@@ -21,4 +21,4 @@ export class FindReleasesByGenreDTO extends BasicDTO<GenreType, Release[]> {}
 export class FindReleasesByArtistDTO extends BasicDTO<ArtistId, Release[]> {}
 
 // GET USER RELEASES
-export class GetUserReleasesDTO extends BasicDTO<void, Release[]> {}
+export class GetUserPurchasesDTO extends BasicDTO<void, Release[]> {}

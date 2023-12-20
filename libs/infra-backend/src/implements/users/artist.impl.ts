@@ -53,3 +53,5 @@ export class ArtistImplement implements ArtistRepository {
 		return inputs
 	}
 }
+
+module.exports = new ArtistImplement()

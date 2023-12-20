@@ -1,8 +1,29 @@
-import { Router } from "express"
-const router = Router()
+export class ReleasesController {
+	getAll(req, res) {
+		// logic
+	}
 
-router.get("/", (req, res) => {
-	res.send({ message: "All Releases" })
-})
+	create(req, res) {
+		// logic
+	}
 
-export default router
+	get(req, res) {
+		// logic
+	}
+
+	modify(req, res) {
+		// logic
+	}
+
+	getManyByArtist(req, res) {
+		// logic
+	}
+
+	getManyByGenre(req, res) {
+		// logic
+	}
+
+	getUserPurchases(req, res) {
+		// logic
+	}
+}

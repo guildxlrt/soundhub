@@ -1,8 +1,17 @@
-import { Router } from "express"
-const router = Router()
+export class AuthController {
+	login(req, res) {
+		// logic
+	}
 
-router.get("/", (req, res) => {
-	res.send({ message: "Auth" })
-})
+	logout(req, res) {
+		// logic
+	}
 
-export default router
+	changeEmail(req, res) {
+		// logic
+	}
+
+	changePass(req, res) {
+		// logic
+	}
+}

@@ -25,7 +25,7 @@ export abstract class ReleaseRepository
 		inputs: InputsLayer<GenreType, Release[]>
 	): Promise<InputsLayer<GenreType, Release[]>>
 
-	abstract getUserReleases(
+	abstract getUserPurchases(
 		inputs: InputsLayer<unknown, Release[]>
 	): Promise<InputsLayer<unknown, Release[]>>
 }

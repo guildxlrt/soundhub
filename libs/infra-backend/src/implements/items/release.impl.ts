@@ -5,7 +5,7 @@ import {
 	FindReleasesByGenreDTO,
 	GetAllReleasesDTO,
 	GetReleaseDTO,
-	GetUserReleasesDTO,
+	GetUserPurchasesDTO,
 	ModifyReleasePriceDTO,
 } from "Dto"
 
@@ -54,7 +54,7 @@ export class ReleaseImplement implements ReleaseRepository {
 		return inputs
 	}
 
-	async getUserReleases(inputs: GetUserReleasesDTO): Promise<GetUserReleasesDTO> {
+	async getUserPurchases(inputs: GetUserPurchasesDTO): Promise<GetUserPurchasesDTO> {
 		const dbRes: Release[] = []
 
 		inputs.putInStorage(dbRes)

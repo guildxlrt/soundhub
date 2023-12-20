@@ -1,22 +1,13 @@
-import * as express from "express"
-import auth from "./auth"
-import artists from "./artists"
-import releases from "./releases"
-import songs from "./songs"
-import announces from "./announces"
-import events from "./events"
+import { AnnoncesController } from "./announces"
+import { ArtistsController } from "./artists"
+import { AuthController } from "./auth"
+import { EventsController } from "./events"
+import { ReleasesController } from "./releases"
+import { SongsController } from "./songs"
 
-const router = express.Router()
-
-router.use("/", (req, res) => {
-	res.send({ message: "Hello API" })
-})
-
-router.use("/auth", auth)
-router.use("/artists", artists)
-router.use("/releases", releases)
-router.use("/songs", songs)
-router.use("/events", events)
-router.use("/announces", announces)
-
-export default router
+export const annoncesController = new AnnoncesController()
+export const artistsController = new ArtistsController()
+export const authController = new AuthController()
+export const eventsController = new EventsController()
+export const releasesController = new ReleasesController()
+export const songsController = new SongsController()

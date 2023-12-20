@@ -1,10 +1,10 @@
 import * as express from "express"
-import auth from "./auth"
-import artists from "./artists"
-import releases from "./releases"
-import songs from "./songs"
-import announces from "./announces"
-import events from "./events"
+import authRoutes from "./auth"
+import artistsRoutes from "./artists"
+import releasesRoutes from "./releases"
+import songsRoutes from "./songs"
+import announcesRoutes from "./announces"
+import eventsRoutes from "./events"
 
 const router = express.Router()
 
@@ -12,11 +12,11 @@ router.use("/", (req, res) => {
 	res.send({ message: "Hello API" })
 })
 
-router.use("/auth", auth)
-router.use("/artists", artists)
-router.use("/releases", releases)
-router.use("/songs", songs)
-router.use("/events", events)
-router.use("/announces", announces)
+router.use("/", authRoutes)
+router.use("/artists", artistsRoutes)
+router.use("/releases", releasesRoutes)
+router.use("/songs", songsRoutes)
+router.use("/events", eventsRoutes)
+router.use("/announces", announcesRoutes)
 
 export default router
