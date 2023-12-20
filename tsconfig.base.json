@@ -15,6 +15,7 @@
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
+			"Controllers": ["libs/controllers/src/index.ts"],
 			"Domain": ["libs/domain/src/index.ts"],
 			"Dto": ["libs/dto/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],

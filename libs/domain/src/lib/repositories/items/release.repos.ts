@@ -24,8 +24,4 @@ export abstract class ReleaseRepository
 	abstract findManyByGenre(
 		inputs: InputsLayer<GenreType, Release[]>
 	): Promise<InputsLayer<GenreType, Release[]>>
-
-	abstract getUserPurchases(
-		inputs: InputsLayer<unknown, Release[]>
-	): Promise<InputsLayer<unknown, Release[]>>
 }
