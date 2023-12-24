@@ -1,15 +1,15 @@
-import { ApiReq, ApiRes } from "../assets"
+import { ApiRequest, ApiReply } from "../assets"
 
 export class SongsController {
-	get(req: ApiReq, res: ApiRes) {
+	get(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	getManyByArtist(req: ApiReq, res: ApiRes) {
+	getManyByArtist(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	getManyByGenre(req: ApiReq, res: ApiRes) {
+	getManyByGenre(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 }

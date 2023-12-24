@@ -1,19 +1,19 @@
-import { ApiReq, ApiRes } from "../assets"
+import { ApiRequest, ApiReply } from "../assets"
 
 export class AuthController {
-	login(req: ApiReq, res: ApiRes) {
+	login(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	logout(req: ApiReq, res: ApiRes) {
+	logout(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	changeEmail(req: ApiReq, res: ApiRes) {
+	changeEmail(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	changePass(req: ApiReq, res: ApiRes) {
+	changePass(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 }

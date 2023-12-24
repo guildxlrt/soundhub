@@ -1,28 +1,36 @@
 import { Song, SongRepository } from "Domain"
-import { FindSongsByArtistDTO, FindSongsByReleaseDTO, GetSongDTO } from "Dto"
+import {
+	FindSongsByArtistInputDTO,
+	FindSongsByArtistReplyDTO,
+	FindSongsByReleaseInputDTO,
+	FindSongsByReleaseReplyDTO,
+	GetSongInputDTO,
+	GetSongReplyDTO,
+	ReplyDTO,
+} from "Dto"
 
 export class SongImplement implements SongRepository {
-	async get(inputs: GetSongDTO): Promise<GetSongDTO> {
-		const dbRes: any = {}
+	async get(inputs: GetSongInputDTO): Promise<GetSongReplyDTO> {
+		const dbRes = new Song(0, new Date(), 0, "title", "audioUrl", [], undefined)
+		const res = new ReplyDTO(dbRes)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByArtist(inputs: FindSongsByArtistDTO): Promise<FindSongsByArtistDTO> {
-		const dbRes: Song[] = []
+	async findManyByArtist(inputs: FindSongsByArtistInputDTO): Promise<FindSongsByArtistReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByRelease(inputs: FindSongsByReleaseDTO): Promise<FindSongsByReleaseDTO> {
-		const dbRes: Song[] = []
+	async findManyByRelease(
+		inputs: FindSongsByReleaseInputDTO
+	): Promise<FindSongsByReleaseReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }

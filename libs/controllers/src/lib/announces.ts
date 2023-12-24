@@ -1,23 +1,23 @@
-import { ApiReq, ApiRes } from "../assets"
+import { ApiRequest, ApiReply } from "../assets"
 
 export class AnnoncesController {
-	getAll(req: ApiReq, res: ApiRes) {
+	getAll(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	create(req: ApiReq, res: ApiRes) {
+	create(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	get(req: ApiReq, res: ApiRes) {
+	get(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	delete(req: ApiReq, res: ApiRes) {
+	delete(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	getManyByArtist(req: ApiReq, res: ApiRes) {
+	getManyByArtist(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 }

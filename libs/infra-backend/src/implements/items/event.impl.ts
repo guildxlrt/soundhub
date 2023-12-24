@@ -1,46 +1,54 @@
 import { Event, EventRepository } from "Domain"
 import {
-	CreateEventDTO,
-	DeleteEventsDTO,
-	FindEventsByArtistDTO,
-	GetAllEventsDTO,
-	GetEventDTO,
+	CreateEventInputDTO,
+	CreateEventReplyDTO,
+	DeleteEventInputDTO,
+	DeleteEventReplyDTO,
+	FindEventsByArtistInputDTO,
+	FindEventsByArtistReplyDTO,
+	GetAllEventsInputDTO,
+	GetAllEventsReplyDTO,
+	GetEventInputDTO,
+	GetEventReplyDTO,
+	ReplyDTO,
 } from "Dto"
 
 export class EventImplement implements EventRepository {
-	async create(inputs: CreateEventDTO): Promise<CreateEventDTO> {
-		inputs.putInStorage(true)
+	async create(inputs: CreateEventInputDTO): Promise<CreateEventReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async delete(inputs: DeleteEventsDTO): Promise<DeleteEventsDTO> {
-		inputs.putInStorage()
+	async delete(inputs: DeleteEventInputDTO): Promise<DeleteEventReplyDTO> {
+		const res = new ReplyDTO(undefined)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async get(inputs: GetEventDTO): Promise<GetEventDTO> {
-		const dbRes: any = {}
+	async get(inputs: GetEventInputDTO): Promise<GetEventReplyDTO> {
+		const newArtist = new Event(0, new Date(), new Date(), [], "title", "text", null)
+		const res = new ReplyDTO(newArtist)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getAll(inputs: GetAllEventsDTO): Promise<GetAllEventsDTO> {
-		const dbRes: Event[] = []
+	async getAll(inputs: GetAllEventsInputDTO): Promise<GetAllEventsReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByArtist(inputs: FindEventsByArtistDTO): Promise<FindEventsByArtistDTO> {
-		const dbRes: Event[] = []
+	async findManyByArtist(
+		inputs: FindEventsByArtistInputDTO
+	): Promise<FindEventsByArtistReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }

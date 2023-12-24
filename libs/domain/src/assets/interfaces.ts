@@ -1,8 +1,11 @@
 import { GenreType } from "Shared-utils"
 
-export interface InputsLayer<D, S> {
+export interface InputLayer<D> {
 	readonly data: D
-	storage?: S
+}
+
+export interface OutputLayer<D> {
+	readonly data: D
 	error?: {
 		status: number
 		message: string
@@ -10,31 +13,31 @@ export interface InputsLayer<D, S> {
 }
 
 export interface BaseReposUser<T> {
-	create(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	modify(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	modify(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	getById(inputs: InputsLayer<number, T>): Promise<InputsLayer<number, T>>
+	getById(inputs: InputLayer<number>): Promise<OutputLayer<T>>
 
-	getByEmail(inputs: InputsLayer<string, T>): Promise<InputsLayer<string, T>>
+	getByEmail(inputs: InputLayer<string>): Promise<OutputLayer<T>>
 }
 
 export interface BaseReposArtistItem<T> {
-	get(inputs: InputsLayer<number, T>): Promise<InputsLayer<number, T>>
+	get(inputs: InputLayer<number>): Promise<OutputLayer<T>>
 
-	getAll(inputs: InputsLayer<unknown, T[]>): Promise<InputsLayer<unknown, T[]>>
+	getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<T[]>>
 
-	findManyByArtist(inputs: InputsLayer<number, T[]>): Promise<InputsLayer<number, T[]>>
+	findManyByArtist(inputs: InputLayer<number>): Promise<OutputLayer<T[]>>
 }
 
 export interface BaseReposGenred<T> {
-	getAll(inputs: InputsLayer<unknown, T[]>): Promise<InputsLayer<unknown, T[]>>
+	getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<T[]>>
 
-	findManyByGenre(inputs: InputsLayer<GenreType, T[]>): Promise<InputsLayer<GenreType, T[]>>
+	findManyByGenre(inputs: InputLayer<GenreType>): Promise<OutputLayer<T[]>>
 }
 
 export interface BaseReposRemovableItem {
-	create(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	delete(inputs: InputsLayer<number, unknown>): Promise<InputsLayer<number, unknown>>
+	delete(inputs: InputLayer<number>): Promise<OutputLayer<unknown>>
 }

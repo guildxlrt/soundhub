@@ -1,56 +1,85 @@
 import { Artist, ArtistRepository } from "Domain"
 import {
-	CreateArtistDTO,
-	ModifyArtistDTO,
-	FindArtistsByGenreDTO,
-	GetAllArtistsDTO,
-	GetArtistByEmailDTO,
-	GetArtistByIdDTO,
+	CreateArtistInputDTO,
+	ModifyArtistInputDTO,
+	FindArtistsByGenreInputDTO,
+	GetAllArtistsInputDTO,
+	GetArtistByEmailInputDTO,
+	GetArtistByIdInputDTO,
+	ReplyDTO,
+	CreateArtistReplyDTO,
+	ModifyArtistReplyDTO,
+	GetArtistByIdReplyDTO,
+	GetArtistByEmailReplyDTO,
+	GetAllArtistsReplyDTO,
+	FindArtistsByGenreReplyDTO,
 } from "Dto"
 
 export class ArtistImplement implements ArtistRepository {
-	async create(inputs: CreateArtistDTO): Promise<CreateArtistDTO> {
-		inputs.putInStorage(true)
+	async create(inputs: CreateArtistInputDTO): Promise<CreateArtistReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async modify(inputs: ModifyArtistDTO): Promise<ModifyArtistDTO> {
-		inputs.putInStorage(true)
+	async modify(inputs: ModifyArtistInputDTO): Promise<ModifyArtistReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getById(inputs: GetArtistByIdDTO): Promise<GetArtistByIdDTO> {
-		const dbRes: any = {}
+	async getById(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
+		const dbRes = new Artist(
+			0,
+			new Date(),
+			0,
+			"name",
+			"bio",
+			null,
+			null,
+			"metal",
+			undefined,
+			undefined
+		)
+		const res = new ReplyDTO(dbRes)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getByEmail(inputs: GetArtistByEmailDTO): Promise<GetArtistByEmailDTO> {
-		const dbRes: any = {}
+	async getByEmail(inputs: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
+		const dbRes = new Artist(
+			0,
+			new Date(),
+			0,
+			"name",
+			"bio",
+			null,
+			null,
+			"metal",
+			undefined,
+			undefined
+		)
+		const res = new ReplyDTO(dbRes)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getAll(inputs: GetAllArtistsDTO): Promise<GetAllArtistsDTO> {
-		const dbRes: Artist[] = []
+	async getAll(inputs: GetAllArtistsInputDTO): Promise<GetAllArtistsReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByGenre(inputs: FindArtistsByGenreDTO): Promise<FindArtistsByGenreDTO> {
-		const dbRes: Artist[] = []
+	async findManyByGenre(inputs: FindArtistsByGenreInputDTO): Promise<FindArtistsByGenreReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }
 

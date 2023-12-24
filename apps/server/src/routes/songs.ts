@@ -5,8 +5,8 @@ const router = Router()
 
 router.get("/:id", songsController.get)
 
-router.get("/artist/:id/", songsController.getManyByArtist)
+router.get("/by-artist/:id/", songsController.getManyByArtist)
 
-router.get("/release/:id/", songsController.getManyByGenre)
+router.get("/by-release/:id/", songsController.getManyByGenre)
 
 export default router

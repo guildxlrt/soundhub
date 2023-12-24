@@ -1,14 +1,18 @@
 import { ArtistId, ReleaseId, Song } from "Domain"
-import { BasicDTO, INewSong } from "../../assets"
+import { InputDTO, INewSong, ReplyDTO } from "../../assets"
 
 // CREATE SONG
-export class NewSong extends BasicDTO<INewSong, Song> {}
+export class NewSongInputDTO extends InputDTO<INewSong> {}
+export class NewSongReplyDTO extends ReplyDTO<Song> {}
 
 // GET SONG
-export class GetSongDTO extends BasicDTO<ReleaseId, Song> {}
+export class GetSongInputDTO extends InputDTO<ReleaseId> {}
+export class GetSongReplyDTO extends ReplyDTO<Song> {}
 
 // FIND MANY BY ARTIST
-export class FindSongsByArtistDTO extends BasicDTO<ArtistId, Song[]> {}
+export class FindSongsByArtistInputDTO extends InputDTO<ArtistId> {}
+export class FindSongsByArtistReplyDTO extends ReplyDTO<Song[]> {}
 
 // FIND MANY BY RELEASE
-export class FindSongsByReleaseDTO extends BasicDTO<ArtistId, Song[]> {}
+export class FindSongsByReleaseInputDTO extends InputDTO<ArtistId> {}
+export class FindSongsByReleaseReplyDTO extends ReplyDTO<Song[]> {}

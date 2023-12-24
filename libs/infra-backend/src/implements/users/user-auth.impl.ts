@@ -1,30 +1,40 @@
 import { UserAuthRepository } from "Domain"
-import { LoginDTO, LogoutDTO, ChangeEmailDTO, ChangePassDTO } from "Dto"
+import {
+	ChangeEmailInputDTO,
+	ChangePassInputDTO,
+	LoginInputDTO,
+	LogoutInputDTO,
+	ReplyDTO,
+} from "Dto"
+import { LoginReplyDTO, LogoutReplyDTO, ChangeEmailReplyDTO, ChangePassReplyDTO } from "Dto"
 
 export class UserAuthImplement implements UserAuthRepository {
-	async login(inputs: LoginDTO): Promise<LoginDTO> {
+	async login(inputs: LoginInputDTO): Promise<LoginReplyDTO> {
 		const creds = new Credential()
+		const res = new ReplyDTO(creds)
 
-		inputs.putInStorage(creds)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async logout(inputs: LogoutDTO): Promise<LogoutDTO> {
-		inputs.putInStorage()
+	async logout(inputs: LogoutInputDTO): Promise<LogoutReplyDTO> {
+		const res = new ReplyDTO(undefined)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async changeEmail(inputs: ChangeEmailDTO): Promise<ChangeEmailDTO> {
-		inputs.putInStorage(true)
+	async changeEmail(inputs: ChangeEmailInputDTO): Promise<ChangeEmailReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async changePass(inputs: ChangePassDTO): Promise<ChangePassDTO> {
-		inputs.putInStorage(true)
+	async changePass(inputs: ChangePassInputDTO): Promise<ChangePassReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }

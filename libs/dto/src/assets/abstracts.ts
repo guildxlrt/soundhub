@@ -1,8 +1,16 @@
-import { InputsLayer } from "Domain"
+import { InputLayer } from "Domain"
+import { OutputLayer } from "Domain"
 
-export abstract class BasicDTO<D, S> implements InputsLayer<D, S> {
+export abstract class InputDTO<D> implements InputLayer<D> {
 	readonly data: D
-	storage?: S
+
+	constructor(data: D) {
+		this.data = data
+	}
+}
+
+export class ReplyDTO<D> implements OutputLayer<D> {
+	readonly data: D
 	error?: {
 		status: number
 		message: string
@@ -10,16 +18,10 @@ export abstract class BasicDTO<D, S> implements InputsLayer<D, S> {
 
 	constructor(data: D) {
 		this.data = data
-		this.storage = undefined
 		this.error = undefined
 	}
 
-	putInStorage(storage: S): void {
-		this.storage = storage
-		return
-	}
-
-	putInError(status: number, message: string): void {
+	returnError(status: number, message: string): void {
 		this.error = { status: status, message: message }
 		return
 	}

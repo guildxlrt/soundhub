@@ -1,13 +1,13 @@
 import { DatabaseServices } from "Infra-backend"
-import { CreateArtistDTO } from "Dto"
+import { CreateArtistInputDTO, CreateArtistReplyDTO } from "Dto"
 import { BaseUsecase } from "../../../assets"
 
-export class CreateArtistUsecase extends BaseUsecase<CreateArtistDTO> {
+export class CreateArtistUsecase extends BaseUsecase<CreateArtistInputDTO> {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}
 
-	async execute(params: CreateArtistDTO): Promise<CreateArtistDTO> {
-		return await this.service.artist.create(params)
+	async execute(input: CreateArtistInputDTO): Promise<CreateArtistReplyDTO> {
+		return await this.service.artist.create(input)
 	}
 }

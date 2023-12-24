@@ -1,55 +1,78 @@
 import { Release, ReleaseRepository } from "Domain"
 import {
-	CreateReleaseDTO,
-	FindReleasesByArtistDTO,
-	FindReleasesByGenreDTO,
-	GetAllReleasesDTO,
-	GetReleaseDTO,
-	ModifyReleasePriceDTO,
+	CreateReleaseInputDTO,
+	CreateReleaseReplyDTO,
+	FindReleasesByArtistInputDTO,
+	FindReleasesByArtistReplyDTO,
+	FindReleasesByGenreInputDTO,
+	FindReleasesByGenreReplyDTO,
+	GetAllReleasesInputDTO,
+	GetAllReleasesReplyDTO,
+	GetReleaseInputDTO,
+	GetReleaseReplyDTO,
+	ModifyReleasePriceInputDTO,
+	ModifyReleasePriceReplyDTO,
+	ReplyDTO,
 } from "Dto"
 
 export class ReleaseImplement implements ReleaseRepository {
-	async create(inputs: CreateReleaseDTO): Promise<CreateReleaseDTO> {
-		inputs.putInStorage(true)
+	async create(inputs: CreateReleaseInputDTO): Promise<CreateReleaseReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async modifyPrice(inputs: ModifyReleasePriceDTO): Promise<ModifyReleasePriceDTO> {
-		inputs.putInStorage(true)
+	async modifyPrice(inputs: ModifyReleasePriceInputDTO): Promise<ModifyReleasePriceReplyDTO> {
+		{
+			const res = new ReplyDTO(true)
 
-		return inputs
+			console.log(inputs)
+			return res
+		}
 	}
 
-	async get(inputs: GetReleaseDTO): Promise<GetReleaseDTO> {
-		const dbRes: any = {}
+	async get(inputs: GetReleaseInputDTO): Promise<GetReleaseReplyDTO> {
+		const dbRes = new Release(
+			0,
+			new Date(),
+			0,
+			"title",
+			"album",
+			"descript",
+			9,
+			["metal", "rock", "blues"],
+			[],
+			undefined
+		)
+		const res = new ReplyDTO(dbRes)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getAll(inputs: GetAllReleasesDTO): Promise<GetAllReleasesDTO> {
-		const dbRes: Release[] = []
+	async getAll(inputs: GetAllReleasesInputDTO): Promise<GetAllReleasesReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByGenre(inputs: FindReleasesByGenreDTO): Promise<FindReleasesByGenreDTO> {
-		const dbRes: Release[] = []
+	async findManyByGenre(
+		inputs: FindReleasesByGenreInputDTO
+	): Promise<FindReleasesByGenreReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByArtist(inputs: FindReleasesByArtistDTO): Promise<FindReleasesByArtistDTO> {
-		const dbRes: Release[] = []
+	async findManyByArtist(
+		inputs: FindReleasesByArtistInputDTO
+	): Promise<FindReleasesByArtistReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }

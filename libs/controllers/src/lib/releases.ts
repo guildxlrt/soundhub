@@ -1,27 +1,27 @@
-import { ApiReq, ApiRes } from "../assets"
+import { ApiRequest, ApiReply } from "../assets"
 
 export class ReleasesController {
-	getAll(req: ApiReq, res: ApiRes) {
+	getAll(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	create(req: ApiReq, res: ApiRes) {
+	create(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	get(req: ApiReq, res: ApiRes) {
+	get(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	modify(req: ApiReq, res: ApiRes) {
+	modify(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	getManyByArtist(req: ApiReq, res: ApiRes) {
+	getManyByArtist(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 
-	getManyByGenre(req: ApiReq, res: ApiRes) {
+	getManyByGenre(req: ApiRequest, res: ApiReply) {
 		// logic
 	}
 }

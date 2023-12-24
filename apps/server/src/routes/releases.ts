@@ -11,8 +11,8 @@ router.get("/:id", releasesController.get)
 
 router.put("/edit", releasesController.modify)
 
-router.get("/artist/:id/", releasesController.getManyByArtist)
+router.get("/by-artist/:id/", releasesController.getManyByArtist)
 
-router.get("/genre/:genre/", releasesController.getManyByGenre)
+router.get("/by-genre/:genre/", releasesController.getManyByGenre)
 
 export default router

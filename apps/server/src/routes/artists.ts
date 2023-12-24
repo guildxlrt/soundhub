@@ -5,14 +5,14 @@ const router = Router()
 
 router.get("/", artistsController.getAll)
 
-router.get("/genre/:genre", artistsController.getManyByGenre)
+router.get("/by-genre/:genre", artistsController.getManyByGenre)
 
 router.post("/new", artistsController.create)
 
 router.get("/:id", artistsController.getById)
 
-router.get("/email", artistsController.getByEmail)
+router.get("/by-email", artistsController.getByEmail)
 
-router.put("/update", artistsController.modify)
+router.put("/by-update", artistsController.modify)
 
 export default router

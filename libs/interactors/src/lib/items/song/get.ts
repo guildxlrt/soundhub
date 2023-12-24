@@ -1,13 +1,13 @@
 import { DatabaseServices } from "Infra-backend"
-import { GetSongDTO } from "Dto"
+import { GetSongInputDTO, GetSongReplyDTO } from "Dto"
 import { BaseUsecase } from "../../../assets"
 
-export class GetSongUsecase extends BaseUsecase<GetSongDTO> {
+export class GetSongUsecase extends BaseUsecase<GetSongInputDTO> {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}
 
-	async execute(inputs: GetSongDTO): Promise<GetSongDTO> {
-		return await this.service.song.get(inputs)
+	async execute(input: GetSongInputDTO): Promise<GetSongReplyDTO> {
+		return await this.service.song.get(input)
 	}
 }

@@ -1,13 +1,13 @@
 import { DatabaseServices } from "Infra-backend"
-import { GetArtistByEmailDTO } from "Dto"
+import { GetArtistByEmailInputDTO, GetArtistByEmailReplyDTO } from "Dto"
 import { BaseUsecase } from "../../../assets"
 
-export class GetArtistByEmailUsecase extends BaseUsecase<GetArtistByEmailDTO> {
+export class GetArtistByEmailUsecase extends BaseUsecase<GetArtistByEmailInputDTO> {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}
 
-	async execute(email: GetArtistByEmailDTO): Promise<GetArtistByEmailDTO> {
+	async execute(email: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
 		return await this.service.artist.getByEmail(email)
 	}
 }

@@ -1,21 +1,27 @@
 import { ArtistId, Release, ReleaseId } from "Domain"
 import { GenreType } from "Shared-utils"
-import { BasicDTO, INewPrice, INewRelease } from "../../assets"
+import { InputDTO, INewPrice, INewRelease, ReplyDTO } from "../../assets"
 
 // CREATE RELEASE
-export class CreateReleaseDTO extends BasicDTO<INewRelease, boolean> {}
+export class CreateReleaseInputDTO extends InputDTO<INewRelease> {}
+export class CreateReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // MODIFY PRICE
-export class ModifyReleasePriceDTO extends BasicDTO<INewPrice, boolean> {}
+export class ModifyReleasePriceInputDTO extends InputDTO<INewPrice> {}
+export class ModifyReleasePriceReplyDTO extends ReplyDTO<boolean> {}
 
 // GET ARTIST
-export class GetReleaseDTO extends BasicDTO<ReleaseId, Release> {}
+export class GetReleaseInputDTO extends InputDTO<ReleaseId> {}
+export class GetReleaseReplyDTO extends ReplyDTO<Release> {}
 
 // GET ALL
-export class GetAllReleasesDTO extends BasicDTO<void, Release[]> {}
+export class GetAllReleasesInputDTO extends InputDTO<void> {}
+export class GetAllReleasesReplyDTO extends ReplyDTO<Release[]> {}
 
 // FIND MANY BY GENRE
-export class FindReleasesByGenreDTO extends BasicDTO<GenreType, Release[]> {}
+export class FindReleasesByGenreInputDTO extends InputDTO<GenreType> {}
+export class FindReleasesByGenreReplyDTO extends ReplyDTO<Release[]> {}
 
 // FIND MANY BY ARTIST
-export class FindReleasesByArtistDTO extends BasicDTO<ArtistId, Release[]> {}
+export class FindReleasesByArtistInputDTO extends InputDTO<ArtistId> {}
+export class FindReleasesByArtistReplyDTO extends ReplyDTO<Release[]> {}

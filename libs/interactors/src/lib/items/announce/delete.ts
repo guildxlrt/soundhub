@@ -1,13 +1,13 @@
 import { DatabaseServices } from "Infra-backend"
-import { DeleteAnnouncesDTO } from "Dto"
+import { DeleteAnnouncesInputDTO, DeleteAnnouncesReplyDTO } from "Dto"
 import { BaseUsecase } from "../../../assets"
 
-export class DeleteAnnounceUsecase extends BaseUsecase<DeleteAnnouncesDTO> {
+export class DeleteAnnounceUsecase extends BaseUsecase<DeleteAnnouncesInputDTO> {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}
 
-	async execute(inputs: DeleteAnnouncesDTO): Promise<DeleteAnnouncesDTO> {
-		return await this.service.announce.delete(inputs)
+	async execute(input: DeleteAnnouncesInputDTO): Promise<DeleteAnnouncesReplyDTO> {
+		return await this.service.announce.delete(input)
 	}
 }

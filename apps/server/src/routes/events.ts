@@ -11,6 +11,6 @@ router.get("/:id", eventsController.get)
 
 router.delete("/delete", eventsController.delete)
 
-router.get("/artist/:id/", eventsController.getManyByArtist)
+router.get("/by-artist/:id/", eventsController.getManyByArtist)
 
 export default router

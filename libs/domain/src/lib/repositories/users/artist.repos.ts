@@ -1,21 +1,17 @@
 import { GenreType } from "Shared-utils"
 import { Artist, ArtistId, UserAuthEmail } from "../../entities"
-import { BaseReposUser, BaseReposGenred, InputsLayer } from "../../../assets"
+import { BaseReposUser, BaseReposGenred, InputLayer, OutputLayer } from "../../../assets"
 
 export abstract class ArtistRepository implements BaseReposUser<Artist>, BaseReposGenred<Artist> {
-	abstract create(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	abstract modify(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	abstract modify(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	abstract getById(inputs: InputsLayer<ArtistId, Artist>): Promise<InputsLayer<ArtistId, Artist>>
+	abstract getById(inputs: InputLayer<ArtistId>): Promise<OutputLayer<Artist>>
 
-	abstract getByEmail(
-		inputs: InputsLayer<UserAuthEmail, Artist>
-	): Promise<InputsLayer<UserAuthEmail, Artist>>
+	abstract getByEmail(inputs: InputLayer<UserAuthEmail>): Promise<OutputLayer<Artist>>
 
-	abstract getAll(inputs: InputsLayer<unknown, Artist[]>): Promise<InputsLayer<unknown, Artist[]>>
+	abstract getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<Artist[]>>
 
-	abstract findManyByGenre(
-		inputs: InputsLayer<GenreType, Artist[]>
-	): Promise<InputsLayer<GenreType, Artist[]>>
+	abstract findManyByGenre(inputs: InputLayer<GenreType>): Promise<OutputLayer<Artist[]>>
 }

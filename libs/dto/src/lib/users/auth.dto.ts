@@ -1,11 +1,17 @@
-import { BasicDTO, IChangeEmailData, IChangePassData, ILogin } from "../../assets"
+import { InputDTO, IChangeEmail, IChangePass, ILogin, ReplyDTO } from "../../assets"
 
-export class LoginDTO extends BasicDTO<ILogin, Credential> {}
+// LOGIN
+export class LoginInputDTO extends InputDTO<ILogin> {}
+export class LoginReplyDTO extends ReplyDTO<Credential> {}
 
-export class LogoutDTO extends BasicDTO<void, void> {}
+// LOGOUT
+export class LogoutInputDTO extends InputDTO<void> {}
+export class LogoutReplyDTO extends ReplyDTO<void> {}
 
 // EMAIL
-export class ChangeEmailDTO extends BasicDTO<IChangeEmailData, boolean> {}
+export class ChangeEmailInputDTO extends InputDTO<IChangeEmail> {}
+export class ChangeEmailReplyDTO extends ReplyDTO<boolean> {}
 
 // PASSWORD
-export class ChangePassDTO extends BasicDTO<IChangePassData, boolean> {}
+export class ChangePassInputDTO extends InputDTO<IChangePass> {}
+export class ChangePassReplyDTO extends ReplyDTO<boolean> {}

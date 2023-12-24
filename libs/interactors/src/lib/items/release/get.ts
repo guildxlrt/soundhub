@@ -1,13 +1,13 @@
 import { DatabaseServices } from "Infra-backend"
 import { BaseUsecase } from "../../../assets"
-import { GetReleaseDTO } from "Dto"
+import { GetReleaseInputDTO, GetReleaseReplyDTO } from "Dto"
 
-export class GetReleaseUsecase extends BaseUsecase<GetReleaseDTO> {
+export class GetReleaseUsecase extends BaseUsecase<GetReleaseInputDTO> {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}
 
-	async execute(inputs: GetReleaseDTO): Promise<GetReleaseDTO> {
-		return await this.service.release.get(inputs)
+	async execute(input: GetReleaseInputDTO): Promise<GetReleaseReplyDTO> {
+		return await this.service.release.get(input)
 	}
 }

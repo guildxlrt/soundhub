@@ -1,46 +1,54 @@
 import { Announce, AnnounceRepository } from "Domain"
 import {
-	CreateAnnounceDTO,
-	DeleteAnnouncesDTO,
-	FindAnnouncesByArtistDTO,
-	GetAllAnnouncesDTO,
-	GetAnnounceDTO,
+	CreateAnnounceInputDTO,
+	CreateAnnounceReplyDTO,
+	DeleteAnnouncesInputDTO,
+	DeleteAnnouncesReplyDTO,
+	FindAnnouncesByArtistInputDTO,
+	FindAnnouncesByArtistReplyDTO,
+	GetAllAnnouncesInputDTO,
+	GetAllAnnouncesReplyDTO,
+	GetAnnounceInputDTO,
+	GetAnnounceReplyDTO,
+	ReplyDTO,
 } from "Dto"
 
 export class AnnounceImplement implements AnnounceRepository {
-	async create(inputs: CreateAnnounceDTO): Promise<CreateAnnounceDTO> {
-		inputs.putInStorage(true)
+	async create(inputs: CreateAnnounceInputDTO): Promise<CreateAnnounceReplyDTO> {
+		const res = new ReplyDTO(true)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async delete(inputs: DeleteAnnouncesDTO): Promise<DeleteAnnouncesDTO> {
-		inputs.putInStorage()
+	async delete(inputs: DeleteAnnouncesInputDTO): Promise<DeleteAnnouncesReplyDTO> {
+		const res = new ReplyDTO(undefined)
 
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async get(inputs: GetAnnounceDTO): Promise<GetAnnounceDTO> {
-		const dbRes: any = {}
+	async get(inputs: GetAnnounceInputDTO): Promise<GetAnnounceReplyDTO> {
+		const dbRes = new Announce(0, new Date(), 0, "title", "text", null, null)
+		const res = new ReplyDTO(dbRes)
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async getAll(inputs: GetAllAnnouncesDTO): Promise<GetAllAnnouncesDTO> {
-		const dbRes: Announce[] = []
+	async getAll(inputs: GetAllAnnouncesInputDTO): Promise<GetAllAnnouncesReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 
-	async findManyByArtist(inputs: FindAnnouncesByArtistDTO): Promise<FindAnnouncesByArtistDTO> {
-		const dbRes: Announce[] = []
+	async findManyByArtist(
+		inputs: FindAnnouncesByArtistInputDTO
+	): Promise<FindAnnouncesByArtistReplyDTO> {
+		const res = new ReplyDTO([])
 
-		inputs.putInStorage(dbRes)
-
-		return inputs
+		console.log(inputs)
+		return res
 	}
 }
