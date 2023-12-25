@@ -1,5 +1,5 @@
 import { ApiRequest, ApiReply } from "../assets"
-import { apiError } from "Shared-utils"
+import { apiError } from "../assets"
 import {
 	CreateArtistInputDTO,
 	FindArtistsByGenreInputDTO,
@@ -87,8 +87,8 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: GetArtistByEmailInputDTO = req.body as GetArtistByEmailInputDTO
-			const getArtistById = new GetArtistByEmailUsecase(databaseServices)
-			const { data, error } = await getArtistById.execute(inputs)
+			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
+			const { data, error } = await getArtistByEmail.execute(inputs)
 
 			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })

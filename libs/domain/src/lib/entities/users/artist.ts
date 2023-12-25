@@ -1,5 +1,4 @@
-import { GenresArray, GenreType } from "Shared-utils"
-import { UserAuthId } from "./auth"
+import { ArtistId, GenresArray, GenreType, UserAuthId } from "Shared-utils"
 import { BaseEntity } from "../../../assets"
 
 export class Artist extends BaseEntity {
@@ -11,9 +10,9 @@ export class Artist extends BaseEntity {
 	genres: GenresArray
 
 	constructor(
-		id: number,
+		id: ArtistId,
 		createdAt: Date,
-		user_auth_id: number,
+		user_auth_id: UserAuthId,
 		name: string,
 		bio: string,
 		avatarUrl: string | null,
@@ -35,5 +34,3 @@ export class Artist extends BaseEntity {
 		this.genres = [genre1, genre2, genre3]
 	}
 }
-
-export type ArtistId = Pick<Artist, "id">["id"]

@@ -1,5 +1,5 @@
+import { AnnounceId, ArtistId } from "Shared-utils"
 import { BaseEntity } from "../../../assets"
-import { ArtistId } from "../users/artist"
 
 export class Announce extends BaseEntity {
 	artist_id: ArtistId
@@ -9,7 +9,7 @@ export class Announce extends BaseEntity {
 	videoUrl: string | null
 
 	constructor(
-		id: number,
+		id: AnnounceId,
 		createdAt: Date,
 
 		artist_id: ArtistId,
@@ -27,5 +27,3 @@ export class Announce extends BaseEntity {
 		this.videoUrl = videoUrl
 	}
 }
-
-export type AnnounceId = Pick<Announce, "id">["id"]

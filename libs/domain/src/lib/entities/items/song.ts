@@ -1,6 +1,5 @@
+import { ArtistId, ReleaseId, SongId } from "Shared-utils"
 import { BaseEntity } from "../../../assets"
-import { ArtistId } from "../users/artist"
-import { ReleaseId } from "./release"
 
 export class Song extends BaseEntity {
 	release_id: ReleaseId
@@ -10,7 +9,7 @@ export class Song extends BaseEntity {
 	lyrics?: string
 
 	constructor(
-		id: number,
+		id: SongId,
 		createdAt: Date,
 		release_id: ReleaseId,
 		title: string,
@@ -32,5 +31,3 @@ export class Song extends BaseEntity {
 		}
 	}
 }
-
-export type SongId = Pick<Song, "id">["id"]

@@ -1,5 +1,5 @@
+import { ArtistId, EventId } from "Shared-utils"
 import { BaseEntity } from "../../../assets"
-import { ArtistId } from "../users/artist"
 
 export class Event extends BaseEntity {
 	date: Date
@@ -9,7 +9,7 @@ export class Event extends BaseEntity {
 	imageUrl: string | null
 
 	constructor(
-		id: number,
+		id: EventId,
 		createdAt: Date,
 
 		date: Date,
@@ -27,5 +27,3 @@ export class Event extends BaseEntity {
 		this.imageUrl = imageUrl
 	}
 }
-
-export type EventId = Pick<Event, "id">["id"]

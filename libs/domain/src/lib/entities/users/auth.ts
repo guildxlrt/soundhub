@@ -11,6 +11,3 @@ export class UserAuth extends BaseEntity {
 		this.password = password
 	}
 }
-
-export type UserAuthId = Pick<UserAuth, "id">["id"]
-export type UserAuthEmail = Pick<UserAuth, "email">["email"]

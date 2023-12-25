@@ -1,4 +1,5 @@
-import { InputDTO, IChangeEmail, IChangePass, ILogin, ReplyDTO } from "../../assets"
+import { IChangeEmail, IChangePass, ILogin } from "Shared-utils"
+import { InputDTO, ReplyDTO } from "../../assets"
 
 // LOGIN
 export class LoginInputDTO extends InputDTO<ILogin> {}

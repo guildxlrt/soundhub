@@ -1,6 +1,5 @@
-import { Artist, ArtistId } from "Domain"
-import { GenreType } from "Shared-utils"
-import { InputDTO, IModifyArtist, INewArtist, ReplyDTO } from "../../assets"
+import { ArtistId, GenreType, IModifyArtist, INewArtist, IArtist } from "Shared-utils"
+import { InputDTO, ReplyDTO } from "../../assets"
 
 // CREATE ARTIST
 export class CreateArtistInputDTO extends InputDTO<INewArtist> {}
@@ -12,16 +11,16 @@ export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
 export class GetArtistByIdInputDTO extends InputDTO<ArtistId> {}
-export class GetArtistByIdReplyDTO extends ReplyDTO<Artist> {}
+export class GetArtistByIdReplyDTO extends ReplyDTO<IArtist> {}
 
 // ARTIST BY EMAIL
 export class GetArtistByEmailInputDTO extends InputDTO<string> {}
-export class GetArtistByEmailReplyDTO extends ReplyDTO<Artist> {}
+export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtist> {}
 
 // GET ALL
 export class GetAllArtistsInputDTO extends InputDTO<void> {}
-export class GetAllArtistsReplyDTO extends ReplyDTO<Artist[]> {}
+export class GetAllArtistsReplyDTO extends ReplyDTO<IArtist[]> {}
 
 // ARTISTS BY GENRE
 export class FindArtistsByGenreInputDTO extends InputDTO<GenreType> {}
-export class FindArtistsByGenreReplyDTO extends ReplyDTO<Artist[]> {}
+export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtist[]> {}

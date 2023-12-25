@@ -2,8 +2,8 @@ import { Announce, AnnounceRepository } from "Domain"
 import {
 	CreateAnnounceInputDTO,
 	CreateAnnounceReplyDTO,
-	DeleteAnnouncesInputDTO,
-	DeleteAnnouncesReplyDTO,
+	DeleteAnnounceInputDTO,
+	DeleteAnnounceReplyDTO,
 	FindAnnouncesByArtistInputDTO,
 	FindAnnouncesByArtistReplyDTO,
 	GetAllAnnouncesInputDTO,
@@ -21,7 +21,7 @@ export class AnnounceImplement implements AnnounceRepository {
 		return res
 	}
 
-	async delete(inputs: DeleteAnnouncesInputDTO): Promise<DeleteAnnouncesReplyDTO> {
+	async delete(inputs: DeleteAnnounceInputDTO): Promise<DeleteAnnounceReplyDTO> {
 		const res = new ReplyDTO(undefined)
 
 		console.log(inputs)

@@ -1,23 +1,105 @@
+import { apiError } from "../assets"
 import { ApiRequest, ApiReply } from "../assets"
+import {
+	CreateEventInputDTO,
+	DeleteEventInputDTO,
+	FindEventsByArtistInputDTO,
+	GetAllEventsInputDTO,
+	GetEventInputDTO,
+} from "Dto"
+import {
+	CreateEventUsecase,
+	DeleteEventUsecase,
+	FindEventsByArtistUsecase,
+	GetAllEventsUsecase,
+	GetEventUsecase,
+} from "Interactors"
+import { databaseServices } from "Infra-backend"
 
 export class EventsController {
-	getAll(req: ApiRequest, res: ApiReply) {
-		// logic
+	async create(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+
+		try {
+			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
+			const createEvent = new CreateEventUsecase(databaseServices)
+			const { data, error } = await createEvent.execute(inputs)
+
+			// Operators
+			// ... doing some heathcheck
+
+			// Saving Profile
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(202).send(data)
+		} catch (error) {
+			//
+		}
 	}
 
-	create(req: ApiRequest, res: ApiReply) {
-		// logic
+	async delete(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "DELETE") return res.status(405).send({ error: apiError.e405.msg })
+
+		try {
+			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
+			const deleteEvent = new DeleteEventUsecase(databaseServices)
+			const { data, error } = await deleteEvent.execute(inputs)
+
+			// Operators
+			// ... doing some heathcheck
+
+			// Saving Profile
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(202).send(data)
+		} catch (error) {
+			//
+		}
 	}
 
-	get(req: ApiRequest, res: ApiReply) {
-		// logic
+	async get(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+
+		try {
+			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
+			const getEvent = new GetEventUsecase(databaseServices)
+			const { data, error } = await getEvent.execute(inputs)
+
+			// Return infos
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(200).send(data)
+		} catch (error) {
+			//
+		}
 	}
 
-	delete(req: ApiRequest, res: ApiReply) {
-		// logic
+	async getAll(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+
+		try {
+			const inputs: GetAllEventsInputDTO = req.body as GetAllEventsInputDTO
+			const getAllEvents = new GetAllEventsUsecase(databaseServices)
+			const { data, error } = await getAllEvents.execute(inputs)
+
+			// Return infos
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(200).send(data)
+		} catch (error) {
+			//
+		}
 	}
 
-	getManyByArtist(req: ApiRequest, res: ApiReply) {
-		// logic
+	async findManyByArtist(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+
+		try {
+			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
+			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
+			const { data, error } = await findEventsByArtist.execute(inputs)
+
+			// Return infos
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(200).send(data)
+		} catch (error) {
+			//
+		}
 	}
 }

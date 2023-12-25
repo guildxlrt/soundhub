@@ -1,28 +1,26 @@
 import { BaseEntity } from "../../../assets"
-import { ArtistId } from "../users/artist"
-import { Song } from "./song"
-import { GenresArray, ReleaseType } from "Shared-utils"
+import { ArtistId, GenresArray, ReleaseId, ReleasePrice, ReleaseType, SongId } from "Shared-utils"
 
 export class Release extends BaseEntity {
 	artist_id: ArtistId
 	title: string
 	releaseType: ReleaseType
 	descript: string | null
-	price: null | number
+	price: null | ReleasePrice
 	genres: GenresArray
-	songs: Song[]
+	songs: SongId[]
 	coverUrl?: string
 
 	constructor(
-		id: number,
+		id: ReleaseId,
 		createdAt: Date,
 		artist_id: ArtistId,
 		title: string,
 		releaseType: ReleaseType,
 		descript: string | null,
-		price: null | number,
+		price: null | ReleasePrice,
 		genres: GenresArray,
-		songs: Song[],
+		songs: SongId[],
 		coverUrl?: string
 	) {
 		super(id, createdAt)
@@ -37,6 +35,3 @@ export class Release extends BaseEntity {
 		this.coverUrl = coverUrl
 	}
 }
-
-export type ReleaseId = Pick<Release, "id">["id"]
-export type ReleasePrice = Pick<Release, "price">["price"]

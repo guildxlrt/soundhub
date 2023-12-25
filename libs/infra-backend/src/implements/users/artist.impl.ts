@@ -1,4 +1,4 @@
-import { Artist, ArtistRepository } from "Domain"
+import { ArtistRepository } from "Domain"
 import {
 	CreateArtistInputDTO,
 	ModifyArtistInputDTO,
@@ -31,38 +31,28 @@ export class ArtistImplement implements ArtistRepository {
 	}
 
 	async getById(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
-		const dbRes = new Artist(
-			0,
-			new Date(),
-			0,
-			"name",
-			"bio",
-			null,
-			null,
-			"metal",
-			undefined,
-			undefined
-		)
-		const res = new ReplyDTO(dbRes)
+		const res = new GetArtistByIdReplyDTO({
+			id: 0,
+			name: "",
+			bio: "",
+			avatarUrl: null,
+			members: null,
+			genre1: "blues",
+		})
 
 		console.log(inputs)
 		return res
 	}
 
 	async getByEmail(inputs: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
-		const dbRes = new Artist(
-			0,
-			new Date(),
-			0,
-			"name",
-			"bio",
-			null,
-			null,
-			"metal",
-			undefined,
-			undefined
-		)
-		const res = new ReplyDTO(dbRes)
+		const res = new GetArtistByEmailReplyDTO({
+			id: 0,
+			name: "",
+			bio: "",
+			avatarUrl: null,
+			members: null,
+			genre1: "blues",
+		})
 
 		console.log(inputs)
 		return res

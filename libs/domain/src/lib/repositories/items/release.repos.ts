@@ -1,27 +1,18 @@
-import { ArtistId, Release, ReleaseId } from "../../entities"
-import { BaseReposArtistItem, BaseReposGenred, InputsLayer } from "../../../assets"
-import { GenreType } from "Shared-utils"
+import { GenreType, ArtistId, IRelease, ReleaseId } from "Shared-utils"
+import { ArtistItemMethods, GenreMethods, InputLayer } from "../../../assets"
 
 export abstract class ReleaseRepository
-	implements BaseReposArtistItem<Release>, BaseReposGenred<Release>
+	implements ArtistItemMethods<IRelease>, GenreMethods<IRelease>
 {
-	abstract create(inputs: InputsLayer<unknown, boolean>): Promise<InputsLayer<unknown, boolean>>
+	abstract create(inputs: InputLayer<unknown>): Promise<InputLayer<boolean>>
 
-	abstract modifyPrice(
-		inputs: InputsLayer<unknown, boolean>
-	): Promise<InputsLayer<unknown, boolean>>
+	abstract modifyPrice(inputs: InputLayer<unknown>): Promise<InputLayer<boolean>>
 
-	abstract get(inputs: InputsLayer<ReleaseId, Release>): Promise<InputsLayer<ReleaseId, Release>>
+	abstract get(inputs: InputLayer<ReleaseId>): Promise<InputLayer<IRelease>>
 
-	abstract getAll(
-		inputs: InputsLayer<unknown, Release[]>
-	): Promise<InputsLayer<unknown, Release[]>>
+	abstract getAll(inputs: InputLayer<unknown>): Promise<InputLayer<IRelease[]>>
 
-	abstract findManyByArtist(
-		inputs: InputsLayer<ArtistId, Release[]>
-	): Promise<InputsLayer<ArtistId, Release[]>>
+	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<InputLayer<IRelease[]>>
 
-	abstract findManyByGenre(
-		inputs: InputsLayer<GenreType, Release[]>
-	): Promise<InputsLayer<GenreType, Release[]>>
+	abstract findManyByGenre(inputs: InputLayer<GenreType>): Promise<InputLayer<IRelease[]>>
 }

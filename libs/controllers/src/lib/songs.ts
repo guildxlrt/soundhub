@@ -1,15 +1,23 @@
+import { GetSongInputDTO } from "Dto"
 import { ApiRequest, ApiReply } from "../assets"
+import { apiError } from "../assets"
+import { GetSongUsecase } from "Interactors"
+import { databaseServices } from "Infra-backend"
 
 export class SongsController {
-	get(req: ApiRequest, res: ApiReply) {
-		// logic
-	}
+	async get(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 
-	getManyByArtist(req: ApiRequest, res: ApiReply) {
-		// logic
-	}
+		try {
+			const inputs: GetSongInputDTO = req.body as GetSongInputDTO
+			const getSong = new GetSongUsecase(databaseServices)
+			const { data, error } = await getSong.execute(inputs)
 
-	getManyByGenre(req: ApiRequest, res: ApiReply) {
-		// logic
+			// Return infos
+			if (error) res.status(error.status).send({ error: error.message })
+			return res.status(200).send(data)
+		} catch (error) {
+			//
+		}
 	}
 }
