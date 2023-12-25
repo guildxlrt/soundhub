@@ -1,12 +1,12 @@
-import { ArtistId, ReleaseId, SongId } from "Shared-utils"
-import { BaseEntity } from "../../../assets"
+import { ArtistId, ISong, ReleaseId, SongId } from "Shared-utils"
+import { EntityLayer } from "../../../assets"
 
-export class Song extends BaseEntity {
+export class Song extends EntityLayer implements ISong {
 	release_id: ReleaseId
 	title: string
 	audioUrl: string
 	featuring: ArtistId[] | null
-	lyrics?: string
+	lyrics: string | null
 
 	constructor(
 		id: SongId,
@@ -15,7 +15,7 @@ export class Song extends BaseEntity {
 		title: string,
 		audioUrl: string,
 		featuring: ArtistId[],
-		lyrics?: string
+		lyrics: string | null
 	) {
 		super(id, createdAt)
 

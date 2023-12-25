@@ -2,12 +2,11 @@ import { ArtistId, GenresArray, ReleaseId, ReleaseType, SongId } from "Shared-ut
 
 // SONG
 export interface ISong {
-	readonly id: SongId
 	release_id: ReleaseId
 	title: string
 	audioUrl: string
 	featuring: number[] | null
-	lyrics?: string | undefined
+	lyrics: string | null
 }
 
 // PRICE
@@ -17,17 +16,6 @@ export interface INewPrice {
 }
 
 // RELEASE
-export interface INewRelease {
-	artist_id: ArtistId
-	title: string
-	releaseType: ReleaseType
-	descript: string | null
-	price: number | null
-	genres: GenresArray
-	songs: SongId[]
-	cover?: File
-}
-
 export interface IRelease {
 	artist_id: ArtistId
 	title: string
@@ -36,5 +24,16 @@ export interface IRelease {
 	price: number | null
 	genres: GenresArray
 	songs: SongId[]
-	cover?: File
+	coverUrl: string | null
+}
+
+export interface INewRelease {
+	artist_id: ArtistId
+	title: string
+	releaseType: ReleaseType
+	descript: string | null
+	price: number | null
+	genres: GenresArray
+	songs: SongId[]
+	cover: File | null
 }

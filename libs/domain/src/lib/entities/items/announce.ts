@@ -1,7 +1,7 @@
-import { AnnounceId, ArtistId } from "Shared-utils"
-import { BaseEntity } from "../../../assets"
+import { AnnounceId, ArtistId, IAnnounce } from "Shared-utils"
+import { EntityLayer } from "../../../assets"
 
-export class Announce extends BaseEntity {
+export class Announce extends EntityLayer implements IAnnounce {
 	artist_id: ArtistId
 	title: string
 	text: string
@@ -11,7 +11,6 @@ export class Announce extends BaseEntity {
 	constructor(
 		id: AnnounceId,
 		createdAt: Date,
-
 		artist_id: ArtistId,
 		title: string,
 		text: string,

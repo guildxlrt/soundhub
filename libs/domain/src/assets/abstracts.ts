@@ -1,4 +1,4 @@
-export abstract class BaseEntity {
+export abstract class EntityLayer {
 	readonly id: number
 	readonly createdAt: Date
 

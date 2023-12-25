@@ -1,9 +1,10 @@
-import { ArtistId, EventId } from "Shared-utils"
-import { BaseEntity } from "../../../assets"
+import { ArtistId, EventId, IEvent } from "Shared-utils"
+import { EntityLayer } from "../../../assets"
 
-export class Event extends BaseEntity {
+export class Event extends EntityLayer implements IEvent {
 	date: Date
-	organizers: ArtistId[]
+	planner: ArtistId
+	artists: ArtistId[]
 	title: string
 	text: string
 	imageUrl: string | null
@@ -11,17 +12,18 @@ export class Event extends BaseEntity {
 	constructor(
 		id: EventId,
 		createdAt: Date,
-
+		planner: ArtistId,
 		date: Date,
-		organizers: ArtistId[],
+		artists: ArtistId[],
 		title: string,
 		text: string,
 		imageUrl: string | null
 	) {
 		super(id, createdAt)
 
+		this.planner = planner
 		this.date = date
-		this.organizers = organizers
+		this.artists = artists
 		this.title = title
 		this.text = text
 		this.imageUrl = imageUrl

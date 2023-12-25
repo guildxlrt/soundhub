@@ -1,6 +1,7 @@
-import { BaseEntity } from "../../../assets"
+import { IUserAuth } from "Shared-utils"
+import { EntityLayer } from "../../../assets"
 
-export class UserAuth extends BaseEntity {
+export class UserAuth extends EntityLayer implements IUserAuth {
 	email: string
 	password: string
 

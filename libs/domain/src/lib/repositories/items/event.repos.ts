@@ -1,14 +1,14 @@
 import { ArtistId, EventId, IEvent } from "Shared-utils"
-import { ArtistItemMethods, RemoveMethods, InputLayer } from "../../../assets"
+import { ArtistItemMethods, RemoveMethods, InputLayer, OutputLayer } from "../../../assets"
 
 export abstract class EventRepository implements ArtistItemMethods<IEvent>, RemoveMethods {
-	abstract create(inputs: InputLayer<unknown>): Promise<InputLayer<boolean>>
+	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 
-	abstract delete(inputs: InputLayer<EventId>): Promise<InputLayer<unknown>>
+	abstract delete(inputs: InputLayer<EventId>): Promise<OutputLayer<unknown>>
 
-	abstract get(inputs: InputLayer<EventId>): Promise<InputLayer<IEvent>>
+	abstract get(inputs: InputLayer<EventId>): Promise<OutputLayer<IEvent>>
 
-	abstract getAll(inputs: InputLayer<unknown>): Promise<InputLayer<IEvent[]>>
+	abstract getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<IEvent[]>>
 
-	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<InputLayer<IEvent[]>>
+	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<OutputLayer<IEvent[]>>
 }

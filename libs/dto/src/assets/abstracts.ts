@@ -1,7 +1,4 @@
-import { InputLayer } from "Domain"
-import { OutputLayer } from "Domain"
-
-export abstract class InputDTO<D> implements InputLayer<D> {
+export abstract class InputDTO<D> {
 	readonly data: D
 
 	constructor(data: D) {
@@ -9,7 +6,7 @@ export abstract class InputDTO<D> implements InputLayer<D> {
 	}
 }
 
-export class ReplyDTO<D> implements OutputLayer<D> {
+export class ReplyDTO<D> {
 	readonly data: D
 	error?: {
 		status: number

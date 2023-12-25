@@ -1,6 +1,14 @@
-import { ArtistId, GenreType, GenresArray } from "Shared-utils"
+import { GenresArray } from "Shared-utils"
 
 // ARTIST
+export interface IArtist {
+	name: string
+	bio: string | null
+	members: string[] | null
+	genres: GenresArray
+	avatarUrl: string | null
+}
+
 export interface INewArtist {
 	email: string
 	password: string
@@ -19,15 +27,4 @@ export interface IModifyArtist {
 	members: string[]
 	genres: GenresArray
 	avatar?: File | null
-}
-
-export interface IArtist {
-	id: ArtistId
-	name: string
-	bio: string
-	avatarUrl: string | null
-	members: string[] | null
-	genre1: GenreType
-	genre2?: GenreType
-	genre3?: GenreType
 }

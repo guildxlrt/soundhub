@@ -1,6 +1,14 @@
-import { IMedia, ArtistId, AnnounceId, EventId } from "Shared-utils"
+import { IMedia, ArtistId } from "Shared-utils"
 
 // ANNOUNCE
+export interface IAnnounce {
+	artist_id: ArtistId
+	title: string
+	text: string
+	imageUrl: string | null
+	videoUrl: string | null
+}
+
 export interface INewAnnounce {
 	artist_id: ArtistId
 	title: string
@@ -9,27 +17,20 @@ export interface INewAnnounce {
 }
 
 // EVENT
+export interface IEvent {
+	planner: ArtistId
+	date: Date
+	artists: ArtistId[]
+	title: string
+	text: string
+	imageUrl: string | null
+}
+
 export interface INewEvent {
-	artist_id: ArtistId
+	planner: ArtistId
+	date: Date
+	artists: ArtistId[]
 	title: string
 	text: string
 	media?: IMedia
-}
-
-export interface IAnnounce {
-	id: AnnounceId
-	artist_id: ArtistId
-	title: string
-	text: string
-	imageUrl: string | null
-	videoUrl: string | null
-}
-
-export interface IEvent {
-	id: EventId
-	date: Date
-	organizers: ArtistId[]
-	title: string
-	text: string
-	imageUrl: string | null
 }

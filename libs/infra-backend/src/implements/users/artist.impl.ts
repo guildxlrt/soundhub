@@ -17,20 +17,33 @@ import {
 
 export class ArtistImplement implements ArtistRepository {
 	async create(inputs: CreateArtistInputDTO): Promise<CreateArtistReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO(true)
 
-		console.log(inputs)
 		return res
 	}
 
 	async modify(inputs: ModifyArtistInputDTO): Promise<ModifyArtistReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO(true)
 
-		console.log(inputs)
 		return res
 	}
 
 	async getById(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new GetArtistByIdReplyDTO({
 			id: 0,
 			name: "",
@@ -40,11 +53,15 @@ export class ArtistImplement implements ArtistRepository {
 			genre1: "blues",
 		})
 
-		console.log(inputs)
 		return res
 	}
 
 	async getByEmail(inputs: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new GetArtistByEmailReplyDTO({
 			id: 0,
 			name: "",
@@ -54,21 +71,28 @@ export class ArtistImplement implements ArtistRepository {
 			genre1: "blues",
 		})
 
-		console.log(inputs)
 		return res
 	}
 
 	async getAll(inputs: GetAllArtistsInputDTO): Promise<GetAllArtistsReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO([])
 
-		console.log(inputs)
 		return res
 	}
 
 	async findManyByGenre(inputs: FindArtistsByGenreInputDTO): Promise<FindArtistsByGenreReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO([])
 
-		console.log(inputs)
 		return res
 	}
 }

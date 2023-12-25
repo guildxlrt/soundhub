@@ -1,10 +1,10 @@
-import { ArtistId, GenresArray, GenreType, UserAuthId } from "Shared-utils"
-import { BaseEntity } from "../../../assets"
+import { ArtistId, GenresArray, IArtist, UserAuthId } from "Shared-utils"
+import { EntityLayer } from "../../../assets"
 
-export class Artist extends BaseEntity {
+export class Artist extends EntityLayer implements IArtist {
 	readonly user_auth_id: UserAuthId
 	name: string
-	bio: string
+	bio: string | null
 	avatarUrl: string | null
 	members: string[]
 	genres: GenresArray
@@ -15,22 +15,20 @@ export class Artist extends BaseEntity {
 		user_auth_id: UserAuthId,
 		name: string,
 		bio: string,
-		avatarUrl: string | null,
 		members: string[] | null,
-		genre1: GenreType,
-		genre2?: GenreType,
-		genre3?: GenreType
+		genres: GenresArray,
+		avatarUrl: string | null
 	) {
 		super(id, createdAt)
 
 		this.user_auth_id = user_auth_id
 		this.name = name
 		this.bio = bio
-		this.avatarUrl = avatarUrl
 
 		if (members !== null && members.length >= 1) this.members = members
 		else this.members = []
 
-		this.genres = [genre1, genre2, genre3]
+		this.genres = genres
+		this.avatarUrl = avatarUrl
 	}
 }

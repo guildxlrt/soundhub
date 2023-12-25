@@ -3,10 +3,14 @@ import { GetSongInputDTO, GetSongReplyDTO, ReplyDTO } from "Dto"
 
 export class SongImplement implements SongRepository {
 	async get(inputs: GetSongInputDTO): Promise<GetSongReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const dbRes = new Song(0, new Date(), 0, "title", "audioUrl", [], undefined)
 		const res = new ReplyDTO(dbRes)
 
-		console.log(inputs)
 		return res
 	}
 }

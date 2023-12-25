@@ -17,22 +17,35 @@ import {
 
 export class ReleaseImplement implements ReleaseRepository {
 	async create(inputs: CreateReleaseInputDTO): Promise<CreateReleaseReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO(true)
 
-		console.log(inputs)
 		return res
 	}
 
 	async modifyPrice(inputs: ModifyReleasePriceInputDTO): Promise<ModifyReleasePriceReplyDTO> {
 		{
+			// Calling DB
+			// ... some logic
+			console.log(inputs)
+
+			// Return Response
 			const res = new ReplyDTO(true)
 
-			console.log(inputs)
 			return res
 		}
 	}
 
 	async get(inputs: GetReleaseInputDTO): Promise<GetReleaseReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const dbRes = new Release(
 			0,
 			new Date(),
@@ -47,32 +60,43 @@ export class ReleaseImplement implements ReleaseRepository {
 		)
 		const res = new ReplyDTO(dbRes)
 
-		console.log(inputs)
 		return res
 	}
 
 	async getAll(inputs: GetAllReleasesInputDTO): Promise<GetAllReleasesReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO([])
 
-		console.log(inputs)
 		return res
 	}
 
 	async findManyByGenre(
 		inputs: FindReleasesByGenreInputDTO
 	): Promise<FindReleasesByGenreReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO([])
 
-		console.log(inputs)
 		return res
 	}
 
 	async findManyByArtist(
 		inputs: FindReleasesByArtistInputDTO
 	): Promise<FindReleasesByArtistReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
 		const res = new ReplyDTO([])
 
-		console.log(inputs)
 		return res
 	}
 }
