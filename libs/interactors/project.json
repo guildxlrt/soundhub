@@ -16,5 +16,7 @@
 			}
 		}
 	},
-	"tags": ["type:lib", "scope:shared"]
+	"tags": ["type:lib", "scope:shared"],
+	"implicitDependencies": ["dto", "infra-backend"]
+
 }

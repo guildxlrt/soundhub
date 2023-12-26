@@ -1,9 +1,9 @@
 import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, LogoutInputDTO } from "Dto"
-import { ApiRequest, ApiReply, apiError } from "../assets"
+import { ApiRequest, ApiReply, apiError, IAuthController } from "../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
 
-export class AuthController {
+export class AuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
 

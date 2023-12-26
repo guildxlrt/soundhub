@@ -1,4 +1,4 @@
-import { apiError } from "../assets"
+import { IEventsController, apiError } from "../assets"
 import { ApiRequest, ApiReply } from "../assets"
 import {
 	CreateEventInputDTO,
@@ -16,7 +16,7 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 
-export class EventsController {
+export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
 

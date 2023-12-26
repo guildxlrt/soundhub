@@ -1,7 +1,8 @@
-import { GenresArray } from "Shared-utils"
+import { ArtistId, GenresArray } from "Shared-utils"
 
 // ARTIST
 export interface IArtist {
+	id: ArtistId
 	name: string
 	bio: string | null
 	members: string[] | null

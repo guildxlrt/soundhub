@@ -56,7 +56,7 @@ export class ReleaseImplement implements ReleaseRepository {
 			9,
 			["metal", "rock", "blues"],
 			[],
-			undefined
+			null
 		)
 		const res = new ReplyDTO(dbRes)
 

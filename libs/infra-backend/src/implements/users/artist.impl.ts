@@ -50,7 +50,7 @@ export class ArtistImplement implements ArtistRepository {
 			bio: "",
 			avatarUrl: null,
 			members: null,
-			genre1: "blues",
+			genres: ["blues", undefined, undefined],
 		})
 
 		return res
@@ -68,7 +68,7 @@ export class ArtistImplement implements ArtistRepository {
 			bio: "",
 			avatarUrl: null,
 			members: null,
-			genre1: "blues",
+			genres: ["blues", undefined, undefined],
 		})
 
 		return res

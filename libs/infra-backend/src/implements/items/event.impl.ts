@@ -42,7 +42,7 @@ export class EventImplement implements EventRepository {
 		console.log(inputs)
 
 		// Return Response
-		const newArtist = new Event(0, new Date(), new Date(), [], "title", "text", null)
+		const newArtist = new Event(0, new Date(), 0, new Date(), [], "title", "text", null)
 		const res = new ReplyDTO(newArtist)
 
 		return res

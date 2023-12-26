@@ -5,7 +5,7 @@ import {
 	GetAllAnnouncesInputDTO,
 	GetAnnounceInputDTO,
 } from "Dto"
-import { ApiRequest, ApiReply } from "../assets"
+import { ApiRequest, ApiReply, IAnnoncesController } from "../assets"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -16,7 +16,7 @@ import {
 import { databaseServices } from "Infra-backend"
 import { apiError } from "../assets"
 
-export class AnnoncesController {
+export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
 

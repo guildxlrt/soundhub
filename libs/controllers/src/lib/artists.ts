@@ -1,4 +1,4 @@
-import { ApiRequest, ApiReply } from "../assets"
+import { ApiRequest, ApiReply, IArtistController } from "../assets"
 import { apiError } from "../assets"
 import {
 	CreateArtistInputDTO,
@@ -17,15 +17,6 @@ import {
 	ModifyArtistUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-
-interface IArtistController {
-	create(req: unknown, res: unknown): Promise<unknown>
-	modify(req: unknown, res: unknown): Promise<unknown>
-	getAll(req: unknown, res: unknown): Promise<unknown>
-	getById(req: unknown, res: unknown): Promise<unknown>
-	getByEmail(req: unknown, res: unknown): Promise<unknown>
-	findManyByGenre(req: unknown, res: unknown): Promise<unknown>
-}
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {

@@ -1,4 +1,4 @@
-import { apiError } from "../assets"
+import { IReleasesController, apiError } from "../assets"
 import { ApiRequest, ApiReply } from "../assets"
 import {
 	CreateReleaseInputDTO,
@@ -18,7 +18,7 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 
-export class ReleasesController {
+export class ReleasesController implements IReleasesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
 

@@ -1,4 +1,4 @@
-import { IMedia, ArtistId } from "Shared-utils"
+import { IMedia, ArtistId, EventId } from "Shared-utils"
 
 // ANNOUNCE
 export interface IAnnounce {
@@ -18,6 +18,7 @@ export interface INewAnnounce {
 
 // EVENT
 export interface IEvent {
+	id: EventId
 	planner: ArtistId
 	date: Date
 	artists: ArtistId[]

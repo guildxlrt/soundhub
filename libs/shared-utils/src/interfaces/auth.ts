@@ -1,4 +1,7 @@
+import { UserAuthId } from "../types"
+
 export interface IUserAuth {
+	readonly id: UserAuthId
 	readonly email: string
 	readonly password: string
 }

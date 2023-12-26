@@ -1,10 +1,10 @@
 import { GetSongInputDTO } from "Dto"
-import { ApiRequest, ApiReply } from "../assets"
+import { ApiRequest, ApiReply, ISongsController } from "../assets"
 import { apiError } from "../assets"
 import { GetSongUsecase } from "Interactors"
 import { databaseServices } from "Infra-backend"
 
-export class SongsController {
+export class SongsController implements ISongsController {
 	async get(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 

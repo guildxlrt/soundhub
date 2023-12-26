@@ -2,6 +2,7 @@ import { ArtistId, GenresArray, ReleaseId, ReleaseType, SongId } from "Shared-ut
 
 // SONG
 export interface ISong {
+	id: SongId
 	release_id: ReleaseId
 	title: string
 	audioUrl: string
@@ -17,6 +18,7 @@ export interface INewPrice {
 
 // RELEASE
 export interface IRelease {
+	id: ReleaseId
 	artist_id: ArtistId
 	title: string
 	releaseType: ReleaseType

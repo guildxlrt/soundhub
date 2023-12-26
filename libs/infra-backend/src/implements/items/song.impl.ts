@@ -8,7 +8,7 @@ export class SongImplement implements SongRepository {
 		console.log(inputs)
 
 		// Return Response
-		const dbRes = new Song(0, new Date(), 0, "title", "audioUrl", [], undefined)
+		const dbRes = new Song(0, new Date(), 0, "title", "audioUrl", [], null)
 		const res = new ReplyDTO(dbRes)
 
 		return res

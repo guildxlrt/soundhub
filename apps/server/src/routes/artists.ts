@@ -5,7 +5,7 @@ const router = Router()
 
 router.get("/", artistsController.getAll)
 
-router.get("/by-genre/:genre", artistsController.getManyByGenre)
+router.get("/by-genre/:genre", artistsController.findManyByGenre)
 
 router.post("/new", artistsController.create)
 
