@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"scripts": {
 		"format": "nx format:write && prisma format",
-		"lint": "nx run-many -t lint --projects=tag:scope:api",
+		"lint": "nx run-many -t lint --projects=tag:scope:shared",
 		"prepare": "husky install",
 		"build": "nx run-many -t build --projects=tag:scope:api",
 		"serve": "nx run server:serve",

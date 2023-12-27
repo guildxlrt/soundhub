@@ -4,7 +4,7 @@ export interface InputLayer<D> {
 }
 
 export interface OutputLayer<D> {
-	readonly data: D
+	readonly data: D | undefined
 	error?: {
 		status: number
 		message: string

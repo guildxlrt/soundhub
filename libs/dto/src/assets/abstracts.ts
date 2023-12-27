@@ -7,19 +7,20 @@ export abstract class InputDTO<D> {
 }
 
 export class ReplyDTO<D> {
-	readonly data: D
+	readonly data: D | undefined
 	error?: {
 		status: number
 		message: string
 	}
 
-	constructor(data: D) {
+	constructor(
+		data: D | undefined,
+		error?: {
+			status: number
+			message: string
+		}
+	) {
 		this.data = data
-		this.error = undefined
-	}
-
-	returnError(status: number, message: string): void {
-		this.error = { status: status, message: message }
-		return
+		this.error = error
 	}
 }

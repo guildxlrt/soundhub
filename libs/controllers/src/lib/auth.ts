@@ -2,6 +2,7 @@ import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, LogoutInputDTO 
 import { ApiRequest, ApiReply, apiError, IAuthController } from "../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
+import { validators } from "Operators"
 
 export class AuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
@@ -12,10 +13,7 @@ export class AuthController implements IAuthController {
 			const login = new LoginUsecase(databaseServices)
 			const { data, error } = await login.execute(inputs)
 
-			// Operators
-			// ... doing some heathcheck
-
-			// Saving Profile
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -31,10 +29,7 @@ export class AuthController implements IAuthController {
 			const logout = new LogoutUsecase(databaseServices)
 			const { data, error } = await logout.execute(inputs)
 
-			// Operators
-			// ... doing some heathcheck
-
-			// Saving Profile
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -47,13 +42,16 @@ export class AuthController implements IAuthController {
 
 		try {
 			const inputs: ChangeEmailInputDTO = req.body as ChangeEmailInputDTO
+
+			// Operators
+			const { actual, confirm, newEmail } = inputs.data
+			validators.changeEmail(actual, confirm, newEmail)
+
+			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
 			const { data, error } = await changeEmail.execute(inputs)
 
-			// Operators
-			// ... doing some heathcheck
-
-			// Saving Profile
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -66,13 +64,16 @@ export class AuthController implements IAuthController {
 
 		try {
 			const inputs: ChangePassInputDTO = req.body as ChangePassInputDTO
+
+			// Operators
+			const { actual, confirm, newPass } = inputs.data
+			validators.changeEmail(actual, confirm, newPass)
+
+			// Saving changes
 			const changePass = new ChangePassUsecase(databaseServices)
 			const { data, error } = await changePass.execute(inputs)
 
-			// Operators
-			// ... doing some heathcheck
-
-			// Saving Profile
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {

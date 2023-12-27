@@ -17,6 +17,7 @@ import {
 	ModifyArtistUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
+import { validators } from "Operators"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -24,13 +25,18 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: CreateArtistInputDTO = req.body as CreateArtistInputDTO
+
+			// SANITIZE
+			const { email, password, confirmEmail, confirmPass } = inputs.data
+			// auths
+			validators.signupAuths(email, password, confirmEmail, confirmPass)
+			// ,,, others data checking
+
+			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(inputs)
 
-			// Operators
-			// ... doing some heathcheck
-
-			// Saving Profile
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -43,13 +49,15 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: ModifyArtistInputDTO = req.body as ModifyArtistInputDTO
-			const modifyArtist = new ModifyArtistUsecase(databaseServices)
-			const { data, error } = await modifyArtist.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Changes
+			const modifyArtist = new ModifyArtistUsecase(databaseServices)
+			const { data, error } = await modifyArtist.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {

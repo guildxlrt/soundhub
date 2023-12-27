@@ -33,9 +33,9 @@ model Artist {
   genres    String[]
   avatarUrl String?
 
-  Release Release[]
+  Release  Release[]
   Announce Announce[]
-  Event   Event[]
+  Event    Event[]
 }
 
 model Announce {
@@ -45,10 +45,10 @@ model Announce {
   artist_id Int
   artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 
-  title       String
-  text        String
-  imageUrl    String?
-  videoUrl    String?
+  title    String
+  text     String
+  imageUrl String?
+  videoUrl String?
 }
 
 model Event {
@@ -56,13 +56,13 @@ model Event {
   createdAt DateTime @default(now())
 
   planner Int
-  artist    Artist @relation(fields: [planner], references: [id], onDelete: Cascade)
+  artist  Artist @relation(fields: [planner], references: [id], onDelete: Cascade)
 
-  date        DateTime
-  artists     Int[]
-  title       String
-  text        String
-  imageUrl    String?
+  date     DateTime
+  artists  Int[]
+  title    String
+  text     String
+  imageUrl String?
 }
 
 model Release {
@@ -80,7 +80,7 @@ model Release {
   songs       Int[]
   coverUrl    String?
 
-  Song    Song[]
+  Song Song[]
 }
 
 model Song {

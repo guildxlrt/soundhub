@@ -8,7 +8,7 @@ import eventsRoutes from "./events"
 
 const router = express.Router()
 
-router.use("/", (req, res) => {
+router.get("/", (req, res) => {
 	res.send({ message: "Hello API" })
 })
 

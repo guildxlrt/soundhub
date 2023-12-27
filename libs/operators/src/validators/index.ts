@@ -7,7 +7,7 @@ import { userImageValidator } from "./users-image.valid"
 
 // VALIDATORS
 export const validators = {
-	newAuths: signupAuthsValidator,
+	signupAuths: signupAuthsValidator,
 	changeEmail: changeEmailValidator,
 	changePass: changePassValidator,
 	userImg: userImageValidator,

@@ -22,13 +22,15 @@ export class EventsController implements IEventsController {
 
 		try {
 			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
-			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const createEvent = new CreateEventUsecase(databaseServices)
+			const { data, error } = await createEvent.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -41,13 +43,15 @@ export class EventsController implements IEventsController {
 
 		try {
 			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
-			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const deleteEvent = new DeleteEventUsecase(databaseServices)
+			const { data, error } = await deleteEvent.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {

@@ -24,13 +24,15 @@ export class ReleasesController implements IReleasesController {
 
 		try {
 			const inputs: CreateReleaseInputDTO = req.body as CreateReleaseInputDTO
-			const createRelease = new CreateReleaseUsecase(databaseServices)
-			const { data, error } = await createRelease.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const createRelease = new CreateReleaseUsecase(databaseServices)
+			const { data, error } = await createRelease.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -43,13 +45,15 @@ export class ReleasesController implements IReleasesController {
 
 		try {
 			const inputs: ModifyReleasePriceInputDTO = req.body as ModifyReleasePriceInputDTO
-			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
-			const { data, error } = await modifyRelease.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
+			const { data, error } = await modifyRelease.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {

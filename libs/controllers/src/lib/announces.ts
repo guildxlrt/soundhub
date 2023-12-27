@@ -22,13 +22,15 @@ export class AnnoncesController implements IAnnoncesController {
 
 		try {
 			const inputs: CreateAnnounceInputDTO = req.body as CreateAnnounceInputDTO
-			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
-			const { data, error } = await createAnnounce.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
+			const { data, error } = await createAnnounce.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
@@ -41,13 +43,15 @@ export class AnnoncesController implements IAnnoncesController {
 
 		try {
 			const inputs: DeleteAnnounceInputDTO = req.body as DeleteAnnounceInputDTO
-			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
-			const { data, error } = await deleteAnnounce.execute(inputs)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
+			const { data, error } = await deleteAnnounce.execute(inputs)
+
+			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
