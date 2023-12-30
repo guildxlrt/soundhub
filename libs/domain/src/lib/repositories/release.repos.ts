@@ -1,5 +1,5 @@
 import { GenreType, ArtistId, IRelease, ReleaseId } from "Shared-utils"
-import { ArtistItemMethods, GenreMethods, InputLayer, OutputLayer } from "../../../assets"
+import { ArtistItemMethods, GenreMethods, InputLayer, OutputLayer } from "../../assets"
 
 export abstract class ReleaseRepository implements ArtistItemMethods, GenreMethods {
 	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>

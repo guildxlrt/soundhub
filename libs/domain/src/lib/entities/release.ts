@@ -1,4 +1,4 @@
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 import {
 	ArtistId,
 	GenresArray,

@@ -6,6 +6,15 @@ export abstract class InputDTO<D> {
 	}
 }
 
+export abstract class InputFileDTO<D> extends InputDTO<D> {
+	readonly file?: File
+
+	constructor(data: D, file?: File) {
+		super(data)
+		this.file = file
+	}
+}
+
 export class ReplyDTO<D> {
 	readonly data: D | undefined
 	error?: {

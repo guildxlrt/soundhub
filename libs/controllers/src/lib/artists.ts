@@ -24,13 +24,17 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: CreateArtistInputDTO = req.body as CreateArtistInputDTO
+			const inputs: CreateArtistInputDTO = {
+				data: req.body,
+				file: null,
+			} as CreateArtistInputDTO
 
 			// SANITIZE
-			const { email, password, confirmEmail, confirmPass } = inputs.data
+			//const { email, password, confirmEmail, confirmPass } = inputs.data
 			// auths
-			validators.signupAuths(email, password, confirmEmail, confirmPass)
-			// ,,, others data checking
+			//validators.signupAuths(email, password, confirmEmail, confirmPass)
+			// ...
+			// others data checking
 
 			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
@@ -40,7 +44,7 @@ export class ArtistsController implements IArtistController {
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			return res.status(500).send(error)
 		}
 	}
 
@@ -48,7 +52,10 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: ModifyArtistInputDTO = req.body as ModifyArtistInputDTO
+			const inputs: ModifyArtistInputDTO = {
+				data: req.body,
+				file: null,
+			} as ModifyArtistInputDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -69,7 +76,9 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: GetArtistByIdInputDTO = req.body as GetArtistByIdInputDTO
+			const inputs: GetArtistByIdInputDTO = {
+				data: Number(req.params.id),
+			} as GetArtistByIdInputDTO
 			const getArtistById = new GetArtistByIdUsecase(databaseServices)
 			const { data, error } = await getArtistById.execute(inputs)
 
@@ -85,7 +94,9 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: GetArtistByEmailInputDTO = req.body as GetArtistByEmailInputDTO
+			const inputs: GetArtistByEmailInputDTO = {
+				data: req.body.email,
+			} as GetArtistByEmailInputDTO
 			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
 			const { data, error } = await getArtistByEmail.execute(inputs)
 
@@ -101,7 +112,7 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: GetAllArtistsInputDTO = req.body as GetAllArtistsInputDTO
+			const inputs: GetAllArtistsInputDTO = { data: undefined } as GetAllArtistsInputDTO
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
 			const { data, error } = await getAllArtists.execute(inputs)
 
@@ -117,7 +128,9 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
 
 		try {
-			const inputs: FindArtistsByGenreInputDTO = req.body as FindArtistsByGenreInputDTO
+			const inputs: FindArtistsByGenreInputDTO = {
+				data: req.params.genre,
+			} as FindArtistsByGenreInputDTO
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
 			const { data, error } = await findArtistsByGenre.execute(inputs)
 

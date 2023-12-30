@@ -1,12 +1,12 @@
 import { ArtistId, GenreType, IModifyArtist, INewArtist, IArtist } from "Shared-utils"
-import { InputDTO, ReplyDTO } from "../assets"
+import { InputDTO, InputFileDTO, ReplyDTO } from "../assets"
 
 // CREATE ARTIST
-export class CreateArtistInputDTO extends InputDTO<INewArtist> {}
+export class CreateArtistInputDTO extends InputFileDTO<INewArtist> {}
 export class CreateArtistReplyDTO extends ReplyDTO<string> {}
 
 // MODIFY ARTIST
-export class ModifyArtistInputDTO extends InputDTO<IModifyArtist> {}
+export class ModifyArtistInputDTO extends InputFileDTO<IModifyArtist> {}
 export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID

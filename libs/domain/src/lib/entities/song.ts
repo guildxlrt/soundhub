@@ -1,5 +1,5 @@
 import { ArtistId, ISong, ReleaseId, SongId } from "Shared-utils"
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 
 export class Song extends EntityLayer implements ISong {
 	release_id: ReleaseId

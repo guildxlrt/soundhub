@@ -1,5 +1,5 @@
 import { ArtistId, GenresArray, IArtist, UserAuthId } from "Shared-utils"
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 
 export class Artist extends EntityLayer implements IArtist {
 	readonly user_auth_id: UserAuthId

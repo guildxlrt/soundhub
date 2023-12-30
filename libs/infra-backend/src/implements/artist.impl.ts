@@ -23,6 +23,7 @@ export class ArtistImplement implements ArtistRepository {
 		try {
 			// Calling DB
 			const prisma = new PrismaClient()
+
 			await prisma.userAuth.create({
 				data: {
 					email: email,
@@ -42,6 +43,7 @@ export class ArtistImplement implements ArtistRepository {
 			// Return Response
 			return new ReplyDTO<string>(`Welcome, ${name} !!`)
 		} catch (error) {
+			console.log(error)
 			return new ReplyDTO<string>(undefined, {
 				status: 500,
 				message: `${error}`,

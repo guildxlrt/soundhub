@@ -1,5 +1,5 @@
 import { AnnounceId, ArtistId, IAnnounce } from "Shared-utils"
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 
 export class Announce extends EntityLayer implements IAnnounce {
 	artist_id: ArtistId

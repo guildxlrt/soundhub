@@ -1,5 +1,5 @@
 import { IUserAuth } from "Shared-utils"
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 
 export class UserAuth extends EntityLayer implements IUserAuth {
 	email: string

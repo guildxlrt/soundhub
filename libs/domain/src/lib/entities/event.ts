@@ -1,5 +1,5 @@
 import { ArtistId, EventId, IEvent } from "Shared-utils"
-import { EntityLayer } from "../../../assets"
+import { EntityLayer } from "../../assets"
 
 export class Event extends EntityLayer implements IEvent {
 	date: Date

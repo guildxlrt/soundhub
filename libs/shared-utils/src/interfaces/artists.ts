@@ -19,7 +19,7 @@ export interface INewArtist {
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatar?: File
+	avatar: boolean
 }
 
 export interface IModifyArtist {
@@ -27,5 +27,5 @@ export interface IModifyArtist {
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatar?: File | null
+	avatar: boolean | null // true = add, null = no changes, false = remove
 }

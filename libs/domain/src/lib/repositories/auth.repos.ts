@@ -1,4 +1,4 @@
-import { InputLayer, OutputLayer } from "../../../assets"
+import { InputLayer, OutputLayer } from "../../assets"
 
 export abstract class UserAuthRepository {
 	abstract login(inputs: InputLayer<unknown>): Promise<OutputLayer<Credential>>

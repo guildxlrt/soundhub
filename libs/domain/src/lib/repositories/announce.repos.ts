@@ -1,5 +1,5 @@
 import { AnnounceId, ArtistId, IAnnounce } from "Shared-utils"
-import { ArtistItemMethods, RemoveMethods, InputLayer, OutputLayer } from "../../../assets"
+import { ArtistItemMethods, RemoveMethods, InputLayer, OutputLayer } from "../../assets"
 
 export abstract class AnnounceRepository implements ArtistItemMethods, RemoveMethods {
 	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
