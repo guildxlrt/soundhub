@@ -63,11 +63,7 @@ export class ReleaseImplement implements ReleaseRepository {
 		return res
 	}
 
-	async getAll(inputs: GetAllReleasesInputDTO): Promise<GetAllReleasesReplyDTO> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
-
+	async getAll(): Promise<GetAllReleasesReplyDTO> {
 		// Return Response
 		const res = new ReplyDTO([])
 

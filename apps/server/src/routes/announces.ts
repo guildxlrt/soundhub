@@ -1,16 +1,17 @@
 import { Router } from "express"
-import { annoncesController } from "Controllers"
+import { controllers } from "Controllers"
 
 const router = Router()
+const controller = controllers.annonces
 
-router.get("/", annoncesController.getAll)
+router.get("/", controller.getAll)
 
-router.post("/new", annoncesController.create)
+router.post("/new", controller.create)
 
-router.get("/:id", annoncesController.get)
+router.get("/:id", controller.get)
 
-router.delete("/delete", annoncesController.delete)
+router.delete("/delete", controller.delete)
 
-router.get("/by-artist/:id/", annoncesController.findManyByArtist)
+router.get("/by-artist/:id/", controller.findManyByArtist)
 
 export default router

@@ -15,7 +15,7 @@ export const signupAuthsValidator = (
 
 	// Password
 	const validPass = validator.isStrongPassword(password)
-	if (validPass) throw new ErrorMsg(400, "weak Password")
+	if (!validPass) throw new ErrorMsg(400, "weak Password")
 	if (password !== confirmPass) throw new ErrorMsg(400, "passwords don't match")
 	else return
 }

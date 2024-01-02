@@ -1,17 +1,19 @@
 import { Router } from "express"
-import { artistsController } from "Controllers"
+import { controllers } from "Controllers"
 
 const router = Router()
-router.post("/new", artistsController.create)
+const controller = controllers.artists
 
-router.put("/by-update", artistsController.modify)
+router.post("/new", controller.create)
 
-router.get("/:id", artistsController.getById)
+router.put("/update", controller.modify)
 
-router.get("/by-email", artistsController.getByEmail)
+router.get("/:id", controller.getById)
 
-router.get("/", artistsController.getAll)
+router.get("/by-email", controller.getByEmail)
 
-router.get("/by-genre/:genre", artistsController.findManyByGenre)
+router.get("/", controller.getAll)
+
+router.get("/by-genre/:genre", controller.findManyByGenre)
 
 export default router

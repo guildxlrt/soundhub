@@ -4,17 +4,20 @@
 	"license": "MIT",
 	"scripts": {
 		"format": "nx format:write && prisma format",
-		"lint": "nx run-many -t lint --projects=tag:scope:shared",
+		"lint": "nx run-many -t lint --projects=tag:type:shared,tag:scope:api",
 		"prepare": "husky install",
-		"build": "nx run-many -t build --projects=tag:scope:api",
+		"build": "nx run-many -t build --projects=tag:type:backend",
 		"serve": "nx run server:serve",
-		"graph": "nx reset && nx graph",
+		"graph": "nx graph",
 		"migrate": "prisma migrate dev --name init"
 	},
 	"workspaces": [
 		"apps/*",
 		"libs/*"
 	],
+	"prisma": {
+		"schema": "libs/db-client/src/prisma/schema.prisma"
+	},
 	"private": true,
 	"dependencies": {
 		"@prisma/client": "5.7.1",

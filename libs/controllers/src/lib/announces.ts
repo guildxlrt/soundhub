@@ -2,7 +2,6 @@ import {
 	CreateAnnounceInputDTO,
 	DeleteAnnounceInputDTO,
 	FindAnnouncesByArtistInputDTO,
-	GetAllAnnouncesInputDTO,
 	GetAnnounceInputDTO,
 } from "Dto"
 import { ApiRequest, ApiReply, IAnnoncesController } from "../assets"
@@ -14,11 +13,10 @@ import {
 	GetAnnounceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { apiError } from "../assets"
-
+import { errorMsg } from "Shared-utils"
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: CreateAnnounceInputDTO = req.body as CreateAnnounceInputDTO
@@ -39,7 +37,7 @@ export class AnnoncesController implements IAnnoncesController {
 	}
 
 	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: DeleteAnnounceInputDTO = req.body as DeleteAnnounceInputDTO
@@ -60,7 +58,7 @@ export class AnnoncesController implements IAnnoncesController {
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
@@ -76,12 +74,11 @@ export class AnnoncesController implements IAnnoncesController {
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetAllAnnouncesInputDTO = req.body as GetAllAnnouncesInputDTO
 			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
-			const { data, error } = await getAllAnnounces.execute(inputs)
+			const { data, error } = await getAllAnnounces.execute()
 
 			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
@@ -92,7 +89,7 @@ export class AnnoncesController implements IAnnoncesController {
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO

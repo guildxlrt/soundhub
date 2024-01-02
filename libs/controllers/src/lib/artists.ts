@@ -1,9 +1,8 @@
 import { ApiRequest, ApiReply, IArtistController } from "../assets"
-import { apiError } from "../assets"
+import { errorMsg } from "Shared-utils"
 import {
 	CreateArtistInputDTO,
 	FindArtistsByGenreInputDTO,
-	GetAllArtistsInputDTO,
 	GetArtistByEmailInputDTO,
 	GetArtistByIdInputDTO,
 	ModifyArtistInputDTO,
@@ -21,7 +20,7 @@ import { validators } from "Operators"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: CreateArtistInputDTO = {
@@ -30,11 +29,11 @@ export class ArtistsController implements IArtistController {
 			} as CreateArtistInputDTO
 
 			// SANITIZE
-			//const { email, password, confirmEmail, confirmPass } = inputs.data
+			const { email, password, confirmEmail, confirmPass } = inputs.data
 			// auths
-			//validators.signupAuths(email, password, confirmEmail, confirmPass)
-			// ...
+			validators.signupAuths(email, password, confirmEmail, confirmPass)
 			// others data checking
+			// ...
 
 			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
@@ -44,20 +43,25 @@ export class ArtistsController implements IArtistController {
 			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
+			if (error.status) {
+				return res.status(error.status).send(error.message)
+			}
 			return res.status(500).send(error)
 		}
 	}
 
 	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: ModifyArtistInputDTO = {
-				data: req.body,
+				data: {
+					...req.body,
+				},
 				file: null,
 			} as ModifyArtistInputDTO
 
-			// Operators
+			// SANITIZE
 			// ... doing some heathcheck
 
 			// Saving Changes
@@ -73,7 +77,7 @@ export class ArtistsController implements IArtistController {
 	}
 
 	async getById(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: GetArtistByIdInputDTO = {
@@ -91,7 +95,7 @@ export class ArtistsController implements IArtistController {
 	}
 
 	async getByEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: GetArtistByEmailInputDTO = {
@@ -109,12 +113,11 @@ export class ArtistsController implements IArtistController {
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetAllArtistsInputDTO = { data: undefined } as GetAllArtistsInputDTO
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
-			const { data, error } = await getAllArtists.execute(inputs)
+			const { data, error } = await getAllArtists.execute()
 
 			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
@@ -125,7 +128,7 @@ export class ArtistsController implements IArtistController {
 	}
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: FindArtistsByGenreInputDTO = {

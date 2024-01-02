@@ -17,7 +17,7 @@ model UserAuth {
   email    String @unique
   password String
 
-  Artist Artist[]
+  artists Artist[]
 }
 
 model Artist {
@@ -33,9 +33,9 @@ model Artist {
   genres    String[]
   avatarUrl String?
 
-  Release  Release[]
-  Announce Announce[]
-  Event    Event[]
+  releases  Release[]
+  announce Announce[]
+  events    Event[]
 }
 
 model Announce {
@@ -77,10 +77,10 @@ model Release {
   descript    String?
   price       Int?
   genres      String[]
-  songs       Int[]
+  songs_list       Int[]
   coverUrl    String?
 
-  Song Song[]
+  songs Song[]
 }
 
 model Song {

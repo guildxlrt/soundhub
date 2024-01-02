@@ -1,8 +1,9 @@
 import { Router } from "express"
-import { songsController } from "Controllers"
+import { controllers } from "Controllers"
 
 const router = Router()
+const controller = controllers.songs
 
-router.get("/:id", songsController.get)
+router.get("/:id", controller.get)
 
 export default router

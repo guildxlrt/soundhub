@@ -7,7 +7,7 @@ export class GetAllAnnouncesUsecase extends BaseUsecase<GetAllAnnouncesInputDTO>
 		super(service)
 	}
 
-	async execute(input: GetAllAnnouncesInputDTO): Promise<GetAllAnnouncesReplyDTO> {
-		return await this.service.announce.getAll(input)
+	async execute(): Promise<GetAllAnnouncesReplyDTO> {
+		return await this.service.announce.getAll()
 	}
 }

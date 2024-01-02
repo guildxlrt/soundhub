@@ -7,7 +7,7 @@ export class GetAllArtistsUsecase extends BaseUsecase<GetAllArtistsInputDTO> {
 		super(service)
 	}
 
-	async execute(input: GetAllArtistsInputDTO): Promise<GetAllArtistsReplyDTO> {
-		return await this.service.artist.getAll(input)
+	async execute(): Promise<GetAllArtistsReplyDTO> {
+		return await this.service.artist.getAll()
 	}
 }

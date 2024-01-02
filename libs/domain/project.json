@@ -16,6 +16,6 @@
 			}
 		}
 	},
-	"tags": ["type:lib", "scope:shared"],
+	"tags": ["type:shared"],
 	"implicitDependencies": ["shared-utils"]
 }

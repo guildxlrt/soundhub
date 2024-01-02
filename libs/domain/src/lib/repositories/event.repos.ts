@@ -8,7 +8,7 @@ export abstract class EventRepository implements ArtistItemMethods, RemoveMethod
 
 	abstract get(inputs: InputLayer<EventId>): Promise<OutputLayer<IEvent>>
 
-	abstract getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<IEvent[]>>
+	abstract getAll(): Promise<OutputLayer<IEvent[]>>
 
 	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<OutputLayer<IEvent[]>>
 }

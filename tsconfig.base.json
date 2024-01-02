@@ -16,6 +16,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"Controllers": ["libs/controllers/src/index.ts"],
+			"DbClient": ["libs/db-client/src/index.ts"],
 			"Domain": ["libs/domain/src/index.ts"],
 			"Dto": ["libs/dto/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],

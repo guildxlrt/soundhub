@@ -6,7 +6,6 @@ import {
 	DeleteAnnounceReplyDTO,
 	FindAnnouncesByArtistInputDTO,
 	FindAnnouncesByArtistReplyDTO,
-	GetAllAnnouncesInputDTO,
 	GetAllAnnouncesReplyDTO,
 	GetAnnounceInputDTO,
 	GetAnnounceReplyDTO,
@@ -48,11 +47,7 @@ export class AnnounceImplement implements AnnounceRepository {
 		return res
 	}
 
-	async getAll(inputs: GetAllAnnouncesInputDTO): Promise<GetAllAnnouncesReplyDTO> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
-
+	async getAll(): Promise<GetAllAnnouncesReplyDTO> {
 		// Return Response
 		const res = new ReplyDTO([])
 

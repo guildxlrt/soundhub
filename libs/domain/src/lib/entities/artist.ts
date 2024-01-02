@@ -1,7 +1,7 @@
 import { ArtistId, GenresArray, IArtist, UserAuthId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
-export class Artist extends EntityLayer implements IArtist {
+export class Artist extends EntityLayer implements Omit<IArtist, "email"> {
 	readonly user_auth_id: UserAuthId
 	name: string
 	bio: string | null

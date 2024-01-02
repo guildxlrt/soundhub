@@ -1,14 +1,15 @@
 import { Router } from "express"
-import { authController } from "Controllers"
+import { controllers } from "Controllers"
 
 const router = Router()
+const controller = controllers.auth
 
-router.post("/login", authController.login)
+router.post("/login", controller.login)
 
-router.delete("/logout", authController.logout)
+router.delete("/logout", controller.logout)
 
-router.put("/change-email", authController.changeEmail)
+router.put("/change-email", controller.changeEmail)
 
-router.put("/change-pass", authController.changePass)
+router.put("/change-pass", controller.changePass)
 
 export default router

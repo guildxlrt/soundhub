@@ -8,7 +8,7 @@ export abstract class ReleaseRepository implements ArtistItemMethods, GenreMetho
 
 	abstract get(inputs: InputLayer<ReleaseId>): Promise<OutputLayer<IRelease>>
 
-	abstract getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<IRelease[]>>
+	abstract getAll(): Promise<OutputLayer<IRelease[]>>
 
 	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<OutputLayer<IRelease[]>>
 

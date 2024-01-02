@@ -2,11 +2,11 @@ import { ArtistId, GenresArray } from "Shared-utils"
 
 // ARTIST
 export interface IArtist {
-	id: ArtistId
-	name: string
+	id: ArtistId | undefined
+	name: string | undefined
 	bio: string | null
-	members: string[] | null
-	genres: GenresArray
+	members: string[] | undefined
+	genres: [string | undefined, string | undefined, string | undefined]
 	avatarUrl: string | null
 }
 
@@ -23,6 +23,7 @@ export interface INewArtist {
 }
 
 export interface IModifyArtist {
+	id: ArtistId
 	name: string
 	bio: string
 	members: string[]

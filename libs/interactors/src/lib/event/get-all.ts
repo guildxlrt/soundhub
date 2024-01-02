@@ -7,7 +7,7 @@ export class GetAllEventsUsecase extends BaseUsecase<GetAllEventsInputDTO> {
 		super(service)
 	}
 
-	async execute(input: GetAllEventsInputDTO): Promise<GetAllEventsReplyDTO> {
-		return await this.service.event.getAll(input)
+	async execute(): Promise<GetAllEventsReplyDTO> {
+		return await this.service.event.getAll()
 	}
 }

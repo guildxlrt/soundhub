@@ -1,12 +1,13 @@
 import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, LogoutInputDTO } from "Dto"
-import { ApiRequest, ApiReply, apiError, IAuthController } from "../assets"
+import { ApiRequest, ApiReply, IAuthController } from "../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
 import { validators } from "Operators"
+import { errorMsg } from "Shared-utils"
 
 export class AuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: LoginInputDTO = req.body as LoginInputDTO
@@ -22,7 +23,7 @@ export class AuthController implements IAuthController {
 	}
 
 	async logout(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: LogoutInputDTO = req.body as LogoutInputDTO
@@ -38,7 +39,7 @@ export class AuthController implements IAuthController {
 	}
 
 	async changeEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: ChangeEmailInputDTO = req.body as ChangeEmailInputDTO
@@ -60,7 +61,7 @@ export class AuthController implements IAuthController {
 	}
 
 	async changePass(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: ChangePassInputDTO = req.body as ChangePassInputDTO

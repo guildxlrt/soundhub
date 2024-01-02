@@ -8,7 +8,7 @@ export abstract class AnnounceRepository implements ArtistItemMethods, RemoveMet
 
 	abstract get(inputs: InputLayer<AnnounceId>): Promise<OutputLayer<IAnnounce>>
 
-	abstract getAll(inputs: InputLayer<unknown>): Promise<OutputLayer<IAnnounce[]>>
+	abstract getAll(): Promise<OutputLayer<IAnnounce[]>>
 
 	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<OutputLayer<IAnnounce[]>>
 }

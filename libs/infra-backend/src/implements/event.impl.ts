@@ -6,7 +6,6 @@ import {
 	DeleteEventReplyDTO,
 	FindEventsByArtistInputDTO,
 	FindEventsByArtistReplyDTO,
-	GetAllEventsInputDTO,
 	GetAllEventsReplyDTO,
 	GetEventInputDTO,
 	GetEventReplyDTO,
@@ -48,11 +47,7 @@ export class EventImplement implements EventRepository {
 		return res
 	}
 
-	async getAll(inputs: GetAllEventsInputDTO): Promise<GetAllEventsReplyDTO> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
-
+	async getAll(): Promise<GetAllEventsReplyDTO> {
 		// Return Response
 		const res = new ReplyDTO([])
 

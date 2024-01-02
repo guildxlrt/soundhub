@@ -1,10 +1,9 @@
-import { IEventsController, apiError } from "../assets"
+import { IEventsController } from "../assets"
 import { ApiRequest, ApiReply } from "../assets"
 import {
 	CreateEventInputDTO,
 	DeleteEventInputDTO,
 	FindEventsByArtistInputDTO,
-	GetAllEventsInputDTO,
 	GetEventInputDTO,
 } from "Dto"
 import {
@@ -15,10 +14,11 @@ import {
 	GetEventUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
+import { errorMsg } from "Shared-utils"
 
 export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
@@ -39,7 +39,7 @@ export class EventsController implements IEventsController {
 	}
 
 	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
@@ -60,7 +60,7 @@ export class EventsController implements IEventsController {
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
@@ -76,12 +76,11 @@ export class EventsController implements IEventsController {
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetAllEventsInputDTO = req.body as GetAllEventsInputDTO
 			const getAllEvents = new GetAllEventsUsecase(databaseServices)
-			const { data, error } = await getAllEvents.execute(inputs)
+			const { data, error } = await getAllEvents.execute()
 
 			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
@@ -92,7 +91,7 @@ export class EventsController implements IEventsController {
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO

@@ -1,16 +1,17 @@
 import { Router } from "express"
-import { eventsController } from "Controllers"
+import { controllers } from "Controllers"
 
 const router = Router()
+const controller = controllers.events
 
-router.get("/", eventsController.getAll)
+router.get("/", controller.getAll)
 
-router.post("/new", eventsController.create)
+router.post("/new", controller.create)
 
-router.get("/:id", eventsController.get)
+router.get("/:id", controller.get)
 
-router.delete("/delete", eventsController.delete)
+router.delete("/delete", controller.delete)
 
-router.get("/by-artist/:id/", eventsController.findManyByArtist)
+router.get("/by-artist/:id/", controller.findManyByArtist)
 
 export default router

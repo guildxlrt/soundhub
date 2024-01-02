@@ -1,10 +1,9 @@
-import { IReleasesController, apiError } from "../assets"
+import { IReleasesController } from "../assets"
 import { ApiRequest, ApiReply } from "../assets"
 import {
 	CreateReleaseInputDTO,
 	FindReleasesByArtistInputDTO,
 	FindReleasesByGenreInputDTO,
-	GetAllReleasesInputDTO,
 	GetReleaseInputDTO,
 	ModifyReleasePriceInputDTO,
 } from "Dto"
@@ -17,10 +16,11 @@ import {
 	ModifyReleasePriceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
+import { errorMsg } from "Shared-utils"
 
 export class ReleasesController implements IReleasesController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: CreateReleaseInputDTO = req.body as CreateReleaseInputDTO
@@ -41,7 +41,7 @@ export class ReleasesController implements IReleasesController {
 	}
 
 	async modifyPrice(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: ModifyReleasePriceInputDTO = req.body as ModifyReleasePriceInputDTO
@@ -62,7 +62,7 @@ export class ReleasesController implements IReleasesController {
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: GetReleaseInputDTO = req.body as GetReleaseInputDTO
@@ -78,12 +78,11 @@ export class ReleasesController implements IReleasesController {
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetAllReleasesInputDTO = req.body as GetAllReleasesInputDTO
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
-			const { data, error } = await getAllReleases.execute(inputs)
+			const { data, error } = await getAllReleases.execute()
 
 			// Return infos
 			if (error) res.status(error.status).send({ error: error.message })
@@ -94,7 +93,7 @@ export class ReleasesController implements IReleasesController {
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: FindReleasesByArtistInputDTO = req.body as FindReleasesByArtistInputDTO
@@ -110,7 +109,7 @@ export class ReleasesController implements IReleasesController {
 	}
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiError.e405.msg })
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
 			const inputs: FindReleasesByGenreInputDTO = req.body as FindReleasesByGenreInputDTO

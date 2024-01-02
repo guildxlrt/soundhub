@@ -16,6 +16,6 @@
 			}
 		}
 	},
-	"tags": ["type:lib", "scope:shared"],
-	"implicitDependencies": ["shared-utils", "domain", "dto"]
+	"tags": ["type:shared"],
+	"implicitDependencies": ["shared-utils", "domain", "dto", "db-client"]
 }

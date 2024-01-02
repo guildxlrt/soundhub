@@ -5,9 +5,11 @@ import { EventsController } from "./events"
 import { ReleasesController } from "./releases"
 import { SongsController } from "./songs"
 
-export const annoncesController = new AnnoncesController()
-export const artistsController = new ArtistsController()
-export const authController = new AuthController()
-export const eventsController = new EventsController()
-export const releasesController = new ReleasesController()
-export const songsController = new SongsController()
+export const controllers = {
+	annonces: new AnnoncesController(),
+	artists: new ArtistsController(),
+	auth: new AuthController(),
+	events: new EventsController(),
+	releases: new ReleasesController(),
+	songs: new SongsController(),
+}
