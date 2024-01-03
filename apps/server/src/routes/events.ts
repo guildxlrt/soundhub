@@ -1,16 +1,17 @@
 import { Router } from "express"
 import { controllers } from "Controllers"
+import { authMiddleware } from "Middlewares"
 
 const router = Router()
 const controller = controllers.events
 
-router.get("/", controller.getAll)
+router.post("/new", authMiddleware, controller.create)
 
-router.post("/new", controller.create)
+router.delete("/delete", authMiddleware, controller.delete)
 
 router.get("/:id", controller.get)
 
-router.delete("/delete", controller.delete)
+router.get("/", controller.getAll)
 
 router.get("/by-artist/:id/", controller.findManyByArtist)
 

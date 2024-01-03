@@ -16,7 +16,7 @@ export class Release extends EntityLayer implements IRelease {
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
-	songs: SongId[]
+	songs_list: SongId[]
 	coverUrl: string | null
 
 	constructor(
@@ -28,7 +28,7 @@ export class Release extends EntityLayer implements IRelease {
 		descript: string | null,
 		price: null | ReleasePrice,
 		genres: GenresArray,
-		songs: SongId[],
+		songs_list: SongId[],
 		coverUrl: string | null
 	) {
 		super(id, createdAt)
@@ -39,7 +39,7 @@ export class Release extends EntityLayer implements IRelease {
 		this.descript = descript
 		this.price = price
 		this.genres = genres
-		this.songs = songs
+		this.songs_list = songs_list
 		this.coverUrl = coverUrl
 	}
 }

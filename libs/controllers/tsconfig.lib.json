@@ -7,5 +7,5 @@
 		"types": ["node"]
 	},
 	"exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
-	"include": ["src/**/*.ts", "../shared-utils/src/error/error-msg.ts"]
+	"include": ["src/**/*.ts", "../shared-utils/src/error/error-msg.ts", "../shared-utils/src/express-js/params.ts"]
 }

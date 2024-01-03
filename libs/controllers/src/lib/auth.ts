@@ -1,24 +1,29 @@
-import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, LogoutInputDTO } from "Dto"
-import { ApiRequest, ApiReply, IAuthController } from "../assets"
+import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO } from "Dto"
+import { IAuthController } from "../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
 import { validators } from "Operators"
-import { errorMsg } from "Shared-utils"
+import { ILogin, errorMsg, ApiRequest, ApiReply } from "Shared-utils"
+import { ctrlrErrHandler } from "../assets/error-handler"
 
 export class AuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: LoginInputDTO = req.body as LoginInputDTO
+			const inputs: LoginInputDTO = {
+				data: {
+					...(req.body as ILogin),
+				},
+			} as LoginInputDTO
 			const login = new LoginUsecase(databaseServices)
 			const { data, error } = await login.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -26,15 +31,14 @@ export class AuthController implements IAuthController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: LogoutInputDTO = req.body as LogoutInputDTO
 			const logout = new LogoutUsecase(databaseServices)
-			const { data, error } = await logout.execute(inputs)
+			const { data, error } = await logout.execute()
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -51,12 +55,12 @@ export class AuthController implements IAuthController {
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
 			const { data, error } = await changeEmail.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -73,12 +77,12 @@ export class AuthController implements IAuthController {
 			// Saving changes
 			const changePass = new ChangePassUsecase(databaseServices)
 			const { data, error } = await changePass.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 }

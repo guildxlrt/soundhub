@@ -4,7 +4,7 @@ import {
 	FindAnnouncesByArtistInputDTO,
 	GetAnnounceInputDTO,
 } from "Dto"
-import { ApiRequest, ApiReply, IAnnoncesController } from "../assets"
+import { IAnnoncesController } from "../assets"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -13,7 +13,8 @@ import {
 	GetAnnounceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { errorMsg } from "Shared-utils"
+import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
+import { ctrlrErrHandler } from "../assets/error-handler"
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
@@ -27,12 +28,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
 			const { data, error } = await createAnnounce.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -48,12 +49,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
 			const { data, error } = await deleteAnnounce.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -64,12 +65,12 @@ export class AnnoncesController implements IAnnoncesController {
 			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
 			const getAnnounce = new GetAnnounceUsecase(databaseServices)
 			const { data, error } = await getAnnounce.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -79,12 +80,12 @@ export class AnnoncesController implements IAnnoncesController {
 		try {
 			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
 			const { data, error } = await getAllAnnounces.execute()
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -95,12 +96,12 @@ export class AnnoncesController implements IAnnoncesController {
 			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
 			const { data, error } = await findAnnouncesByArtist.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 }

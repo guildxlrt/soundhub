@@ -13,18 +13,22 @@ import {
 	GetAllArtistsReplyDTO,
 	FindArtistsByGenreReplyDTO,
 } from "Dto"
-import { ErrorMsg, IArtist, ArtistsList, ArtistsListItem, errorMsg } from "Shared-utils"
+import { ErrorMsg, IArtist, IArtistsList, IArtistsListItem, errorMsg } from "Shared-utils"
 import { dbClient, dbErrHandler } from "DbClient"
 
 export class ArtistImplement implements ArtistRepository {
 	async create(inputs: CreateArtistInputDTO): Promise<CreateArtistReplyDTO> {
-		const { name, bio, members, genres, email, password } = inputs.data
-
+		const { name, bio, members, genres, auths } = inputs.data
+		const { email, cleanPass } = auths
 		try {
-			await dbClient.userAuth.create({
+			// Storing files
+			// ...
+
+			// Persist data
+			const data = await dbClient.userAuth.create({
 				data: {
 					email: email,
-					password: password,
+					password: String(cleanPass),
 					artists: {
 						create: {
 							name: name,
@@ -38,9 +42,12 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Response
-			return new ReplyDTO<string>(`Welcome, ${name} !!`)
+			return new ReplyDTO<{ message: string; userAuthId: number }>({
+				message: `Welcome, ${name} !!`,
+				userAuthId: data.id,
+			})
 		} catch (error) {
-			const res = new ReplyDTO<string>(
+			const res = new ReplyDTO<{ message: string; userAuthId: number }>(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
@@ -175,7 +182,7 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Reorganize
-			const list = data.map((artist): ArtistsListItem => {
+			const list = data.map((artist): IArtistsListItem => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -185,11 +192,11 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<ArtistsList>(list)
+			const res = new ReplyDTO<IArtistsList>(list)
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<ArtistsList>([], new ErrorMsg(500, errorMsg.e500, error))
+			const res = new ReplyDTO<IArtistsList>([], new ErrorMsg(500, errorMsg.e500, error))
 
 			return res
 		}
@@ -211,7 +218,7 @@ export class ArtistImplement implements ArtistRepository {
 				},
 			})
 
-			const list = data.map((artist): ArtistsListItem => {
+			const list = data.map((artist): IArtistsListItem => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -221,11 +228,11 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<ArtistsList>(list)
+			const res = new ReplyDTO<IArtistsList>(list)
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<ArtistsList>([], new ErrorMsg(500, errorMsg.e500, error))
+			const res = new ReplyDTO<IArtistsList>([], new ErrorMsg(500, errorMsg.e500, error))
 
 			return res
 		}

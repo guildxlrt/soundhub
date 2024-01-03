@@ -16,7 +16,8 @@ import {
 	ModifyReleasePriceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { errorMsg } from "Shared-utils"
+import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
+import { ctrlrErrHandler } from "../assets/error-handler"
 
 export class ReleasesController implements IReleasesController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -31,12 +32,12 @@ export class ReleasesController implements IReleasesController {
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -52,12 +53,12 @@ export class ReleasesController implements IReleasesController {
 			// Saving Profile
 			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
 			const { data, error } = await modifyRelease.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(202).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -68,12 +69,12 @@ export class ReleasesController implements IReleasesController {
 			const inputs: GetReleaseInputDTO = req.body as GetReleaseInputDTO
 			const getRelease = new GetReleaseUsecase(databaseServices)
 			const { data, error } = await getRelease.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -83,12 +84,12 @@ export class ReleasesController implements IReleasesController {
 		try {
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
 			const { data, error } = await getAllReleases.execute()
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -99,12 +100,12 @@ export class ReleasesController implements IReleasesController {
 			const inputs: FindReleasesByArtistInputDTO = req.body as FindReleasesByArtistInputDTO
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
 			const { data, error } = await findReleasesByArtist.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -115,12 +116,12 @@ export class ReleasesController implements IReleasesController {
 			const inputs: FindReleasesByGenreInputDTO = req.body as FindReleasesByGenreInputDTO
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
 			const { data, error } = await findReleasesByGenre.execute(inputs)
+if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 }

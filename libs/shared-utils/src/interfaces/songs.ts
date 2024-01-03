@@ -4,8 +4,8 @@ import { ReleaseId, SongId } from "Shared-utils"
 export interface ISong {
 	id: SongId
 	release_id: ReleaseId
-	title: string
 	audioUrl: string
+	title: string
 	featuring: number[] | null
 	lyrics: string | null
 }

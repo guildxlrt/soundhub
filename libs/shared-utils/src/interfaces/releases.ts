@@ -15,7 +15,7 @@ export interface IRelease {
 	descript: string | null
 	price: number | null
 	genres: GenresArray
-	songs: SongId[]
+	songs_list: SongId[]
 	coverUrl: string | null
 }
 
@@ -25,7 +25,12 @@ export interface INewRelease {
 	releaseType: ReleaseType
 	descript: string | null
 	price: number | null
-	genres: GenresArray
-	songs: SongId[]
-	cover: File | null
+	genres: string[]
+	cover: boolean
+	songs_array: {
+		// audio: File
+		title: string
+		featuring: number[]
+		lyrics: string | null
+	}[]
 }

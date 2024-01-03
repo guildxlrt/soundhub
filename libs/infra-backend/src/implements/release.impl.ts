@@ -1,3 +1,4 @@
+import { dbClient, dbErrHandler } from "DbClient"
 import { Release, ReleaseRepository } from "Domain"
 import {
 	CreateReleaseInputDTO,
@@ -6,7 +7,6 @@ import {
 	FindReleasesByArtistReplyDTO,
 	FindReleasesByGenreInputDTO,
 	FindReleasesByGenreReplyDTO,
-	GetAllReleasesInputDTO,
 	GetAllReleasesReplyDTO,
 	GetReleaseInputDTO,
 	GetReleaseReplyDTO,
@@ -14,17 +14,53 @@ import {
 	ModifyReleasePriceReplyDTO,
 	ReplyDTO,
 } from "Dto"
+import { ErrorMsg } from "Shared-utils"
 
 export class ReleaseImplement implements ReleaseRepository {
 	async create(inputs: CreateReleaseInputDTO): Promise<CreateReleaseReplyDTO> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const { artist_id, title, releaseType, descript, price, genres, songs_array } = inputs.data
 
-		// Return Response
-		const res = new ReplyDTO(true)
+		try {
+			// Storing files
+			// ...
 
-		return res
+			const songsFormattedArray = songs_array.map((song) => {
+				return {
+					audioUrl: "placeholder",
+					title: song.title,
+					featuring: song.featuring,
+					lyrics: song.lyrics,
+				}
+			})
+
+			await dbClient.release.create({
+				data: {
+					artist_id: artist_id,
+					title: title,
+					releaseType: releaseType,
+					descript: descript,
+					price: price,
+					genres: genres,
+					coverUrl: null,
+					songs: {
+						create: songsFormattedArray,
+					},
+				},
+			})
+
+			// Response
+			return new ReplyDTO<string>(`${title} was created.`)
+		} catch (error) {
+			const res = new ReplyDTO<string>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+
+			// Specific Errors
+			// ...
+
+			return res
+		}
 	}
 
 	async modifyPrice(inputs: ModifyReleasePriceInputDTO): Promise<ModifyReleasePriceReplyDTO> {

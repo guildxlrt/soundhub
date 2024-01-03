@@ -1,5 +1,13 @@
-import { ApiRequest, ApiReply, IArtistController } from "../assets"
-import { errorMsg } from "Shared-utils"
+import {
+	GenreType,
+	IModifyArtist,
+	INewArtist,
+	errorMsg,
+	ApiRequest,
+	ApiReply,
+	Token,
+	authExpires,
+} from "Shared-utils"
 import {
 	CreateArtistInputDTO,
 	FindArtistsByGenreInputDTO,
@@ -16,7 +24,9 @@ import {
 	ModifyArtistUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { validators } from "Operators"
+import { formatters, validators } from "Operators"
+import { IArtistController, ctrlrErrHandler } from "../assets"
+import { Artist } from "Domain"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -24,29 +34,44 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: CreateArtistInputDTO = {
-				data: req.body,
+				data: req.body as INewArtist,
 				file: null,
 			} as CreateArtistInputDTO
 
+			const { auths, genres, name, bio, members } = inputs.data
+			const { email, password, confirmEmail, confirmPass } = auths
+
 			// SANITIZE
-			const { email, password, confirmEmail, confirmPass } = inputs.data
 			// auths
 			validators.signupAuths(email, password, confirmEmail, confirmPass)
+			const hash = await formatters.passwd(password)
+			auths.cleanPass = hash
+			// genres
+			const cleanGenres = formatters.genres(genres)
+			inputs.data.cleanGenres = cleanGenres
 			// others data checking
-			// ...
+			// ... ( name)
 
 			// Saving Profile
+			const artist = new Artist(999, new Date(), 999, name, bio, members, cleanGenres, null)
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
-			return res.status(202).send(data)
+			const token = new Token().generate(data.userAuthId)
+
+			return res
+				.cookie("jwt", token, {
+					maxAge: authExpires.oneWeek,
+					httpOnly: true,
+					sameSite: "lax",
+					secure: false,
+				})
+				.status(202)
+				.send(data.message)
 		} catch (error) {
-			if (error.status) {
-				return res.status(error.status).send(error.message)
-			}
-			return res.status(500).send(error)
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -56,7 +81,7 @@ export class ArtistsController implements IArtistController {
 		try {
 			const inputs: ModifyArtistInputDTO = {
 				data: {
-					...req.body,
+					...(req.body as IModifyArtist),
 				},
 				file: null,
 			} as ModifyArtistInputDTO
@@ -67,12 +92,12 @@ export class ArtistsController implements IArtistController {
 			// Saving Changes
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
 			const { data, error } = await modifyArtist.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -81,16 +106,16 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: GetArtistByIdInputDTO = {
-				data: Number(req.params.id),
+				data: req.body.id as number,
 			} as GetArtistByIdInputDTO
 			const getArtistById = new GetArtistByIdUsecase(databaseServices)
 			const { data, error } = await getArtistById.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -99,16 +124,16 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: GetArtistByEmailInputDTO = {
-				data: req.body.email,
+				data: req.body.email as string,
 			} as GetArtistByEmailInputDTO
 			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
 			const { data, error } = await getArtistByEmail.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -118,12 +143,12 @@ export class ArtistsController implements IArtistController {
 		try {
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
 			const { data, error } = await getAllArtists.execute()
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 
@@ -132,16 +157,16 @@ export class ArtistsController implements IArtistController {
 
 		try {
 			const inputs: FindArtistsByGenreInputDTO = {
-				data: req.params.genre,
+				data: req.params.genre as GenreType,
 			} as FindArtistsByGenreInputDTO
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
 			const { data, error } = await findArtistsByGenre.execute(inputs)
+			if (error) throw error
 
 			// Return infos
-			if (error) res.status(error.status).send({ error: error.message })
 			return res.status(200).send(data)
 		} catch (error) {
-			//
+			ctrlrErrHandler(error, res)
 		}
 	}
 }

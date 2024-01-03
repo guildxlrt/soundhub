@@ -1,4 +1,7 @@
 import { Request, Response } from "express"
 
-export type ApiRequest = Request
+export interface ApiRequest extends Request {
+	auth?: { userId: number }
+}
+
 export type ApiReply = Response

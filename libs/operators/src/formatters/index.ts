@@ -1,8 +1,10 @@
-import { userNameFormatter } from "./users-name.format"
+import { genresFormat } from "./genres.format"
+import { passwdFormat } from "./passwd.format"
 
 // FORMATTERS
 export const formatters = {
-	userName: userNameFormatter,
+	passwd: passwdFormat,
+	genres: genresFormat,
 }
 
 export type Formatters = typeof formatters

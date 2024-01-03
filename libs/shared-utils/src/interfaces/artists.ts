@@ -11,14 +11,18 @@ export interface IArtist {
 }
 
 export interface INewArtist {
-	email: string
-	password: string
-	confirmEmail: string
-	confirmPass: string
+	auths: {
+		email: string
+		confirmEmail: string
+		password: string
+		confirmPass: string
+		cleanPass: undefined | string
+	}
 	name: string
 	bio: string
 	members: string[]
 	genres: GenresArray
+	cleanGenres: GenresArray | undefined
 	avatar: boolean
 }
 
@@ -30,3 +34,7 @@ export interface IModifyArtist {
 	genres: GenresArray
 	avatar: boolean | null // true = add, null = no changes, false = remove
 }
+
+export type IArtistsListItem = Omit<IArtist, "bio" | "members">
+
+export type IArtistsList = IArtistsListItem[]

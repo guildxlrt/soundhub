@@ -2,7 +2,7 @@ import { ArtistId, GenreType, UserAuthEmail } from "Shared-utils"
 import { UserMethods, GenreMethods, InputLayer, OutputLayer } from "../../assets"
 
 export abstract class ArtistRepository implements UserMethods, GenreMethods {
-	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<string>>
+	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<unknown>>
 
 	abstract modify(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
 

@@ -14,7 +14,6 @@ export class GetAnnounceInputDTO extends InputDTO<AnnounceId> {}
 export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounce> {}
 
 // GET ALL
-export class GetAllAnnouncesInputDTO extends InputDTO<void> {}
 export class GetAllAnnouncesReplyDTO extends ReplyDTO<IAnnounce[]> {}
 
 // FIND MANY BY ARTIST

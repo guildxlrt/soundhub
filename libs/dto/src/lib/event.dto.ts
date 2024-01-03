@@ -14,7 +14,6 @@ export class GetEventInputDTO extends InputDTO<EventId> {}
 export class GetEventReplyDTO extends ReplyDTO<IEvent> {}
 
 // GET ALL
-export class GetAllEventsInputDTO extends InputDTO<void> {}
 export class GetAllEventsReplyDTO extends ReplyDTO<IEvent[]> {}
 
 // FIND MANY BY ARTIST

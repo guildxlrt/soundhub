@@ -1,11 +1,5 @@
 import { UserAuthRepository } from "Domain"
-import {
-	ChangeEmailInputDTO,
-	ChangePassInputDTO,
-	LoginInputDTO,
-	LogoutInputDTO,
-	ReplyDTO,
-} from "Dto"
+import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, ReplyDTO } from "Dto"
 import { LoginReplyDTO, LogoutReplyDTO, ChangeEmailReplyDTO, ChangePassReplyDTO } from "Dto"
 
 export class UserAuthImplement implements UserAuthRepository {
@@ -21,10 +15,9 @@ export class UserAuthImplement implements UserAuthRepository {
 		return res
 	}
 
-	async logout(inputs: LogoutInputDTO): Promise<LogoutReplyDTO> {
+	async logout(): Promise<LogoutReplyDTO> {
 		// Calling DB
 		// ... some logic
-		console.log(inputs)
 
 		// Return Response
 		const res = new ReplyDTO(undefined)

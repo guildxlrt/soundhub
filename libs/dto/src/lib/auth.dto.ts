@@ -6,7 +6,6 @@ export class LoginInputDTO extends InputDTO<ILogin> {}
 export class LoginReplyDTO extends ReplyDTO<Credential> {}
 
 // LOGOUT
-export class LogoutInputDTO extends InputDTO<void> {}
 export class LogoutReplyDTO extends ReplyDTO<void> {}
 
 // EMAIL

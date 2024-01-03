@@ -3,7 +3,7 @@ import { InputDTO, ReplyDTO } from "../assets"
 
 // CREATE RELEASE
 export class CreateReleaseInputDTO extends InputDTO<INewRelease> {}
-export class CreateReleaseReplyDTO extends ReplyDTO<boolean> {}
+export class CreateReleaseReplyDTO extends ReplyDTO<string> {}
 
 // MODIFY PRICE
 export class ModifyReleasePriceInputDTO extends InputDTO<INewPrice> {}
@@ -14,7 +14,6 @@ export class GetReleaseInputDTO extends InputDTO<ReleaseId> {}
 export class GetReleaseReplyDTO extends ReplyDTO<IRelease> {}
 
 // GET ALL
-export class GetAllReleasesInputDTO extends InputDTO<void> {}
 export class GetAllReleasesReplyDTO extends ReplyDTO<IRelease[]> {}
 
 // FIND MANY BY GENRE
