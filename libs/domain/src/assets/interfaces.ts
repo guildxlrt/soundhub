@@ -1,17 +1,3 @@
-// I/O
-export interface InputLayer<D> {
-	readonly data: D
-}
-
-export interface OutputLayer<D> {
-	readonly data: D | undefined
-	error?: {
-		status: number
-		message: string
-	}
-}
-
-// REPOS LAYERS
 export interface UserMethods {
 	create(inputs: unknown): unknown
 	modify(inputs: unknown): unknown

@@ -1,25 +1,51 @@
-import { ArtistId, GenreType, IModifyArtist, INewArtist, IArtist, IArtistsList } from "Shared-utils"
-import { InputDTO, InputFileDTO, ReplyDTO } from "../assets"
+import { ArtistId, GenreType, IArtistInfoLong, IArtistsList, GenresArray } from "Shared-utils"
+import { ReplyDTO } from "../assets"
 
 // CREATE ARTIST
-export class CreateArtistInputDTO extends InputFileDTO<INewArtist> {}
+export interface CreateArtistInputDTO {
+	profile: {
+		name: string
+		bio: string
+		members: string[]
+		genres: GenresArray
+		avatar: boolean
+	}
+	auths: {
+		email: string
+		confirmEmail: string
+		password: string
+		confirmPass: string
+	}
+}
 export class CreateArtistReplyDTO extends ReplyDTO<{ message: string; userAuthId: number }> {}
 
 // MODIFY ARTIST
-export class ModifyArtistInputDTO extends InputFileDTO<IModifyArtist> {}
+export interface ModifyArtistInputDTO {
+	id: ArtistId
+	name: string
+	bio: string
+	members: string[]
+	genres: GenresArray
+	avatar: boolean | null // true = add, null = no changes, false = remove
+}
 export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
-export class GetArtistByIdInputDTO extends InputDTO<ArtistId> {}
-export class GetArtistByIdReplyDTO extends ReplyDTO<IArtist | null> {}
+export interface GetArtistByIdInputDTO {
+	id: number
+}
+export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
 
 // ARTIST BY EMAIL
-export class GetArtistByEmailInputDTO extends InputDTO<string> {}
-export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtist | null> {}
+export interface GetArtistByEmailInputDTO {
+	email: string
+}
+export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
 
 // GET ALL
 export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsList> {}
 
 // ARTISTS BY GENRE
-export class FindArtistsByGenreInputDTO extends InputDTO<GenreType> {}
+export type FindArtistsByGenreInputDTO = GenreType
+
 export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtistsList> {}

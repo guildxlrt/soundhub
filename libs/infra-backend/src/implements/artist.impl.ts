@@ -1,10 +1,12 @@
-import { ArtistRepository } from "Domain"
 import {
-	CreateArtistInputDTO,
-	ModifyArtistInputDTO,
-	FindArtistsByGenreInputDTO,
-	GetArtistByEmailInputDTO,
-	GetArtistByIdInputDTO,
+	ArtistRepository,
+	FetchByEmailParams,
+	FetchByGenreParams,
+	FetchByIdParams,
+	ModifyArtistParams,
+	NewArtistParams,
+} from "Domain"
+import {
 	ReplyDTO,
 	CreateArtistReplyDTO,
 	ModifyArtistReplyDTO,
@@ -13,13 +15,13 @@ import {
 	GetAllArtistsReplyDTO,
 	FindArtistsByGenreReplyDTO,
 } from "Dto"
-import { ErrorMsg, IArtist, IArtistsList, IArtistsListItem, errorMsg } from "Shared-utils"
+import { ErrorMsg, IArtistInfoLong, IArtistsList, IArtistInfoShort, errorMsg } from "Shared-utils"
 import { dbClient, dbErrHandler } from "DbClient"
 
 export class ArtistImplement implements ArtistRepository {
-	async create(inputs: CreateArtistInputDTO): Promise<CreateArtistReplyDTO> {
-		const { name, bio, members, genres, auths } = inputs.data
-		const { email, cleanPass } = auths
+	async create(inputs: NewArtistParams): Promise<CreateArtistReplyDTO> {
+		const { name, bio, members, genres } = inputs.data.profile
+		const { email, password } = inputs.data.auths
 		try {
 			// Storing files
 			// ...
@@ -28,7 +30,7 @@ export class ArtistImplement implements ArtistRepository {
 			const data = await dbClient.userAuth.create({
 				data: {
 					email: email,
-					password: String(cleanPass),
+					password: password,
 					artists: {
 						create: {
 							name: name,
@@ -59,7 +61,7 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async modify(inputs: ModifyArtistInputDTO): Promise<ModifyArtistReplyDTO> {
+	async modify(inputs: ModifyArtistParams): Promise<ModifyArtistReplyDTO> {
 		const { name, bio, members, genres, id } = inputs.data
 
 		try {
@@ -89,8 +91,8 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async getById(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
-		const id = inputs.data
+	async getById(inputs: FetchByIdParams): Promise<GetArtistByIdReplyDTO> {
+		const id = inputs.id
 
 		try {
 			const data = await dbClient.artist.findUnique({
@@ -107,7 +109,7 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<IArtist>({
+			const res = new ReplyDTO<IArtistInfoLong>({
 				id: id,
 				name: data?.name,
 				bio: null,
@@ -124,8 +126,8 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async getByEmail(inputs: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
-		const email = inputs.data
+	async getByEmail(inputs: FetchByEmailParams): Promise<GetArtistByEmailReplyDTO> {
+		const email = inputs.email
 
 		try {
 			const data = await dbClient.userAuth.findUnique({
@@ -148,7 +150,7 @@ export class ArtistImplement implements ArtistRepository {
 
 			// Return Response
 
-			const res = new ReplyDTO<IArtist>({
+			const res = new ReplyDTO<IArtistInfoLong>({
 				id: data?.artists[0].id,
 				name: data?.artists[0].name,
 				bio: null,
@@ -182,7 +184,7 @@ export class ArtistImplement implements ArtistRepository {
 			})
 
 			// Reorganize
-			const list = data.map((artist): IArtistsListItem => {
+			const list = data.map((artist): IArtistInfoShort => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -202,8 +204,8 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async findManyByGenre(inputs: FindArtistsByGenreInputDTO): Promise<FindArtistsByGenreReplyDTO> {
-		const genre: string = inputs.data
+	async findManyByGenre(inputs: FetchByGenreParams): Promise<FindArtistsByGenreReplyDTO> {
+		const genre: string = inputs.genre
 
 		try {
 			const data = await dbClient.artist.findMany({
@@ -218,7 +220,7 @@ export class ArtistImplement implements ArtistRepository {
 				},
 			})
 
-			const list = data.map((artist): IArtistsListItem => {
+			const list = data.map((artist): IArtistInfoShort => {
 				return {
 					id: artist.id,
 					name: artist.name,

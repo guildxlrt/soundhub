@@ -1,11 +1,11 @@
 import { DatabaseServices } from "Infra-backend"
 
-export abstract class BaseUsecase<Input> {
+export abstract class BaseUsecase {
 	readonly service: DatabaseServices
 
 	constructor(service: DatabaseServices) {
 		this.service = service
 	}
 
-	abstract execute(input: Input): Promise<any>
+	abstract execute(input: unknown): Promise<unknown>
 }

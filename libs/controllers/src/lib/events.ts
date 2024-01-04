@@ -30,7 +30,7 @@ export class EventsController implements IEventsController {
 			// Saving Profile
 			const createEvent = new CreateEventUsecase(databaseServices)
 			const { data, error } = await createEvent.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
@@ -51,7 +51,7 @@ if (error) throw error
 			// Saving Profile
 			const deleteEvent = new DeleteEventUsecase(databaseServices)
 			const { data, error } = await deleteEvent.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
@@ -67,7 +67,7 @@ if (error) throw error
 			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
 			const getEvent = new GetEventUsecase(databaseServices)
 			const { data, error } = await getEvent.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
@@ -82,7 +82,7 @@ if (error) throw error
 		try {
 			const getAllEvents = new GetAllEventsUsecase(databaseServices)
 			const { data, error } = await getAllEvents.execute()
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
@@ -98,7 +98,7 @@ if (error) throw error
 			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
 			const { data, error } = await findEventsByArtist.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)

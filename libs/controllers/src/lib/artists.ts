@@ -1,13 +1,4 @@
-import {
-	GenreType,
-	IModifyArtist,
-	INewArtist,
-	errorMsg,
-	ApiRequest,
-	ApiReply,
-	Token,
-	authExpires,
-} from "Shared-utils"
+import { errorMsg, ApiRequest, ApiReply, Token, authExpires } from "Shared-utils"
 import {
 	CreateArtistInputDTO,
 	FindArtistsByGenreInputDTO,
@@ -26,36 +17,36 @@ import {
 import { databaseServices } from "Infra-backend"
 import { formatters, validators } from "Operators"
 import { IArtistController, ctrlrErrHandler } from "../assets"
-import { Artist } from "Domain"
+import { Artist, NewArtistParams, ModifyArtistParams, UserAuth } from "Domain"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: CreateArtistInputDTO = {
-				data: req.body as INewArtist,
-				file: null,
-			} as CreateArtistInputDTO
+			const inputs = req.body as CreateArtistInputDTO
 
-			const { auths, genres, name, bio, members } = inputs.data
-			const { email, password, confirmEmail, confirmPass } = auths
+			const { genres, name, bio, members } = inputs.profile
+			const { email, password, confirmEmail, confirmPass } = inputs.auths
 
 			// SANITIZE
 			// auths
 			validators.signupAuths(email, password, confirmEmail, confirmPass)
 			const hash = await formatters.passwd(password)
-			auths.cleanPass = hash
+			const hashedPass = hash
 			// genres
 			const cleanGenres = formatters.genres(genres)
-			inputs.data.cleanGenres = cleanGenres
 			// others data checking
 			// ... ( name)
 
-			// Saving Profile
-			const artist = new Artist(999, new Date(), 999, name, bio, members, cleanGenres, null)
+			// Saving
+			const userData = {
+				profile: new Artist(undefined, undefined, name, bio, members, cleanGenres, null),
+				auths: new UserAuth(undefined, undefined, email, hashedPass),
+			}
+
 			const createArtist = new CreateArtistUsecase(databaseServices)
-			const { data, error } = await createArtist.execute(inputs)
+			const { data, error } = await createArtist.execute(new NewArtistParams(userData))
 			if (error) throw error
 
 			// Return infos
@@ -79,19 +70,22 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: ModifyArtistInputDTO = {
-				data: {
-					...(req.body as IModifyArtist),
-				},
-				file: null,
-			} as ModifyArtistInputDTO
+			const inputs = req.body as ModifyArtistInputDTO
+
+			const { genres, name, bio, members } = inputs
 
 			// SANITIZE
-			// ... doing some heathcheck
+			// genres
+			const cleanGenres = formatters.genres(genres)
+			// others data checking
+			// ... ( name)
+
+			// Saving
+			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres, null)
 
 			// Saving Changes
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
-			const { data, error } = await modifyArtist.execute(inputs)
+			const { data, error } = await modifyArtist.execute(new ModifyArtistParams(userData))
 			if (error) throw error
 
 			// Return infos
@@ -105,9 +99,8 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetArtistByIdInputDTO = {
-				data: req.body.id as number,
-			} as GetArtistByIdInputDTO
+			const inputs = req.body.id as GetArtistByIdInputDTO
+
 			const getArtistById = new GetArtistByIdUsecase(databaseServices)
 			const { data, error } = await getArtistById.execute(inputs)
 			if (error) throw error
@@ -123,9 +116,8 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: GetArtistByEmailInputDTO = {
-				data: req.body.email as string,
-			} as GetArtistByEmailInputDTO
+			const inputs = req.body.email as GetArtistByEmailInputDTO
+
 			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
 			const { data, error } = await getArtistByEmail.execute(inputs)
 			if (error) throw error
@@ -156,11 +148,10 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: FindArtistsByGenreInputDTO = {
-				data: req.params.genre as GenreType,
-			} as FindArtistsByGenreInputDTO
+			const inputs = req.params.genre as FindArtistsByGenreInputDTO
+
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
-			const { data, error } = await findArtistsByGenre.execute(inputs)
+			const { data, error } = await findArtistsByGenre.execute({ genre: inputs })
 			if (error) throw error
 
 			// Return infos

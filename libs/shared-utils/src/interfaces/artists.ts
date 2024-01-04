@@ -1,7 +1,7 @@
-import { ArtistId, GenresArray } from "Shared-utils"
+import { ArtistId } from "Shared-utils"
 
 // ARTIST
-export interface IArtist {
+export interface IArtistInfoLong {
 	id: ArtistId | undefined
 	name: string | undefined
 	bio: string | null
@@ -10,31 +10,6 @@ export interface IArtist {
 	avatarUrl: string | null
 }
 
-export interface INewArtist {
-	auths: {
-		email: string
-		confirmEmail: string
-		password: string
-		confirmPass: string
-		cleanPass: undefined | string
-	}
-	name: string
-	bio: string
-	members: string[]
-	genres: GenresArray
-	cleanGenres: GenresArray | undefined
-	avatar: boolean
-}
+export type IArtistInfoShort = Omit<IArtistInfoLong, "bio" | "members">
 
-export interface IModifyArtist {
-	id: ArtistId
-	name: string
-	bio: string
-	members: string[]
-	genres: GenresArray
-	avatar: boolean | null // true = add, null = no changes, false = remove
-}
-
-export type IArtistsListItem = Omit<IArtist, "bio" | "members">
-
-export type IArtistsList = IArtistsListItem[]
+export type IArtistsList = IArtistInfoShort[]

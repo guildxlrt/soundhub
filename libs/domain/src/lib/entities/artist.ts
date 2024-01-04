@@ -1,8 +1,8 @@
-import { ArtistId, GenresArray, IArtist, UserAuthId } from "Shared-utils"
+import { ArtistId, GenresArray, UserAuthId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
-export class Artist extends EntityLayer implements Omit<IArtist, "email"> {
-	readonly user_auth_id: UserAuthId
+export class Artist extends EntityLayer {
+	user_auth_id: UserAuthId
 	name: string
 	bio: string | null
 	avatarUrl: string | null
@@ -11,15 +11,16 @@ export class Artist extends EntityLayer implements Omit<IArtist, "email"> {
 
 	constructor(
 		id: ArtistId,
-		createdAt: Date,
 		user_auth_id: UserAuthId,
 		name: string,
 		bio: string,
 		members: string[] | null,
 		genres: GenresArray,
-		avatarUrl: string | null
+		avatarUrl: string | null,
+		createdAt?: Date
 	) {
 		super(id, createdAt)
+		if (!createdAt) this.createdAt = new Date()
 
 		this.user_auth_id = user_auth_id
 		this.name = name

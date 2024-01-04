@@ -32,7 +32,7 @@ export class ReleasesController implements IReleasesController {
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
@@ -53,7 +53,7 @@ if (error) throw error
 			// Saving Profile
 			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
 			const { data, error } = await modifyRelease.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
@@ -69,7 +69,7 @@ if (error) throw error
 			const inputs: GetReleaseInputDTO = req.body as GetReleaseInputDTO
 			const getRelease = new GetReleaseUsecase(databaseServices)
 			const { data, error } = await getRelease.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
@@ -84,7 +84,7 @@ if (error) throw error
 		try {
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
 			const { data, error } = await getAllReleases.execute()
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
@@ -100,7 +100,7 @@ if (error) throw error
 			const inputs: FindReleasesByArtistInputDTO = req.body as FindReleasesByArtistInputDTO
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
 			const { data, error } = await findReleasesByArtist.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
@@ -116,7 +116,7 @@ if (error) throw error
 			const inputs: FindReleasesByGenreInputDTO = req.body as FindReleasesByGenreInputDTO
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
 			const { data, error } = await findReleasesByGenre.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)

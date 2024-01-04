@@ -13,7 +13,7 @@ export class SongsController implements ISongsController {
 			const inputs: GetSongInputDTO = req.body as GetSongInputDTO
 			const getSong = new GetSongUsecase(databaseServices)
 			const { data, error } = await getSong.execute(inputs)
-if (error) throw error
+			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
