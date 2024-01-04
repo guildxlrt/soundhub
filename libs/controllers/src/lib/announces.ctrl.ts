@@ -15,6 +15,7 @@ import {
 import { databaseServices } from "Infra-backend"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { ctrlrErrHandler } from "../assets/error-handler"
+import { Announce, NewAnnounceParams } from "Domain"
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
@@ -26,8 +27,20 @@ export class AnnoncesController implements IAnnoncesController {
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const { title, text, artist_id } = inputs
+			const announceData = new Announce(
+				undefined,
+				artist_id,
+				title,
+				text,
+				undefined,
+				undefined
+			)
+
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
-			const { data, error } = await createAnnounce.execute(inputs)
+			const { data, error } = await createAnnounce.execute(
+				new NewAnnounceParams(announceData)
+			)
 			if (error) throw error
 
 			// Return infos

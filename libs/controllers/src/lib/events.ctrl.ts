@@ -15,6 +15,7 @@ import {
 import { databaseServices } from "Infra-backend"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { ctrlrErrHandler } from "../assets/error-handler"
+import { NewEventParams, Event } from "Domain"
 
 export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -27,8 +28,20 @@ export class EventsController implements IEventsController {
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const { date, planner, location, artists, title, text } = inputs
+			const eventData = new Event(
+				undefined,
+				planner,
+				date,
+				location,
+				artists,
+				title,
+				text,
+				undefined
+			)
+
 			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(inputs)
+			const { data, error } = await createEvent.execute(new NewEventParams(eventData))
 			if (error) throw error
 
 			// Return infos

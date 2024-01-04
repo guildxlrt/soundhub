@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { GetSongReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { IdParams } from "Domain"
 
-export class GetSongUsecase extends BaseUsecase {
+export class GetSongUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

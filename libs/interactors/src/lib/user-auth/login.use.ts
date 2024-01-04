@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { LoginReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { LoginParams } from "Domain"
 
-export class LoginUsecase extends BaseUsecase {
+export class LoginUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

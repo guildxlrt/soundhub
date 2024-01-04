@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { CreateEventReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { NewEventParams } from "Domain"
 
-export class CreateEventUsecase extends BaseUsecase {
+export class CreateEventUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

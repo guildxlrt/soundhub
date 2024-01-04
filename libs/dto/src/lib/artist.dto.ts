@@ -1,4 +1,12 @@
-import { ArtistId, GenreType, IArtistInfoLong, IArtistsList, GenresArray } from "Shared-utils"
+import {
+	ArtistId,
+	GenreType,
+	IArtistInfoLong,
+	IArtistsList,
+	GenresArray,
+	UserEmail,
+	UserPassword,
+} from "Shared-utils"
 import { ReplyDTO } from "../assets"
 
 // CREATE ARTIST
@@ -11,10 +19,10 @@ export interface CreateArtistInputDTO {
 		avatar: boolean
 	}
 	auths: {
-		email: string
-		confirmEmail: string
-		password: string
-		confirmPass: string
+		email: UserEmail
+		confirmEmail: UserEmail
+		password: UserPassword
+		confirmPass: UserPassword
 	}
 }
 export class CreateArtistReplyDTO extends ReplyDTO<{ message: string; userAuthId: number }> {}
@@ -32,13 +40,13 @@ export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
 export interface GetArtistByIdInputDTO {
-	id: number
+	id: ArtistId
 }
 export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
 
 // ARTIST BY EMAIL
 export interface GetArtistByEmailInputDTO {
-	email: string
+	email: UserEmail
 }
 export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
 

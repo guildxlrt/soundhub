@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { FindReleasesByGenreReplyDTO } from "Dto"
 import { GenreParams } from "Domain"
 
-export class FindReleasesByGenreUsecase extends BaseUsecase {
+export class FindReleasesByGenreUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

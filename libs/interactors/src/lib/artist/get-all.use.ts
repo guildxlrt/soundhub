@@ -1,8 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { GetAllArtistsReplyDTO } from "Dto"
 
-export class GetAllArtistsUsecase extends BaseUsecase {
+export class GetAllArtistsUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

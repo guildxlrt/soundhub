@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { ChangeEmailReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { ChangeEmailParams } from "Domain"
 
-export class ChangeEmailUsecase extends BaseUsecase {
+export class ChangeEmailUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

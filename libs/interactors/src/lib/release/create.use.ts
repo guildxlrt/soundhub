@@ -1,10 +1,10 @@
 import { DatabaseServices } from "Infra-backend"
 import { CreateReleaseReplyDTO } from "Dto"
 
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { NewReleaseParams } from "Domain"
 
-export class CreateReleaseUsecase extends BaseUsecase {
+export class CreateReleaseUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

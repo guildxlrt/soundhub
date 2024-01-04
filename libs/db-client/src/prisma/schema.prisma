@@ -59,6 +59,7 @@ model Event {
   artist  Artist @relation(fields: [planner], references: [id], onDelete: Cascade)
 
   date     DateTime
+  location String
   artists  Int[]
   title    String
   text     String

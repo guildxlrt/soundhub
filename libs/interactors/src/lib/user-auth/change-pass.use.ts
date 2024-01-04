@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { ChangePassReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { ChangePassParams } from "Domain"
 
-export class ChangePassUsecase extends BaseUsecase {
+export class ChangePassUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

@@ -1,9 +1,9 @@
 import { DatabaseServices } from "Infra-backend"
 import { DeleteEventReplyDTO } from "Dto"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { IdParams } from "Domain"
 
-export class DeleteEventUsecase extends BaseUsecase {
+export class DeleteEventUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 
-export abstract class BaseUsecase {
+export abstract class UsecaseLayer {
 	readonly services: DatabaseServices
 
 	constructor(services: DatabaseServices) {

@@ -1,3 +1,3 @@
-export * from "./release-enum"
+export * from "./release"
 export * from "./genres"
-export * from "./entitiesId"
+export * from "./values"

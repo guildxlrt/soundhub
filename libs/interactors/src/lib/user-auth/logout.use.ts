@@ -1,8 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { BaseUsecase } from "../../assets"
+import { UsecaseLayer } from "../../assets"
 import { LogoutReplyDTO } from "Dto"
 
-export class LogoutUsecase extends BaseUsecase {
+export class LogoutUsecase extends UsecaseLayer {
 	constructor(service: DatabaseServices) {
 		super(service)
 	}

@@ -1,4 +1,4 @@
-import { ArtistId, IAnnounce } from "Shared-utils"
+import { AnnounceId, ArtistId, IAnnounce } from "Shared-utils"
 import { ReplyDTO } from "../assets"
 
 // CREATE POST
@@ -11,13 +11,13 @@ export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
 export interface DeleteAnnounceInputDTO {
-	id: number
+	id: AnnounceId
 }
 export class DeleteAnnounceReplyDTO extends ReplyDTO<void> {}
 
 // GET POST
 export interface GetAnnounceInputDTO {
-	id: number
+	id: AnnounceId
 }
 export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounce> {}
 
@@ -26,6 +26,6 @@ export class GetAllAnnouncesReplyDTO extends ReplyDTO<IAnnounce[]> {}
 
 // FIND MANY BY ARTIST
 export interface FindAnnouncesByArtistInputDTO {
-	id: number
+	id: ArtistId
 }
 export class FindAnnouncesByArtistReplyDTO extends ReplyDTO<IAnnounce[]> {}

@@ -48,6 +48,7 @@ export interface IEvent {
 	id: EventId
 	planner: ArtistId
 	date: Date
+	location: string
 	artists: ArtistId[]
 	title: string
 	text: string

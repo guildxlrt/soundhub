@@ -1,5 +1,5 @@
 import { ReleaseId, ReleasePrice } from "Shared-utils"
-import { Release, Song } from "../../entities"
+import { Release, Song } from "../../../entities"
 
 export class NewReleaseParams {
 	release: Release

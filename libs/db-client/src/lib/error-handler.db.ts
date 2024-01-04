@@ -14,6 +14,7 @@ export const dbErrHandler = {
 				status: 409,
 				message: errorMsg.e409.email,
 				name: "Unique constraint failed",
+				timestamp: new Date(),
 			})
 		}
 		return

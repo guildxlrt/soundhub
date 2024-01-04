@@ -1,4 +1,4 @@
-import { ArtistId, GenreType, IRelease, ReleaseId, ReleaseType } from "Shared-utils"
+import { ArtistId, GenreType, IRelease, ReleaseId, ReleasePrice, ReleaseType } from "Shared-utils"
 import { ReplyDTO } from "../assets"
 
 // CREATE RELEASE
@@ -7,7 +7,7 @@ export interface CreateReleaseInputDTO {
 	title: string
 	releaseType: ReleaseType
 	descript: string | null
-	price: number | null
+	price: ReleasePrice | null
 	genres: string[]
 	cover: boolean
 	songs_array: {
@@ -23,13 +23,13 @@ export class CreateReleaseReplyDTO extends ReplyDTO<string> {}
 // MODIFY PRICE
 export interface ModifyReleasePriceInputDTO {
 	id: ReleaseId
-	newAmount: number
+	newAmount: ReleasePrice
 }
 export class ModifyReleasePriceReplyDTO extends ReplyDTO<boolean> {}
 
 // GET ARTIST
 export interface GetReleaseInputDTO {
-	id: number
+	id: ReleaseId
 }
 export class GetReleaseReplyDTO extends ReplyDTO<IRelease> {}
 
@@ -44,6 +44,6 @@ export class FindReleasesByGenreReplyDTO extends ReplyDTO<IRelease[]> {}
 
 // FIND MANY BY ARTIST
 export interface FindReleasesByArtistInputDTO {
-	id: number
+	id: ArtistId
 }
 export class FindReleasesByArtistReplyDTO extends ReplyDTO<IRelease[]> {}
