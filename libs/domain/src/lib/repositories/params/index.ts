@@ -1,0 +1,6 @@
+export * from "./global.params.ts"
+export * from "./artists.params.ts.js"
+export * from "./user-auth.params.ts.js"
+export * from "./releases.params"
+export * from "./announces.params.ts.js"
+export * from "./events.params.ts.js"

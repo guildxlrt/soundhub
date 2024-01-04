@@ -10,12 +10,12 @@ export class Announce extends EntityLayer implements IAnnounce {
 
 	constructor(
 		id: AnnounceId,
-		createdAt: Date,
 		artist_id: ArtistId,
 		title: string,
 		text: string,
 		imageUrl: string | null,
-		videoUrl: string | null
+		videoUrl: string | null,
+		createdAt?: Date
 	) {
 		super(id, createdAt)
 

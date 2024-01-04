@@ -1,68 +1,61 @@
-import { Announce, AnnounceRepository } from "Domain"
+import { AnnouncesRepository, IdParams, NewAnnounceParams } from "Domain"
 import {
-	CreateAnnounceInputDTO,
 	CreateAnnounceReplyDTO,
-	DeleteAnnounceInputDTO,
 	DeleteAnnounceReplyDTO,
-	FindAnnouncesByArtistInputDTO,
 	FindAnnouncesByArtistReplyDTO,
 	GetAllAnnouncesReplyDTO,
-	GetAnnounceInputDTO,
 	GetAnnounceReplyDTO,
 	ReplyDTO,
 } from "Dto"
 
-export class AnnounceImplement implements AnnounceRepository {
-	async create(inputs: CreateAnnounceInputDTO): Promise<CreateAnnounceReplyDTO> {
+export class AnnouncesImplement implements AnnouncesRepository {
+	async create(inputs: NewAnnounceParams): Promise<CreateAnnounceReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO(true)
+		const res: any = new ReplyDTO(true)
 
 		return res
 	}
 
-	async delete(inputs: DeleteAnnounceInputDTO): Promise<DeleteAnnounceReplyDTO> {
+	async delete(inputs: IdParams): Promise<DeleteAnnounceReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO(undefined)
+		const res: any = new ReplyDTO(undefined)
 
 		return res
 	}
 
-	async get(inputs: GetAnnounceInputDTO): Promise<GetAnnounceReplyDTO> {
+	async get(inputs: IdParams): Promise<GetAnnounceReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const dbRes = new Announce(0, new Date(), 0, "title", "text", null, null)
-		const res = new ReplyDTO(dbRes)
+		const res: any = new ReplyDTO({})
 
 		return res
 	}
 
 	async getAll(): Promise<GetAllAnnouncesReplyDTO> {
 		// Return Response
-		const res = new ReplyDTO([])
+		const res: any = new ReplyDTO([])
 
 		return res
 	}
 
-	async findManyByArtist(
-		inputs: FindAnnouncesByArtistInputDTO
-	): Promise<FindAnnouncesByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<FindAnnouncesByArtistReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res: any = new ReplyDTO([])
 
 		return res
 	}

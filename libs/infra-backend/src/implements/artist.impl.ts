@@ -1,27 +1,34 @@
 import {
-	ArtistRepository,
-	FetchByEmailParams,
-	FetchByGenreParams,
-	FetchByIdParams,
+	ArtistsRepository,
+	EmailParams,
+	GenreParams,
+	IdParams,
 	ModifyArtistParams,
 	NewArtistParams,
 } from "Domain"
 import {
-	ReplyDTO,
-	CreateArtistReplyDTO,
 	ModifyArtistReplyDTO,
 	GetArtistByIdReplyDTO,
 	GetArtistByEmailReplyDTO,
 	GetAllArtistsReplyDTO,
 	FindArtistsByGenreReplyDTO,
+	ReplyDTO,
 } from "Dto"
-import { ErrorMsg, IArtistInfoLong, IArtistsList, IArtistInfoShort, errorMsg } from "Shared-utils"
+import {
+	ErrorMsg,
+	IArtistInfoLong,
+	IArtistsList,
+	IArtistInfoShort,
+	errorMsg,
+	INewArtistSuccess,
+} from "Shared-utils"
 import { dbClient, dbErrHandler } from "DbClient"
 
-export class ArtistImplement implements ArtistRepository {
-	async create(inputs: NewArtistParams): Promise<CreateArtistReplyDTO> {
+export class ArtistsImplement implements ArtistsRepository {
+	async create(inputs: NewArtistParams): Promise<ReplyDTO<INewArtistSuccess>> {
 		const { name, bio, members, genres } = inputs.data.profile
 		const { email, password } = inputs.data.auths
+
 		try {
 			// Storing files
 			// ...
@@ -91,7 +98,7 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async getById(inputs: FetchByIdParams): Promise<GetArtistByIdReplyDTO> {
+	async getById(inputs: IdParams): Promise<GetArtistByIdReplyDTO> {
 		const id = inputs.id
 
 		try {
@@ -126,7 +133,7 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async getByEmail(inputs: FetchByEmailParams): Promise<GetArtistByEmailReplyDTO> {
+	async getByEmail(inputs: EmailParams): Promise<GetArtistByEmailReplyDTO> {
 		const email = inputs.email
 
 		try {
@@ -204,7 +211,7 @@ export class ArtistImplement implements ArtistRepository {
 		}
 	}
 
-	async findManyByGenre(inputs: FetchByGenreParams): Promise<FindArtistsByGenreReplyDTO> {
+	async findManyByGenre(inputs: GenreParams): Promise<FindArtistsByGenreReplyDTO> {
 		const genre: string = inputs.genre
 
 		try {

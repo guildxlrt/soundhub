@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared"],
-	"implicitDependencies": ["shared-utils", "domain", "dto", "db-client"]
+	"implicitDependencies": ["shared-utils", "domain", "db-client"]
 }

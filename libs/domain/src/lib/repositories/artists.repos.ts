@@ -1,22 +1,17 @@
-import { UserMethods, GenreMethods, OutputLayer } from "../../assets"
-import {
-	FetchByEmailParams,
-	FetchByIdParams,
-	FetchByGenreParams,
-	ModifyArtistParams,
-	NewArtistParams,
-} from "../params"
+import { UserMethods, GenreMethods } from "../../assets"
+import { EmailParams, IdParams, GenreParams, ModifyArtistParams, NewArtistParams } from "./params"
+import { Reply } from "Shared-utils"
 
-export abstract class ArtistRepository implements UserMethods, GenreMethods {
-	abstract create(inputs: NewArtistParams): Promise<OutputLayer<unknown>>
+export abstract class ArtistsRepository implements UserMethods, GenreMethods {
+	abstract create(inputs: NewArtistParams): Promise<Reply<unknown>>
 
-	abstract modify(inputs: ModifyArtistParams): Promise<OutputLayer<boolean>>
+	abstract modify(inputs: ModifyArtistParams): Promise<Reply<boolean>>
 
-	abstract getById(inputs: FetchByIdParams): Promise<OutputLayer<unknown>>
+	abstract getById(inputs: IdParams): Promise<Reply<unknown>>
 
-	abstract getByEmail(inputs: FetchByEmailParams): Promise<OutputLayer<unknown>>
+	abstract getByEmail(inputs: EmailParams): Promise<Reply<unknown>>
 
-	abstract getAll(): Promise<OutputLayer<unknown[]>>
+	abstract getAll(): Promise<Reply<unknown[]>>
 
-	abstract findManyByGenre(inputs: FetchByGenreParams): Promise<OutputLayer<unknown[]>>
+	abstract findManyByGenre(inputs: GenreParams): Promise<Reply<unknown[]>>
 }

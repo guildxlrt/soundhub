@@ -1,19 +1,15 @@
-import { Event, EventRepository } from "Domain"
+import { EventsRepository, IdParams, NewEventParams } from "Domain"
 import {
-	CreateEventInputDTO,
 	CreateEventReplyDTO,
-	DeleteEventInputDTO,
 	DeleteEventReplyDTO,
-	FindEventsByArtistInputDTO,
 	FindEventsByArtistReplyDTO,
 	GetAllEventsReplyDTO,
-	GetEventInputDTO,
 	GetEventReplyDTO,
 	ReplyDTO,
 } from "Dto"
 
-export class EventImplement implements EventRepository {
-	async create(inputs: CreateEventInputDTO): Promise<CreateEventReplyDTO> {
+export class EventsImplement implements EventsRepository {
+	async create(inputs: NewEventParams): Promise<CreateEventReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
@@ -24,7 +20,7 @@ export class EventImplement implements EventRepository {
 		return res
 	}
 
-	async delete(inputs: DeleteEventInputDTO): Promise<DeleteEventReplyDTO> {
+	async delete(inputs: IdParams): Promise<DeleteEventReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
@@ -35,14 +31,13 @@ export class EventImplement implements EventRepository {
 		return res
 	}
 
-	async get(inputs: GetEventInputDTO): Promise<GetEventReplyDTO> {
+	async get(inputs: IdParams): Promise<GetEventReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const newArtist = new Event(0, new Date(), 0, new Date(), [], "title", "text", null)
-		const res = new ReplyDTO(newArtist)
+		const res: any = new ReplyDTO({})
 
 		return res
 	}
@@ -54,9 +49,7 @@ export class EventImplement implements EventRepository {
 		return res
 	}
 
-	async findManyByArtist(
-		inputs: FindEventsByArtistInputDTO
-	): Promise<FindEventsByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<FindEventsByArtistReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)

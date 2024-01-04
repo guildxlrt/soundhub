@@ -1,14 +1,20 @@
-import { ArtistId, ISong, ReleaseId, SongId } from "Shared-utils"
-import { InputDTO, ReplyDTO } from "../assets"
+import { ISong } from "Shared-utils"
+import { ReplyDTO } from "../assets"
 
 // GET SONG
-export class GetSongInputDTO extends InputDTO<SongId> {}
+export interface GetSongInputDTO {
+	id: number
+}
 export class GetSongReplyDTO extends ReplyDTO<ISong> {}
 
 // FIND MANY BY ARTIST
-export class FindSongsByArtistInputDTO extends InputDTO<ArtistId> {}
+export interface FindSongsByArtistInputDTO {
+	id: number
+}
 export class FindSongsByArtistReplyDTO extends ReplyDTO<ISong[]> {}
 
 // FIND MANY BY RELEASE
-export class FindSongsByReleaseInputDTO extends InputDTO<ReleaseId> {}
+export interface FindSongsByReleaseInputDTO {
+	id: number
+}
 export class FindSongsByReleaseReplyDTO extends ReplyDTO<ISong[]> {}

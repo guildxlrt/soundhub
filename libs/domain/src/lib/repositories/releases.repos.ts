@@ -1,16 +1,17 @@
-import { GenreType, ArtistId, ReleaseId } from "Shared-utils"
-import { ArtistItemMethods, GenreMethods, InputLayer, OutputLayer } from "../../assets"
+import { ArtistItemMethods, GenreMethods } from "../../assets"
+import { GenreParams, IdParams, NewReleaseParams, ReleasePriceParams } from "./params"
+import { Reply } from "Shared-utils"
 
-export abstract class ReleaseRepository implements ArtistItemMethods, GenreMethods {
-	abstract create(inputs: InputLayer<unknown>): Promise<OutputLayer<string>>
+export abstract class ReleasesRepository implements ArtistItemMethods, GenreMethods {
+	abstract create(inputs: NewReleaseParams): Promise<Reply<string>>
 
-	abstract modifyPrice(inputs: InputLayer<unknown>): Promise<OutputLayer<boolean>>
+	abstract modifyPrice(inputs: ReleasePriceParams): Promise<Reply<boolean>>
 
-	abstract get(inputs: InputLayer<ReleaseId>): Promise<OutputLayer<unknown>>
+	abstract get(inputs: IdParams): Promise<Reply<unknown>>
 
-	abstract getAll(): Promise<OutputLayer<unknown[]>>
+	abstract getAll(): Promise<Reply<unknown[]>>
 
-	abstract findManyByArtist(inputs: InputLayer<ArtistId>): Promise<OutputLayer<unknown[]>>
+	abstract findManyByArtist(inputs: IdParams): Promise<Reply<unknown[]>>
 
-	abstract findManyByGenre(inputs: InputLayer<GenreType>): Promise<OutputLayer<unknown[]>>
+	abstract findManyByGenre(inputs: GenreParams): Promise<Reply<unknown[]>>
 }

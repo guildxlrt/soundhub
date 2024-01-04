@@ -1,11 +1,10 @@
-import { ErrorMsg } from "Shared-utils"
+import { ErrorMsg, Reply } from "Shared-utils"
 
-export class ReplyDTO<D> {
-	readonly data: D | undefined
-	error?: ErrorMsg
+export class ReplyDTO<D> extends Reply<D> {
+	override readonly data?: D
+	override error?: ErrorMsg
 
-	constructor(data: D | undefined, error?: ErrorMsg) {
-		this.data = data
-		this.error = error
+	constructor(data?: D, error?: ErrorMsg) {
+		super(data, error)
 	}
 }

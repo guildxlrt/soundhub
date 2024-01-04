@@ -77,7 +77,6 @@ model Release {
   descript    String?
   price       Int?
   genres      String[]
-  songs_list  Int[]
   coverUrl    String?
 
   songs Song[]

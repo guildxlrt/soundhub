@@ -1,9 +1,9 @@
-import { changeEmailValidator } from "./change-email.valid"
-import { changePassValidator } from "./change-pass.valid"
-import { mediaValidator } from "./media.valid"
-import { signupAuthsValidator } from "./signup-auths.valid"
-import { songValidator } from "./song.valid"
-import { userImageValidator } from "./users-image.valid"
+import { changeEmailValidator } from "./change-email.val"
+import { changePassValidator } from "./change-pass.val"
+import { mediaValidator } from "./media.val"
+import { signupAuthsValidator } from "./signup-auths.val"
+import { songValidator } from "./song.val"
+import { userImageValidator } from "./users-image.val"
 
 // VALIDATORS
 export const validators = {

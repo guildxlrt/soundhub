@@ -11,13 +11,13 @@ export class Event extends EntityLayer implements IEvent {
 
 	constructor(
 		id: EventId,
-		createdAt: Date,
 		planner: ArtistId,
 		date: Date,
 		artists: ArtistId[],
 		title: string,
 		text: string,
-		imageUrl: string | null
+		imageUrl: string | null,
+		createdAt?: Date
 	) {
 		super(id, createdAt)
 

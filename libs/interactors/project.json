@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared"],
-	"implicitDependencies": ["dto", "infra-backend"]
+	"implicitDependencies": ["domain", "dto", "infra-backend"]
 }

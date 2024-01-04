@@ -1,25 +1,49 @@
-import { ArtistId, GenreType, INewPrice, INewRelease, IRelease, ReleaseId } from "Shared-utils"
-import { InputDTO, ReplyDTO } from "../assets"
+import { ArtistId, GenreType, IRelease, ReleaseId, ReleaseType } from "Shared-utils"
+import { ReplyDTO } from "../assets"
 
 // CREATE RELEASE
-export class CreateReleaseInputDTO extends InputDTO<INewRelease> {}
+export interface CreateReleaseInputDTO {
+	artist_id: ArtistId
+	title: string
+	releaseType: ReleaseType
+	descript: string | null
+	price: number | null
+	genres: string[]
+	cover: boolean
+	songs_array: {
+		// audio: File
+		title: string
+		featuring: number[]
+		lyrics: string | null
+	}[]
+}
+
 export class CreateReleaseReplyDTO extends ReplyDTO<string> {}
 
 // MODIFY PRICE
-export class ModifyReleasePriceInputDTO extends InputDTO<INewPrice> {}
+export interface ModifyReleasePriceInputDTO {
+	id: ReleaseId
+	newAmount: number
+}
 export class ModifyReleasePriceReplyDTO extends ReplyDTO<boolean> {}
 
 // GET ARTIST
-export class GetReleaseInputDTO extends InputDTO<ReleaseId> {}
+export interface GetReleaseInputDTO {
+	id: number
+}
 export class GetReleaseReplyDTO extends ReplyDTO<IRelease> {}
 
 // GET ALL
 export class GetAllReleasesReplyDTO extends ReplyDTO<IRelease[]> {}
 
 // FIND MANY BY GENRE
-export class FindReleasesByGenreInputDTO extends InputDTO<GenreType> {}
+export interface FindReleasesByGenreInputDTO {
+	genre: GenreType
+}
 export class FindReleasesByGenreReplyDTO extends ReplyDTO<IRelease[]> {}
 
 // FIND MANY BY ARTIST
-export class FindReleasesByArtistInputDTO extends InputDTO<ArtistId> {}
+export interface FindReleasesByArtistInputDTO {
+	id: number
+}
 export class FindReleasesByArtistReplyDTO extends ReplyDTO<IRelease[]> {}

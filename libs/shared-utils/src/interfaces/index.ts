@@ -1,5 +1,0 @@
-export * from "./artists"
-export * from "./releases"
-export * from "./songs"
-export * from "./announces"
-export * from "./events"

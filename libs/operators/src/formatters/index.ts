@@ -1,5 +1,5 @@
-import { genresFormat } from "./genres.format"
-import { passwdFormat } from "./passwd.format"
+import { genresFormat } from "./genres.fmt"
+import { passwdFormat } from "./passwd.fmt"
 
 // FORMATTERS
 export const formatters = {

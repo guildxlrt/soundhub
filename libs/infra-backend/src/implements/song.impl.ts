@@ -1,15 +1,14 @@
-import { Song, SongRepository } from "Domain"
-import { GetSongInputDTO, GetSongReplyDTO, ReplyDTO } from "Dto"
+import { IdParams, SongsRepository } from "Domain"
+import { GetSongReplyDTO, ReplyDTO } from "Dto"
 
-export class SongImplement implements SongRepository {
-	async get(inputs: GetSongInputDTO): Promise<GetSongReplyDTO> {
+export class SongsImplement implements SongsRepository {
+	async get(inputs: IdParams): Promise<GetSongReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const dbRes = new Song(0, new Date(), 0, "title", "audioUrl", [], null)
-		const res = new ReplyDTO(dbRes)
+		const res: any = new ReplyDTO({})
 
 		return res
 	}

@@ -1,27 +1,27 @@
-import { ArtistId, ISong, ReleaseId, SongId } from "Shared-utils"
+import { ArtistId, ReleaseId, SongId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
-export class Song extends EntityLayer implements ISong {
-	release_id: ReleaseId
-	title: string
+export class Song extends EntityLayer {
+	release_id: ReleaseId | undefined
 	audioUrl: string
-	featuring: ArtistId[] | null
+	title: string
+	featuring: ArtistId[]
 	lyrics: string | null
 
 	constructor(
 		id: SongId,
-		createdAt: Date,
 		release_id: ReleaseId,
-		title: string,
 		audioUrl: string,
+		title: string,
 		featuring: ArtistId[],
-		lyrics: string | null
+		lyrics: string | null,
+		createdAt?: Date
 	) {
 		super(id, createdAt)
 
 		this.release_id = release_id
-		this.title = title
 		this.audioUrl = audioUrl
+		this.title = title
 		this.lyrics = lyrics
 
 		if (featuring !== null && featuring.length >= 1) {

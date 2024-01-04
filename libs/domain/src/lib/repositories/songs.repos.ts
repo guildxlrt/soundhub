@@ -1,6 +1,7 @@
-import { InputLayer, OutputLayer } from "../../assets"
-import { SongId, ISong } from "Shared-utils"
+import { Reply } from "Shared-utils"
+import { ISong } from "Shared-utils"
+import { IdParams } from "./params"
 
-export abstract class SongRepository {
-	abstract get(inputs: InputLayer<SongId>): Promise<OutputLayer<ISong>>
+export abstract class SongsRepository {
+	abstract get(inputs: IdParams): Promise<Reply<ISong>>
 }

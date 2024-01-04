@@ -1,35 +1,25 @@
 import { EntityLayer } from "../../assets"
-import {
-	ArtistId,
-	GenresArray,
-	IRelease,
-	ReleaseId,
-	ReleasePrice,
-	ReleaseType,
-	SongId,
-} from "Shared-utils"
+import { ArtistId, GenresArray, ReleaseId, ReleasePrice, ReleaseType } from "Shared-utils"
 
-export class Release extends EntityLayer implements IRelease {
+export class Release extends EntityLayer {
 	artist_id: ArtistId
 	title: string
 	releaseType: ReleaseType
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
-	songs_list: SongId[]
 	coverUrl: string | null
 
 	constructor(
 		id: ReleaseId,
-		createdAt: Date,
 		artist_id: ArtistId,
 		title: string,
 		releaseType: ReleaseType,
 		descript: string | null,
 		price: null | ReleasePrice,
 		genres: GenresArray,
-		songs_list: SongId[],
-		coverUrl: string | null
+		coverUrl: string | null,
+		createdAt?: Date
 	) {
 		super(id, createdAt)
 
@@ -39,7 +29,6 @@ export class Release extends EntityLayer implements IRelease {
 		this.descript = descript
 		this.price = price
 		this.genres = genres
-		this.songs_list = songs_list
 		this.coverUrl = coverUrl
 	}
 }

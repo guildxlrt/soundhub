@@ -1,30 +1,33 @@
-import { dbClient, dbErrHandler } from "DbClient"
-import { Release, ReleaseRepository } from "Domain"
+import { dbClient } from "DbClient"
 import {
-	CreateReleaseInputDTO,
+	GenreParams,
+	IdParams,
+	NewReleaseParams,
+	ReleasePriceParams,
+	ReleasesRepository,
+	Song,
+} from "Domain"
+import {
 	CreateReleaseReplyDTO,
-	FindReleasesByArtistInputDTO,
 	FindReleasesByArtistReplyDTO,
-	FindReleasesByGenreInputDTO,
 	FindReleasesByGenreReplyDTO,
 	GetAllReleasesReplyDTO,
-	GetReleaseInputDTO,
 	GetReleaseReplyDTO,
-	ModifyReleasePriceInputDTO,
 	ModifyReleasePriceReplyDTO,
 	ReplyDTO,
 } from "Dto"
 import { ErrorMsg } from "Shared-utils"
 
-export class ReleaseImplement implements ReleaseRepository {
-	async create(inputs: CreateReleaseInputDTO): Promise<CreateReleaseReplyDTO> {
-		const { artist_id, title, releaseType, descript, price, genres, songs_array } = inputs.data
+export class ReleasesImplement implements ReleasesRepository {
+	async create(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {
+		const { artist_id, title, releaseType, descript, price, genres } = inputs.release
+		const songs = inputs.songs
 
 		try {
 			// Storing files
 			// ...
 
-			const songsFormattedArray = songs_array.map((song) => {
+			const songsFormattedArray = songs.map((song): Omit<Song, "id" | "release_id"> => {
 				return {
 					audioUrl: "placeholder",
 					title: song.title,
@@ -40,7 +43,7 @@ export class ReleaseImplement implements ReleaseRepository {
 					releaseType: releaseType,
 					descript: descript,
 					price: price,
-					genres: genres,
+					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
 					coverUrl: null,
 					songs: {
 						create: songsFormattedArray,
@@ -63,38 +66,25 @@ export class ReleaseImplement implements ReleaseRepository {
 		}
 	}
 
-	async modifyPrice(inputs: ModifyReleasePriceInputDTO): Promise<ModifyReleasePriceReplyDTO> {
-		{
-			// Calling DB
-			// ... some logic
-			console.log(inputs)
-
-			// Return Response
-			const res = new ReplyDTO(true)
-
-			return res
-		}
-	}
-
-	async get(inputs: GetReleaseInputDTO): Promise<GetReleaseReplyDTO> {
+	async modifyPrice(inputs: ReleasePriceParams): Promise<ModifyReleasePriceReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const dbRes = new Release(
-			0,
-			new Date(),
-			0,
-			"title",
-			"album",
-			"descript",
-			9,
-			["metal", "rock", "blues"],
-			[],
-			null
-		)
-		const res = new ReplyDTO(dbRes)
+		const res = new ReplyDTO(true)
+
+		return res
+	}
+
+	async get(inputs: IdParams): Promise<GetReleaseReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+
+		const res: any = new ReplyDTO({})
 
 		return res
 	}
@@ -106,9 +96,7 @@ export class ReleaseImplement implements ReleaseRepository {
 		return res
 	}
 
-	async findManyByGenre(
-		inputs: FindReleasesByGenreInputDTO
-	): Promise<FindReleasesByGenreReplyDTO> {
+	async findManyByGenre(inputs: GenreParams): Promise<FindReleasesByGenreReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
@@ -119,9 +107,7 @@ export class ReleaseImplement implements ReleaseRepository {
 		return res
 	}
 
-	async findManyByArtist(
-		inputs: FindReleasesByArtistInputDTO
-	): Promise<FindReleasesByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<FindReleasesByArtistReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
