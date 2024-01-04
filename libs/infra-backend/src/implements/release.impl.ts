@@ -1,4 +1,4 @@
-import { dbClient } from "DbClient"
+import { dbClient } from "../db-client"
 import {
 	GenreParams,
 	IdParams,

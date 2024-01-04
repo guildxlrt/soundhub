@@ -16,7 +16,7 @@
 		"libs/*"
 	],
 	"prisma": {
-		"schema": "libs/db-client/src/prisma/schema.prisma"
+		"schema": "libs/infra-backend/prisma/schema.prisma"
 	},
 	"private": true,
 	"dependencies": {
