@@ -15,4 +15,8 @@ router.get("/", controller.getAll)
 
 router.get("/by-artist/:id/", controller.findManyByArtist)
 
+router.get("/by-date/:id/", controller.findManyByDate)
+
+router.get("/by-location/:id/", controller.findManyByLocation)
+
 export default router

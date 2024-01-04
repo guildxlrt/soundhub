@@ -3,6 +3,8 @@ import {
 	CreateEventReplyDTO,
 	DeleteEventReplyDTO,
 	FindEventsByArtistReplyDTO,
+	FindEventsByDateReplyDTO,
+	FindEventsByLocationReplyDTO,
 	GetAllEventsReplyDTO,
 	GetEventReplyDTO,
 	ReplyDTO,
@@ -50,6 +52,28 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async findManyByArtist(inputs: IdParams): Promise<FindEventsByArtistReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+		const res = new ReplyDTO([])
+
+		return res
+	}
+
+	async findManyByDate(inputs: Date): Promise<FindEventsByDateReplyDTO> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+		const res = new ReplyDTO([])
+
+		return res
+	}
+
+	async findManyByLocation(inputs: string): Promise<FindEventsByLocationReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)

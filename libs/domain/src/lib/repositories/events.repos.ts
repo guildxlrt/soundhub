@@ -13,4 +13,8 @@ export abstract class EventsRepository implements ArtistItemMethods, RemoveMetho
 	abstract getAll(): Promise<Reply<IEvent[]>>
 
 	abstract findManyByArtist(inputs: IdParams): Promise<Reply<IEvent[]>>
+
+	abstract findManyByDate(inputs: Date): Promise<Reply<IEvent[]>>
+
+	abstract findManyByLocation(inputs: string): Promise<Reply<IEvent[]>>
 }

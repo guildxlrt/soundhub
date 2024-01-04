@@ -32,3 +32,15 @@ export interface FindEventsByArtistInputDTO {
 	id: ArtistId
 }
 export class FindEventsByArtistReplyDTO extends ReplyDTO<IEvent[]> {}
+
+// FIND MANY BY DATE
+export interface FindEventsByDateInputDTO {
+	date: Date
+}
+export class FindEventsByDateReplyDTO extends ReplyDTO<IEvent[]> {}
+
+// FIND MANY BY LOCATION
+export interface FindEventsByLocationInputDTO {
+	location: string
+}
+export class FindEventsByLocationReplyDTO extends ReplyDTO<IEvent[]> {}

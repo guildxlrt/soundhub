@@ -3,12 +3,16 @@ import {
 	CreateEventInputDTO,
 	DeleteEventInputDTO,
 	FindEventsByArtistInputDTO,
+	FindEventsByDateInputDTO,
+	FindEventsByLocationInputDTO,
 	GetEventInputDTO,
 } from "Dto"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
+	FindEventsByDateUsecase,
+	FindEventsByLocationUsecase,
 	GetAllEventsUsecase,
 	GetEventUsecase,
 } from "Interactors"
@@ -110,6 +114,38 @@ export class EventsController implements IEventsController {
 			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
 			const { data, error } = await findEventsByArtist.execute(inputs)
+			if (error) throw error
+
+			// Return infos
+			return res.status(200).send(data)
+		} catch (error) {
+			ctrlrErrHandler(error, res)
+		}
+	}
+
+	async findManyByDate(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+
+		try {
+			const inputs: FindEventsByDateInputDTO = req.body as FindEventsByDateInputDTO
+			const findEventsByDate = new FindEventsByDateUsecase(databaseServices)
+			const { data, error } = await findEventsByDate.execute(inputs.date)
+			if (error) throw error
+
+			// Return infos
+			return res.status(200).send(data)
+		} catch (error) {
+			ctrlrErrHandler(error, res)
+		}
+	}
+
+	async findManyByLocation(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+
+		try {
+			const inputs: FindEventsByLocationInputDTO = req.body as FindEventsByLocationInputDTO
+			const findEventsByLocation = new FindEventsByLocationUsecase(databaseServices)
+			const { data, error } = await findEventsByLocation.execute(inputs.location)
 			if (error) throw error
 
 			// Return infos

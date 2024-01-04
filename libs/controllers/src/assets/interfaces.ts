@@ -27,7 +27,7 @@ export interface ISongsController {
 	get(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IEventsController {
+export interface IAnnoncesController {
 	create(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
@@ -35,10 +35,12 @@ export interface IEventsController {
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IAnnoncesController {
+export interface IEventsController {
 	create(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>
+	findManyByDate(req: unknown, res: unknown): Promise<unknown>
+	findManyByLocation(req: unknown, res: unknown): Promise<unknown>
 }
