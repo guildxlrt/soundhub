@@ -1,8 +1,8 @@
 import {
 	ArtistId,
 	GenreType,
-	IArtistInfoLong,
-	IArtistsList,
+	IArtistInfoSucc,
+	IArtistsListSucc,
 	GenresArray,
 	UserEmail,
 	UserPassword,
@@ -42,18 +42,18 @@ export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 export interface GetArtistByIdInputDTO {
 	id: ArtistId
 }
-export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
+export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc | null> {}
 
 // ARTIST BY EMAIL
 export interface GetArtistByEmailInputDTO {
 	email: UserEmail
 }
-export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoLong | null> {}
+export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc | null> {}
 
 // GET ALL
-export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsList> {}
+export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsListSucc> {}
 
 // ARTISTS BY GENRE
 export type FindArtistsByGenreInputDTO = GenreType
 
-export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtistsList> {}
+export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtistsListSucc> {}

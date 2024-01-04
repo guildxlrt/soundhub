@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { ChangeEmailParams } from "Domain"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: ChangeEmailParams): Promise<ChangeEmailReplyDTO> {

@@ -5,8 +5,8 @@ import { UsecaseLayer } from "../../assets"
 import { NewReleaseParams } from "Domain"
 
 export class CreateReleaseUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {

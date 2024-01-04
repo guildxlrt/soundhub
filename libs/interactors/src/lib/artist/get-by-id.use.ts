@@ -4,8 +4,8 @@ import { GetArtistByIdReplyDTO } from "Dto"
 import { IdParams } from "Domain"
 
 export class GetArtistByIdUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: IdParams): Promise<GetArtistByIdReplyDTO> {

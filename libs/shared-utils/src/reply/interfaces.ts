@@ -1,13 +1,12 @@
 import { ArtistId, EventId, GenresArray, ReleaseId, ReleaseType, SongId } from "Shared-utils"
-import {} from "Shared-utils"
 
 // ARTIST
-export interface INewArtistSuccess {
+export interface INewArtistSucc {
 	message: string
 	userAuthId: number
 }
 
-export interface IArtistInfoLong {
+export interface IArtistInfoSucc {
 	id: ArtistId | undefined
 	name: string | undefined
 	bio: string | null
@@ -16,12 +15,12 @@ export interface IArtistInfoLong {
 	avatarUrl: string | null
 }
 
-export type IArtistInfoShort = Omit<IArtistInfoLong, "bio" | "members">
+export type IArtistInfoShortSucc = Omit<IArtistInfoSucc, "bio" | "members">
 
-export type IArtistsList = IArtistInfoShort[]
+export type IArtistsListSucc = IArtistInfoShortSucc[]
 
 // SONG
-export interface ISong {
+export interface ISongSucc {
 	id: SongId
 	release_id: ReleaseId
 	audioUrl: string
@@ -31,7 +30,7 @@ export interface ISong {
 }
 
 // RELEASE
-export interface IRelease {
+export interface IReleaseSucc {
 	id: ReleaseId
 	artist_id: ArtistId
 	title: string
@@ -44,11 +43,11 @@ export interface IRelease {
 }
 
 // EVENT
-export interface IEvent {
+export interface IEventSucc {
 	id: EventId
 	planner: ArtistId
 	date: Date
-	location: string
+	place: string
 	artists: ArtistId[]
 	title: string
 	text: string
@@ -56,7 +55,7 @@ export interface IEvent {
 }
 
 // ANNOUNCE
-export interface IAnnounce {
+export interface IAnnounceSucc {
 	artist_id: ArtistId
 	title: string
 	text: string

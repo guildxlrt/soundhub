@@ -42,5 +42,5 @@ export interface IEventsController {
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>
 	findManyByDate(req: unknown, res: unknown): Promise<unknown>
-	findManyByLocation(req: unknown, res: unknown): Promise<unknown>
+	findManyByPlace(req: unknown, res: unknown): Promise<unknown>
 }

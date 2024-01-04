@@ -4,6 +4,7 @@ import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { GetSongUsecase } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import { ctrlrErrHandler } from "../assets/error-handler"
+import { IdParams } from "Domain"
 
 export class SongsController implements ISongsController {
 	async get(req: ApiRequest, res: ApiReply) {
@@ -12,7 +13,7 @@ export class SongsController implements ISongsController {
 		try {
 			const inputs: GetSongInputDTO = req.body as GetSongInputDTO
 			const getSong = new GetSongUsecase(databaseServices)
-			const { data, error } = await getSong.execute(inputs)
+			const { data, error } = await getSong.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos

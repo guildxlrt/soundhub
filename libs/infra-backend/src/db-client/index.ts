@@ -1,2 +1,2 @@
-export * from "./client.db"
-export * from "./error-handler.db"
+export * from "./client"
+export * from "./error-handler"

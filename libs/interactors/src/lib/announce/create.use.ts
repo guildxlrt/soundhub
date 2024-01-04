@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { NewAnnounceParams } from "Domain"
 
 export class CreateAnnounceUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: NewAnnounceParams): Promise<CreateAnnounceReplyDTO> {

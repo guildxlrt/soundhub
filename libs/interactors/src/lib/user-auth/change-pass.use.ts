@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { ChangePassParams } from "Domain"
 
 export class ChangePassUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: ChangePassParams): Promise<ChangePassReplyDTO> {

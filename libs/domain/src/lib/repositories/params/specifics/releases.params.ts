@@ -12,12 +12,11 @@ export class NewReleaseParams {
 }
 
 export class ReleasePriceParams {
-	data: {
-		id: ReleaseId
-		price: ReleasePrice
-	}
+	id: ReleaseId
+	price: ReleasePrice
 
-	constructor(data: { id: ReleaseId; price: ReleasePrice }) {
-		this.data = data
+	constructor(id: ReleaseId, price: ReleasePrice) {
+		this.id = id
+		this.price = price
 	}
 }

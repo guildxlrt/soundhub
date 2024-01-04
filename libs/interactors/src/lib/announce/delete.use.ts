@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { IdParams } from "Domain"
 
 export class DeleteAnnounceUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: IdParams): Promise<DeleteAnnounceReplyDTO> {

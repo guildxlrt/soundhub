@@ -3,8 +3,8 @@ import { UsecaseLayer } from "../../assets"
 import { LogoutReplyDTO } from "Dto"
 
 export class LogoutUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(): Promise<LogoutReplyDTO> {

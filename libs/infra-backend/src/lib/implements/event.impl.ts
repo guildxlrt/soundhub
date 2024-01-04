@@ -1,10 +1,10 @@
-import { EventsRepository, IdParams, NewEventParams } from "Domain"
+import { DateParams, EventsRepository, IdParams, NewEventParams, PlaceParams } from "Domain"
 import {
 	CreateEventReplyDTO,
 	DeleteEventReplyDTO,
 	FindEventsByArtistReplyDTO,
 	FindEventsByDateReplyDTO,
-	FindEventsByLocationReplyDTO,
+	FindEventsByPlaceReplyDTO,
 	GetAllEventsReplyDTO,
 	GetEventReplyDTO,
 	ReplyDTO,
@@ -62,7 +62,7 @@ export class EventsImplement implements EventsRepository {
 		return res
 	}
 
-	async findManyByDate(inputs: Date): Promise<FindEventsByDateReplyDTO> {
+	async findManyByDate(inputs: DateParams): Promise<FindEventsByDateReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
@@ -73,7 +73,7 @@ export class EventsImplement implements EventsRepository {
 		return res
 	}
 
-	async findManyByLocation(inputs: string): Promise<FindEventsByLocationReplyDTO> {
+	async findManyByPlace(inputs: PlaceParams): Promise<FindEventsByPlaceReplyDTO> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)

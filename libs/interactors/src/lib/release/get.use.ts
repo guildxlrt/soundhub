@@ -4,8 +4,8 @@ import { GetReleaseReplyDTO } from "Dto"
 import { IdParams } from "Domain"
 
 export class GetReleaseUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: IdParams): Promise<GetReleaseReplyDTO> {

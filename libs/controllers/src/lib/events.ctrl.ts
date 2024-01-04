@@ -4,7 +4,7 @@ import {
 	DeleteEventInputDTO,
 	FindEventsByArtistInputDTO,
 	FindEventsByDateInputDTO,
-	FindEventsByLocationInputDTO,
+	FindEventsByPlaceInputDTO,
 	GetEventInputDTO,
 } from "Dto"
 import {
@@ -12,14 +12,14 @@ import {
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
-	FindEventsByLocationUsecase,
+	FindEventsByPlaceUsecase,
 	GetAllEventsUsecase,
 	GetEventUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { ctrlrErrHandler } from "../assets/error-handler"
-import { NewEventParams, Event } from "Domain"
+import { NewEventParams, Event, IdParams, DateParams, PlaceParams } from "Domain"
 
 export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -32,12 +32,12 @@ export class EventsController implements IEventsController {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const { date, planner, location, artists, title, text } = inputs
+			const { date, planner, place, artists, title, text } = inputs
 			const eventData = new Event(
 				undefined,
 				planner,
 				date,
-				location,
+				place,
 				artists,
 				title,
 				text,
@@ -66,7 +66,7 @@ export class EventsController implements IEventsController {
 
 			// Saving Profile
 			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(inputs)
+			const { data, error } = await deleteEvent.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -82,7 +82,7 @@ export class EventsController implements IEventsController {
 		try {
 			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
 			const getEvent = new GetEventUsecase(databaseServices)
-			const { data, error } = await getEvent.execute(inputs)
+			const { data, error } = await getEvent.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -113,7 +113,7 @@ export class EventsController implements IEventsController {
 		try {
 			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
-			const { data, error } = await findEventsByArtist.execute(inputs)
+			const { data, error } = await findEventsByArtist.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -129,7 +129,7 @@ export class EventsController implements IEventsController {
 		try {
 			const inputs: FindEventsByDateInputDTO = req.body as FindEventsByDateInputDTO
 			const findEventsByDate = new FindEventsByDateUsecase(databaseServices)
-			const { data, error } = await findEventsByDate.execute(inputs.date)
+			const { data, error } = await findEventsByDate.execute(new DateParams(inputs.date))
 			if (error) throw error
 
 			// Return infos
@@ -139,13 +139,13 @@ export class EventsController implements IEventsController {
 		}
 	}
 
-	async findManyByLocation(req: ApiRequest, res: ApiReply) {
+	async findManyByPlace(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
 
 		try {
-			const inputs: FindEventsByLocationInputDTO = req.body as FindEventsByLocationInputDTO
-			const findEventsByLocation = new FindEventsByLocationUsecase(databaseServices)
-			const { data, error } = await findEventsByLocation.execute(inputs.location)
+			const inputs: FindEventsByPlaceInputDTO = req.body as FindEventsByPlaceInputDTO
+			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseServices)
+			const { data, error } = await findEventsByPlace.execute(new PlaceParams(inputs.place))
 			if (error) throw error
 
 			// Return infos

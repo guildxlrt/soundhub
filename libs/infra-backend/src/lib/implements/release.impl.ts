@@ -1,4 +1,3 @@
-import { dbClient } from "../db-client"
 import {
 	GenreParams,
 	IdParams,
@@ -17,6 +16,7 @@ import {
 	ReplyDTO,
 } from "Dto"
 import { ErrorMsg } from "Shared-utils"
+import { dbClient } from "../../db-client"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {

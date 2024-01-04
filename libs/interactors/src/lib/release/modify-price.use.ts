@@ -4,8 +4,8 @@ import { ModifyReleasePriceReplyDTO } from "Dto"
 import { ReleasePriceParams } from "Domain"
 
 export class ModifyReleasePriceUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: ReleasePriceParams): Promise<ModifyReleasePriceReplyDTO> {

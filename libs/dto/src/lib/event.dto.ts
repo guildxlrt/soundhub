@@ -1,11 +1,11 @@
-import { ArtistId, EventId, IEvent } from "Shared-utils"
+import { ArtistId, EventId, IEventSucc } from "Shared-utils"
 import { ReplyDTO } from "../assets"
 
 // CREATE POST
 export interface CreateEventInputDTO {
 	planner: ArtistId
 	date: Date
-	location: string
+	place: string
 	artists: ArtistId[]
 	title: string
 	text: string
@@ -22,25 +22,25 @@ export class DeleteEventReplyDTO extends ReplyDTO<void> {}
 export interface GetEventInputDTO {
 	id: EventId
 }
-export class GetEventReplyDTO extends ReplyDTO<IEvent> {}
+export class GetEventReplyDTO extends ReplyDTO<IEventSucc> {}
 
 // GET ALL
-export class GetAllEventsReplyDTO extends ReplyDTO<IEvent[]> {}
+export class GetAllEventsReplyDTO extends ReplyDTO<IEventSucc[]> {}
 
 // FIND MANY BY ARTIST
 export interface FindEventsByArtistInputDTO {
 	id: ArtistId
 }
-export class FindEventsByArtistReplyDTO extends ReplyDTO<IEvent[]> {}
+export class FindEventsByArtistReplyDTO extends ReplyDTO<IEventSucc[]> {}
 
 // FIND MANY BY DATE
 export interface FindEventsByDateInputDTO {
 	date: Date
 }
-export class FindEventsByDateReplyDTO extends ReplyDTO<IEvent[]> {}
+export class FindEventsByDateReplyDTO extends ReplyDTO<IEventSucc[]> {}
 
 // FIND MANY BY LOCATION
-export interface FindEventsByLocationInputDTO {
-	location: string
+export interface FindEventsByPlaceInputDTO {
+	place: string
 }
-export class FindEventsByLocationReplyDTO extends ReplyDTO<IEvent[]> {}
+export class FindEventsByPlaceReplyDTO extends ReplyDTO<IEventSucc[]> {}

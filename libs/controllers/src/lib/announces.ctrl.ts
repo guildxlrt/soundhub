@@ -15,7 +15,8 @@ import {
 import { databaseServices } from "Infra-backend"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { ctrlrErrHandler } from "../assets/error-handler"
-import { Announce, NewAnnounceParams } from "Domain"
+import { Announce, IdParams, NewAnnounceParams } from "Domain"
+
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
@@ -61,7 +62,7 @@ export class AnnoncesController implements IAnnoncesController {
 
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
-			const { data, error } = await deleteAnnounce.execute(inputs)
+			const { data, error } = await deleteAnnounce.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -77,7 +78,7 @@ export class AnnoncesController implements IAnnoncesController {
 		try {
 			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
 			const getAnnounce = new GetAnnounceUsecase(databaseServices)
-			const { data, error } = await getAnnounce.execute(inputs)
+			const { data, error } = await getAnnounce.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -108,7 +109,7 @@ export class AnnoncesController implements IAnnoncesController {
 		try {
 			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
-			const { data, error } = await findAnnouncesByArtist.execute(inputs)
+			const { data, error } = await findAnnouncesByArtist.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos

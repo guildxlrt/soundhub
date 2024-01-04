@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { NewArtistParams } from "Domain"
 
 export class CreateArtistUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: NewArtistParams): Promise<CreateArtistReplyDTO> {

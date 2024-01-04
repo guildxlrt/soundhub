@@ -4,8 +4,8 @@ import { UsecaseLayer } from "../../assets"
 import { LoginParams } from "Domain"
 
 export class LoginUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: LoginParams): Promise<LoginReplyDTO> {

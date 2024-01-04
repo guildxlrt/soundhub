@@ -4,8 +4,8 @@ import { FindReleasesByGenreReplyDTO } from "Dto"
 import { GenreParams } from "Domain"
 
 export class FindReleasesByGenreUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: GenreParams): Promise<FindReleasesByGenreReplyDTO> {

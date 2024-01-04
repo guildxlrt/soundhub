@@ -1,7 +1,7 @@
-import { Reply } from "Shared-utils"
-import { ISong } from "Shared-utils"
+import { ReplyLayer } from "Shared-utils"
+import { ISongSucc } from "Shared-utils"
 import { IdParams } from "./params"
 
-export abstract class SongsRepository {
-	abstract get(inputs: IdParams): Promise<Reply<ISong>>
+export interface SongsRepository {
+	get(inputs: IdParams): Promise<ReplyLayer<ISongSucc>>
 }

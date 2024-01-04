@@ -1,20 +1,13 @@
-import { IEvent } from "Shared-utils"
-import { ArtistItemMethods, RemoveMethods } from "../../assets"
-import { IdParams, NewEventParams } from "./params"
-import { Reply } from "Shared-utils"
+import { IEventSucc } from "Shared-utils"
+import { DateParams, IdParams, NewEventParams, PlaceParams } from "./params"
+import { ReplyLayer } from "Shared-utils"
 
-export abstract class EventsRepository implements ArtistItemMethods, RemoveMethods {
-	abstract create(inputs: NewEventParams): Promise<Reply<boolean>>
-
-	abstract delete(inputs: IdParams): Promise<Reply<unknown>>
-
-	abstract get(inputs: IdParams): Promise<Reply<IEvent>>
-
-	abstract getAll(): Promise<Reply<IEvent[]>>
-
-	abstract findManyByArtist(inputs: IdParams): Promise<Reply<IEvent[]>>
-
-	abstract findManyByDate(inputs: Date): Promise<Reply<IEvent[]>>
-
-	abstract findManyByLocation(inputs: string): Promise<Reply<IEvent[]>>
+export interface EventsRepository {
+	create(inputs: NewEventParams): Promise<ReplyLayer<boolean>>
+	delete(inputs: IdParams): Promise<ReplyLayer<unknown>>
+	get(inputs: IdParams): Promise<ReplyLayer<IEventSucc>>
+	getAll(): Promise<ReplyLayer<IEventSucc[]>>
+	findManyByArtist(inputs: IdParams): Promise<ReplyLayer<IEventSucc[]>>
+	findManyByDate(inputs: DateParams): Promise<ReplyLayer<IEventSucc[]>>
+	findManyByPlace(inputs: PlaceParams): Promise<ReplyLayer<IEventSucc[]>>
 }

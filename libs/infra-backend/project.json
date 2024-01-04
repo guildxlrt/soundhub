@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared"],
-	"implicitDependencies": ["shared-utils", "domain"]
+	"implicitDependencies": ["shared-utils", "domain", "dto"]
 }

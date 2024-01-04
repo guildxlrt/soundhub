@@ -4,7 +4,7 @@ import { EntityLayer } from "../../assets"
 export class Event extends EntityLayer {
 	planner: ArtistId
 	date: Date
-	location: string
+	place: string
 	artists: ArtistId[]
 	title: string
 	text: string
@@ -14,7 +14,7 @@ export class Event extends EntityLayer {
 		id: EventId,
 		planner: ArtistId,
 		date: Date,
-		location: string,
+		place: string,
 		artists: ArtistId[],
 		title: string,
 		text: string,
@@ -26,7 +26,7 @@ export class Event extends EntityLayer {
 		this.planner = planner
 		this.date = date
 		this.artists = artists
-		this.location = location
+		this.place = place
 		this.title = title
 		this.text = text
 		this.imageUrl = imageUrl

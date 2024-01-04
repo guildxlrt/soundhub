@@ -4,8 +4,8 @@ import { FindArtistsByGenreReplyDTO } from "Dto"
 import { GenreParams } from "Domain"
 
 export class FindArtistsByGenreUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(inputs: GenreParams): Promise<FindArtistsByGenreReplyDTO> {

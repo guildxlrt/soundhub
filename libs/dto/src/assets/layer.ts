@@ -1,10 +1,11 @@
-import { ErrorMsg, Reply } from "Shared-utils"
+import { ErrorMsg, ReplyLayer } from "Shared-utils"
 
-export class ReplyDTO<D> extends Reply<D> {
-	override readonly data?: D
-	override error?: ErrorMsg
+export class ReplyDTO<D> implements ReplyLayer<D> {
+	readonly data?: D
+	error?: ErrorMsg
 
 	constructor(data?: D, error?: ErrorMsg) {
-		super(data, error)
+		this.data = data
+		this.error = error
 	}
 }

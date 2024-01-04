@@ -3,8 +3,8 @@ import { UsecaseLayer } from "../../assets"
 import { GetAllReleasesReplyDTO } from "Dto"
 
 export class GetAllReleasesUsecase extends UsecaseLayer {
-	constructor(service: DatabaseServices) {
-		super(service)
+	constructor(services: DatabaseServices) {
+		super(services)
 	}
 
 	async execute(): Promise<GetAllReleasesReplyDTO> {

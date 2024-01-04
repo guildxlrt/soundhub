@@ -17,7 +17,15 @@ import {
 import { databaseServices } from "Infra-backend"
 import { formatters, validators } from "Operators"
 import { IArtistController, ctrlrErrHandler } from "../assets"
-import { Artist, NewArtistParams, ModifyArtistParams, UserAuth } from "Domain"
+import {
+	Artist,
+	NewArtistParams,
+	ModifyArtistParams,
+	UserAuth,
+	GenreParams,
+	EmailParams,
+	IdParams,
+} from "Domain"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -102,7 +110,7 @@ export class ArtistsController implements IArtistController {
 			const inputs = req.body.id as GetArtistByIdInputDTO
 
 			const getArtistById = new GetArtistByIdUsecase(databaseServices)
-			const { data, error } = await getArtistById.execute(inputs)
+			const { data, error } = await getArtistById.execute(new IdParams(inputs.id))
 			if (error) throw error
 
 			// Return infos
@@ -119,7 +127,7 @@ export class ArtistsController implements IArtistController {
 			const inputs = req.body.email as GetArtistByEmailInputDTO
 
 			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
-			const { data, error } = await getArtistByEmail.execute(inputs)
+			const { data, error } = await getArtistByEmail.execute(new EmailParams(inputs.email))
 			if (error) throw error
 
 			// Return infos
@@ -151,7 +159,7 @@ export class ArtistsController implements IArtistController {
 			const inputs = req.params.genre as FindArtistsByGenreInputDTO
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
-			const { data, error } = await findArtistsByGenre.execute({ genre: inputs })
+			const { data, error } = await findArtistsByGenre.execute(new GenreParams(inputs))
 			if (error) throw error
 
 			// Return infos
