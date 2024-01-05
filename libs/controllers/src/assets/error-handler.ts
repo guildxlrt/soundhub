@@ -4,5 +4,8 @@ export const ctrlrErrHandler = (error: any, res: ApiReply) => {
 	if (error.status) {
 		return res.status(error.status).send(error.message)
 	}
+
+	console.error(error)
+
 	return res.status(500).send(error)
 }

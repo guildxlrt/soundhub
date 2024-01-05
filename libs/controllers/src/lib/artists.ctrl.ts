@@ -58,11 +58,12 @@ export class ArtistsController implements IArtistController {
 			if (error) throw error
 
 			// Return infos
-			const token = new Token().generate(data.userAuthId)
+			const expires = authExpires.oneYear
+			const token = new Token().generate(data.userAuthId, expires)
 
 			return res
 				.cookie("jwt", token, {
-					maxAge: authExpires.oneWeek,
+					maxAge: expires,
 					httpOnly: true,
 					sameSite: "lax",
 					secure: false,

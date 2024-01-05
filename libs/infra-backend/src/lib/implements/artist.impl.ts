@@ -22,7 +22,7 @@ import {
 	errorMsg,
 	INewArtistSucc,
 } from "Shared-utils"
-import { dbClient, dbErrHandler } from "../db-client"
+import { dbClient, dbErrHandler } from "../../db-client"
 
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<ReplyDTO<INewArtistSucc>> {
