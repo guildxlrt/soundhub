@@ -2,7 +2,7 @@ import { ArtistId, EventId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
 export class Event extends EntityLayer {
-	planner: ArtistId
+	planner: ArtistId | undefined
 	date: Date
 	place: string
 	artists: ArtistId[]
@@ -11,8 +11,8 @@ export class Event extends EntityLayer {
 	imageUrl: string | null
 
 	constructor(
-		id: EventId,
-		planner: ArtistId,
+		id: EventId | undefined,
+		planner: ArtistId | undefined,
 		date: Date,
 		place: string,
 		artists: ArtistId[],

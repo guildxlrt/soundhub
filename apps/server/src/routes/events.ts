@@ -7,6 +7,8 @@ const controller = controllers.events
 
 router.post("/new", authMiddleware, controller.create)
 
+router.get("/modify", authMiddleware, controller.modify)
+
 router.delete("/delete", authMiddleware, controller.delete)
 
 router.get("/:id", controller.get)

@@ -4,8 +4,7 @@ import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
 import { validators } from "Operators"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { ctrlrErrHandler } from "../assets/error-handler"
-import { ChangeEmailParams, ChangePassParams, LoginParams } from "Domain"
+import { errHandler } from "../assets/error-handler"
 
 export class UserAuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
@@ -13,16 +12,15 @@ export class UserAuthController implements IAuthController {
 
 		try {
 			const inputs = req.body as LoginInputDTO
-			const { email, password } = inputs
 
 			const login = new LoginUsecase(databaseServices)
-			const { data, error } = await login.execute(new LoginParams(email, password))
+			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -37,7 +35,7 @@ export class UserAuthController implements IAuthController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -47,21 +45,15 @@ export class UserAuthController implements IAuthController {
 		try {
 			const inputs = req.body as ChangeEmailInputDTO
 
-			// Operators
-			const { actual, confirm, newEmail } = inputs
-			validators.changeEmail(actual, confirm, newEmail)
-
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
-			const { data, error } = await changeEmail.execute(
-				new ChangeEmailParams(actual, confirm, newEmail)
-			)
+			const { data, error } = await changeEmail.execute(inputs)
 			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -71,21 +63,15 @@ export class UserAuthController implements IAuthController {
 		try {
 			const inputs = req.body as ChangePassInputDTO
 
-			// Operators
-			const { actual, confirm, newPass } = inputs
-			validators.changeEmail(actual, confirm, newPass)
-
 			// Saving changes
 			const changePass = new ChangePassUsecase(databaseServices)
-			const { data, error } = await changePass.execute(
-				new ChangePassParams(actual, confirm, newPass)
-			)
+			const { data, error } = await changePass.execute(inputs)
 			if (error) throw error
 
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 }

@@ -1,6 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
 import { LogoutReplyDTO } from "Dto"
+import { ErrorMsg } from "Shared-utils"
 
 export class LogoutUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {
@@ -8,6 +9,13 @@ export class LogoutUsecase extends UsecaseLayer {
 	}
 
 	async execute(): Promise<LogoutReplyDTO> {
-		return await this.services.userAuths.logout()
+		try {
+			return await this.services.userAuths.logout()
+		} catch (error) {
+			return new LogoutReplyDTO(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 }

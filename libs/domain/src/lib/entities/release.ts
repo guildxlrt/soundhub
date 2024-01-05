@@ -11,7 +11,7 @@ export class Release extends EntityLayer {
 	coverUrl: string | null
 
 	constructor(
-		id: ReleaseId,
+		id: ReleaseId | undefined,
 		artist_id: ArtistId,
 		title: string,
 		releaseType: ReleaseType,

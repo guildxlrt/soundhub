@@ -7,3 +7,11 @@ export class NewEventParams {
 		this.data = data
 	}
 }
+
+export class ModifyEventParams {
+	data: Event
+
+	constructor(data: Event) {
+		this.data = data
+	}
+}

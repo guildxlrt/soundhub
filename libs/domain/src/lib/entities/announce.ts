@@ -2,15 +2,15 @@ import { AnnounceId, ArtistId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
 export class Announce extends EntityLayer {
-	artist_id: ArtistId
+	artist_id: ArtistId | undefined
 	title: string
 	text: string
 	imageUrl: string | null
 	videoUrl: string | null
 
 	constructor(
-		id: AnnounceId,
-		artist_id: ArtistId,
+		id: AnnounceId | undefined,
+		artist_id: ArtistId | undefined,
 		title: string,
 		text: string,
 		imageUrl: string | null,

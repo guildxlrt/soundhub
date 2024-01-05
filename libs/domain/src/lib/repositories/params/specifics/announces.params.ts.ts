@@ -7,3 +7,11 @@ export class NewAnnounceParams {
 		this.data = data
 	}
 }
+
+export class ModifyAnnounceParams {
+	data: Announce
+
+	constructor(data: Announce) {
+		this.data = data
+	}
+}

@@ -42,13 +42,13 @@ export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 export interface GetArtistByIdInputDTO {
 	id: ArtistId
 }
-export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc | null> {}
+export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // ARTIST BY EMAIL
 export interface GetArtistByEmailInputDTO {
 	email: UserEmail
 }
-export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc | null> {}
+export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // GET ALL
 export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsListSucc> {}

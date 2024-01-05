@@ -1,13 +1,15 @@
-import { ReleaseId, ReleasePrice } from "Shared-utils"
+import { GenresArray, ReleaseId, ReleasePrice } from "Shared-utils"
 import { Release, Song } from "../../../entities"
 
 export class NewReleaseParams {
 	release: Release
 	songs: Song[]
+	cleanGenres: GenresArray
 
-	constructor(release: Release, songs: Song[]) {
+	constructor(release: Release, songs: Song[], cleanGenres: GenresArray) {
 		this.release = release
 		this.songs = songs
+		this.cleanGenres = cleanGenres
 	}
 }
 

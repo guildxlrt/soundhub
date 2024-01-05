@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client"
-import { ReplyDTO } from "Dto"
 import { ErrorMsg, errorMsg } from "Shared-utils"
+import { Reply } from "../reply"
 
 export const dbErrHandler = {
 	uniqueEmail: (error: unknown, res: unknown): ErrorMsg | void => {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code === "P2002" &&
-			res instanceof ReplyDTO &&
+			res instanceof Reply &&
 			res.error instanceof ErrorMsg
 		) {
 			return (res.error = {

@@ -29,6 +29,7 @@ export interface ISongsController {
 
 export interface IAnnoncesController {
 	create(req: unknown, res: unknown): Promise<unknown>
+	modify(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
@@ -37,6 +38,7 @@ export interface IAnnoncesController {
 
 export interface IEventsController {
 	create(req: unknown, res: unknown): Promise<unknown>
+	modify(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>

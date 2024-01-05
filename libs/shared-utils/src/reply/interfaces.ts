@@ -14,7 +14,7 @@ export interface INewArtistSucc {
 	userAuthId: UserAuthId
 }
 
-export interface IArtistInfoSucc {
+export type IArtistInfoSucc = null | {
 	id: ArtistId | undefined
 	name: string | undefined
 	bio: string | null
@@ -23,9 +23,8 @@ export interface IArtistInfoSucc {
 	avatarUrl: string | null
 }
 
-export type IArtistInfoShortSucc = Omit<IArtistInfoSucc, "bio" | "members">
-
-export type IArtistsListSucc = IArtistInfoShortSucc[]
+export type IArtistsListSucc = Omit<IArtistInfoSucc, "bio" | "members">[]
+export type IArtistsListItemSucc = IArtistsListSucc[0]
 
 // SONG
 export interface ISongSucc {
@@ -54,9 +53,8 @@ export interface IReleaseSucc {
 	songs_list: { audioUrl: string; title: string }[]
 	coverUrl: string | null
 }
-export type IReleaseShortSucc = Omit<IReleaseSucc, "descript" | "price" | "songs_list">
-
-export type IReleasesListSucc = IArtistInfoShortSucc[]
+export type IReleasesListSucc = Omit<IReleaseSucc, "descript" | "price" | "songs_list">[]
+export type IReleasesListItemSucc = IReleasesListSucc[0]
 
 // EVENT
 export interface IEventSucc {
@@ -70,6 +68,9 @@ export interface IEventSucc {
 	imageUrl: string | null
 }
 
+export type IEventsListSucc = Omit<IEventSucc, "text" | "songs_list">[]
+export type IEventsListItemSucc = IEventsListSucc[0]
+
 // ANNOUNCE
 export interface IAnnounceSucc {
 	artist_id: ArtistId
@@ -78,3 +79,6 @@ export interface IAnnounceSucc {
 	imageUrl: string | null
 	videoUrl: string | null
 }
+
+export type IAnnouncesListSucc = Omit<IAnnounceSucc, "text" | "songs_list">[]
+export type IAnnouncesListItemSucc = IAnnouncesListSucc[0]

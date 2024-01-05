@@ -1,10 +1,21 @@
 import { AnnouncesRepository, IdParams, NewAnnounceParams } from "Domain"
 
 import { Reply } from "../../assets"
-import { IAnnounceSucc } from "Shared-utils"
+import { IAnnounceSucc, IAnnouncesListSucc } from "Shared-utils"
 
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+		const res: any = new Reply(true)
+
+		return res
+	}
+
+	async modify(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
@@ -37,14 +48,14 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		return res
 	}
 
-	async getAll(): Promise<Reply<IAnnounceSucc[]>> {
+	async getAll(): Promise<Reply<IAnnouncesListSucc>> {
 		// Return Response
 		const res: any = new Reply([])
 
 		return res
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<Reply<IAnnounceSucc[]>> {
+	async findManyByArtist(inputs: IdParams): Promise<Reply<IAnnouncesListSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)

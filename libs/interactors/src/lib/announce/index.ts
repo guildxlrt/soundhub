@@ -1,4 +1,5 @@
 export * from "./create.use"
+export * from "./modify.use"
 export * from "./delete.use"
 export * from "./get.use"
 export * from "./get-all.use"

@@ -9,8 +9,8 @@ export class Song extends EntityLayer {
 	lyrics: string | null
 
 	constructor(
-		id: SongId,
-		release_id: ReleaseId,
+		id: SongId | undefined,
+		release_id: ReleaseId | undefined,
 		audioUrl: string,
 		title: string,
 		featuring: ArtistId[],

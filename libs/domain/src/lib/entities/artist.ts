@@ -14,7 +14,7 @@ export class Artist extends EntityLayer {
 		user_auth_id: UserAuthId | undefined,
 		name: string,
 		bio: string,
-		members: string[] | null,
+		members: string[],
 		genres: GenresArray,
 		avatarUrl: string | null,
 		createdAt?: Date

@@ -2,7 +2,9 @@ import {
 	ArtistId,
 	GenreType,
 	GenresArray,
+	INewReleaseSucc,
 	IReleaseSucc,
+	IReleasesListSucc,
 	ReleaseId,
 	ReleasePrice,
 	ReleaseType,
@@ -28,7 +30,7 @@ export interface CreateReleaseInputDTO {
 	}[]
 }
 
-export class CreateReleaseReplyDTO extends ReplyDTO<string> {}
+export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY PRICE
 export interface ModifyReleasePriceInputDTO {
@@ -44,15 +46,15 @@ export interface GetReleaseInputDTO {
 export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}
 
 // GET ALL
-export class GetAllReleasesReplyDTO extends ReplyDTO<IReleaseSucc[]> {}
+export class GetAllReleasesReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY GENRE
 export type FindReleasesByGenreInputDTO = GenreType
 
-export class FindReleasesByGenreReplyDTO extends ReplyDTO<IReleaseSucc[]> {}
+export class FindReleasesByGenreReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY ARTIST
 export interface FindReleasesByArtistInputDTO {
 	id: ArtistId
 }
-export class FindReleasesByArtistReplyDTO extends ReplyDTO<IReleaseSucc[]> {}
+export class FindReleasesByArtistReplyDTO extends ReplyDTO<IReleasesListSucc> {}

@@ -1,7 +1,7 @@
 import { errorMsg } from "Shared-utils"
 import { ApiReply } from "../../../shared-utils/src/express-js/params"
 
-export const ctrlrErrHandler = (error: any, res: ApiReply) => {
+export const errHandler = (error: any, res: ApiReply) => {
 	try {
 		console.error(error)
 

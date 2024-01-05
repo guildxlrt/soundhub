@@ -14,6 +14,17 @@ export class EventsImplement implements EventsRepository {
 		return res
 	}
 
+	async modify(inputs: NewEventParams): Promise<Reply<boolean>> {
+		// Calling DB
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+		const res = new Reply(true)
+
+		return res
+	}
+
 	async delete(inputs: IdParams): Promise<Reply<void>> {
 		// Calling DB
 		// ... some logic

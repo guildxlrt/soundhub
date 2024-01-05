@@ -2,6 +2,7 @@ import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
 import { GetArtistByIdInputDTO, GetArtistByIdReplyDTO } from "Dto"
 import { IdParams } from "Domain"
+import { ErrorMsg } from "Shared-utils"
 
 export class GetArtistByIdUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {
@@ -9,6 +10,13 @@ export class GetArtistByIdUsecase extends UsecaseLayer {
 	}
 
 	async execute(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
-		return await this.services.artists.getById(new IdParams(inputs.id))
+		try {
+			return await this.services.artists.getById(new IdParams(inputs.id))
+		} catch (error) {
+			return new GetArtistByIdReplyDTO(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 }

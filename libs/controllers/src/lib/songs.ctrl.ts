@@ -3,8 +3,7 @@ import { ISongsController } from "../assets"
 import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
 import { GetSongUsecase } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { ctrlrErrHandler } from "../assets/error-handler"
-import { IdParams } from "Domain"
+import { errHandler } from "../assets/error-handler"
 
 export class SongsController implements ISongsController {
 	async get(req: ApiRequest, res: ApiReply) {
@@ -13,13 +12,13 @@ export class SongsController implements ISongsController {
 		try {
 			const inputs: GetSongInputDTO = req.body as GetSongInputDTO
 			const getSong = new GetSongUsecase(databaseServices)
-			const { data, error } = await getSong.execute(new IdParams(inputs.id))
+			const { data, error } = await getSong.execute(inputs)
 			if (error) throw error
 
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 }

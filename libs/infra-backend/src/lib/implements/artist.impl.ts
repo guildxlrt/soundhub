@@ -10,7 +10,7 @@ import {
 	ErrorMsg,
 	IArtistInfoSucc,
 	IArtistsListSucc,
-	IArtistInfoShortSucc,
+	IArtistsListItemSucc,
 	errorMsg,
 	INewArtistSucc,
 } from "Shared-utils"
@@ -76,17 +76,10 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Return Response
-			const res = new Reply(true)
-
-			return res
+			// ponse
+			return new Reply(true)
 		} catch (error) {
-			const res = new Reply<boolean>(
-				false,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
-
-			return res
+			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
 		}
 	}
 
@@ -107,8 +100,8 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Return Response
-			const res = new Reply<IArtistInfoSucc>({
+			// ponse
+			return new Reply<IArtistInfoSucc>({
 				id: id,
 				name: data?.name,
 				bio: null,
@@ -116,15 +109,8 @@ export class ArtistsImplement implements ArtistsRepository {
 				genres: [data?.genres[0], data?.genres[1], data?.genres[2]],
 				avatarUrl: null,
 			})
-
-			return res
 		} catch (error) {
-			const res = new Reply<IArtistInfoSucc>(
-				undefined,
-				new ErrorMsg(500, errorMsg.e500, error)
-			)
-
-			return res
+			return new Reply<IArtistInfoSucc>(undefined, new ErrorMsg(500, errorMsg.e500, error))
 		}
 	}
 
@@ -150,9 +136,9 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Return Response
+			// ponse
 
-			const res = new Reply<IArtistInfoSucc>({
+			return new Reply<IArtistInfoSucc>({
 				id: data?.artists[0].id,
 				name: data?.artists[0].name,
 				bio: null,
@@ -164,15 +150,8 @@ export class ArtistsImplement implements ArtistsRepository {
 				],
 				avatarUrl: null,
 			})
-
-			return res
 		} catch (error) {
-			const res = new Reply<IArtistInfoSucc>(
-				undefined,
-				new ErrorMsg(500, errorMsg.e500, error)
-			)
-
-			return res
+			return new Reply<IArtistInfoSucc>(undefined, new ErrorMsg(500, errorMsg.e500, error))
 		}
 	}
 
@@ -189,7 +168,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((artist): IArtistInfoShortSucc => {
+			const list = data.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -198,14 +177,10 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// Return Response
-			const res = new Reply<IArtistsListSucc>(list)
-
-			return res
+			// ponse
+			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			const res = new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
-
-			return res
+			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
 		}
 	}
 
@@ -225,7 +200,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			const list = data.map((artist): IArtistInfoShortSucc => {
+			const list = data.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -234,14 +209,10 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// Return Response
-			const res = new Reply<IArtistsListSucc>(list)
-
-			return res
+			// ponse
+			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			const res = new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
-
-			return res
+			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
 		}
 	}
 }

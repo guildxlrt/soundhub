@@ -16,7 +16,7 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import { formatters } from "Operators"
-import { IArtistController, ctrlrErrHandler } from "../assets"
+import { IArtistController, errHandler } from "../assets"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -53,7 +53,7 @@ export class ArtistsController implements IArtistController {
 				.status(202)
 				.send(data.message)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -71,7 +71,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -88,7 +88,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -105,7 +105,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -120,7 +120,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 
@@ -137,7 +137,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			ctrlrErrHandler(error, res)
+			errHandler(error, res)
 		}
 	}
 }
