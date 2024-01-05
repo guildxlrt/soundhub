@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { GetArtistByIdReplyDTO } from "Dto"
+import { GetArtistByIdInputDTO, GetArtistByIdReplyDTO } from "Dto"
 import { IdParams } from "Domain"
 
 export class GetArtistByIdUsecase extends UsecaseLayer {
@@ -8,7 +8,7 @@ export class GetArtistByIdUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: IdParams): Promise<GetArtistByIdReplyDTO> {
-		return await this.services.artists.getById(inputs)
+	async execute(inputs: GetArtistByIdInputDTO): Promise<GetArtistByIdReplyDTO> {
+		return await this.services.artists.getById(new IdParams(inputs.id))
 	}
 }

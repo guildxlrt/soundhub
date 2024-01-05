@@ -2,7 +2,7 @@ import { ArtistId, GenresArray, UserAuthId } from "Shared-utils"
 import { EntityLayer } from "../../assets"
 
 export class Artist extends EntityLayer {
-	user_auth_id: UserAuthId
+	user_auth_id: UserAuthId | undefined
 	name: string
 	bio: string | null
 	avatarUrl: string | null
@@ -10,8 +10,8 @@ export class Artist extends EntityLayer {
 	genres: GenresArray
 
 	constructor(
-		id: ArtistId,
-		user_auth_id: UserAuthId,
+		id: ArtistId | undefined,
+		user_auth_id: UserAuthId | undefined,
 		name: string,
 		bio: string,
 		members: string[] | null,

@@ -7,14 +7,6 @@ import {
 	NewArtistParams,
 } from "Domain"
 import {
-	ModifyArtistReplyDTO,
-	GetArtistByIdReplyDTO,
-	GetArtistByEmailReplyDTO,
-	GetAllArtistsReplyDTO,
-	FindArtistsByGenreReplyDTO,
-	ReplyDTO,
-} from "Dto"
-import {
 	ErrorMsg,
 	IArtistInfoSucc,
 	IArtistsListSucc,
@@ -22,12 +14,12 @@ import {
 	errorMsg,
 	INewArtistSucc,
 } from "Shared-utils"
-import { dbClient, dbErrHandler } from "../../db-client"
+import { dbClient, dbErrHandler, Reply } from "../../assets"
 
 export class ArtistsImplement implements ArtistsRepository {
-	async create(inputs: NewArtistParams): Promise<ReplyDTO<INewArtistSucc>> {
-		const { name, bio, members, genres } = inputs.data.profile
-		const { email, password } = inputs.data.auths
+	async create(inputs: NewArtistParams): Promise<Reply<INewArtistSucc>> {
+		const { name, bio, members, genres } = inputs.profile
+		const { email, password } = inputs.auths
 
 		try {
 			// Storing files
@@ -51,12 +43,12 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Response
-			return new ReplyDTO<{ message: string; userAuthId: number }>({
+			return new Reply<{ message: string; userAuthId: number }>({
 				message: `Welcome, ${name} !!`,
 				userAuthId: data.id,
 			})
 		} catch (error) {
-			const res = new ReplyDTO<{ message: string; userAuthId: number }>(
+			const res = new Reply<{ message: string; userAuthId: number }>(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
@@ -68,7 +60,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyArtistParams): Promise<ModifyArtistReplyDTO> {
+	async modify(inputs: ModifyArtistParams): Promise<Reply<boolean>> {
 		const { name, bio, members, genres, id } = inputs.data
 
 		try {
@@ -85,11 +77,11 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO(true)
+			const res = new Reply(true)
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<boolean>(
+			const res = new Reply<boolean>(
 				false,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
@@ -98,7 +90,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getById(inputs: IdParams): Promise<GetArtistByIdReplyDTO> {
+	async getById(inputs: IdParams): Promise<Reply<IArtistInfoSucc>> {
 		const id = inputs.id
 
 		try {
@@ -116,7 +108,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<IArtistInfoSucc>({
+			const res = new Reply<IArtistInfoSucc>({
 				id: id,
 				name: data?.name,
 				bio: null,
@@ -127,13 +119,16 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<null>(null, new ErrorMsg(500, errorMsg.e500, error))
+			const res = new Reply<IArtistInfoSucc>(
+				undefined,
+				new ErrorMsg(500, errorMsg.e500, error)
+			)
 
 			return res
 		}
 	}
 
-	async getByEmail(inputs: EmailParams): Promise<GetArtistByEmailReplyDTO> {
+	async getByEmail(inputs: EmailParams): Promise<Reply<IArtistInfoSucc>> {
 		const email = inputs.email
 
 		try {
@@ -157,7 +152,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			// Return Response
 
-			const res = new ReplyDTO<IArtistInfoSucc>({
+			const res = new Reply<IArtistInfoSucc>({
 				id: data?.artists[0].id,
 				name: data?.artists[0].name,
 				bio: null,
@@ -172,13 +167,16 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<null>(null, new ErrorMsg(500, errorMsg.e500, error))
+			const res = new Reply<IArtistInfoSucc>(
+				undefined,
+				new ErrorMsg(500, errorMsg.e500, error)
+			)
 
 			return res
 		}
 	}
 
-	async getAll(): Promise<GetAllArtistsReplyDTO> {
+	async getAll(): Promise<Reply<IArtistsListSucc>> {
 		try {
 			// Calling DB
 			const data = await dbClient.artist.findMany({
@@ -201,17 +199,17 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<IArtistsListSucc>(list)
+			const res = new Reply<IArtistsListSucc>(list)
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
+			const res = new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
 
 			return res
 		}
 	}
 
-	async findManyByGenre(inputs: GenreParams): Promise<FindArtistsByGenreReplyDTO> {
+	async findManyByGenre(inputs: GenreParams): Promise<Reply<IArtistsListSucc>> {
 		const genre: string = inputs.genre
 
 		try {
@@ -237,11 +235,11 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Return Response
-			const res = new ReplyDTO<IArtistsListSucc>(list)
+			const res = new Reply<IArtistsListSucc>(list)
 
 			return res
 		} catch (error) {
-			const res = new ReplyDTO<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
+			const res = new Reply<IArtistsListSucc>([], new ErrorMsg(500, errorMsg.e500, error))
 
 			return res
 		}

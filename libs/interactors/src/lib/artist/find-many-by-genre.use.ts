@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { FindArtistsByGenreReplyDTO } from "Dto"
+import { FindArtistsByGenreInputDTO, FindArtistsByGenreReplyDTO } from "Dto"
 import { GenreParams } from "Domain"
 
 export class FindArtistsByGenreUsecase extends UsecaseLayer {
@@ -8,7 +8,7 @@ export class FindArtistsByGenreUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: GenreParams): Promise<FindArtistsByGenreReplyDTO> {
-		return await this.services.artists.findManyByGenre(inputs)
+	async execute(inputs: FindArtistsByGenreInputDTO): Promise<FindArtistsByGenreReplyDTO> {
+		return await this.services.artists.findManyByGenre(new GenreParams(inputs))
 	}
 }

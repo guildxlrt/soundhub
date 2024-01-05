@@ -1,61 +1,56 @@
 import { AnnouncesRepository, IdParams, NewAnnounceParams } from "Domain"
-import {
-	CreateAnnounceReplyDTO,
-	DeleteAnnounceReplyDTO,
-	FindAnnouncesByArtistReplyDTO,
-	GetAllAnnouncesReplyDTO,
-	GetAnnounceReplyDTO,
-	ReplyDTO,
-} from "Dto"
+
+import { Reply } from "../../assets"
+import { IAnnounceSucc } from "Shared-utils"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(inputs: NewAnnounceParams): Promise<CreateAnnounceReplyDTO> {
+	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res: any = new ReplyDTO(true)
+		const res: any = new Reply(true)
 
 		return res
 	}
 
-	async delete(inputs: IdParams): Promise<DeleteAnnounceReplyDTO> {
+	async delete(inputs: IdParams): Promise<Reply<void>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res: any = new ReplyDTO(undefined)
+		const res: any = new Reply(undefined)
 
 		return res
 	}
 
-	async get(inputs: IdParams): Promise<GetAnnounceReplyDTO> {
+	async get(inputs: IdParams): Promise<Reply<IAnnounceSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res: any = new ReplyDTO({})
+		const res: any = new Reply({})
 
 		return res
 	}
 
-	async getAll(): Promise<GetAllAnnouncesReplyDTO> {
+	async getAll(): Promise<Reply<IAnnounceSucc[]>> {
 		// Return Response
-		const res: any = new ReplyDTO([])
+		const res: any = new Reply([])
 
 		return res
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<FindAnnouncesByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<Reply<IAnnounceSucc[]>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res: any = new ReplyDTO([])
+		const res: any = new Reply([])
 
 		return res
 	}

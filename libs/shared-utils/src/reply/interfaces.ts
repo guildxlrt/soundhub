@@ -1,9 +1,17 @@
-import { ArtistId, EventId, GenresArray, ReleaseId, ReleaseType, SongId } from "Shared-utils"
+import {
+	ArtistId,
+	EventId,
+	GenresArray,
+	ReleaseId,
+	ReleaseType,
+	SongId,
+	UserAuthId,
+} from "Shared-utils"
 
 // ARTIST
 export interface INewArtistSucc {
 	message: string
-	userAuthId: number
+	userAuthId: UserAuthId
 }
 
 export interface IArtistInfoSucc {
@@ -30,6 +38,11 @@ export interface ISongSucc {
 }
 
 // RELEASE
+export interface INewReleaseSucc {
+	message: string
+	id: ReleaseId
+}
+
 export interface IReleaseSucc {
 	id: ReleaseId
 	artist_id: ArtistId
@@ -41,6 +54,9 @@ export interface IReleaseSucc {
 	songs_list: { audioUrl: string; title: string }[]
 	coverUrl: string | null
 }
+export type IReleaseShortSucc = Omit<IReleaseSucc, "descript" | "price" | "songs_list">
+
+export type IReleasesListSucc = IArtistInfoShortSucc[]
 
 // EVENT
 export interface IEventSucc {

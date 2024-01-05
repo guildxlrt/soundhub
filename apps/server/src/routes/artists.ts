@@ -5,7 +5,7 @@ import { authMiddleware } from "Middlewares"
 const router = Router()
 const controller = controllers.artists
 
-router.post("/new", controller.create)
+router.post("/signup", controller.create)
 
 router.put("/update", authMiddleware, controller.modify)
 

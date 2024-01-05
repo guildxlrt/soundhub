@@ -1,85 +1,77 @@
 import { DateParams, EventsRepository, IdParams, NewEventParams, PlaceParams } from "Domain"
-import {
-	CreateEventReplyDTO,
-	DeleteEventReplyDTO,
-	FindEventsByArtistReplyDTO,
-	FindEventsByDateReplyDTO,
-	FindEventsByPlaceReplyDTO,
-	GetAllEventsReplyDTO,
-	GetEventReplyDTO,
-	ReplyDTO,
-} from "Dto"
+import { Reply } from "../../assets"
+import { IEventSucc } from "Shared-utils"
 
 export class EventsImplement implements EventsRepository {
-	async create(inputs: NewEventParams): Promise<CreateEventReplyDTO> {
+	async create(inputs: NewEventParams): Promise<Reply<boolean>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO(true)
+		const res = new Reply(true)
 
 		return res
 	}
 
-	async delete(inputs: IdParams): Promise<DeleteEventReplyDTO> {
+	async delete(inputs: IdParams): Promise<Reply<void>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO(undefined)
+		const res = new Reply(undefined)
 
 		return res
 	}
 
-	async get(inputs: IdParams): Promise<GetEventReplyDTO> {
+	async get(inputs: IdParams): Promise<Reply<IEventSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res: any = new ReplyDTO({})
+		const res: any = new Reply({})
 
 		return res
 	}
 
-	async getAll(): Promise<GetAllEventsReplyDTO> {
+	async getAll(): Promise<Reply<IEventSucc[]>> {
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<FindEventsByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<Reply<IEventSucc[]>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
 
-	async findManyByDate(inputs: DateParams): Promise<FindEventsByDateReplyDTO> {
+	async findManyByDate(inputs: DateParams): Promise<Reply<IEventSucc[]>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
 
-	async findManyByPlace(inputs: PlaceParams): Promise<FindEventsByPlaceReplyDTO> {
+	async findManyByPlace(inputs: PlaceParams): Promise<Reply<IEventSucc[]>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}

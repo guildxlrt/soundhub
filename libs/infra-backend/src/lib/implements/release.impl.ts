@@ -6,20 +6,12 @@ import {
 	ReleasesRepository,
 	Song,
 } from "Domain"
-import {
-	CreateReleaseReplyDTO,
-	FindReleasesByArtistReplyDTO,
-	FindReleasesByGenreReplyDTO,
-	GetAllReleasesReplyDTO,
-	GetReleaseReplyDTO,
-	ModifyReleasePriceReplyDTO,
-	ReplyDTO,
-} from "Dto"
-import { ErrorMsg } from "Shared-utils"
-import { dbClient } from "../../db-client"
+import { ErrorMsg, INewReleaseSucc, IReleaseSucc, IReleasesListSucc } from "Shared-utils"
+import { dbClient } from "../../assets"
+import { Reply } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
-	async create(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {
+	async create(inputs: NewReleaseParams): Promise<Reply<INewReleaseSucc>> {
 		const { artist_id, title, releaseType, descript, price, genres } = inputs.release
 		const songs = inputs.songs
 
@@ -36,7 +28,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			await dbClient.release.create({
+			const data = await dbClient.release.create({
 				data: {
 					artist_id: artist_id,
 					title: title,
@@ -52,9 +44,9 @@ export class ReleasesImplement implements ReleasesRepository {
 			})
 
 			// Response
-			return new ReplyDTO<string>(`${title} was created.`)
+			return new Reply<INewReleaseSucc>({ message: `${title} was created.`, id: data.id })
 		} catch (error) {
-			const res = new ReplyDTO<string>(
+			const res = new Reply<INewReleaseSucc>(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
@@ -66,54 +58,54 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modifyPrice(inputs: ReleasePriceParams): Promise<ModifyReleasePriceReplyDTO> {
+	async modifyPrice(inputs: ReleasePriceParams): Promise<Reply<boolean>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO(true)
+		const res = new Reply(true)
 
 		return res
 	}
 
-	async get(inputs: IdParams): Promise<GetReleaseReplyDTO> {
+	async get(inputs: IdParams): Promise<Reply<IReleaseSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
 
-		const res: any = new ReplyDTO({})
+		const res: any = new Reply({})
 
 		return res
 	}
 
-	async getAll(): Promise<GetAllReleasesReplyDTO> {
+	async getAll(): Promise<Reply<IReleasesListSucc>> {
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
 
-	async findManyByGenre(inputs: GenreParams): Promise<FindReleasesByGenreReplyDTO> {
+	async findManyByGenre(inputs: GenreParams): Promise<Reply<IReleasesListSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<FindReleasesByArtistReplyDTO> {
+	async findManyByArtist(inputs: IdParams): Promise<Reply<IReleasesListSucc>> {
 		// Calling DB
 		// ... some logic
 		console.log(inputs)
 
 		// Return Response
-		const res = new ReplyDTO([])
+		const res = new Reply([])
 
 		return res
 	}
