@@ -16,6 +16,6 @@
 			}
 		}
 	},
-	"tags": ["type:shared"],
+	"tags": ["type:shared", "scope:infrastructure", "scope:api"],
 	"implicitDependencies": ["shared-utils", "domain"]
 }

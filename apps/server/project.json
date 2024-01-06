@@ -69,5 +69,5 @@
 		}
 	},
 	"tags": ["type:backend", "scope:api"],
-	"implicitDependencies": ["controllers", "middlewares"]
+	"implicitDependencies": ["interface-back"]
 }

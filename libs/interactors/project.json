@@ -16,6 +16,6 @@
 			}
 		}
 	},
-	"tags": ["type:shared"],
-	"implicitDependencies": ["domain", "dto", "infra-backend"]
+	"tags": ["type:shared", "scope:logic"],
+	"implicitDependencies": ["domain", "dto"]
 }

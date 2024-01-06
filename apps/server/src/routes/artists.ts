@@ -1,6 +1,5 @@
 import { Router } from "express"
-import { controllers } from "Controllers"
-import { authMiddleware } from "Middlewares"
+import { controllers, authMiddleware } from "Interface-back"
 
 const router = Router()
 const controller = controllers.artists

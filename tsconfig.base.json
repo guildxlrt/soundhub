@@ -15,12 +15,13 @@
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
-			"Controllers": ["libs/controllers/src/index.ts"],
 			"Domain": ["libs/domain/src/index.ts"],
 			"Dto": ["libs/dto/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],
+			"Infra-frontend": ["libs/infra-frontend/src/index.ts"],
 			"Interactors": ["libs/interactors/src/index.ts"],
-			"Middlewares": ["libs/middlewares/src/index.ts"],
+			"Interface-back": ["libs/interface-back/src/index.ts"],
+			"Interface-front": ["libs/interface-front/src/index.ts"],
 			"Operators": ["libs/operators/src/index.ts"],
 			"Shared-utils": ["libs/shared-utils/src/index.ts"]
 		}

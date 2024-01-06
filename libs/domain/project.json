@@ -16,6 +16,6 @@
 			}
 		}
 	},
-	"tags": ["type:shared"],
+	"tags": ["type:shared", "scope:logic"],
 	"implicitDependencies": ["shared-utils"]
 }
