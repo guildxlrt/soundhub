@@ -7,6 +7,9 @@ apps/*/.env.local
 libs/*/.env
 libs/*/.env.local
 
+private.pem
+public.pem
+
 # compiled output
 dist
 tmp
