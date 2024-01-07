@@ -1,10 +1,3 @@
-import {
-	CreateAnnounceInputDTO,
-	DeleteAnnounceInputDTO,
-	FindAnnouncesByArtistInputDTO,
-	GetAnnounceInputDTO,
-	ModifyAnnounceInputDTO,
-} from "Dto"
 import { IAnnoncesController } from "../assets"
 import {
 	CreateAnnounceUsecase,
@@ -15,12 +8,19 @@ import {
 	ModifyAnnounceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
+import {
+	apiErrorMsg,
+	CreateAnnounceInputDTO,
+	DeleteAnnounceInputDTO,
+	FindAnnouncesByArtistInputDTO,
+	GetAnnounceInputDTO,
+	ModifyAnnounceInputDTO,
+} from "Shared"
+import { errHandler, ApiRequest, ApiReply } from "../assets"
 
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: CreateAnnounceInputDTO = req.body as CreateAnnounceInputDTO
@@ -36,12 +36,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: ModifyAnnounceInputDTO = req.body as ModifyAnnounceInputDTO
@@ -57,12 +57,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: DeleteAnnounceInputDTO = req.body as DeleteAnnounceInputDTO
@@ -78,12 +78,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
@@ -94,12 +94,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
@@ -109,12 +109,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO
@@ -125,7 +125,7 @@ export class AnnoncesController implements IAnnoncesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 }

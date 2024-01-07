@@ -1,9 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { CreateArtistInputDTO, CreateArtistReplyDTO } from "Dto"
+import { CreateArtistInputDTO, CreateArtistReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { Artist, NewArtistParams, UserAuth } from "Domain"
-import { validators, formatters } from "Operators"
-import { ErrorMsg } from "Shared-utils"
+import { Artist, NewArtistParams, UserAuth } from "Shared"
+import { ErrorMsg, validators, formatters } from "Shared"
 
 export class CreateArtistUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

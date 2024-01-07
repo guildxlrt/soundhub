@@ -1,12 +1,5 @@
 import { IReleasesController } from "../assets"
 import {
-	CreateReleaseInputDTO,
-	FindReleasesByArtistInputDTO,
-	FindReleasesByGenreInputDTO,
-	GetReleaseInputDTO,
-	ModifyReleasePriceInputDTO,
-} from "Dto"
-import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
 	FindReleasesByGenreUsecase,
@@ -15,12 +8,19 @@ import {
 	ModifyReleasePriceUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
+import {
+	CreateReleaseInputDTO,
+	FindReleasesByArtistInputDTO,
+	FindReleasesByGenreInputDTO,
+	GetReleaseInputDTO,
+	ModifyReleasePriceInputDTO,
+	apiErrorMsg,
+} from "Shared"
+import { errHandler, ApiRequest, ApiReply } from "../assets"
 
 export class ReleasesController implements IReleasesController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: CreateReleaseInputDTO = req.body as CreateReleaseInputDTO
@@ -33,12 +33,12 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async modifyPrice(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: ModifyReleasePriceInputDTO = req.body as ModifyReleasePriceInputDTO
@@ -51,12 +51,12 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: GetReleaseInputDTO = req.body as GetReleaseInputDTO
@@ -67,12 +67,12 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
@@ -82,12 +82,12 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindReleasesByArtistInputDTO = req.body as FindReleasesByArtistInputDTO
@@ -98,12 +98,12 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindReleasesByGenreInputDTO = req.body as FindReleasesByGenreInputDTO
@@ -114,7 +114,7 @@ export class ReleasesController implements IReleasesController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 }

@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { LoginInputDTO, LoginReplyDTO } from "Dto"
+import { LoginInputDTO, LoginReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { LoginParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { LoginParams } from "Shared"
 
 export class LoginUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

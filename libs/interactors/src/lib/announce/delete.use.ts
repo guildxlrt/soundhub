@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { DeleteAnnounceInputDTO, DeleteAnnounceReplyDTO } from "Dto"
+import { DeleteAnnounceInputDTO, DeleteAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { IdParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { IdParams } from "Shared"
 
 export class DeleteAnnounceUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

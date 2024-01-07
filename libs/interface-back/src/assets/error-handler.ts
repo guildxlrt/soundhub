@@ -1,16 +1,16 @@
-import { errorMsg } from "Shared-utils"
-import { ApiReply } from "../../../shared-utils/src/express-js/params"
+import { ErrorMsg, apiErrorMsg } from "Shared"
+import { ApiReply } from "./params"
 
-export const errHandler = (error: any, res: ApiReply) => {
-	try {
+export class ApiErrHandler {
+	async reply(error: unknown, res: ApiReply) {
 		console.error(error)
 
-		if (error.status) {
+		if (error instanceof ErrorMsg && error.status) {
 			return res.status(error.status).send(error.message)
 		}
 
-		return res.status(500).send(error)
-	} catch (error) {
-		return res.status(500).send(errorMsg.e500)
+		return res.status(500).send(apiErrorMsg.e500)
 	}
 }
+
+export const errHandler = new ApiErrHandler()

@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { ModifyEventInputDTO, ModifyEventReplyDTO } from "Dto"
+import { ModifyEventInputDTO, ModifyEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { Event, ModifyEventParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { Event, ModifyEventParams } from "Shared"
 
 export class ModifyEventUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

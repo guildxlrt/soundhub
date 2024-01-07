@@ -1,14 +1,12 @@
-import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO } from "Dto"
 import { IAuthController } from "../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
-import { validators } from "Operators"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
+import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, apiErrorMsg } from "Shared"
+import { errHandler, ApiRequest, ApiReply } from "../assets"
 
 export class UserAuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body as LoginInputDTO
@@ -20,12 +18,12 @@ export class UserAuthController implements IAuthController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async logout(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const logout = new LogoutUsecase(databaseServices)
@@ -35,12 +33,12 @@ export class UserAuthController implements IAuthController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async changeEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body as ChangeEmailInputDTO
@@ -53,12 +51,12 @@ export class UserAuthController implements IAuthController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async changePass(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body as ChangePassInputDTO
@@ -71,7 +69,7 @@ export class UserAuthController implements IAuthController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 }

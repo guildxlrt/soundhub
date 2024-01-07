@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { ModifyAnnounceInputDTO, ModifyAnnounceReplyDTO } from "Dto"
+import { ModifyAnnounceInputDTO, ModifyAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { Announce, ModifyAnnounceParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { Announce, ModifyAnnounceParams } from "Shared"
 
 export class ModifyAnnounceUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { FindReleasesByGenreInputDTO, FindReleasesByGenreReplyDTO } from "Dto"
-import { GenreParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { FindReleasesByGenreInputDTO, FindReleasesByGenreReplyDTO, ErrorMsg } from "Shared"
+import { GenreParams } from "Shared"
 
 export class FindReleasesByGenreUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

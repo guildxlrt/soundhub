@@ -1,7 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { LogoutReplyDTO } from "Dto"
-import { ErrorMsg } from "Shared-utils"
+import { LogoutReplyDTO, ErrorMsg } from "Shared"
 
 export class LogoutUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

@@ -1,11 +1,13 @@
-import { errorMsg, ApiRequest, ApiReply, Token } from "Shared-utils"
 import {
 	CreateArtistInputDTO,
 	FindArtistsByGenreInputDTO,
 	GetArtistByEmailInputDTO,
 	GetArtistByIdInputDTO,
 	ModifyArtistInputDTO,
-} from "Dto"
+	apiErrorMsg,
+	formatters,
+} from "Shared"
+
 import {
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
@@ -15,12 +17,11 @@ import {
 	ModifyArtistUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { formatters } from "Operators"
-import { IArtistController, authExpires, errHandler } from "../assets"
+import { IArtistController, Token, authExpires, errHandler, ApiRequest, ApiReply } from "../assets"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body as CreateArtistInputDTO
@@ -41,7 +42,8 @@ export class ArtistsController implements IArtistController {
 
 			// Return infos
 			const expires = authExpires.oneYear
-			const token = new Token().generate(data.userAuthId, expires)
+			const id = data?.userAuthId
+			const token = new Token().generate(id, expires)
 
 			return res
 				.cookie("jwt", token, {
@@ -51,14 +53,14 @@ export class ArtistsController implements IArtistController {
 					secure: false,
 				})
 				.status(202)
-				.send(data.message)
+				.send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body as ModifyArtistInputDTO
@@ -71,12 +73,12 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getById(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body.id as GetArtistByIdInputDTO
@@ -88,12 +90,12 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getByEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs = req.body.email as GetArtistByEmailInputDTO
@@ -105,12 +107,12 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
@@ -120,15 +122,15 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.params.genre as FindArtistsByGenreInputDTO
+			const inputs = req.params["genre"] as FindArtistsByGenreInputDTO
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
 			const { data, error } = await findArtistsByGenre.execute(inputs)
@@ -137,7 +139,7 @@ export class ArtistsController implements IArtistController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 }

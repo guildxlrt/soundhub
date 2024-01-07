@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { GetArtistByEmailInputDTO, GetArtistByEmailReplyDTO } from "Dto"
+import { GetArtistByEmailInputDTO, GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { EmailParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { EmailParams } from "Shared"
 
 export class GetArtistByEmailUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

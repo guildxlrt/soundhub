@@ -1,9 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { ChangePassInputDTO, ChangePassReplyDTO } from "Dto"
+import { ChangePassInputDTO, ChangePassReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { ChangePassParams } from "Domain"
-import { validators } from "Operators"
-import { ErrorMsg } from "Shared-utils"
+import { ChangePassParams } from "Shared"
+import { ErrorMsg, validators } from "Shared"
 
 export class ChangePassUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

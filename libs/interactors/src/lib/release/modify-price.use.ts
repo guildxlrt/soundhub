@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { ModifyReleasePriceInputDTO, ModifyReleasePriceReplyDTO } from "Dto"
-import { ReleasePriceParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { ModifyReleasePriceInputDTO, ModifyReleasePriceReplyDTO, ErrorMsg } from "Shared"
+import { ReleasePriceParams } from "Shared"
 
 export class ModifyReleasePriceUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

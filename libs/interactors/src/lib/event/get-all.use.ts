@@ -1,7 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { GetAllEventsReplyDTO } from "Dto"
-import { ErrorMsg } from "Shared-utils"
+import { GetAllEventsReplyDTO, ErrorMsg } from "Shared"
 
 export class GetAllEventsUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

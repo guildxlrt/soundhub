@@ -1,14 +1,5 @@
 import { IEventsController } from "../assets"
 import {
-	CreateEventInputDTO,
-	DeleteEventInputDTO,
-	FindEventsByArtistInputDTO,
-	FindEventsByDateInputDTO,
-	FindEventsByPlaceInputDTO,
-	GetEventInputDTO,
-	ModifyEventInputDTO,
-} from "Dto"
-import {
 	CreateEventUsecase,
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
@@ -19,12 +10,21 @@ import {
 	ModifyEventUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
-
+import {
+	CreateEventInputDTO,
+	DeleteEventInputDTO,
+	FindEventsByArtistInputDTO,
+	FindEventsByDateInputDTO,
+	FindEventsByPlaceInputDTO,
+	GetEventInputDTO,
+	ModifyEventInputDTO,
+	apiErrorMsg,
+} from "Shared"
+import { errHandler, ApiRequest, ApiReply } from "../assets"
+// return errHandler.reply
 export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
@@ -40,12 +40,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: ModifyEventInputDTO = req.body as ModifyEventInputDTO
@@ -61,12 +61,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
@@ -82,12 +82,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(202).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
@@ -98,12 +98,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const getAllEvents = new GetAllEventsUsecase(databaseServices)
@@ -113,12 +113,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
@@ -129,12 +129,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByDate(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindEventsByDateInputDTO = req.body as FindEventsByDateInputDTO
@@ -145,12 +145,12 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 
 	async findManyByPlace(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
+		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: FindEventsByPlaceInputDTO = req.body as FindEventsByPlaceInputDTO
@@ -161,7 +161,7 @@ export class EventsController implements IEventsController {
 			// Return infos
 			return res.status(200).send(data)
 		} catch (error) {
-			errHandler(error, res)
+			return errHandler.reply(error, res)
 		}
 	}
 }

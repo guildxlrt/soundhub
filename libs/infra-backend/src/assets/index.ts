@@ -1,2 +1,3 @@
 export * from "./reply"
-export * from "./db-client"
+export * from "./client"
+export * from "./error-handler"

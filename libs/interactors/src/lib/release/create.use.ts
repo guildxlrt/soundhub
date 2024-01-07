@@ -1,9 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { CreateReleaseInputDTO, CreateReleaseReplyDTO } from "Dto"
+import { CreateReleaseInputDTO, CreateReleaseReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { NewReleaseParams, Release, Song } from "Domain"
-import { formatters } from "Operators"
-import { ErrorMsg } from "Shared-utils"
+import { NewReleaseParams, Release, Song } from "Shared"
+import { ErrorMsg, formatters } from "Shared"
 
 export class CreateReleaseUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

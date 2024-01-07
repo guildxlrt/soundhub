@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
 import { UsecaseLayer } from "../../assets"
-import { GetArtistByIdInputDTO, GetArtistByIdReplyDTO } from "Dto"
-import { IdParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { GetArtistByIdInputDTO, GetArtistByIdReplyDTO, ErrorMsg } from "Shared"
+import { IdParams } from "Shared"
 
 export class GetArtistByIdUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

@@ -1,9 +1,8 @@
 import { DatabaseServices } from "Infra-backend"
-import { ChangeEmailInputDTO, ChangeEmailReplyDTO } from "Dto"
+import { ChangeEmailInputDTO, ChangeEmailReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { validators } from "Operators"
-import { ChangeEmailParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { ChangeEmailParams } from "Shared"
+import { ErrorMsg, validators } from "Shared"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {

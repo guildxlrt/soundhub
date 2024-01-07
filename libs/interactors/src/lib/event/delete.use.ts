@@ -1,8 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
-import { DeleteEventInputDTO, DeleteEventReplyDTO } from "Dto"
+import { DeleteEventInputDTO, DeleteEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { IdParams } from "Domain"
-import { ErrorMsg } from "Shared-utils"
+import { IdParams } from "Shared"
 
 export class DeleteEventUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices) {
