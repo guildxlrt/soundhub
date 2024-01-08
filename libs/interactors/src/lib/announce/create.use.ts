@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { CreateAnnounceInputDTO, CreateAnnounceReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { CreateAnnounceReqDTO, CreateAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Announce, NewAnnounceParams } from "Shared"
 
 export class CreateAnnounceUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: CreateAnnounceInputDTO): Promise<CreateAnnounceReplyDTO> {
+	async execute(inputs: CreateAnnounceReqDTO): Promise<CreateAnnounceReplyDTO> {
 		try {
 			const { title, text, artist_id } = inputs
 			const announceData = new Announce(undefined, artist_id, title, text, null, null)

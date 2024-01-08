@@ -2,19 +2,19 @@ import { ArtistId, ISongSucc, ReleaseId, SongId } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // GET SONG
-export interface GetSongInputDTO {
+export interface GetSongReqDTO {
 	id: SongId
 }
 export class GetSongReplyDTO extends ReplyDTO<ISongSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindSongsByArtistInputDTO {
+export interface FindSongsByArtistReqDTO {
 	id: ArtistId
 }
 export class FindSongsByArtistReplyDTO extends ReplyDTO<ISongSucc[]> {}
 
 // FIND MANY BY RELEASE
-export interface FindSongsByReleaseInputDTO {
+export interface FindSongsByReleaseReqDTO {
 	id: ReleaseId
 }
 export class FindSongsByReleaseReplyDTO extends ReplyDTO<ISongSucc[]> {}

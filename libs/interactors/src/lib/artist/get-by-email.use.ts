@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { GetArtistByEmailInputDTO, GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { GetArtistByEmailReqDTO, GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { EmailParams } from "Shared"
 
 export class GetArtistByEmailUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: GetArtistByEmailInputDTO): Promise<GetArtistByEmailReplyDTO> {
+	async execute(inputs: GetArtistByEmailReqDTO): Promise<GetArtistByEmailReplyDTO> {
 		try {
 			return await this.services.artists.getByEmail(new EmailParams(inputs.email))
 		} catch (error) {

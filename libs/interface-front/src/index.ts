@@ -1,1 +1,1 @@
-export * from "./lib/interface-front"
+export * from "./lib"

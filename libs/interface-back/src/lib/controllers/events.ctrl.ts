@@ -1,4 +1,4 @@
-import { IEventsController } from "../assets"
+import { IEventsController } from "../../assets"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecase,
@@ -11,23 +11,23 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import {
-	CreateEventInputDTO,
-	DeleteEventInputDTO,
-	FindEventsByArtistInputDTO,
-	FindEventsByDateInputDTO,
-	FindEventsByPlaceInputDTO,
-	GetEventInputDTO,
-	ModifyEventInputDTO,
+	CreateEventReqDTO,
+	DeleteEventReqDTO,
+	FindEventsByArtistReqDTO,
+	FindEventsByDateReqDTO,
+	FindEventsByPlaceReqDTO,
+	GetEventReqDTO,
+	ModifyEventReqDTO,
 	apiErrorMsg,
 } from "Shared"
-import { errHandler, ApiRequest, ApiReply } from "../assets"
+import { errHandler, ApiRequest, ApiReply } from "../../assets"
 // return errHandler.reply
 export class EventsController implements IEventsController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
+			const inputs: CreateEventReqDTO = req.body as CreateEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -48,7 +48,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyEventInputDTO = req.body as ModifyEventInputDTO
+			const inputs: ModifyEventReqDTO = req.body as ModifyEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -69,7 +69,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
+			const inputs: DeleteEventReqDTO = req.body as DeleteEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -90,7 +90,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
+			const inputs: GetEventReqDTO = req.body as GetEventReqDTO
 			const getEvent = new GetEventUsecase(databaseServices)
 			const { data, error } = await getEvent.execute(inputs)
 			if (error) throw error
@@ -121,7 +121,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
+			const inputs: FindEventsByArtistReqDTO = req.body as FindEventsByArtistReqDTO
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
 			const { data, error } = await findEventsByArtist.execute(inputs)
 			if (error) throw error
@@ -137,7 +137,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindEventsByDateInputDTO = req.body as FindEventsByDateInputDTO
+			const inputs: FindEventsByDateReqDTO = req.body as FindEventsByDateReqDTO
 			const findEventsByDate = new FindEventsByDateUsecase(databaseServices)
 			const { data, error } = await findEventsByDate.execute(inputs)
 			if (error) throw error
@@ -153,7 +153,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindEventsByPlaceInputDTO = req.body as FindEventsByPlaceInputDTO
+			const inputs: FindEventsByPlaceReqDTO = req.body as FindEventsByPlaceReqDTO
 			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseServices)
 			const { data, error } = await findEventsByPlace.execute(inputs)
 			if (error) throw error

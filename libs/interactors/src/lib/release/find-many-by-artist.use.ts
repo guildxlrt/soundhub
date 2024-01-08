@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
+import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
-import { FindReleasesByArtistInputDTO, FindReleasesByArtistReplyDTO, ErrorMsg } from "Shared"
+import { FindReleasesByArtistReqDTO, FindReleasesByArtistReplyDTO, ErrorMsg } from "Shared"
 import { IdParams } from "Shared"
 
 export class FindReleasesByArtistUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: FindReleasesByArtistInputDTO): Promise<FindReleasesByArtistReplyDTO> {
+	async execute(inputs: FindReleasesByArtistReqDTO): Promise<FindReleasesByArtistReplyDTO> {
 		try {
 			return await this.services.releases.findManyByArtist(new IdParams(inputs.id))
 		} catch (error) {

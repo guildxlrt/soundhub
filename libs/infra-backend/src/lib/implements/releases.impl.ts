@@ -9,6 +9,8 @@ import {
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,
+	IReleasesListItemSucc,
+	apiErrorMsg,
 } from "Shared"
 import { dbClient } from "../../assets"
 import { Reply } from "../../assets"
@@ -54,62 +56,181 @@ export class ReleasesImplement implements ReleasesRepository {
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
 
-			// Specific Errors
-			// ...
-
 			return res
 		}
 	}
 
 	async modifyPrice(inputs: ReleasePriceParams): Promise<Reply<boolean>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const { id, price } = inputs
 
-		// Return Response
-		const res = new Reply(true)
+		try {
+			await dbClient.release.update({
+				where: {
+					id: id,
+				},
+				data: {
+					price: price,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
+		}
 	}
 
 	async get(inputs: IdParams): Promise<Reply<IReleaseSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const id = inputs.id
 
-		// Return Response
+		try {
+			const data = await dbClient.release.findUnique({
+				where: {
+					id: id,
+				},
+				select: {
+					artist_id: true,
+					title: true,
+					releaseType: true,
+					descript: true,
+					price: true,
+					genres: true,
+					coverUrl: true,
+					songs: {
+						select: {
+							audioUrl: true,
+							title: true,
+						},
+					},
+				},
+			})
 
-		const res: any = new Reply({})
-
-		return res
+			// Response
+			return new Reply<IReleaseSucc>({
+				id: id,
+				artist_id: id,
+				title: data?.title,
+				releaseType: data?.releaseType,
+				descript: data?.descript,
+				price: data?.price,
+				genres: data?.genres,
+				coverUrl: data?.coverUrl,
+				songs: data?.songs,
+			})
+		} catch (error) {
+			return new Reply<IReleaseSucc>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 
 	async getAll(): Promise<Reply<IReleasesListSucc>> {
-		// Return Response
-		const res = new Reply([])
+		try {
+			// Calling DB
+			const data = await dbClient.release.findMany({
+				select: {
+					id: true,
+					artist_id: true,
+					title: true,
+					releaseType: true,
+					genres: true,
+					coverUrl: true,
+				},
+			})
 
-		return res
+			// Reorganize
+			const list = data.map((release): IReleasesListItemSucc => {
+				return {
+					id: release.id,
+					artist_id: release.artist_id,
+					title: release.title,
+					releaseType: release.releaseType,
+					genres: [release.genres[0], release.genres[1], release.genres[2]],
+					coverUrl: null,
+				}
+			})
+
+			// Response
+			return new Reply<IReleasesListSucc>(list)
+		} catch (error) {
+			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 
 	async findManyByGenre(inputs: GenreParams): Promise<Reply<IReleasesListSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const genre: string = inputs.genre
 
-		// Return Response
-		const res = new Reply([])
+		try {
+			// Calling DB
+			const data = await dbClient.release.findMany({
+				where: {
+					genres: { has: genre },
+				},
+				select: {
+					id: true,
+					artist_id: true,
+					title: true,
+					releaseType: true,
+					genres: true,
+					coverUrl: true,
+				},
+			})
 
-		return res
+			// Reorganize
+			const list = data.map((release): IReleasesListItemSucc => {
+				return {
+					id: release.id,
+					artist_id: release.artist_id,
+					title: release.title,
+					releaseType: release.releaseType,
+					genres: [release.genres[0], release.genres[1], release.genres[2]],
+					coverUrl: null,
+				}
+			})
+
+			// Response
+			return new Reply<IReleasesListSucc>(list)
+		} catch (error) {
+			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 
 	async findManyByArtist(inputs: IdParams): Promise<Reply<IReleasesListSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const artistId = inputs.id
 
-		// Return Response
-		const res = new Reply([])
+		try {
+			// Calling DB
+			const data = await dbClient.release.findMany({
+				where: {
+					artist_id: artistId,
+				},
+				select: {
+					id: true,
+					artist_id: true,
+					title: true,
+					releaseType: true,
+					genres: true,
+					coverUrl: true,
+				},
+			})
 
-		return res
+			// Reorganize
+			const list = data.map((release): IReleasesListItemSucc => {
+				return {
+					id: release.id,
+					artist_id: release.artist_id,
+					title: release.title,
+					releaseType: release.releaseType,
+					genres: [release.genres[0], release.genres[1], release.genres[2]],
+					coverUrl: null,
+				}
+			})
+
+			// Response
+			return new Reply<IReleasesListSucc>(list)
+		} catch (error) {
+			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 }

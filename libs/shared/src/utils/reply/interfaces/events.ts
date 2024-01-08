@@ -2,15 +2,15 @@ import { ArtistId, EventId } from "../../types"
 
 // EVENT
 export interface IEventSucc {
-	id: EventId
-	planner: ArtistId
-	date: Date
-	place: string
-	artists: ArtistId[]
-	title: string
-	text: string
-	imageUrl: string | null
+	id: EventId | undefined
+	planner: ArtistId | undefined
+	date: Date | undefined
+	place: string | undefined
+	artists: ArtistId[] | undefined
+	title: string | undefined
+	text: string | undefined
+	imageUrl: string | null | undefined
 }
 
-export type IEventsListSucc = Omit<IEventSucc, "text" | "songs_list">[]
+export type IEventsListSucc = Omit<IEventSucc, "text">[]
 export type IEventsListItemSucc = IEventsListSucc[0]

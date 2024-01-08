@@ -1,4 +1,4 @@
-import { ArtistId, GenresArray, ReleaseId, ReleaseType } from "../../types"
+import { ArtistId, ReleaseId } from "../../types"
 
 // RELEASE
 export interface INewReleaseSucc {
@@ -9,13 +9,13 @@ export interface INewReleaseSucc {
 export interface IReleaseSucc {
 	id: ReleaseId
 	artist_id: ArtistId
-	title: string
-	releaseType: ReleaseType
-	descript: string | null
-	price: number | null
-	genres: GenresArray
-	songs_list: { audioUrl: string; title: string }[]
-	coverUrl: string | null
+	title: string | undefined
+	releaseType: string | undefined
+	descript: string | null | undefined
+	price: number | null | undefined
+	genres: string[] | undefined
+	songs: { audioUrl: string; title: string }[] | undefined
+	coverUrl: string | null | undefined
 }
-export type IReleasesListSucc = Omit<IReleaseSucc, "descript" | "price" | "songs_list">[]
+export type IReleasesListSucc = Omit<IReleaseSucc, "descript" | "price" | "songs">[]
 export type IReleasesListItemSucc = IReleasesListSucc[0]

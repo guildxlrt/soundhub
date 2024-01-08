@@ -1,15 +1,15 @@
-import { IAuthController } from "../assets"
+import { IAuthController } from "../../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
-import { ChangeEmailInputDTO, ChangePassInputDTO, LoginInputDTO, apiErrorMsg } from "Shared"
-import { errHandler, ApiRequest, ApiReply } from "../assets"
+import { ChangeEmailReqDTO, ChangePassReqDTO, LoginReqDTO, apiErrorMsg } from "Shared"
+import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class UserAuthController implements IAuthController {
 	async login(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as LoginInputDTO
+			const inputs = req.body as LoginReqDTO
 
 			const login = new LoginUsecase(databaseServices)
 			const { data, error } = await login.execute(inputs)
@@ -41,7 +41,7 @@ export class UserAuthController implements IAuthController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as ChangeEmailInputDTO
+			const inputs = req.body as ChangeEmailReqDTO
 
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
@@ -59,7 +59,7 @@ export class UserAuthController implements IAuthController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as ChangePassInputDTO
+			const inputs = req.body as ChangePassReqDTO
 
 			// Saving changes
 			const changePass = new ChangePassUsecase(databaseServices)

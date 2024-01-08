@@ -2,7 +2,7 @@ import { AnnounceId, ArtistId, IAnnounceSucc, IAnnouncesListSucc } from "../util
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
-export interface CreateAnnounceInputDTO {
+export interface CreateAnnounceReqDTO {
 	artist_id: ArtistId
 	title: string
 	text: string
@@ -10,20 +10,20 @@ export interface CreateAnnounceInputDTO {
 export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // MODIFY POST
-export interface ModifyAnnounceInputDTO {
+export interface ModifyAnnounceReqDTO {
 	title: string
 	text: string
 }
 export class ModifyAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
-export interface DeleteAnnounceInputDTO {
+export interface DeleteAnnounceReqDTO {
 	id: AnnounceId
 }
 export class DeleteAnnounceReplyDTO extends ReplyDTO<void> {}
 
 // GET POST
-export interface GetAnnounceInputDTO {
+export interface GetAnnounceReqDTO {
 	id: AnnounceId
 }
 export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounceSucc> {}
@@ -32,7 +32,7 @@ export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounceSucc> {}
 export class GetAllAnnouncesReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindAnnouncesByArtistInputDTO {
+export interface FindAnnouncesByArtistReqDTO {
 	id: ArtistId
 }
 export class FindAnnouncesByArtistReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}

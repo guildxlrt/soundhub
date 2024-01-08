@@ -10,7 +10,7 @@ import {
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE ARTIST
-export interface CreateArtistInputDTO {
+export interface CreateArtistReqDTO {
 	profile: {
 		name: string
 		bio: string
@@ -28,7 +28,7 @@ export interface CreateArtistInputDTO {
 export class CreateArtistReplyDTO extends ReplyDTO<{ message: string; userAuthId: number }> {}
 
 // MODIFY ARTIST
-export interface ModifyArtistInputDTO {
+export interface ModifyArtistReqDTO {
 	id: ArtistId
 	name: string
 	bio: string
@@ -39,13 +39,13 @@ export interface ModifyArtistInputDTO {
 export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
-export interface GetArtistByIdInputDTO {
+export interface GetArtistByIdReqDTO {
 	id: ArtistId
 }
 export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // ARTIST BY EMAIL
-export interface GetArtistByEmailInputDTO {
+export interface GetArtistByEmailReqDTO {
 	email: UserEmail
 }
 export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
@@ -54,6 +54,6 @@ export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsListSucc> {}
 
 // ARTISTS BY GENRE
-export type FindArtistsByGenreInputDTO = GenreType
+export type FindArtistsByGenreReqDTO = GenreType
 
 export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtistsListSucc> {}

@@ -1,4 +1,4 @@
-import { ArtistId, EventId, UserAuthId } from "../../types"
+import { ArtistId, UserAuthId } from "../../types"
 
 // ARTIST
 export interface INewArtistSucc {

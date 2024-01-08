@@ -1,15 +1,16 @@
 import { DatabaseServices } from "Infra-backend"
-import { ChangeEmailInputDTO, ChangeEmailReplyDTO } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { ChangeEmailReqDTO, ChangeEmailReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { ChangeEmailParams } from "Shared"
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: ChangeEmailInputDTO): Promise<ChangeEmailReplyDTO> {
+	async execute(inputs: ChangeEmailReqDTO): Promise<ChangeEmailReplyDTO> {
 		try {
 			// Operators
 			const { actual, confirm, newEmail } = inputs

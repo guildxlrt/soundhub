@@ -12,7 +12,7 @@ import {
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE RELEASE
-export interface CreateReleaseInputDTO {
+export interface CreateReleaseReqDTO {
 	release: {
 		artist_id: ArtistId
 		title: string
@@ -33,14 +33,14 @@ export interface CreateReleaseInputDTO {
 export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY PRICE
-export interface ModifyReleasePriceInputDTO {
+export interface ModifyReleasePriceReqDTO {
 	id: ReleaseId
 	newAmount: ReleasePrice
 }
 export class ModifyReleasePriceReplyDTO extends ReplyDTO<boolean> {}
 
 // GET ARTIST
-export interface GetReleaseInputDTO {
+export interface GetReleaseReqDTO {
 	id: ReleaseId
 }
 export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}
@@ -49,12 +49,12 @@ export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}
 export class GetAllReleasesReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY GENRE
-export type FindReleasesByGenreInputDTO = GenreType
+export type FindReleasesByGenreReqDTO = GenreType
 
 export class FindReleasesByGenreReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindReleasesByArtistInputDTO {
+export interface FindReleasesByArtistReqDTO {
 	id: ArtistId
 }
 export class FindReleasesByArtistReplyDTO extends ReplyDTO<IReleasesListSucc> {}

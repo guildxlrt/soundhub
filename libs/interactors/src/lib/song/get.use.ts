@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { GetSongInputDTO, GetSongReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { GetSongReqDTO, GetSongReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { IdParams } from "Shared"
 
 export class GetSongUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: GetSongInputDTO): Promise<GetSongReplyDTO> {
+	async execute(inputs: GetSongReqDTO): Promise<GetSongReplyDTO> {
 		try {
 			return await this.services.songs.get(new IdParams(inputs.id))
 		} catch (error) {

@@ -1,13 +1,14 @@
-import { ArtistId } from "../../types"
+import { AnnounceId, ArtistId } from "../../types"
 
 // ANNOUNCE
 export interface IAnnounceSucc {
+	id: AnnounceId
 	artist_id: ArtistId
-	title: string
-	text: string
-	imageUrl: string | null
-	videoUrl: string | null
+	title: string | undefined
+	text: string | undefined
+	imageUrl: string | null | undefined
+	videoUrl: string | null | undefined
 }
 
-export type IAnnouncesListSucc = Omit<IAnnounceSucc, "text" | "songs_list">[]
+export type IAnnouncesListSucc = Omit<IAnnounceSucc, "text" | "videoUrl">[]
 export type IAnnouncesListItemSucc = IAnnouncesListSucc[0]

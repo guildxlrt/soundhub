@@ -1,4 +1,4 @@
-import { IAnnoncesController } from "../assets"
+import { IAnnoncesController } from "../../assets"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -10,20 +10,20 @@ import {
 import { databaseServices } from "Infra-backend"
 import {
 	apiErrorMsg,
-	CreateAnnounceInputDTO,
-	DeleteAnnounceInputDTO,
-	FindAnnouncesByArtistInputDTO,
-	GetAnnounceInputDTO,
-	ModifyAnnounceInputDTO,
+	CreateAnnounceReqDTO,
+	DeleteAnnounceReqDTO,
+	FindAnnouncesByArtistReqDTO,
+	GetAnnounceReqDTO,
+	ModifyAnnounceReqDTO,
 } from "Shared"
-import { errHandler, ApiRequest, ApiReply } from "../assets"
+import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: CreateAnnounceInputDTO = req.body as CreateAnnounceInputDTO
+			const inputs: CreateAnnounceReqDTO = req.body as CreateAnnounceReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -44,7 +44,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyAnnounceInputDTO = req.body as ModifyAnnounceInputDTO
+			const inputs: ModifyAnnounceReqDTO = req.body as ModifyAnnounceReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -65,7 +65,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: DeleteAnnounceInputDTO = req.body as DeleteAnnounceInputDTO
+			const inputs: DeleteAnnounceReqDTO = req.body as DeleteAnnounceReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -86,7 +86,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
+			const inputs: GetAnnounceReqDTO = req.body as GetAnnounceReqDTO
 			const getAnnounce = new GetAnnounceUsecase(databaseServices)
 			const { data, error } = await getAnnounce.execute(inputs)
 			if (error) throw error
@@ -117,7 +117,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO
+			const inputs: FindAnnouncesByArtistReqDTO = req.body as FindAnnouncesByArtistReqDTO
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
 			const { data, error } = await findAnnouncesByArtist.execute(inputs)
 			if (error) throw error

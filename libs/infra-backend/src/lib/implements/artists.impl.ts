@@ -74,7 +74,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// ponse
+			// Response
 			return new Reply(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
@@ -98,7 +98,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// ponse
+			// Response
 			return new Reply<IArtistInfoSucc>({
 				id: id,
 				name: data?.name,
@@ -134,7 +134,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// ponse
+			// Response
 
 			return new Reply<IArtistInfoSucc>({
 				id: data?.artists[0].id,
@@ -175,7 +175,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// ponse
+			// Response
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -207,7 +207,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// ponse
+			// Response
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))

@@ -1,16 +1,17 @@
 import { DatabaseServices } from "Infra-backend"
-import { CreateArtistInputDTO, CreateArtistReplyDTO } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { CreateArtistReqDTO, CreateArtistReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Artist, NewArtistParams, UserAuth } from "Shared"
 import { ErrorMsg, validators, formatters } from "Shared"
 
 export class CreateArtistUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
 	async execute(inputs: {
-		data: CreateArtistInputDTO
+		data: CreateArtistReqDTO
 		cleanPass: string
 	}): Promise<CreateArtistReplyDTO> {
 		try {

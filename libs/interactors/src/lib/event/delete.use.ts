@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { DeleteEventInputDTO, DeleteEventReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { DeleteEventReqDTO, DeleteEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { IdParams } from "Shared"
 
 export class DeleteEventUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: DeleteEventInputDTO): Promise<DeleteEventReplyDTO> {
+	async execute(inputs: DeleteEventReqDTO): Promise<DeleteEventReplyDTO> {
 		try {
 			return await this.services.events.delete(new IdParams(inputs.id))
 		} catch (error) {

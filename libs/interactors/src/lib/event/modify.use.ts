@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { ModifyEventInputDTO, ModifyEventReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { ModifyEventReqDTO, ModifyEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Event, ModifyEventParams } from "Shared"
 
 export class ModifyEventUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyEventInputDTO): Promise<ModifyEventReplyDTO> {
+	async execute(inputs: ModifyEventReqDTO): Promise<ModifyEventReplyDTO> {
 		try {
 			const { date, place, artists, title, text } = inputs
 			const eventData = new Event(

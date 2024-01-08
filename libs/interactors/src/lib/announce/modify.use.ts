@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { ModifyAnnounceInputDTO, ModifyAnnounceReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { ModifyAnnounceReqDTO, ModifyAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Announce, ModifyAnnounceParams } from "Shared"
 
 export class ModifyAnnounceUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyAnnounceInputDTO): Promise<ModifyAnnounceReplyDTO> {
+	async execute(inputs: ModifyAnnounceReqDTO): Promise<ModifyAnnounceReplyDTO> {
 		try {
 			const { title, text } = inputs
 			const announceData = new Announce(undefined, undefined, title, text, null, null)

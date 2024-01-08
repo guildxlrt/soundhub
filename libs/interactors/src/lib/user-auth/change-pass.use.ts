@@ -1,15 +1,16 @@
 import { DatabaseServices } from "Infra-backend"
-import { ChangePassInputDTO, ChangePassReplyDTO } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { ChangePassReqDTO, ChangePassReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { ChangePassParams } from "Shared"
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangePassUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: ChangePassInputDTO): Promise<ChangePassReplyDTO> {
+	async execute(inputs: ChangePassReqDTO): Promise<ChangePassReplyDTO> {
 		try {
 			// Operators
 			const { actual, confirm, newPass } = inputs

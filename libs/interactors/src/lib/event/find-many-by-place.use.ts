@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
+import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
-import { FindEventsByPlaceInputDTO, FindEventsByPlaceReplyDTO, ErrorMsg } from "Shared"
+import { FindEventsByPlaceReqDTO, FindEventsByPlaceReplyDTO, ErrorMsg } from "Shared"
 import { PlaceParams } from "Shared"
 
 export class FindEventsByPlaceUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: FindEventsByPlaceInputDTO): Promise<FindEventsByPlaceReplyDTO> {
+	async execute(inputs: FindEventsByPlaceReqDTO): Promise<FindEventsByPlaceReplyDTO> {
 		try {
 			return await this.services.events.findManyByPlace(new PlaceParams(inputs.place))
 		} catch (error) {

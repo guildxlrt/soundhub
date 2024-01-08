@@ -25,10 +25,10 @@ export class GenreParams {
 }
 
 export class DateParams {
-	genre: Date
+	date: Date
 
-	constructor(genre: Date) {
-		this.genre = genre
+	constructor(date: Date) {
+		this.date = date
 	}
 }
 

@@ -1,15 +1,38 @@
-import { Reply } from "../../assets"
-import { IdParams, SongsRepository, ISongSucc } from "Shared"
+import { Reply, dbClient } from "../../assets"
+import { IdParams, SongsRepository, ISongSucc, ErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(inputs: IdParams): Promise<Reply<ISongSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const id = inputs.id
 
-		// Return Response
-		const res: any = new Reply({})
+		try {
+			const data = await dbClient.song.findUnique({
+				where: {
+					id: id,
+				},
+				select: {
+					release_id: true,
+					audioUrl: true,
+					title: true,
+					featuring: true,
+					lyrics: true,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<ISongSucc>({
+				id: id,
+				release_id: data?.release_id,
+				audioUrl: data?.audioUrl,
+				title: data?.title,
+				featuring: data?.featuring,
+				lyrics: data?.lyrics,
+			})
+		} catch (error) {
+			return new Reply<ISongSucc>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 }

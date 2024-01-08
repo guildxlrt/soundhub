@@ -1,4 +1,4 @@
-import { IReleasesController } from "../assets"
+import { IReleasesController } from "../../assets"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -9,21 +9,21 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import {
-	CreateReleaseInputDTO,
-	FindReleasesByArtistInputDTO,
-	FindReleasesByGenreInputDTO,
-	GetReleaseInputDTO,
-	ModifyReleasePriceInputDTO,
+	CreateReleaseReqDTO,
+	FindReleasesByArtistReqDTO,
+	FindReleasesByGenreReqDTO,
+	GetReleaseReqDTO,
+	ModifyReleasePriceReqDTO,
 	apiErrorMsg,
 } from "Shared"
-import { errHandler, ApiRequest, ApiReply } from "../assets"
+import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ReleasesController implements IReleasesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: CreateReleaseInputDTO = req.body as CreateReleaseInputDTO
+			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
@@ -41,7 +41,7 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyReleasePriceInputDTO = req.body as ModifyReleasePriceInputDTO
+			const inputs: ModifyReleasePriceReqDTO = req.body as ModifyReleasePriceReqDTO
 
 			// Saving Profile
 			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
@@ -59,7 +59,7 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetReleaseInputDTO = req.body as GetReleaseInputDTO
+			const inputs: GetReleaseReqDTO = req.body as GetReleaseReqDTO
 			const getRelease = new GetReleaseUsecase(databaseServices)
 			const { data, error } = await getRelease.execute(inputs)
 			if (error) throw error
@@ -90,7 +90,7 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindReleasesByArtistInputDTO = req.body as FindReleasesByArtistInputDTO
+			const inputs: FindReleasesByArtistReqDTO = req.body as FindReleasesByArtistReqDTO
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
 			const { data, error } = await findReleasesByArtist.execute(inputs)
 			if (error) throw error
@@ -106,7 +106,7 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindReleasesByGenreInputDTO = req.body as FindReleasesByGenreInputDTO
+			const inputs: FindReleasesByGenreReqDTO = req.body as FindReleasesByGenreReqDTO
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
 			const { data, error } = await findReleasesByGenre.execute(inputs)
 			if (error) throw error

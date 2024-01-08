@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
+import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
-import { ModifyReleasePriceInputDTO, ModifyReleasePriceReplyDTO, ErrorMsg } from "Shared"
+import { ModifyReleasePriceReqDTO, ModifyReleasePriceReplyDTO, ErrorMsg } from "Shared"
 import { ReleasePriceParams } from "Shared"
 
 export class ModifyReleasePriceUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyReleasePriceInputDTO): Promise<ModifyReleasePriceReplyDTO> {
+	async execute(inputs: ModifyReleasePriceReqDTO): Promise<ModifyReleasePriceReplyDTO> {
 		try {
 			const { id, newAmount } = inputs
 

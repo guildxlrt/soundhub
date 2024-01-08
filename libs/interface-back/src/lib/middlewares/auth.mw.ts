@@ -1,4 +1,4 @@
-import { ApiNext, ApiReply, ApiRequest, Token, errHandler } from "../assets"
+import { ApiNext, ApiReply, ApiRequest, Token, errHandler } from "../../assets"
 
 export const authMiddleware = (req: ApiRequest, res: ApiReply, next: ApiNext) => {
 	try {

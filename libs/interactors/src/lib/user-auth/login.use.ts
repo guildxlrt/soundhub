@@ -1,14 +1,15 @@
 import { DatabaseServices } from "Infra-backend"
-import { LoginInputDTO, LoginReplyDTO, ErrorMsg } from "Shared"
+import { ApiServices } from "Infra-frontend"
+import { LoginReqDTO, LoginReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { LoginParams } from "Shared"
 
 export class LoginUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: LoginInputDTO): Promise<LoginReplyDTO> {
+	async execute(inputs: LoginReqDTO): Promise<LoginReplyDTO> {
 		try {
 			const { email, password } = inputs
 

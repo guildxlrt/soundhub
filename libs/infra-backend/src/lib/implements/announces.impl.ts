@@ -1,72 +1,194 @@
-import { Reply } from "../../assets"
+import { Reply, dbClient } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	AnnouncesRepository,
 	IdParams,
 	NewAnnounceParams,
+	ModifyAnnounceParams,
+	ErrorMsg,
+	IAnnouncesListItemSucc,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const { artist_id, title, text, imageUrl, videoUrl } = inputs.data
 
-		// Return Response
-		const res: any = new Reply(true)
+		try {
+			// Storing files
+			// ...
 
-		return res
+			await dbClient.announce.create({
+				data: {
+					artist_id: artist_id as number,
+					title: title,
+					text: text,
+					imageUrl: imageUrl,
+					videoUrl: videoUrl,
+				},
+			})
+
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			const res = new Reply<boolean>(
+				false,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+
+			return res
+		}
 	}
 
-	async modify(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+	async modify(inputs: ModifyAnnounceParams): Promise<Reply<boolean>> {
+		const { artist_id, title, text, imageUrl, videoUrl, id } = inputs.data
 
-		// Return Response
-		const res: any = new Reply(true)
+		try {
+			// Storing files
+			await dbClient.announce.update({
+				where: {
+					id: id,
+				},
+				data: {
+					artist_id: artist_id as number,
+					title: title,
+					text: text,
+					imageUrl: imageUrl,
+					videoUrl: videoUrl,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			const res = new Reply<boolean>(
+				false,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+
+			return res
+		}
 	}
 
 	async delete(inputs: IdParams): Promise<Reply<void>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const id = inputs.id
 
-		// Return Response
-		const res: any = new Reply(undefined)
+		try {
+			await dbClient.announce.delete({
+				where: {
+					id: id,
+				},
+			})
 
-		return res
+			return new Reply<void>()
+		} catch (error) {
+			const res = new Reply<void>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to delete`, error)
+			)
+
+			return res
+		}
 	}
 
 	async get(inputs: IdParams): Promise<Reply<IAnnounceSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const id = inputs.id
 
-		// Return Response
-		const res: any = new Reply({})
+		try {
+			const data = await dbClient.announce.findUnique({
+				where: {
+					id: id,
+				},
+				select: {
+					artist_id: true,
+					title: true,
+					text: true,
+					imageUrl: true,
+					videoUrl: true,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<IAnnounceSucc>({
+				id: id,
+				artist_id: id,
+				title: data?.title,
+				text: data?.text,
+				imageUrl: data?.text,
+				videoUrl: data?.videoUrl,
+			})
+		} catch (error) {
+			return new Reply<IAnnounceSucc>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 
 	async getAll(): Promise<Reply<IAnnouncesListSucc>> {
-		// Return Response
-		const res: any = new Reply([])
+		try {
+			const data = await dbClient.announce.findMany({
+				select: {
+					id: true,
+					artist_id: true,
+					title: true,
+					imageUrl: true,
+				},
+			})
 
-		return res
+			// Reorganize
+			const list = data.map((announce): IAnnouncesListItemSucc => {
+				return {
+					id: announce.id,
+					artist_id: announce.artist_id,
+					title: announce.title,
+					imageUrl: announce.imageUrl,
+				}
+			})
+
+			// Response
+			return new Reply<IAnnouncesListSucc>(list)
+		} catch (error) {
+			return new Reply<IAnnouncesListSucc>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 
 	async findManyByArtist(inputs: IdParams): Promise<Reply<IAnnouncesListSucc>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const artistId = inputs.id
 
-		// Return Response
-		const res: any = new Reply([])
+		try {
+			const data = await dbClient.announce.findMany({
+				where: {
+					artist_id: artistId,
+				},
+				select: {
+					id: true,
+					artist_id: true,
+					title: true,
+					imageUrl: true,
+				},
+			})
 
-		return res
+			// Reorganize
+			const list = data.map((announce): IAnnouncesListItemSucc => {
+				return {
+					id: announce.id,
+					artist_id: announce.artist_id,
+					title: announce.title,
+					imageUrl: announce.imageUrl,
+				}
+			})
+
+			// Response
+			return new Reply<IAnnouncesListSucc>(list)
+		} catch (error) {
+			return new Reply<IAnnouncesListSucc>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 }

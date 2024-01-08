@@ -1,9 +1,10 @@
 import { DatabaseServices } from "Infra-backend"
+import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
 import { GetAllAnnouncesReplyDTO, ErrorMsg } from "Shared"
 
 export class GetAllAnnouncesUsecase extends UsecaseLayer {
-	constructor(services: DatabaseServices) {
+	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
