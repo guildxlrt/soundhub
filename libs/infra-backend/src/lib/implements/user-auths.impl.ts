@@ -1,16 +1,40 @@
-import { ChangeEmailParams, ChangePassParams, LoginParams, UserAuthsRepository } from "Shared"
-import { Reply } from "../../assets"
+import {
+	ChangeEmailParams,
+	ChangePassParams,
+	ErrorMsg,
+	LoginParams,
+	UserAuthsRepository,
+	apiErrorMsg,
+	encryptors,
+} from "Shared"
+import { Reply, dbClient } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
 	async login(inputs: LoginParams): Promise<Reply<Credential>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		const { email, password } = inputs
 
-		// Return Response
-		const res: any = new Reply({})
+		try {
+			const data = await dbClient.userAuth.findUnique({
+				where: {
+					email: email,
+				},
+				select: {
+					email: true,
+					password: true,
+				},
+			})
 
-		return res
+			const encrypted = data?.password as string
+			const compare = await encryptors.comparePass(password, encrypted)
+
+			if (compare) return new Reply<Credential>(new Credential())
+			else throw new ErrorMsg(401, apiErrorMsg.e401)
+		} catch (error) {
+			return new Reply<Credential>(
+				undefined,
+				new ErrorMsg(500, `Error: failed to persist`, error)
+			)
+		}
 	}
 
 	async logout(): Promise<Reply<void>> {

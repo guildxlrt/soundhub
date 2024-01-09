@@ -1,5 +1,7 @@
 export const apiErrorMsg = {
 	e400: "Bad Request",
+	e401: "Unauthorized",
+	e$03: "Forbidden",
 	e404: "Ressource not fount",
 	e405: "Request method is not Allowed",
 	e409: {
