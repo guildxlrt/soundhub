@@ -10,19 +10,10 @@ export class ModifyEventUsecase extends UsecaseLayer {
 	}
 
 	async execute(inputs: ModifyEventReqDTO): Promise<ModifyEventReplyDTO> {
-		try {
-			const { date, place, artists, title, text } = inputs
-			const eventData = new Event(
-				undefined,
-				undefined,
-				date,
-				place,
-				artists,
-				title,
-				text,
-				null
-			)
+		const { date, place, artists, title, text } = inputs
+		const eventData = new Event(undefined, undefined, date, place, artists, title, text, null)
 
+		try {
 			return await this.services.events.modify(new ModifyEventParams(eventData))
 		} catch (error) {
 			return new ModifyEventReplyDTO(

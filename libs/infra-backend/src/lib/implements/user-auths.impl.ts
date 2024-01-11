@@ -5,12 +5,13 @@ import {
 	LoginParams,
 	UserAuthsRepository,
 	apiErrorMsg,
-	encryptors,
+	ILoginRes,
+	ILoginResServer,
 } from "Shared"
 import { Reply, dbClient } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(inputs: LoginParams): Promise<Reply<Credential>> {
+	async login(inputs: LoginParams): Promise<Reply<ILoginRes>> {
 		const { email, password } = inputs
 
 		try {
@@ -21,51 +22,71 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				select: {
 					email: true,
 					password: true,
+					id: true,
 				},
 			})
 
-			const encrypted = data?.password as string
-			const compare = await encryptors.comparePass(password, encrypted)
+			const encryptedPass = data?.password as string
+			const userId = data?.id as number
 
-			if (compare) return new Reply<Credential>(new Credential())
-			else throw new ErrorMsg(401, apiErrorMsg.e401)
+			return new Reply<ILoginResServer>({
+				email: email,
+				password: password,
+				encryptedPass: encryptedPass,
+				id: userId,
+			})
 		} catch (error) {
-			return new Reply<Credential>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<ILoginResServer>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
 	async logout(): Promise<Reply<void>> {
-		// Calling DB
-		// ... some logic
-
-		// Return Response
-		const res: any = new Reply({})
-
-		return res
+		try {
+			return new Reply<void>()
+		} catch (error) {
+			return new Reply<void>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 
 	async changeEmail(inputs: ChangeEmailParams): Promise<Reply<boolean>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		try {
+			const { newEmail, id } = inputs
 
-		// Return Response
-		const res: any = new Reply({})
+			// Persist data
+			await dbClient.userAuth.update({
+				where: {
+					id: id,
+				},
+				data: {
+					email: newEmail,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 
 	async changePass(inputs: ChangePassParams): Promise<Reply<boolean>> {
-		// Calling DB
-		// ... some logic
-		console.log(inputs)
+		try {
+			const { newPass, id } = inputs
 
-		// Return Response
-		const res: any = new Reply({})
+			// Persist data
+			await dbClient.userAuth.update({
+				where: {
+					id: id,
+				},
+				data: {
+					password: newPass,
+				},
+			})
 
-		return res
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+		}
 	}
 }

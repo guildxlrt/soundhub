@@ -3,11 +3,13 @@ import { Artist, UserAuth } from "../../../entities"
 export class NewArtistParams {
 	profile: Artist
 	auths: UserAuth
+	hashedPass?: string
 	file?: File
 
-	constructor(profile: Artist, auths: UserAuth, file?: File) {
+	constructor(profile: Artist, auths: UserAuth, hashedPass?: string, file?: File) {
 		this.profile = profile
 		this.auths = auths
+		this.hashedPass = hashedPass
 		this.file = file
 	}
 }

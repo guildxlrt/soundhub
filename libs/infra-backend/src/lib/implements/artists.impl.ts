@@ -17,7 +17,8 @@ import { dbClient, dbErrHandler, Reply } from "../../assets"
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Reply<INewArtistSucc>> {
 		const { name, bio, members, genres } = inputs.profile
-		const { email, password } = inputs.auths
+		const { email } = inputs.auths
+		const password = inputs.hashedPass as string
 
 		try {
 			// Storing files

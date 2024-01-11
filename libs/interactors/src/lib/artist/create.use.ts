@@ -12,12 +12,14 @@ export class CreateArtistUsecase extends UsecaseLayer {
 
 	async execute(inputs: {
 		data: CreateArtistReqDTO
-		cleanPass: string
+		hashedPass?: string
+		file?: File
 	}): Promise<CreateArtistReplyDTO> {
 		try {
 			const { auths, profile } = inputs.data
 			const { email, password, confirmEmail, confirmPass } = auths
 			const { name, bio, members, genres } = profile
+			const hashedPass = inputs.hashedPass
 
 			// SANITIZE
 			// auths
@@ -28,9 +30,11 @@ export class CreateArtistUsecase extends UsecaseLayer {
 			// ... ( name)
 
 			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres, null)
-			const userAuths = new UserAuth(undefined, email, inputs.cleanPass)
+			const userAuths = new UserAuth(undefined, email, password)
 
-			return await this.services.artists.create(new NewArtistParams(userData, userAuths))
+			return await this.services.artists.create(
+				new NewArtistParams(userData, userAuths, hashedPass)
+			)
 		} catch (error) {
 			return new CreateArtistReplyDTO(
 				undefined,

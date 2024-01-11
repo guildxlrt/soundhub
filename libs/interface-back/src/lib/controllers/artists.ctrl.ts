@@ -5,7 +5,7 @@ import {
 	GetArtistByIdReqDTO,
 	ModifyArtistReqDTO,
 	apiErrorMsg,
-	formatters,
+	encryptors,
 } from "Shared"
 
 import {
@@ -17,7 +17,14 @@ import {
 	ModifyArtistUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
-import { IArtistController, Token, authExpires, errHandler, ApiRequest, ApiReply } from "../../assets"
+import {
+	IArtistController,
+	Token,
+	authExpires,
+	errHandler,
+	ApiRequest,
+	ApiReply,
+} from "../../assets"
 
 export class ArtistsController implements IArtistController {
 	async create(req: ApiRequest, res: ApiReply) {
@@ -26,17 +33,15 @@ export class ArtistsController implements IArtistController {
 		try {
 			const inputs = req.body as CreateArtistReqDTO
 
+			// HashPass
 			const { password } = inputs.auths
-
-			// Hash
-			const hash = await formatters.passwd(password)
-			const hashedPass = hash
+			const hashedPass = await encryptors.hashPass(password)
 
 			// Call DB
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute({
 				data: inputs,
-				cleanPass: hashedPass,
+				hashedPass: hashedPass,
 			})
 			if (error) throw error
 

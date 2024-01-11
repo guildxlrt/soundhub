@@ -10,14 +10,21 @@ export class ChangePassUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ChangePassReqDTO): Promise<ChangePassReplyDTO> {
+	async execute(inputs: {
+		data: ChangePassReqDTO
+		id: number
+		hashedPass?: string
+	}): Promise<ChangePassReplyDTO> {
 		try {
-			// Operators
-			const { actual, confirm, newPass } = inputs
-			validators.changeEmail(actual, confirm, newPass)
+			const { actual, confirm, newPass } = inputs.data
+			const { hashedPass, id } = inputs
 
+			// Operators
+			validators.changePass(actual, confirm, newPass)
+
+			// return
 			return await this.services.userAuths.changePass(
-				new ChangePassParams(actual, confirm, newPass)
+				new ChangePassParams(actual, confirm, newPass, id, hashedPass)
 			)
 		} catch (error) {
 			return new ChangePassReplyDTO(
