@@ -1,4 +1,4 @@
-import { Event } from "../../../entities"
+import { Event } from "../entities"
 
 export class NewEventParams {
 	data: Event

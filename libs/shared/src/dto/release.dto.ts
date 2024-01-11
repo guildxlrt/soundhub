@@ -32,14 +32,21 @@ export interface CreateReleaseReqDTO {
 
 export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
-// MODIFY PRICE
-export interface ModifyReleasePriceReqDTO {
+// MODIFY
+export interface ModifyReleaseReqDTO {
 	id: ReleaseId
 	newAmount: ReleasePrice
 }
-export class ModifyReleasePriceReplyDTO extends ReplyDTO<boolean> {}
+export class ModifyReleaseReplyDTO extends ReplyDTO<boolean> {}
 
-// GET ARTIST
+// HIDE
+export interface HideReleaseReqDTO {
+	id: ReleaseId
+	isPublic: boolean
+}
+export class HideReleaseReplyDTO extends ReplyDTO<boolean> {}
+
+// GET
 export interface GetReleaseReqDTO {
 	id: ReleaseId
 }

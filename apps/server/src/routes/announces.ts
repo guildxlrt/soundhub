@@ -1,19 +1,20 @@
 import { Router } from "express"
 import { controllers, authMiddleware } from "Interface-back"
+import { apiEndpts } from "libs/infra-frontend/src/assets"
 
 const router = Router()
 const controller = controllers.annonces
 
-router.post("/new", authMiddleware, controller.create)
+router.post(apiEndpts.announces.create, authMiddleware, controller.create)
 
-router.get("/modify", authMiddleware, controller.modify)
+router.get(apiEndpts.announces.modify, authMiddleware, controller.modify)
 
-router.delete("/delete", authMiddleware, controller.delete)
+router.delete(apiEndpts.announces.delete, authMiddleware, controller.delete)
 
-router.get("/:id", controller.get)
+router.get(apiEndpts.announces.oneById, controller.get)
 
-router.get("/", controller.getAll)
+router.get(apiEndpts.announces.all, controller.getAll)
 
-router.get("/by-artist/:id/", controller.findManyByArtist)
+router.get(apiEndpts.announces.manyByArtist, controller.findManyByArtist)
 
 export default router

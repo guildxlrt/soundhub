@@ -1,23 +1,24 @@
 import { Router } from "express"
 import { controllers, authMiddleware } from "Interface-back"
+import { apiEndpts } from "libs/infra-frontend/src/assets"
 
 const router = Router()
 const controller = controllers.events
 
-router.post("/new", authMiddleware, controller.create)
+router.post(apiEndpts.events.create, authMiddleware, controller.create)
 
-router.get("/modify", authMiddleware, controller.modify)
+router.get(apiEndpts.events.modify, authMiddleware, controller.modify)
 
-router.delete("/delete", authMiddleware, controller.delete)
+router.delete(apiEndpts.events.delete, authMiddleware, controller.delete)
 
-router.get("/:id", controller.get)
+router.get(apiEndpts.events.oneById, controller.get)
 
-router.get("/", controller.getAll)
+router.get(apiEndpts.events.all, controller.getAll)
 
-router.get("/by-artist/:id/", controller.findManyByArtist)
+router.get(apiEndpts.events.manyByArtist, controller.findManyByArtist)
 
-router.get("/by-date/:id/", controller.findManyByDate)
+router.get(apiEndpts.events.manyByDate, controller.findManyByDate)
 
-router.get("/by-location/:id/", controller.findManyByPlace)
+router.get(apiEndpts.events.manyByPlace, controller.findManyByPlace)
 
 export default router

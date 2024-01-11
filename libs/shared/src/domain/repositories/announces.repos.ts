@@ -1,5 +1,5 @@
 import { IAnnounceSucc, IAnnouncesListSucc } from "../../utils"
-import { IdParams, ModifyAnnounceParams, NewAnnounceParams } from "./params"
+import { IdParams, ModifyAnnounceParams, NewAnnounceParams } from "../params"
 import { ReplyLayer } from "../../utils"
 
 export interface AnnouncesRepository {

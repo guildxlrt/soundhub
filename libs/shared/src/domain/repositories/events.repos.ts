@@ -1,5 +1,5 @@
 import { IEventSucc, IEventsListSucc } from "../../utils"
-import { DateParams, IdParams, ModifyEventParams, NewEventParams, PlaceParams } from "./params"
+import { DateParams, IdParams, ModifyEventParams, NewEventParams, PlaceParams } from "../params"
 import { ReplyLayer } from "../../utils"
 
 export interface EventsRepository {

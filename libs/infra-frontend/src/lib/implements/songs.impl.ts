@@ -3,7 +3,7 @@ import { IdParams, SongsRepository, ISongSucc } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(inputs: IdParams): Promise<Response<ISongSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 

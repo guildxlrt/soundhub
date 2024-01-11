@@ -10,7 +10,7 @@ import {
 
 export class EventsImplement implements EventsRepository {
 	async create(inputs: NewEventParams): Promise<Response<boolean>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -21,7 +21,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async modify(inputs: NewEventParams): Promise<Response<boolean>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -32,7 +32,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async delete(inputs: IdParams): Promise<Response<void>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -43,7 +43,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async get(inputs: IdParams): Promise<Response<IEventSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -61,7 +61,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async findManyByArtist(inputs: IdParams): Promise<Response<IEventSucc[]>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -72,7 +72,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async findManyByDate(inputs: DateParams): Promise<Response<IEventSucc[]>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -83,7 +83,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async findManyByPlace(inputs: PlaceParams): Promise<Response<IEventSucc[]>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 

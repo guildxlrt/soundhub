@@ -1,4 +1,4 @@
-import { EmailParams, IdParams, GenreParams, ModifyArtistParams, NewArtistParams } from "./params"
+import { EmailParams, IdParams, GenreParams, ModifyArtistParams, NewArtistParams } from "../params"
 import { ReplyLayer } from "../../utils"
 
 export interface ArtistsRepository {

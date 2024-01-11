@@ -5,7 +5,8 @@ import {
 	FindReleasesByGenreUsecase,
 	GetAllReleasesUsecase,
 	GetReleaseUsecase,
-	ModifyReleasePriceUsecase,
+	HideReleaseUsecase,
+	ModifyReleaseUsecase,
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import {
@@ -13,7 +14,8 @@ import {
 	FindReleasesByArtistReqDTO,
 	FindReleasesByGenreReqDTO,
 	GetReleaseReqDTO,
-	ModifyReleasePriceReqDTO,
+	HideReleaseReqDTO,
+	ModifyReleaseReqDTO,
 	apiErrorMsg,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -37,15 +39,33 @@ export class ReleasesController implements IReleasesController {
 		}
 	}
 
-	async modifyPrice(req: ApiRequest, res: ApiReply) {
+	async modify(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyReleasePriceReqDTO = req.body as ModifyReleasePriceReqDTO
+			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
 
 			// Saving Profile
-			const modifyRelease = new ModifyReleasePriceUsecase(databaseServices)
+			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
 			const { data, error } = await modifyRelease.execute(inputs)
+			if (error) throw error
+
+			// Return infos
+			return res.status(202).send(data)
+		} catch (error) {
+			return errHandler.reply(error, res)
+		}
+	}
+
+	async hide(req: ApiRequest, res: ApiReply) {
+		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
+
+		try {
+			const inputs: HideReleaseReqDTO = req.body as HideReleaseReqDTO
+
+			// Saving Profile
+			const hideRelease = new HideReleaseUsecase(databaseServices)
+			const { data, error } = await hideRelease.execute(inputs)
 			if (error) throw error
 
 			// Return infos

@@ -18,9 +18,9 @@ export class ChangeEmailParams {
 	actual: string
 	confirm: string
 	newEmail: string
-	id: UserAuthId
+	id?: UserAuthId
 
-	constructor(actual: string, confirm: string, newEmail: string, id: UserAuthId) {
+	constructor(actual: string, confirm: string, newEmail: string, id?: UserAuthId) {
 		this.actual = actual
 		this.confirm = confirm
 		this.newEmail = newEmail
@@ -32,14 +32,14 @@ export class ChangePassParams {
 	actual: string
 	confirm: string
 	newPass: string
-	id: UserAuthId
+	id?: UserAuthId
 	hashedPass?: string
 
 	constructor(
 		actual: string,
 		confirm: string,
 		newPass: string,
-		id: UserAuthId,
+		id?: UserAuthId,
 		hashedPass?: string
 	) {
 		this.actual = actual

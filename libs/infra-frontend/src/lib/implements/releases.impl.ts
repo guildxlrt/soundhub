@@ -2,17 +2,18 @@ import {
 	GenreParams,
 	IdParams,
 	NewReleaseParams,
-	ReleasePriceParams,
+	ModifyReleaseParams,
 	ReleasesRepository,
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,
+	HideReleaseParams,
 } from "Shared"
 import { Response } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(inputs: NewReleaseParams): Promise<Response<INewReleaseSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -22,8 +23,19 @@ export class ReleasesImplement implements ReleasesRepository {
 		return res
 	}
 
-	async modifyPrice(inputs: ReleasePriceParams): Promise<Response<boolean>> {
-		// Calling DB
+	async modify(inputs: ModifyReleaseParams): Promise<Response<boolean>> {
+		// calling API
+		// ... some logic
+		console.log(inputs)
+
+		// Return Response
+		const res: any = new Response(true)
+
+		return res
+	}
+
+	async hide(inputs: HideReleaseParams): Promise<Response<boolean>> {
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -34,7 +46,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async get(inputs: IdParams): Promise<Response<IReleaseSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -52,7 +64,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async findManyByGenre(inputs: GenreParams): Promise<Response<IReleasesListSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -63,7 +75,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async findManyByArtist(inputs: IdParams): Promise<Response<IReleasesListSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 

@@ -1,4 +1,4 @@
-import { GenreType } from "libs/shared/src/utils"
+import { GenreType } from "../../utils"
 
 export class IdParams {
 	id: number

@@ -1,8 +1,10 @@
+import { StatusType } from "../reply"
+
 export class ErrorMsg extends Error {
-	status: number
+	status: StatusType
 	timestamp: Date
 
-	constructor(status: number, message: string, error?: unknown) {
+	constructor(status: StatusType, message: string, error?: unknown) {
 		super(message)
 		this.status = status
 		this.timestamp = new Date()

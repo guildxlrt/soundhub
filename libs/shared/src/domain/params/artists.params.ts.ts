@@ -1,4 +1,4 @@
-import { Artist, UserAuth } from "../../../entities"
+import { Artist, UserAuth } from "../entities"
 
 export class NewArtistParams {
 	profile: Artist

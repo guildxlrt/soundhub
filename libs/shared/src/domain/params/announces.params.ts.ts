@@ -1,4 +1,4 @@
-import { Announce } from "../../../entities"
+import { Announce } from "../entities"
 
 export class NewAnnounceParams {
 	data: Announce

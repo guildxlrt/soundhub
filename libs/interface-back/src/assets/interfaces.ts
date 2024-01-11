@@ -16,7 +16,8 @@ export interface IArtistController {
 
 export interface IReleasesController {
 	create(req: unknown, res: unknown): Promise<unknown>
-	modifyPrice(req: unknown, res: unknown): Promise<unknown>
+	modify(req: unknown, res: unknown): Promise<unknown>
+	hide(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>

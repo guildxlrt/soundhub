@@ -2,7 +2,7 @@ import {
 	GenreParams,
 	IdParams,
 	NewReleaseParams,
-	ReleasePriceParams,
+	ModifyReleaseParams,
 	ReleasesRepository,
 	Song,
 	ErrorMsg,
@@ -11,6 +11,7 @@ import {
 	IReleasesListSucc,
 	IReleasesListItemSucc,
 	apiErrorMsg,
+	HideReleaseParams,
 } from "Shared"
 import { dbClient } from "../../assets"
 import { Reply } from "../../assets"
@@ -42,6 +43,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
 					coverUrl: null,
+					isPublic: true,
 					songs: {
 						create: songsFormattedArray,
 					},
@@ -60,7 +62,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modifyPrice(inputs: ReleasePriceParams): Promise<Reply<boolean>> {
+	async modify(inputs: ModifyReleaseParams): Promise<Reply<boolean>> {
 		const { id, price } = inputs
 
 		try {
@@ -70,6 +72,26 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 				data: {
 					price: price,
+				},
+			})
+
+			// Response
+			return new Reply<boolean>(true)
+		} catch (error) {
+			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
+		}
+	}
+
+	async hide(inputs: HideReleaseParams): Promise<Reply<boolean>> {
+		const { id, isPublic } = inputs
+
+		try {
+			await dbClient.release.update({
+				where: {
+					id: id,
+				},
+				data: {
+					isPublic: isPublic,
 				},
 			})
 

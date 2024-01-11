@@ -13,7 +13,7 @@ import { Response } from "../../assets"
 
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Response<INewArtistSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -24,7 +24,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async modify(inputs: ModifyArtistParams): Promise<Response<boolean>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -35,7 +35,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async getById(inputs: IdParams): Promise<Response<IArtistInfoSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -46,7 +46,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async getByEmail(inputs: EmailParams): Promise<Response<IArtistInfoSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 
@@ -64,7 +64,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async findManyByGenre(inputs: GenreParams): Promise<Response<IArtistsListSucc>> {
-		// Calling DB
+		// calling API
 		// ... some logic
 		console.log(inputs)
 

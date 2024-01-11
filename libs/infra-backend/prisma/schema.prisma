@@ -59,7 +59,7 @@ model Event {
   artist  Artist @relation(fields: [planner], references: [id], onDelete: Cascade)
 
   date     DateTime
-  place String
+  place    String
   artists  Int[]
   title    String
   text     String
@@ -79,6 +79,7 @@ model Release {
   price       Int?
   genres      String[]
   coverUrl    String?
+  isPublic    Boolean
 
   songs Song[]
 }
