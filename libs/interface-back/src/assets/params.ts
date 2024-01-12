@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 
 export interface ApiRequest extends Request {
-	auth?: { userId: number }
+	auth?: { artistId: number; userId: number }
 }
 
 export type ApiReply = Response

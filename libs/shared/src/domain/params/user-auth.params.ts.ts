@@ -4,13 +4,11 @@ export class LoginParams {
 	email: string
 	password: string
 	encrypted?: string
-	id?: string
 
-	constructor(email: string, password: string, encrypted?: string, id?: string) {
+	constructor(email: string, password: string, encrypted?: string) {
 		this.email = email
 		this.password = password
 		this.encrypted = encrypted
-		this.id = id
 	}
 }
 

@@ -12,9 +12,9 @@ import { Reply, dbClient } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
 	async login(inputs: LoginParams): Promise<Reply<ILoginRes>> {
-		const { email, password } = inputs
-
 		try {
+			const { email, password } = inputs
+
 			const data = await dbClient.userAuth.findUnique({
 				where: {
 					email: email,

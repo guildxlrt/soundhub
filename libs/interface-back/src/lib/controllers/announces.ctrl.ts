@@ -9,12 +9,13 @@ import {
 } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import {
+	Announce,
 	apiErrorMsg,
 	CreateAnnounceReqDTO,
-	DeleteAnnounceReqDTO,
-	FindAnnouncesByArtistReqDTO,
-	GetAnnounceReqDTO,
+	DeleteAnnounceParams,
+	ModifyAnnounceParams,
 	ModifyAnnounceReqDTO,
+	NewAnnounceParams,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
@@ -22,15 +23,17 @@ export class AnnoncesController implements IAnnoncesController {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
-		try {
-			const inputs: CreateAnnounceReqDTO = req.body as CreateAnnounceReqDTO
+		const { text, title } = req.body as CreateAnnounceReqDTO
+		const user = req.auth?.artistId
 
+		try {
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const announce = new Announce(undefined, user, title, text)
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
-			const { data, error } = await createAnnounce.execute(inputs)
+			const { data, error } = await createAnnounce.execute(new NewAnnounceParams(announce))
 			if (error) throw error
 
 			// Return infos
@@ -44,14 +47,17 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyAnnounceReqDTO = req.body as ModifyAnnounceReqDTO
+			const user = req.auth?.artistId
 
+			const { text, title } = req.body as ModifyAnnounceReqDTO
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const announce = new Announce(undefined, user, title, text)
+
 			const ModifyAnnounce = new ModifyAnnounceUsecase(databaseServices)
-			const { data, error } = await ModifyAnnounce.execute(inputs)
+			const { data, error } = await ModifyAnnounce.execute(new ModifyAnnounceParams(announce))
 			if (error) throw error
 
 			// Return infos
@@ -63,16 +69,16 @@ export class AnnoncesController implements IAnnoncesController {
 
 	async delete(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+		const user = req.auth?.artistId
+		const id = Number(req.params["id"])
 
 		try {
-			const inputs: DeleteAnnounceReqDTO = req.body as DeleteAnnounceReqDTO
-
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
-			const { data, error } = await deleteAnnounce.execute(inputs)
+			const { data, error } = await deleteAnnounce.execute(new DeleteAnnounceParams(id, user))
 			if (error) throw error
 
 			// Return infos
@@ -85,10 +91,11 @@ export class AnnoncesController implements IAnnoncesController {
 	async get(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
+		const id = Number(req.params["id"])
+		const getAnnounce = new GetAnnounceUsecase(databaseServices)
+		const { data, error } = await getAnnounce.execute(id)
+
 		try {
-			const inputs: GetAnnounceReqDTO = req.body as GetAnnounceReqDTO
-			const getAnnounce = new GetAnnounceUsecase(databaseServices)
-			const { data, error } = await getAnnounce.execute(inputs)
 			if (error) throw error
 
 			// Return infos
@@ -101,9 +108,10 @@ export class AnnoncesController implements IAnnoncesController {
 	async getAll(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
+		const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
+		const { data, error } = await getAllAnnounces.execute()
+
 		try {
-			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
-			const { data, error } = await getAllAnnounces.execute()
 			if (error) throw error
 
 			// Return infos
@@ -116,10 +124,11 @@ export class AnnoncesController implements IAnnoncesController {
 	async findManyByArtist(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
+		const id = Number(req.params["id"])
+		const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
+		const { data, error } = await findAnnouncesByArtist.execute(id)
+
 		try {
-			const inputs: FindAnnouncesByArtistReqDTO = req.body as FindAnnouncesByArtistReqDTO
-			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
-			const { data, error } = await findAnnouncesByArtist.execute(inputs)
 			if (error) throw error
 
 			// Return infos

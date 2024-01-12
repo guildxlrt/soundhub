@@ -20,7 +20,6 @@ export interface CreateReleaseReqDTO {
 		descript: string | null
 		price: ReleasePrice | null
 		genres: GenresArray
-		cover: boolean
 	}
 	songs: {
 		// audio: File
@@ -47,9 +46,6 @@ export interface HideReleaseReqDTO {
 export class HideReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // GET
-export interface GetReleaseReqDTO {
-	id: ReleaseId
-}
 export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}
 
 // GET ALL
@@ -61,7 +57,4 @@ export type FindReleasesByGenreReqDTO = GenreType
 export class FindReleasesByGenreReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindReleasesByArtistReqDTO {
-	id: ArtistId
-}
 export class FindReleasesByArtistReplyDTO extends ReplyDTO<IReleasesListSucc> {}

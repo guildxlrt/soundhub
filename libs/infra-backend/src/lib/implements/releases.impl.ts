@@ -1,6 +1,6 @@
 import {
-	GenreParams,
-	IdParams,
+	GenreType,
+	EntityId,
 	NewReleaseParams,
 	ModifyReleaseParams,
 	ReleasesRepository,
@@ -63,9 +63,10 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async modify(inputs: ModifyReleaseParams): Promise<Reply<boolean>> {
-		const { id, price } = inputs
-
 		try {
+			const { id, price, userAuth } = inputs
+			console.log(userAuth)
+
 			await dbClient.release.update({
 				where: {
 					id: id,
@@ -102,9 +103,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async get(inputs: IdParams): Promise<Reply<IReleaseSucc>> {
-		const id = inputs.id
-
+	async get(id: EntityId): Promise<Reply<IReleaseSucc>> {
 		try {
 			const data = await dbClient.release.findUnique({
 				where: {
@@ -180,9 +179,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByGenre(inputs: GenreParams): Promise<Reply<IReleasesListSucc>> {
-		const genre: string = inputs.genre
-
+	async findManyByGenre(genre: GenreType): Promise<Reply<IReleasesListSucc>> {
 		try {
 			// Calling DB
 			const data = await dbClient.release.findMany({
@@ -218,8 +215,8 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<Reply<IReleasesListSucc>> {
-		const artistId = inputs.id
+	async findManyByArtist(id: EntityId): Promise<Reply<IReleasesListSucc>> {
+		const artistId = id
 
 		try {
 			// Calling DB

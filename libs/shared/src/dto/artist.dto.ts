@@ -7,7 +7,7 @@ import {
 	UserEmail,
 	UserPassword,
 } from "../utils"
-import { ReplyDTO } from "./layers/reply"
+import { ReplyDTO } from "./layers"
 
 // CREATE ARTIST
 export interface CreateArtistReqDTO {
@@ -16,20 +16,18 @@ export interface CreateArtistReqDTO {
 		bio: string
 		members: string[]
 		genres: GenresArray
-		avatar: boolean
 	}
-	auths: {
+	auth: {
 		email: UserEmail
-		confirmEmail: UserEmail
 		password: UserPassword
-		confirmPass: UserPassword
 	}
+	authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
 }
 export class CreateArtistReplyDTO extends ReplyDTO<{ message: string; userAuthId: number }> {}
 
-// MODIFY ARTIST
+// MODIFY ARTIST //
 export interface ModifyArtistReqDTO {
-	id: ArtistId
+	id: ArtistId | undefined
 	name: string
 	bio: string
 	members: string[]
@@ -39,9 +37,7 @@ export interface ModifyArtistReqDTO {
 export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
-export interface GetArtistByIdReqDTO {
-	id: ArtistId
-}
+
 export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // ARTIST BY EMAIL

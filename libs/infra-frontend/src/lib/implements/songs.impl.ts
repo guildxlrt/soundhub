@@ -1,15 +1,26 @@
+import axios from "axios"
 import { Response } from "../../assets"
-import { IdParams, SongsRepository, ISongSucc } from "Shared"
+import {
+	EntityId,
+	SongsRepository,
+	ISongSucc,
+	apiRoot,
+	apiPath,
+	apiEndpts,
+	ErrorMsg,
+	noStatus,
+} from "Shared"
 
 export class SongsImplement implements SongsRepository {
-	async get(inputs: IdParams): Promise<Response<ISongSucc>> {
-		// calling API
-		// ... some logic
-		console.log(inputs)
-
-		// Return Response
-		const res: any = new Response({})
-
-		return res
+	async get(id: EntityId): Promise<Response<ISongSucc>> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiRoot + apiPath.songs + apiEndpts.songs.oneById + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			return new Response<ISongSucc>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+		}
 	}
 }

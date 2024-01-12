@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { controllers, authMiddleware } from "Interface-back"
-import { apiEndpts } from "libs/infra-frontend/src/assets"
+import { apiEndpts } from "Shared"
 
 const router = Router()
 const controller = controllers.releases
@@ -11,12 +11,12 @@ router.put(apiEndpts.releases.modify, authMiddleware, controller.modify)
 
 router.patch(apiEndpts.releases.hide, authMiddleware, controller.hide)
 
-router.get(apiEndpts.releases.oneById, controller.get)
+router.get(apiEndpts.releases.oneById + "id", controller.get)
 
 router.get(apiEndpts.releases.all, controller.getAll)
 
-router.get(apiEndpts.releases.manyByArtist, controller.findManyByArtist)
+router.get(apiEndpts.releases.manyByArtist + "id", controller.findManyByArtist)
 
-router.get(apiEndpts.releases.manyByGenre, controller.findManyByGenre)
+router.get(apiEndpts.releases.manyByGenre + "genre", controller.findManyByGenre)
 
 export default router

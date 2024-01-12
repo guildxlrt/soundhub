@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { CreateReleaseReqDTO, CreateReleaseReplyDTO } from "Shared"
+import { CreateReleaseReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { NewReleaseParams, Release, Song } from "Shared"
 import { ErrorMsg, formatters } from "Shared"
@@ -10,7 +10,7 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: CreateReleaseReqDTO): Promise<CreateReleaseReplyDTO> {
+	async execute(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {
 		try {
 			const { songs } = inputs
 			const { artist_id, title, releaseType, descript, price, genres } = inputs.release

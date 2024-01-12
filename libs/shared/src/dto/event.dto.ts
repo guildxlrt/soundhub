@@ -23,9 +23,7 @@ export interface ModifyEventReqDTO {
 export class ModifyEventReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
-export interface DeleteEventReqDTO {
-	id: EventId
-}
+
 export class DeleteEventReplyDTO extends ReplyDTO<void> {}
 
 // GET POST

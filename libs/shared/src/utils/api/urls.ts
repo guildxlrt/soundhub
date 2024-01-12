@@ -1,6 +1,7 @@
-import { envs } from "Shared"
+import { envs } from "../../envs"
 
 export const apiRoot = envs.apiUrl
+
 export const apiPath = {
 	auths: "/",
 	artists: "/artists",
@@ -20,37 +21,37 @@ export const apiEndpts = {
 	artists: {
 		signup: "/signup",
 		modify: "/update",
-		oneById: "/one-by-id",
-		oneByEmail: "/one-by-email",
+		oneById: "/:",
+		oneByEmail: "/by-email",
 		all: "/",
-		manyByGenre: "/by-genre/:genre",
+		manyByGenre: "/by-genre/:",
 	},
 	releases: {
 		create: "/new",
 		modify: "/edit",
 		hide: "/hide",
-		oneById: "/:id",
+		oneById: "/:",
 		all: "/",
-		manyByArtist: "/by-artist/:id",
-		manyByGenre: "/by-genre/:genre",
+		manyByArtist: "/by-artist/:",
+		manyByGenre: "/by-genre/:",
 	},
 	events: {
 		create: "/new",
 		modify: "/edit",
 		delete: "/delete",
-		oneById: "/:id",
+		oneById: "/:",
 		all: "/",
-		manyByArtist: "/by-artist/:id",
-		manyByDate: "/by-date/:date",
-		manyByPlace: "/by-place/:place",
+		manyByArtist: "/by-artist/:",
+		manyByDate: "/by-date",
+		manyByPlace: "/by-place",
 	},
 	announces: {
 		create: "/new",
 		modify: "/edit",
-		delete: "/delete",
-		oneById: "/:id",
+		delete: "/delete/:",
+		oneById: "/:",
 		all: "/",
-		manyByArtist: "/by-artist/:id",
+		manyByArtist: "/by-artist/:",
 	},
-	songs: { oneById: "/:id" },
+	songs: { oneById: "/:" },
 }

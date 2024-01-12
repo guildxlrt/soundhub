@@ -1,18 +1,11 @@
-import {
-	GenreParams,
-	IdParams,
-	NewReleaseParams,
-	ModifyReleaseParams,
-	HideReleaseParams,
-} from "../params"
 import { INewReleaseSucc, ReplyLayer } from "../../utils"
 
 export interface ReleasesRepository {
-	create(inputs: NewReleaseParams): Promise<ReplyLayer<INewReleaseSucc>>
-	modify(inputs: ModifyReleaseParams): Promise<ReplyLayer<boolean>>
-	hide(inputs: HideReleaseParams): Promise<ReplyLayer<boolean>>
-	get(inputs: IdParams): Promise<ReplyLayer<unknown>>
+	create(inputs: unknown): Promise<ReplyLayer<INewReleaseSucc>>
+	modify(inputs: unknown): Promise<ReplyLayer<boolean>>
+	hide(inputs: unknown): Promise<ReplyLayer<boolean>>
+	get(inputs: unknown): Promise<ReplyLayer<unknown>>
 	getAll(): Promise<ReplyLayer<unknown[]>>
-	findManyByArtist(inputs: IdParams): Promise<ReplyLayer<unknown[]>>
-	findManyByGenre(inputs: GenreParams): Promise<ReplyLayer<unknown[]>>
+	findManyByArtist(inputs: unknown): Promise<ReplyLayer<unknown[]>>
+	findManyByGenre(inputs: unknown): Promise<ReplyLayer<unknown[]>>
 }

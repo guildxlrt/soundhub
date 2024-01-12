@@ -1,10 +1,8 @@
 import { Reply, dbClient } from "../../assets"
-import { IdParams, SongsRepository, ISongSucc, ErrorMsg } from "Shared"
+import { EntityId, SongsRepository, ISongSucc, ErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
-	async get(inputs: IdParams): Promise<Reply<ISongSucc>> {
-		const id = inputs.id
-
+	async get(id: EntityId): Promise<Reply<ISongSucc>> {
 		try {
 			const data = await dbClient.song.findUnique({
 				where: {

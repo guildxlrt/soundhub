@@ -5,16 +5,16 @@ export class Announce extends EntityLayer {
 	artist_id: ArtistId | undefined
 	title: string
 	text: string
-	imageUrl: string | null
-	videoUrl: string | null
+	imageUrl?: string
+	videoUrl?: string
 
 	constructor(
 		id: AnnounceId | undefined,
 		artist_id: ArtistId | undefined,
 		title: string,
 		text: string,
-		imageUrl: string | null,
-		videoUrl: string | null,
+		imageUrl?: string,
+		videoUrl?: string,
 		createdAt?: Date
 	) {
 		super(id, createdAt)

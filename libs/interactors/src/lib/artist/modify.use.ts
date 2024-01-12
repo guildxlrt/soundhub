@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { ModifyArtistReqDTO, ModifyArtistReplyDTO } from "Shared"
+import { ModifyArtistReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Artist, ModifyArtistParams } from "Shared"
 import { ErrorMsg, formatters } from "Shared"
@@ -10,9 +10,10 @@ export class ModifyArtistUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ModifyArtistReqDTO): Promise<ModifyArtistReplyDTO> {
+	async execute(inputs: ModifyArtistParams): Promise<ModifyArtistReplyDTO> {
 		try {
-			const { genres, name, bio, members } = inputs
+			const { genres, name, bio, members } = inputs.profile
+			const { userAuth } = inputs
 
 			// SANITIZE
 			// genres
@@ -21,9 +22,9 @@ export class ModifyArtistUsecase extends UsecaseLayer {
 			// ... ( name)
 
 			// Saving
-			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres, null)
+			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres)
 
-			return await this.services.artists.modify(new ModifyArtistParams(userData))
+			return await this.services.artists.modify(new ModifyArtistParams(userData, userAuth))
 		} catch (error) {
 			return new ModifyArtistReplyDTO(
 				undefined,

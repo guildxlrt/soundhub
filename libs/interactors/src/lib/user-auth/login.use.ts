@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { LoginReqDTO, ErrorMsg, ReplyLayer, ILoginRes } from "Shared"
+import { ErrorMsg, ReplyLayer, ILoginRes } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { LoginParams } from "Shared"
 
@@ -9,11 +9,9 @@ export class LoginUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: LoginReqDTO): Promise<ReplyLayer<ILoginRes>> {
+	async execute(inputs: LoginParams): Promise<ReplyLayer<ILoginRes>> {
 		try {
-			const { email, password } = inputs
-
-			return await this.services.userAuths.login(new LoginParams(email, password))
+			return await this.services.userAuths.login(inputs)
 		} catch (error) {
 			return new ReplyLayer<ILoginRes>(
 				undefined,

@@ -4,10 +4,10 @@ import { EntityLayer } from "./layers"
 export class Artist extends EntityLayer {
 	user_auth_id: UserAuthId | undefined
 	name: string
-	bio: string | null
-	avatarUrl: string | null
+	bio: string
 	members: string[]
 	genres: GenresArray
+	avatarUrl?: string
 
 	constructor(
 		id: ArtistId | undefined,
@@ -16,7 +16,7 @@ export class Artist extends EntityLayer {
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarUrl: string | null,
+		avatarUrl?: string,
 		createdAt?: Date
 	) {
 		super(id, createdAt)

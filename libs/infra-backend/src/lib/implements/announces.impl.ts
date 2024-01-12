@@ -3,16 +3,18 @@ import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	AnnouncesRepository,
-	IdParams,
+	EntityId,
 	NewAnnounceParams,
 	ModifyAnnounceParams,
 	ErrorMsg,
 	IAnnouncesListItemSucc,
+	DeleteAnnounceParams,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
-		const { artist_id, title, text, imageUrl, videoUrl } = inputs.data
+		const { data } = inputs
+		const { artist_id, title, text, imageUrl, videoUrl } = data
 
 		try {
 			// Storing files
@@ -41,9 +43,9 @@ export class AnnouncesImplement implements AnnouncesRepository {
 	}
 
 	async modify(inputs: ModifyAnnounceParams): Promise<Reply<boolean>> {
-		const { artist_id, title, text, imageUrl, videoUrl, id } = inputs.data
-
 		try {
+			const { artist_id, title, text, imageUrl, videoUrl, id } = inputs.data
+
 			// Storing files
 			await dbClient.announce.update({
 				where: {
@@ -70,10 +72,12 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async delete(inputs: IdParams): Promise<Reply<void>> {
-		const id = inputs.id
-
+	async delete(inputs: DeleteAnnounceParams): Promise<Reply<void>> {
 		try {
+			const { id, userAuth } = inputs
+
+			console.log(userAuth)
+
 			await dbClient.announce.delete({
 				where: {
 					id: id,
@@ -91,9 +95,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async get(inputs: IdParams): Promise<Reply<IAnnounceSucc>> {
-		const id = inputs.id
-
+	async get(id: EntityId): Promise<Reply<IAnnounceSucc>> {
 		try {
 			const data = await dbClient.announce.findUnique({
 				where: {
@@ -156,8 +158,8 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<Reply<IAnnouncesListSucc>> {
-		const artistId = inputs.id
+	async findManyByArtist(id: EntityId): Promise<Reply<IAnnouncesListSucc>> {
+		const artistId = id
 
 		try {
 			const data = await dbClient.announce.findMany({

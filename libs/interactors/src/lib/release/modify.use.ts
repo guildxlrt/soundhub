@@ -1,7 +1,7 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
-import { ModifyReleaseReqDTO, ModifyReleaseReplyDTO, ErrorMsg } from "Shared"
+import { ModifyReleaseReplyDTO, ErrorMsg } from "Shared"
 import { ModifyReleaseParams } from "Shared"
 
 export class ModifyReleaseUsecase extends UsecaseLayer {
@@ -9,11 +9,9 @@ export class ModifyReleaseUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ModifyReleaseReqDTO): Promise<ModifyReleaseReplyDTO> {
+	async execute(inputs: ModifyReleaseParams): Promise<ModifyReleaseReplyDTO> {
 		try {
-			const { id, newAmount } = inputs
-
-			return await this.services.releases.modify(new ModifyReleaseParams(id, newAmount))
+			return await this.services.releases.modify(inputs)
 		} catch (error) {
 			return new ModifyReleaseReplyDTO(
 				undefined,

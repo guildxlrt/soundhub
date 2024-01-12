@@ -1,17 +1,17 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { GetEventReqDTO, GetEventReplyDTO, ErrorMsg } from "Shared"
+import { GetEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { IdParams } from "Shared"
+import { EntityId } from "Shared"
 
 export class GetEventUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: GetEventReqDTO): Promise<GetEventReplyDTO> {
+	async execute(id: EntityId): Promise<GetEventReplyDTO> {
 		try {
-			return await this.services.events.get(new IdParams(inputs.id))
+			return await this.services.events.get(id)
 		} catch (error) {
 			return new GetEventReplyDTO(
 				undefined,

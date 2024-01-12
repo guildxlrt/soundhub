@@ -1,11 +1,11 @@
-import { EmailParams, IdParams, GenreParams, ModifyArtistParams, NewArtistParams } from "../params"
-import { ReplyLayer } from "../../utils"
+import { GenreType, ReplyLayer } from "../../utils"
+import { EmailParams } from "../params"
 
 export interface ArtistsRepository {
-	create(inputs: NewArtistParams): Promise<ReplyLayer<unknown>>
-	modify(inputs: ModifyArtistParams): Promise<ReplyLayer<boolean>>
-	getById(inputs: IdParams): Promise<ReplyLayer<unknown>>
+	create(inputs: unknown): Promise<ReplyLayer<unknown>>
+	modify(inputs: unknown): Promise<ReplyLayer<boolean>>
+	getById(inputs: unknown): Promise<ReplyLayer<unknown>>
 	getByEmail(inputs: EmailParams): Promise<ReplyLayer<unknown>>
 	getAll(): Promise<ReplyLayer<unknown[]>>
-	findManyByGenre(inputs: GenreParams): Promise<ReplyLayer<unknown[]>>
+	findManyByGenre(inputs: GenreType): Promise<ReplyLayer<unknown[]>>
 }

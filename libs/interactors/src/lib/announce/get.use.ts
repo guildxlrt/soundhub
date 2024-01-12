@@ -1,17 +1,17 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { GetAnnounceReqDTO, GetAnnounceReplyDTO, ErrorMsg } from "Shared"
+import { GetAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer } from "../../assets"
-import { IdParams } from "Shared"
+import { EntityId } from "Shared"
 
 export class GetAnnounceUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: GetAnnounceReqDTO): Promise<GetAnnounceReplyDTO> {
+	async execute(id: EntityId): Promise<GetAnnounceReplyDTO> {
 		try {
-			return await this.services.announces.get(new IdParams(inputs.id))
+			return await this.services.announces.get(id)
 		} catch (error) {
 			return new GetAnnounceReplyDTO(
 				undefined,

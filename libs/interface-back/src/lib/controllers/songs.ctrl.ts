@@ -1,5 +1,5 @@
 import { ISongsController } from "../../assets"
-import { GetSongReqDTO, apiErrorMsg } from "Shared"
+import { apiErrorMsg } from "Shared"
 import { GetSongUsecase } from "Interactors"
 import { databaseServices } from "Infra-backend"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -9,9 +9,9 @@ export class SongsController implements ISongsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetSongReqDTO = req.body as GetSongReqDTO
+			const id = Number(req.params["id"])
 			const getSong = new GetSongUsecase(databaseServices)
-			const { data, error } = await getSong.execute(inputs)
+			const { data, error } = await getSong.execute(id)
 			if (error) throw error
 
 			// Return infos

@@ -7,8 +7,8 @@ import {
 	INewArtistSucc,
 	ArtistsRepository,
 	EmailParams,
-	GenreParams,
-	IdParams,
+	GenreType,
+	EntityId,
 	ModifyArtistParams,
 	NewArtistParams,
 } from "Shared"
@@ -17,7 +17,7 @@ import { dbClient, dbErrHandler, Reply } from "../../assets"
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Reply<INewArtistSucc>> {
 		const { name, bio, members, genres } = inputs.profile
-		const { email } = inputs.auths
+		const { email } = inputs.auth
 		const password = inputs.hashedPass as string
 
 		try {
@@ -60,9 +60,11 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async modify(inputs: ModifyArtistParams): Promise<Reply<boolean>> {
-		const { name, bio, members, genres, id } = inputs.data
-
 		try {
+			const { name, bio, members, genres, id } = inputs.profile
+			const { userAuth } = inputs
+			console.log(userAuth)
+
 			await dbClient.artist.update({
 				where: {
 					id: id,
@@ -82,9 +84,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getById(inputs: IdParams): Promise<Reply<IArtistInfoSucc>> {
-		const id = inputs.id
-
+	async getById(id: EntityId): Promise<Reply<IArtistInfoSucc>> {
 		try {
 			const data = await dbClient.artist.findUnique({
 				where: {
@@ -183,9 +183,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async findManyByGenre(inputs: GenreParams): Promise<Reply<IArtistsListSucc>> {
-		const genre: string = inputs.genre
-
+	async findManyByGenre(genre: GenreType): Promise<Reply<IArtistsListSucc>> {
 		try {
 			const data = await dbClient.artist.findMany({
 				where: {

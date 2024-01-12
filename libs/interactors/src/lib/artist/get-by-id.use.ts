@@ -1,17 +1,17 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
 import { UsecaseLayer } from "../../assets"
-import { GetArtistByIdReqDTO, GetArtistByIdReplyDTO, ErrorMsg } from "Shared"
-import { IdParams } from "Shared"
+import { GetArtistByIdReplyDTO, ErrorMsg } from "Shared"
+import { EntityId } from "Shared"
 
 export class GetArtistByIdUsecase extends UsecaseLayer {
 	constructor(services: DatabaseServices | ApiServices) {
 		super(services)
 	}
 
-	async execute(inputs: GetArtistByIdReqDTO): Promise<GetArtistByIdReplyDTO> {
+	async execute(id: EntityId): Promise<GetArtistByIdReplyDTO> {
 		try {
-			return await this.services.artists.getById(new IdParams(inputs.id))
+			return await this.services.artists.getById(id)
 		} catch (error) {
 			return new GetArtistByIdReplyDTO(
 				undefined,

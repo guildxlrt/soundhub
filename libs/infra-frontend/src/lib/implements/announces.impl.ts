@@ -1,32 +1,33 @@
 import axios from "axios"
-import { Response, apiUrl } from "../../assets"
+import { Response } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	AnnouncesRepository,
-	IdParams,
-	NewAnnounceParams,
 	noStatus,
 	ErrorMsg,
-	CreateAnnounceReqDTO,
-	ModifyAnnounceParams,
 	ModifyAnnounceReqDTO,
-	DeleteAnnounceReqDTO,
-	GetAnnounceReqDTO,
-	FindAnnouncesByArtistReqDTO,
+	apiRoot,
+	apiPath,
+	apiEndpts,
+	AnnounceId,
+	ArtistId,
+	CreateAnnounceReqDTO,
+	DeleteAnnounceParams,
+	NewAnnounceParams,
+	ModifyAnnounceParams,
 } from "Shared"
-
-const endpoint = "announces/"
 
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Response<boolean>> {
-		const { artist_id, title, text } = inputs.data
 		try {
+			const { text, title } = inputs.data
+
 			return await axios({
 				method: "post",
-				url: `${apiUrl + endpoint}new`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
 				withCredentials: true,
-				data: { artist_id: artist_id, title: title, text: text } as CreateAnnounceReqDTO,
+				data: { title: title, text: text } as CreateAnnounceReqDTO,
 			})
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
@@ -34,41 +35,38 @@ export class AnnouncesImplement implements AnnouncesRepository {
 	}
 
 	async modify(inputs: ModifyAnnounceParams): Promise<Response<boolean>> {
-		const { artist_id, title, text } = inputs.data
 		try {
+			const { text, title } = inputs.data
+
 			return await axios({
 				method: "put",
-				url: `${apiUrl + endpoint}modify`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.modify}`,
 				withCredentials: true,
-				data: { artist_id: artist_id, title: title, text: text } as ModifyAnnounceReqDTO,
+				data: { title: title, text: text } as ModifyAnnounceReqDTO,
 			})
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
 		}
 	}
 
-	async delete(inputs: IdParams): Promise<Response<void>> {
-		const { id } = inputs
+	async delete(id: DeleteAnnounceParams): Promise<Response<void>> {
 		try {
 			return await axios({
 				method: "delete",
-				url: `${apiUrl + endpoint}delete`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.delete + id}`,
 				withCredentials: true,
-				data: { id: id } as DeleteAnnounceReqDTO,
 			})
 		} catch (error) {
 			return new Response<void>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
 		}
 	}
 
-	async get(inputs: IdParams): Promise<Response<IAnnounceSucc>> {
-		const { id } = inputs
+	async get(id: AnnounceId): Promise<Response<IAnnounceSucc>> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrl + endpoint}:${id}`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.oneById + id}`,
 				withCredentials: true,
-				data: { id: id } as GetAnnounceReqDTO,
 			})
 		} catch (error) {
 			return new Response<IAnnounceSucc>(
@@ -82,7 +80,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrl + endpoint}`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.all}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -93,14 +91,12 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<Response<IAnnouncesListSucc>> {
-		const { id } = inputs
+	async findManyByArtist(id: ArtistId): Promise<Response<IAnnouncesListSucc>> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrl + endpoint}by-artist/:${id}`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.manyByArtist + id}`,
 				withCredentials: true,
-				data: { id: id } as FindAnnouncesByArtistReqDTO,
 			})
 		} catch (error) {
 			return new Response<IAnnouncesListSucc>(

@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { controllers } from "Interface-back"
-import { apiEndpts } from "libs/infra-frontend/src/assets"
+import { apiEndpts } from "Shared"
 
 const router = Router()
 const controller = controllers.songs

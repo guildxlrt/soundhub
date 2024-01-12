@@ -2,7 +2,9 @@ import { IAuthController, Token, authExpires } from "../../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
 import {
+	ChangeEmailParams,
 	ChangeEmailReqDTO,
+	ChangePassParams,
 	ChangePassReqDTO,
 	ErrorMsg,
 	ILoginResServer,
@@ -71,12 +73,14 @@ export class UserAuthController implements IAuthController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as ChangeEmailReqDTO
-			const id = req.auth?.userId
+			const { actual, confirm, newEmail } = req.body as ChangeEmailReqDTO
+			const user = req.auth?.userId
 
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
-			const { data, error } = await changeEmail.execute({ data: inputs, id: id as number })
+			const { data, error } = await changeEmail.execute(
+				new ChangeEmailParams(actual, confirm, newEmail, user)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -90,20 +94,18 @@ export class UserAuthController implements IAuthController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as ChangePassReqDTO
-			const id = req.auth?.userId as number
+			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
+			const user = req.auth?.userId
 
 			// HashPass
-			const { newPass } = inputs
 			const hashedPass = await encryptors.hashPass(newPass)
 
 			// Saving Changes
 			const changePass = new ChangePassUsecase(databaseServices)
-			const { data, error } = await changePass.execute({
-				data: inputs,
-				id: id,
-				hashedPass: hashedPass,
-			})
+			const { data, error } = await changePass.execute(
+				new ChangePassParams(actual, confirm, newPass, user, hashedPass)
+			)
+
 			if (error) throw error
 
 			// Return infos

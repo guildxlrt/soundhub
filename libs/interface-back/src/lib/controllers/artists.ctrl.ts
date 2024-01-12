@@ -1,9 +1,12 @@
 import {
+	Artist,
 	CreateArtistReqDTO,
-	FindArtistsByGenreReqDTO,
+	GenreType,
 	GetArtistByEmailReqDTO,
-	GetArtistByIdReqDTO,
+	ModifyArtistParams,
 	ModifyArtistReqDTO,
+	NewArtistParams,
+	UserAuth,
 	apiErrorMsg,
 	encryptors,
 } from "Shared"
@@ -31,18 +34,28 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as CreateArtistReqDTO
+			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
 
 			// HashPass
-			const { password } = inputs.auths
+			const { password, email } = auth
 			const hashedPass = await encryptors.hashPass(password)
 
 			// Call DB
+			const { bio, genres, members, name } = profile
+			const artistProfile = new Artist(
+				undefined,
+				undefined,
+				name,
+				bio,
+				members,
+				genres,
+				undefined
+			)
+			const userAuth = new UserAuth(undefined, email, password)
 			const createArtist = new CreateArtistUsecase(databaseServices)
-			const { data, error } = await createArtist.execute({
-				data: inputs,
-				hashedPass: hashedPass,
-			})
+			const { data, error } = await createArtist.execute(
+				new NewArtistParams(artistProfile, userAuth, authConfirm, hashedPass)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -68,11 +81,23 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body as ModifyArtistReqDTO
+			const user = req.auth?.artistId
+			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
 
 			// Saving Changes
+			const artistProfile = new Artist(
+				undefined,
+				undefined,
+				name,
+				bio,
+				members,
+				genres,
+				undefined
+			)
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
-			const { data, error } = await modifyArtist.execute(inputs)
+			const { data, error } = await modifyArtist.execute(
+				new ModifyArtistParams(artistProfile, user)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -86,10 +111,10 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.body.id as GetArtistByIdReqDTO
+			const id = Number(req.params["id"])
 
 			const getArtistById = new GetArtistByIdUsecase(databaseServices)
-			const { data, error } = await getArtistById.execute(inputs)
+			const { data, error } = await getArtistById.execute(id)
 			if (error) throw error
 
 			// Return infos
@@ -135,10 +160,10 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs = req.params["genre"] as FindArtistsByGenreReqDTO
+			const params = req.params["genre"] as GenreType
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
-			const { data, error } = await findArtistsByGenre.execute(inputs)
+			const { data, error } = await findArtistsByGenre.execute(params)
 			if (error) throw error
 
 			// Return infos

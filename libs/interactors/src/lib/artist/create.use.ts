@@ -1,6 +1,6 @@
 import { DatabaseServices } from "Infra-backend"
 import { ApiServices } from "Infra-frontend"
-import { CreateArtistReqDTO, CreateArtistReplyDTO } from "Shared"
+import { CreateArtistReplyDTO } from "Shared"
 import { UsecaseLayer } from "../../assets"
 import { Artist, NewArtistParams, UserAuth } from "Shared"
 import { ErrorMsg, validators, formatters } from "Shared"
@@ -10,15 +10,11 @@ export class CreateArtistUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: {
-		data: CreateArtistReqDTO
-		hashedPass?: string
-		file?: File
-	}): Promise<CreateArtistReplyDTO> {
+	async execute(inputs: NewArtistParams): Promise<CreateArtistReplyDTO> {
 		try {
-			const { auths, profile } = inputs.data
-			const { email, password, confirmEmail, confirmPass } = auths
-			const { name, bio, members, genres } = profile
+			const { email, password } = inputs.auth
+			const { confirmEmail, confirmPass } = inputs.authConfirm
+			const { name, bio, members, genres } = inputs.profile
 			const hashedPass = inputs.hashedPass
 
 			// SANITIZE
@@ -29,11 +25,12 @@ export class CreateArtistUsecase extends UsecaseLayer {
 			// others data checking
 			// ... ( name)
 
-			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres, null)
+			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres)
 			const userAuths = new UserAuth(undefined, email, password)
+			const authConfirm = inputs.authConfirm
 
 			return await this.services.artists.create(
-				new NewArtistParams(userData, userAuths, hashedPass)
+				new NewArtistParams(userData, userAuths, authConfirm, hashedPass)
 			)
 		} catch (error) {
 			return new CreateArtistReplyDTO(

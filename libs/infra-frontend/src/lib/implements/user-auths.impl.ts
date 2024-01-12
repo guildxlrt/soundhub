@@ -8,19 +8,20 @@ import {
 	LoginParams,
 	LoginReqDTO,
 	UserAuthsRepository,
+	apiEndpts,
+	apiPath,
+	apiRoot,
 	noStatus,
 } from "Shared"
-import { Response, apiUrl } from "../../assets"
+import { Response } from "../../assets"
 import axios from "axios"
-
-const path = "/"
 
 export class UserAuthsImplement implements UserAuthsRepository {
 	async login(inputs: LoginParams): Promise<Response<ILoginRes>> {
 		try {
 			return await axios({
 				method: "post",
-				url: `${apiUrl + path}login`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.auth.login}`,
 				withCredentials: true,
 				data: inputs as LoginReqDTO,
 			})
@@ -33,7 +34,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		try {
 			return await axios({
 				method: "delete",
-				url: `${apiUrl + path}logout`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.auth.logout}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -45,7 +46,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		try {
 			return await axios({
 				method: "put",
-				url: `${apiUrl + path}login`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.auth.changeEmail}`,
 				withCredentials: true,
 				data: inputs as ChangeEmailReqDTO,
 			})
@@ -58,7 +59,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		try {
 			return await axios({
 				method: "put",
-				url: `${apiUrl + path}/login`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.auth.changePass}`,
 				withCredentials: true,
 				data: inputs as ChangePassReqDTO,
 			})

@@ -11,11 +11,12 @@ import {
 import { databaseServices } from "Infra-backend"
 import {
 	CreateReleaseReqDTO,
-	FindReleasesByArtistReqDTO,
-	FindReleasesByGenreReqDTO,
-	GetReleaseReqDTO,
+	GenreType,
+	HideReleaseParams,
 	HideReleaseReqDTO,
+	ModifyReleaseParams,
 	ModifyReleaseReqDTO,
+	NewReleaseParams,
 	apiErrorMsg,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -25,11 +26,16 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
+			const user = req.auth?.artistId as number
 
+			const { release, songs }: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
+
+			release.artist_id = user
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
-			const { data, error } = await createRelease.execute(inputs)
+			const { data, error } = await createRelease.execute(
+				new NewReleaseParams(release, songs, undefined)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -43,11 +49,14 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
+			const { id, newAmount }: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
+			const user = req.auth?.artistId
 
 			// Saving Profile
 			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
-			const { data, error } = await modifyRelease.execute(inputs)
+			const { data, error } = await modifyRelease.execute(
+				new ModifyReleaseParams(id, newAmount, user)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -61,11 +70,14 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: HideReleaseReqDTO = req.body as HideReleaseReqDTO
+			const user = req.auth?.artistId
+			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
 
 			// Saving Profile
 			const hideRelease = new HideReleaseUsecase(databaseServices)
-			const { data, error } = await hideRelease.execute(inputs)
+			const { data, error } = await hideRelease.execute(
+				new HideReleaseParams(id, isPublic, user)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -79,9 +91,9 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetReleaseReqDTO = req.body as GetReleaseReqDTO
+			const id = Number(req.params["id"])
 			const getRelease = new GetReleaseUsecase(databaseServices)
-			const { data, error } = await getRelease.execute(inputs)
+			const { data, error } = await getRelease.execute(id)
 			if (error) throw error
 
 			// Return infos
@@ -110,9 +122,9 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindReleasesByArtistReqDTO = req.body as FindReleasesByArtistReqDTO
+			const id = Number(req.params["id"])
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
-			const { data, error } = await findReleasesByArtist.execute(inputs)
+			const { data, error } = await findReleasesByArtist.execute(id)
 			if (error) throw error
 
 			// Return infos
@@ -126,9 +138,9 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindReleasesByGenreReqDTO = req.body as FindReleasesByGenreReqDTO
+			const id = req.params["genre"] as GenreType
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
-			const { data, error } = await findReleasesByGenre.execute(inputs)
+			const { data, error } = await findReleasesByGenre.execute(id)
 			if (error) throw error
 
 			// Return infos

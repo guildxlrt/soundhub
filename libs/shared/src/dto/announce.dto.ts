@@ -1,9 +1,8 @@
-import { AnnounceId, ArtistId, IAnnounceSucc, IAnnouncesListSucc } from "../utils"
+import { IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
 export interface CreateAnnounceReqDTO {
-	artist_id: ArtistId
 	title: string
 	text: string
 }
@@ -17,22 +16,16 @@ export interface ModifyAnnounceReqDTO {
 export class ModifyAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
-export interface DeleteAnnounceReqDTO {
-	id: AnnounceId
-}
+export type DeleteAnnounceReqDTO = UrlParams
 export class DeleteAnnounceReplyDTO extends ReplyDTO<void> {}
 
 // GET POST
-export interface GetAnnounceReqDTO {
-	id: AnnounceId
-}
+export type GetAnnounceReqDTO = UrlParams
 export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounceSucc> {}
 
 // GET ALL
 export class GetAllAnnouncesReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindAnnouncesByArtistReqDTO {
-	id: ArtistId
-}
+export type FindAnnouncesByArtistReqDTO = UrlParams
 export class FindAnnouncesByArtistReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}

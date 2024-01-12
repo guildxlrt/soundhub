@@ -1,15 +1,16 @@
 import { Reply, dbClient } from "../../assets"
 import {
-	DateParams,
 	ErrorMsg,
 	EventsRepository,
 	IEventSucc,
 	IEventsListItemSucc,
 	IEventsListSucc,
-	IdParams,
+	EntityId,
 	ModifyEventParams,
 	NewEventParams,
 	PlaceParams,
+	DateParams,
+	DeleteEventParams,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
@@ -47,6 +48,9 @@ export class EventsImplement implements EventsRepository {
 	async modify(inputs: ModifyEventParams): Promise<Reply<boolean>> {
 		const { id, planner, date, place, artists, title, text, imageUrl } = inputs.data
 
+		const { userAuth } = inputs
+		console.log(userAuth)
+
 		try {
 			// Storing files
 			await dbClient.event.update({
@@ -76,10 +80,10 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async delete(inputs: IdParams): Promise<Reply<void>> {
-		const id = inputs.id
-
+	async delete(inputs: DeleteEventParams): Promise<Reply<void>> {
 		try {
+			const { id } = inputs
+
 			await dbClient.event.delete({
 				where: {
 					id: id,
@@ -97,9 +101,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async get(inputs: IdParams): Promise<Reply<IEventSucc>> {
-		const id = inputs.id
-
+	async get(id: EntityId): Promise<Reply<IEventSucc>> {
 		try {
 			const data = await dbClient.event.findUnique({
 				where: {
@@ -173,8 +175,8 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtist(inputs: IdParams): Promise<Reply<IEventsListSucc>> {
-		const artistId = inputs.id
+	async findManyByArtist(id: EntityId): Promise<Reply<IEventsListSucc>> {
+		const artistId = id
 
 		try {
 			const data = await dbClient.event.findMany({

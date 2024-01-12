@@ -12,12 +12,13 @@ import {
 import { databaseServices } from "Infra-backend"
 import {
 	CreateEventReqDTO,
-	DeleteEventReqDTO,
-	FindEventsByArtistReqDTO,
+	DeleteEventParams,
+	Event,
 	FindEventsByDateReqDTO,
 	FindEventsByPlaceReqDTO,
-	GetEventReqDTO,
+	ModifyEventParams,
 	ModifyEventReqDTO,
+	NewEventParams,
 	apiErrorMsg,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -27,14 +28,17 @@ export class EventsController implements IEventsController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: CreateEventReqDTO = req.body as CreateEventReqDTO
+			const user = req.auth?.artistId
 
+			const { artists, date, place, text, title }: CreateEventReqDTO =
+				req.body as CreateEventReqDTO
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const event = new Event(undefined, user, date, place, artists, title, text)
 			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(inputs)
+			const { data, error } = await createEvent.execute(new NewEventParams(event))
 			if (error) throw error
 
 			// Return infos
@@ -48,14 +52,19 @@ export class EventsController implements IEventsController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: ModifyEventReqDTO = req.body as ModifyEventReqDTO
+			const user = req.auth?.artistId
+
+			const { artists, date, place, text, title }: ModifyEventReqDTO =
+				req.body as ModifyEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
+			const event = new Event(undefined, user, date, place, artists, title, text)
+
 			const ModifyEvent = new ModifyEventUsecase(databaseServices)
-			const { data, error } = await ModifyEvent.execute(inputs)
+			const { data, error } = await ModifyEvent.execute(new ModifyEventParams(event, user))
 			if (error) throw error
 
 			// Return infos
@@ -69,14 +78,15 @@ export class EventsController implements IEventsController {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: DeleteEventReqDTO = req.body as DeleteEventReqDTO
+			const id = Number(req.params["id"])
+			const user = req.auth?.artistId
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
 			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(inputs)
+			const { data, error } = await deleteEvent.execute(new DeleteEventParams(id, user))
 			if (error) throw error
 
 			// Return infos
@@ -90,9 +100,10 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: GetEventReqDTO = req.body as GetEventReqDTO
+			const id = Number(req.params["id"])
+
 			const getEvent = new GetEventUsecase(databaseServices)
-			const { data, error } = await getEvent.execute(inputs)
+			const { data, error } = await getEvent.execute(id)
 			if (error) throw error
 
 			// Return infos
@@ -121,9 +132,9 @@ export class EventsController implements IEventsController {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const inputs: FindEventsByArtistReqDTO = req.body as FindEventsByArtistReqDTO
+			const id = Number(req.params["id"])
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
-			const { data, error } = await findEventsByArtist.execute(inputs)
+			const { data, error } = await findEventsByArtist.execute(id)
 			if (error) throw error
 
 			// Return infos
