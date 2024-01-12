@@ -24,7 +24,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		const { text, title } = req.body as CreateAnnounceReqDTO
-		const user = req.auth?.artistId
+		const user = req.auth?.profileId
 
 		try {
 			// Operators
@@ -47,7 +47,7 @@ export class AnnoncesController implements IAnnoncesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 
 			const { text, title } = req.body as ModifyAnnounceReqDTO
 			// Operators
@@ -69,7 +69,7 @@ export class AnnoncesController implements IAnnoncesController {
 
 	async delete(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
-		const user = req.auth?.artistId
+		const user = req.auth?.profileId
 		const id = Number(req.params["id"])
 
 		try {

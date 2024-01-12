@@ -11,6 +11,7 @@ import {
 	EntityId,
 	ModifyArtistParams,
 	NewArtistParams,
+	UserCookie,
 } from "Shared"
 import { dbClient, dbErrHandler, Reply } from "../../assets"
 
@@ -41,13 +42,23 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
+			// Find Profile Id
+			const profile = await dbClient.artist.findUnique({
+				where: {
+					user_auth_id: data.id,
+				},
+				select: {
+					id: true,
+				},
+			})
+
 			// Response
-			return new Reply<{ message: string; userAuthId: number }>({
+			return new Reply<INewArtistSucc>({
 				message: `Welcome, ${name} !!`,
-				userAuthId: data.id,
+				userCookie: new UserCookie(data.id, profile?.id as number, "artist"),
 			})
 		} catch (error) {
-			const res = new Reply<{ message: string; userAuthId: number }>(
+			const res = new Reply<INewArtistSucc>(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)
@@ -65,6 +76,14 @@ export class ArtistsImplement implements ArtistsRepository {
 			const { userAuth } = inputs
 			console.log(userAuth)
 
+			// AUTH
+			const data = await dbClient.artist.findUnique({
+				where: {
+					id: id,
+				},
+			})
+
+			// PERSIST
 			await dbClient.artist.update({
 				where: {
 					id: id,

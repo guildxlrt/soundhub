@@ -6,6 +6,7 @@ import {
 	GenresArray,
 	UserEmail,
 	UserPassword,
+	INewArtistSucc,
 } from "../utils"
 import { ReplyDTO } from "./layers"
 
@@ -23,7 +24,7 @@ export interface CreateArtistReqDTO {
 	}
 	authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
 }
-export class CreateArtistReplyDTO extends ReplyDTO<{ message: string; userAuthId: number }> {}
+export class CreateArtistReplyDTO extends ReplyDTO<INewArtistSucc> {}
 
 // MODIFY ARTIST //
 export interface ModifyArtistReqDTO {

@@ -18,7 +18,7 @@ import { Reply } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(inputs: NewReleaseParams): Promise<Reply<INewReleaseSucc>> {
-		const { artist_id, title, releaseType, descript, price, genres } = inputs.release
+		const { owner_id, title, releaseType, descript, price, genres } = inputs.release
 		const songs = inputs.songs
 
 		try {
@@ -36,7 +36,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			const data = await dbClient.release.create({
 				data: {
-					artist_id: artist_id,
+					owner_id: owner_id,
 					title: title,
 					releaseType: releaseType,
 					descript: descript,
@@ -110,7 +110,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					id: id,
 				},
 				select: {
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					releaseType: true,
 					descript: true,
@@ -129,7 +129,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// Response
 			return new Reply<IReleaseSucc>({
 				id: id,
-				artist_id: id,
+				owner_id: id,
 				title: data?.title,
 				releaseType: data?.releaseType,
 				descript: data?.descript,
@@ -152,7 +152,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			const data = await dbClient.release.findMany({
 				select: {
 					id: true,
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -164,7 +164,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			const list = data.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
-					artist_id: release.artist_id,
+					owner_id: release.owner_id,
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],
@@ -188,7 +188,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 				select: {
 					id: true,
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -200,7 +200,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			const list = data.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
-					artist_id: release.artist_id,
+					owner_id: release.owner_id,
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],
@@ -222,11 +222,11 @@ export class ReleasesImplement implements ReleasesRepository {
 			// Calling DB
 			const data = await dbClient.release.findMany({
 				where: {
-					artist_id: artistId,
+					owner_id: artistId,
 				},
 				select: {
 					id: true,
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -238,7 +238,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			const list = data.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
-					artist_id: release.artist_id,
+					owner_id: release.owner_id,
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],

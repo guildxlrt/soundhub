@@ -14,7 +14,7 @@ import { ReplyDTO } from "./layers/reply"
 // CREATE RELEASE
 export interface CreateReleaseReqDTO {
 	release: {
-		artist_id: ArtistId
+		owner_id: ArtistId
 		title: string
 		releaseType: ReleaseType
 		descript: string | null

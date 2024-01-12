@@ -1,7 +1,8 @@
+import { UserCookie } from "Shared"
 import { NextFunction, Request, Response } from "express"
 
 export interface ApiRequest extends Request {
-	auth?: { artistId: number; userId: number }
+	auth?: UserCookie
 }
 
 export type ApiReply = Response

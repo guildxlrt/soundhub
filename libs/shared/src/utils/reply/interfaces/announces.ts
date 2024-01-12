@@ -3,7 +3,7 @@ import { AnnounceId, ArtistId } from "../../types"
 // ANNOUNCE
 export interface IAnnounceSucc {
 	id: AnnounceId
-	artist_id: ArtistId
+	owner_id: ArtistId
 	title: string | undefined
 	text: string | undefined
 	imageUrl: string | null | undefined

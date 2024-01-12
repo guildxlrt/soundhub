@@ -26,11 +26,11 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId as number
+			const user = req.auth?.profileId as number
 
 			const { release, songs }: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
-			release.artist_id = user
+			release.owner_id = user
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(
@@ -50,7 +50,7 @@ export class ReleasesController implements IReleasesController {
 
 		try {
 			const { id, newAmount }: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 
 			// Saving Profile
 			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
@@ -70,7 +70,7 @@ export class ReleasesController implements IReleasesController {
 		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
 
 			// Saving Profile

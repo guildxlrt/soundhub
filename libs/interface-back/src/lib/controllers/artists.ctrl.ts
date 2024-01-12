@@ -7,6 +7,7 @@ import {
 	ModifyArtistReqDTO,
 	NewArtistParams,
 	UserAuth,
+	UserCookie,
 	apiErrorMsg,
 	encryptors,
 } from "Shared"
@@ -60,8 +61,9 @@ export class ArtistsController implements IArtistController {
 
 			// Return infos
 			const expires = authExpires.oneYear
-			const id = data?.userAuthId
-			const token = new Token().generate(id, expires)
+			const userCookie = data?.userCookie
+
+			const token = new Token().generate(userCookie, expires)
 
 			return res
 				.cookie("jwt", token, {
@@ -81,7 +83,7 @@ export class ArtistsController implements IArtistController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
 
 			// Saving Changes

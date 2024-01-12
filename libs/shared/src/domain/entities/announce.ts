@@ -2,7 +2,7 @@ import { AnnounceId, ArtistId } from "../../utils"
 import { EntityLayer } from "./layers"
 
 export class Announce extends EntityLayer {
-	artist_id: ArtistId | undefined
+	owner_id: ArtistId | undefined
 	title: string
 	text: string
 	imageUrl?: string
@@ -10,7 +10,7 @@ export class Announce extends EntityLayer {
 
 	constructor(
 		id: AnnounceId | undefined,
-		artist_id: ArtistId | undefined,
+		owner_id: ArtistId | undefined,
 		title: string,
 		text: string,
 		imageUrl?: string,
@@ -19,7 +19,7 @@ export class Announce extends EntityLayer {
 	) {
 		super(id, createdAt)
 
-		this.artist_id = artist_id
+		this.owner_id = owner_id
 		this.title = title
 		this.text = text
 		this.imageUrl = imageUrl

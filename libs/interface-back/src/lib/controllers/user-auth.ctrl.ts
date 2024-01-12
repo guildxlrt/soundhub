@@ -10,7 +10,7 @@ import {
 	ILoginResServer,
 	LoginReqDTO,
 	ReplyDTO,
-	UserAuthId,
+	UserCookie,
 	apiErrorMsg,
 	encryptors,
 } from "Shared"
@@ -27,7 +27,7 @@ export class UserAuthController implements IAuthController {
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
-			const { encryptedPass, id } = data as ILoginResServer
+			const { encryptedPass, userCookie } = data as ILoginResServer
 
 			// Operations
 			const { password } = inputs
@@ -36,7 +36,7 @@ export class UserAuthController implements IAuthController {
 
 			// Return infos
 			const expires = authExpires.oneYear
-			const token = new Token().generate(id, expires)
+			const token = new Token().generate(userCookie, expires)
 
 			return res
 				.cookie("jwt", token, {
@@ -46,7 +46,7 @@ export class UserAuthController implements IAuthController {
 					secure: false,
 				})
 				.status(202)
-				.send(new ReplyDTO<UserAuthId>(id))
+				.send(new ReplyDTO<UserCookie>(userCookie))
 		} catch (error) {
 			return errHandler.reply(error, res)
 		}
@@ -74,7 +74,7 @@ export class UserAuthController implements IAuthController {
 
 		try {
 			const { actual, confirm, newEmail } = req.body as ChangeEmailReqDTO
-			const user = req.auth?.userId
+			const user = req.auth?.id
 
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
@@ -95,7 +95,7 @@ export class UserAuthController implements IAuthController {
 
 		try {
 			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
-			const user = req.auth?.userId
+			const user = req.auth?.id
 
 			// HashPass
 			const hashedPass = await encryptors.hashPass(newPass)

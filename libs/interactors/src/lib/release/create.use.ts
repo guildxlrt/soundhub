@@ -13,7 +13,7 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 	async execute(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {
 		try {
 			const { songs } = inputs
-			const { artist_id, title, releaseType, descript, price, genres } = inputs.release
+			const { owner_id, title, releaseType, descript, price, genres } = inputs.release
 
 			// Operators
 			// genres
@@ -22,7 +22,7 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 			// saving
 			const release = new Release(
 				undefined,
-				artist_id,
+				owner_id,
 				title,
 				releaseType,
 				descript,

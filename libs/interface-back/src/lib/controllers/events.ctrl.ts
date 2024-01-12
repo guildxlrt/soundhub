@@ -28,7 +28,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
@@ -52,7 +52,7 @@ export class EventsController implements IEventsController {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 
 			const { artists, date, place, text, title }: ModifyEventReqDTO =
 				req.body as ModifyEventReqDTO
@@ -79,7 +79,7 @@ export class EventsController implements IEventsController {
 
 		try {
 			const id = Number(req.params["id"])
-			const user = req.auth?.artistId
+			const user = req.auth?.profileId
 
 			// Operators
 			// ... doing some heathcheck

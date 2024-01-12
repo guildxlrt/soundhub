@@ -2,7 +2,7 @@ import { EntityLayer } from "./layers"
 import { ArtistId, GenresArray, ReleaseId, ReleasePrice, ReleaseType } from "../../utils"
 
 export class Release extends EntityLayer {
-	artist_id: ArtistId
+	owner_id: ArtistId
 	title: string
 	releaseType: ReleaseType
 	descript: string | null
@@ -12,7 +12,7 @@ export class Release extends EntityLayer {
 
 	constructor(
 		id: ReleaseId | undefined,
-		artist_id: ArtistId,
+		owner_id: ArtistId,
 		title: string,
 		releaseType: ReleaseType,
 		descript: string | null,
@@ -23,7 +23,7 @@ export class Release extends EntityLayer {
 	) {
 		super(id, createdAt)
 
-		this.artist_id = artist_id
+		this.owner_id = owner_id
 		this.title = title
 		this.releaseType = releaseType
 		this.descript = descript

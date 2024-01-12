@@ -1,10 +1,10 @@
-import { UserAuthId, UserEmail, UserPassword } from "../../types"
+import { UserAuthId, UserCookie, UserEmail, UserPassword } from "../../types"
 
 export interface ILoginResServer {
 	email: UserEmail
 	password: UserPassword
 	encryptedPass: string | undefined
-	id: number | undefined
+	userCookie: UserCookie
 }
 
 export type ILoginResClient = UserAuthId

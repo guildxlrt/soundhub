@@ -7,6 +7,7 @@ import {
 	apiErrorMsg,
 	ILoginRes,
 	ILoginResServer,
+	UserCookie,
 } from "Shared"
 import { Reply, dbClient } from "../../assets"
 
@@ -15,6 +16,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		try {
 			const { email, password } = inputs
 
+			// find auth id
 			const data = await dbClient.userAuth.findUnique({
 				where: {
 					email: email,
@@ -26,14 +28,23 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
+			// Find Profile Id
+			const profile = await dbClient.artist.findUnique({
+				where: {
+					user_auth_id: data?.id,
+				},
+				select: {
+					id: true,
+				},
+			})
+
 			const encryptedPass = data?.password as string
-			const userId = data?.id as number
 
 			return new Reply<ILoginResServer>({
 				email: email,
 				password: password,
 				encryptedPass: encryptedPass,
-				id: userId,
+				userCookie: new UserCookie(data?.id as number, profile?.id as number, "artist"),
 			})
 		} catch (error) {
 			return new Reply<ILoginResServer>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))

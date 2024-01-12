@@ -14,7 +14,7 @@ import {
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
 		const { data } = inputs
-		const { artist_id, title, text, imageUrl, videoUrl } = data
+		const { owner_id, title, text, imageUrl, videoUrl } = data
 
 		try {
 			// Storing files
@@ -22,7 +22,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 			await dbClient.announce.create({
 				data: {
-					artist_id: artist_id as number,
+					owner_id: owner_id as number,
 					title: title,
 					text: text,
 					imageUrl: imageUrl,
@@ -44,7 +44,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async modify(inputs: ModifyAnnounceParams): Promise<Reply<boolean>> {
 		try {
-			const { artist_id, title, text, imageUrl, videoUrl, id } = inputs.data
+			const { owner_id, title, text, imageUrl, videoUrl, id } = inputs.data
 
 			// Storing files
 			await dbClient.announce.update({
@@ -52,7 +52,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: id,
 				},
 				data: {
-					artist_id: artist_id as number,
+					owner_id: owner_id as number,
 					title: title,
 					text: text,
 					imageUrl: imageUrl,
@@ -102,7 +102,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: id,
 				},
 				select: {
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					text: true,
 					imageUrl: true,
@@ -113,7 +113,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// Response
 			return new Reply<IAnnounceSucc>({
 				id: id,
-				artist_id: id,
+				owner_id: id,
 				title: data?.title,
 				text: data?.text,
 				imageUrl: data?.text,
@@ -132,7 +132,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			const data = await dbClient.announce.findMany({
 				select: {
 					id: true,
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					imageUrl: true,
 				},
@@ -142,7 +142,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			const list = data.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
-					artist_id: announce.artist_id,
+					owner_id: announce.owner_id,
 					title: announce.title,
 					imageUrl: announce.imageUrl,
 				}
@@ -164,11 +164,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const data = await dbClient.announce.findMany({
 				where: {
-					artist_id: artistId,
+					owner_id: artistId,
 				},
 				select: {
 					id: true,
-					artist_id: true,
+					owner_id: true,
 					title: true,
 					imageUrl: true,
 				},
@@ -178,7 +178,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			const list = data.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
-					artist_id: announce.artist_id,
+					owner_id: announce.owner_id,
 					title: announce.title,
 					imageUrl: announce.imageUrl,
 				}

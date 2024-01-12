@@ -8,7 +8,7 @@ export interface INewReleaseSucc {
 
 export interface IReleaseSucc {
 	id: ReleaseId
-	artist_id: ArtistId
+	owner_id: ArtistId
 	title: string | undefined
 	releaseType: string | undefined
 	descript: string | null | undefined
