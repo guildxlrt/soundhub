@@ -2,7 +2,7 @@ import { ArtistId, EventId } from "../../utils"
 import { EntityLayer } from "./layers"
 
 export class Event extends EntityLayer {
-	planner: ArtistId | undefined
+	owner_id: ArtistId | undefined
 	date: Date
 	place: string
 	artists: ArtistId[]
@@ -12,7 +12,7 @@ export class Event extends EntityLayer {
 
 	constructor(
 		id: EventId | undefined,
-		planner: ArtistId | undefined,
+		owner_id: ArtistId | undefined,
 		date: Date,
 		place: string,
 		artists: ArtistId[],
@@ -23,7 +23,7 @@ export class Event extends EntityLayer {
 	) {
 		super(id, createdAt)
 
-		this.planner = planner
+		this.owner_id = owner_id
 		this.date = date
 		this.artists = artists
 		this.place = place

@@ -1,5 +1,5 @@
 import { Reply, dbClient } from "../../assets"
-import { EntityId, SongsRepository, ISongSucc, ErrorMsg } from "Shared"
+import { EntityId, SongsRepository, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(id: EntityId): Promise<Reply<ISongSucc>> {
@@ -27,10 +27,7 @@ export class SongsImplement implements SongsRepository {
 				lyrics: data?.lyrics,
 			})
 		} catch (error) {
-			return new Reply<ISongSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<ISongSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 }

@@ -3,7 +3,7 @@ import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
 export interface CreateEventReqDTO {
-	planner: ArtistId
+	owner_id: ArtistId
 	date: Date
 	place: string
 	artists: ArtistId[]

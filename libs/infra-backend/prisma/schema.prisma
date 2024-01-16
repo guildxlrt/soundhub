@@ -42,8 +42,8 @@ model Announce {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  artist_id Int
-  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+  owner_id Int
+  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
 
   title    String
   text     String
@@ -55,8 +55,8 @@ model Event {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  planner Int
-  artist  Artist @relation(fields: [planner], references: [id], onDelete: Cascade)
+  owner_id Int
+  owner  Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
 
   date     DateTime
   place    String
@@ -70,8 +70,8 @@ model Release {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  artist_id Int
-  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+  owner_id Int
+  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
 
   title       String
   releaseType String

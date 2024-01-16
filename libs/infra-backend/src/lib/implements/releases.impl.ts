@@ -13,15 +13,15 @@ import {
 	apiErrorMsg,
 	HideReleaseParams,
 } from "Shared"
-import { dbClient } from "../../assets"
+import { getArtistID, dbClient } from "../../assets"
 import { Reply } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(inputs: NewReleaseParams): Promise<Reply<INewReleaseSucc>> {
-		const { owner_id, title, releaseType, descript, price, genres } = inputs.release
-		const songs = inputs.songs
-
 		try {
+			const { owner_id, title, releaseType, descript, price, genres } = inputs.release
+			const songs = inputs.songs
+
 			// Storing files
 			// ...
 
@@ -55,7 +55,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		} catch (error) {
 			const res = new Reply<INewReleaseSucc>(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(500, apiErrorMsg.e500, error)
 			)
 
 			return res
@@ -65,8 +65,13 @@ export class ReleasesImplement implements ReleasesRepository {
 	async modify(inputs: ModifyReleaseParams): Promise<Reply<boolean>> {
 		try {
 			const { id, price, userAuth } = inputs
-			console.log(userAuth)
 
+			// owner verification
+			const release = await dbClient.release.findUnique(getArtistID(id))
+
+			if (userAuth !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.release.update({
 				where: {
 					id: id,
@@ -79,14 +84,20 @@ export class ReleasesImplement implements ReleasesRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
+			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
 	async hide(inputs: HideReleaseParams): Promise<Reply<boolean>> {
-		const { id, isPublic } = inputs
-
 		try {
+			const { id, isPublic, userAuth } = inputs
+
+			// owner verification
+			const release = await dbClient.release.findUnique(getArtistID(id))
+
+			if (userAuth !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.release.update({
 				where: {
 					id: id,
@@ -99,7 +110,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
+			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -139,10 +150,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				songs: data?.songs,
 			})
 		} catch (error) {
-			return new Reply<IReleaseSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IReleaseSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -216,9 +224,9 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async findManyByArtist(id: EntityId): Promise<Reply<IReleasesListSucc>> {
-		const artistId = id
-
 		try {
+			const artistId = id
+
 			// Calling DB
 			const data = await dbClient.release.findMany({
 				where: {

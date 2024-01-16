@@ -4,7 +4,6 @@ import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	AnnouncesRepository,
-	noStatus,
 	ErrorMsg,
 	ModifyAnnounceReqDTO,
 	apiRoot,
@@ -23,14 +22,14 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const { text, title } = inputs.data
 
-			return await axios({
+			return (await axios({
 				method: "post",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
 				withCredentials: true,
 				data: { title: title, text: text } as CreateAnnounceReqDTO,
-			})
+			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
@@ -38,70 +37,70 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const { text, title } = inputs.data
 
-			return await axios({
+			return (await axios({
 				method: "put",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.modify}`,
 				withCredentials: true,
 				data: { title: title, text: text } as ModifyAnnounceReqDTO,
-			})
+			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async delete(id: DeleteAnnounceParams): Promise<Response<void>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "delete",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.delete + id}`,
 				withCredentials: true,
-			})
+			})) as Response<void>
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<void>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async get(id: AnnounceId): Promise<Response<IAnnounceSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.oneById + id}`,
 				withCredentials: true,
-			})
+			})) as Response<IAnnounceSucc>
 		} catch (error) {
 			return new Response<IAnnounceSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
 
 	async getAll(): Promise<Response<IAnnouncesListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.all}`,
 				withCredentials: true,
-			})
+			})) as Response<IAnnouncesListSucc>
 		} catch (error) {
 			return new Response<IAnnouncesListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
 
 	async findManyByArtist(id: ArtistId): Promise<Response<IAnnouncesListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.manyByArtist + id}`,
 				withCredentials: true,
-			})
+			})) as Response<IAnnouncesListSucc>
 		} catch (error) {
 			return new Response<IAnnouncesListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}

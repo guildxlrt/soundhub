@@ -3,7 +3,7 @@ import { ArtistId, EventId } from "../../types"
 // EVENT
 export interface IEventSucc {
 	id: EventId | undefined
-	planner: ArtistId | undefined
+	owner_id: ArtistId | undefined
 	date: Date | undefined
 	place: string | undefined
 	artists: ArtistId[] | undefined

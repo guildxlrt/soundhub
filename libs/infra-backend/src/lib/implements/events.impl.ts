@@ -1,4 +1,4 @@
-import { Reply, dbClient } from "../../assets"
+import { Reply, dbClient, getArtistID } from "../../assets"
 import {
 	ErrorMsg,
 	EventsRepository,
@@ -11,19 +11,20 @@ import {
 	PlaceParams,
 	DateParams,
 	DeleteEventParams,
+	apiErrorMsg,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
 	async create(inputs: NewEventParams): Promise<Reply<boolean>> {
-		const { planner, date, place, artists, title, text, imageUrl } = inputs.data
-
 		try {
+			const { owner_id, date, place, artists, title, text, imageUrl } = inputs.data
+
 			// Storing files
 			// ...
 
 			await dbClient.event.create({
 				data: {
-					planner: planner as number,
+					owner_id: owner_id as number,
 					date: date,
 					place: place,
 					artists: artists,
@@ -36,29 +37,30 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(
-				false,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 
 			return res
 		}
 	}
 
 	async modify(inputs: ModifyEventParams): Promise<Reply<boolean>> {
-		const { id, planner, date, place, artists, title, text, imageUrl } = inputs.data
-
-		const { userAuth } = inputs
-		console.log(userAuth)
-
 		try {
-			// Storing files
+			const { id, owner_id, date, place, artists, title, text, imageUrl } = inputs.data
+
+			const { userAuth } = inputs
+
+			// owner verification
+			const event = await dbClient.event.findUnique(getArtistID(id))
+
+			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.event.update({
 				where: {
 					id: id,
 				},
 				data: {
-					planner: planner,
+					owner_id: owner_id,
 					date: date,
 					place: place,
 					artists: artists,
@@ -71,10 +73,7 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(
-				false,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 
 			return res
 		}
@@ -82,8 +81,14 @@ export class EventsImplement implements EventsRepository {
 
 	async delete(inputs: DeleteEventParams): Promise<Reply<void>> {
 		try {
-			const { id } = inputs
+			const { id, userAuth } = inputs
 
+			// owner verification
+			const event = await dbClient.event.findUnique(getArtistID(id))
+
+			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.event.delete({
 				where: {
 					id: id,
@@ -109,7 +114,7 @@ export class EventsImplement implements EventsRepository {
 				},
 				select: {
 					id: true,
-					planner: true,
+					owner_id: true,
 					date: true,
 					place: true,
 					artists: true,
@@ -122,7 +127,7 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<IEventSucc>({
 				id: data?.id,
-				planner: data?.planner,
+				owner_id: data?.owner_id,
 				date: data?.date,
 				place: data?.place,
 				artists: data?.artists,
@@ -131,10 +136,7 @@ export class EventsImplement implements EventsRepository {
 				imageUrl: data?.imageUrl,
 			})
 		} catch (error) {
-			return new Reply<IEventSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IEventSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -143,7 +145,7 @@ export class EventsImplement implements EventsRepository {
 			const data = await dbClient.event.findMany({
 				select: {
 					id: true,
-					planner: true,
+					owner_id: true,
 					date: true,
 					place: true,
 					artists: true,
@@ -156,7 +158,7 @@ export class EventsImplement implements EventsRepository {
 			const list = data.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
-					planner: event.planner,
+					owner_id: event.owner_id,
 					date: event.date,
 					place: event.place,
 					artists: event.artists,
@@ -168,24 +170,21 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
 	async findManyByArtist(id: EntityId): Promise<Reply<IEventsListSucc>> {
-		const artistId = id
-
 		try {
+			const artistId = id
+
 			const data = await dbClient.event.findMany({
 				where: {
 					artists: { has: artistId },
 				},
 				select: {
 					id: true,
-					planner: true,
+					owner_id: true,
 					date: true,
 					place: true,
 					artists: true,
@@ -198,7 +197,7 @@ export class EventsImplement implements EventsRepository {
 			const list = data.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
-					planner: event.planner,
+					owner_id: event.owner_id,
 					date: event.date,
 					place: event.place,
 					artists: event.artists,
@@ -210,24 +209,21 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
 	async findManyByDate(inputs: DateParams): Promise<Reply<IEventsListSucc>> {
-		const date = inputs.date
-
 		try {
+			const date = inputs.date
+
 			const data = await dbClient.event.findMany({
 				where: {
 					date: date,
 				},
 				select: {
 					id: true,
-					planner: true,
+					owner_id: true,
 					place: true,
 					artists: true,
 					title: true,
@@ -239,7 +235,7 @@ export class EventsImplement implements EventsRepository {
 			const list = data.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
-					planner: event.planner,
+					owner_id: event.owner_id,
 					date: date,
 					place: event.place,
 					artists: event.artists,
@@ -251,24 +247,21 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
 	async findManyByPlace(inputs: PlaceParams): Promise<Reply<IEventsListSucc>> {
-		const place = inputs.place
-
 		try {
+			const place = inputs.place
+
 			const data = await dbClient.event.findMany({
 				where: {
 					place: place,
 				},
 				select: {
 					id: true,
-					planner: true,
+					owner_id: true,
 					date: true,
 					artists: true,
 					title: true,
@@ -280,7 +273,7 @@ export class EventsImplement implements EventsRepository {
 			const list = data.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
-					planner: event.planner,
+					owner_id: event.owner_id,
 					date: event.date,
 					place: place,
 					artists: event.artists,
@@ -292,10 +285,7 @@ export class EventsImplement implements EventsRepository {
 			// Response
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 }

@@ -13,15 +13,15 @@ import {
 	NewArtistParams,
 	UserCookie,
 } from "Shared"
-import { dbClient, dbErrHandler, Reply } from "../../assets"
+import { dbClient, dbErrHandler, getAuthID, Reply } from "../../assets"
 
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Reply<INewArtistSucc>> {
-		const { name, bio, members, genres } = inputs.profile
-		const { email } = inputs.auth
-		const password = inputs.hashedPass as string
-
 		try {
+			const { name, bio, members, genres } = inputs.profile
+			const { email } = inputs.auth
+			const password = inputs.hashedPass as string
+
 			// Storing files
 			// ...
 
@@ -42,6 +42,8 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
+			if (!data?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
+
 			// Find Profile Id
 			const profile = await dbClient.artist.findUnique({
 				where: {
@@ -60,7 +62,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		} catch (error) {
 			const res = new Reply<INewArtistSucc>(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(500, apiErrorMsg.e500, error)
 			)
 
 			// Email must be unique
@@ -74,14 +76,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		try {
 			const { name, bio, members, genres, id } = inputs.profile
 			const { userAuth } = inputs
-			console.log(userAuth)
 
 			// AUTH
-			const data = await dbClient.artist.findUnique({
-				where: {
-					id: id,
-				},
-			})
+			const profile = await getAuthID(id)
+
+			if (userAuth !== profile?.id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// PERSIST
 			await dbClient.artist.update({
@@ -99,7 +98,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// Response
 			return new Reply(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, `Error: failed to persist`, error))
+			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -133,9 +132,9 @@ export class ArtistsImplement implements ArtistsRepository {
 	}
 
 	async getByEmail(inputs: EmailParams): Promise<Reply<IArtistInfoSucc>> {
-		const email = inputs.email
-
 		try {
+			const email = inputs.email
+
 			const data = await dbClient.userAuth.findUnique({
 				where: {
 					email: email,
@@ -155,7 +154,6 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Response
-
 			return new Reply<IArtistInfoSucc>({
 				id: data?.artists[0].id,
 				name: data?.artists[0].name,

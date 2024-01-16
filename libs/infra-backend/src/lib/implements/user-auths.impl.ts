@@ -8,8 +8,10 @@ import {
 	ILoginRes,
 	ILoginResServer,
 	UserCookie,
+	encryptors,
 } from "Shared"
 import { Reply, dbClient } from "../../assets"
+import { getAuthID } from "../../assets/get-id"
 
 export class UserAuthsImplement implements UserAuthsRepository {
 	async login(inputs: LoginParams): Promise<Reply<ILoginRes>> {
@@ -28,15 +30,11 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
+			if (!data?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
+			if (!data?.email || !data?.password) throw new ErrorMsg(500, apiErrorMsg.e500)
+
 			// Find Profile Id
-			const profile = await dbClient.artist.findUnique({
-				where: {
-					user_auth_id: data?.id,
-				},
-				select: {
-					id: true,
-				},
-			})
+			const profile = await getAuthID(data?.id)
 
 			const encryptedPass = data?.password as string
 
@@ -61,7 +59,19 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 	async changeEmail(inputs: ChangeEmailParams): Promise<Reply<boolean>> {
 		try {
-			const { newEmail, id } = inputs
+			const { actual, newEmail, id } = inputs
+
+			// verify old
+			const data = await dbClient.userAuth.findUnique({
+				where: {
+					id: id,
+				},
+				select: {
+					email: true,
+				},
+			})
+
+			if (data?.email !== actual) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// Persist data
 			await dbClient.userAuth.update({
@@ -82,7 +92,21 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 	async changePass(inputs: ChangePassParams): Promise<Reply<boolean>> {
 		try {
-			const { newPass, id } = inputs
+			const { actual, newPass, id } = inputs
+
+			// verify old
+			const data = await dbClient.userAuth.findUnique({
+				where: {
+					id: id,
+				},
+				select: {
+					password: true,
+				},
+			})
+			const encrypted = data?.password
+			const hashedPass = await encryptors.comparePass(actual, encrypted as string)
+
+			if (hashedPass !== true) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// Persist data
 			await dbClient.userAuth.update({

@@ -1,4 +1,4 @@
-import { Reply, dbClient } from "../../assets"
+import { Reply, getArtistID, dbClient } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
@@ -9,14 +9,15 @@ import {
 	ErrorMsg,
 	IAnnouncesListItemSucc,
 	DeleteAnnounceParams,
+	apiErrorMsg,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
 	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
-		const { data } = inputs
-		const { owner_id, title, text, imageUrl, videoUrl } = data
-
 		try {
+			const { data } = inputs
+			const { owner_id, title, text, imageUrl, videoUrl } = data
+
 			// Storing files
 			// ...
 
@@ -33,10 +34,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(
-				false,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 
 			return res
 		}
@@ -46,7 +44,12 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const { owner_id, title, text, imageUrl, videoUrl, id } = inputs.data
 
-			// Storing files
+			// owner verification
+			const announce = await dbClient.announce.findUnique(getArtistID(id))
+
+			if (owner_id !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.announce.update({
 				where: {
 					id: id,
@@ -63,10 +66,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// Response
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(
-				false,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
 
 			return res
 		}
@@ -76,8 +76,12 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const { id, userAuth } = inputs
 
-			console.log(userAuth)
+			// owner verification
+			const announce = await dbClient.announce.findUnique(getArtistID(id))
 
+			if (userAuth !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// persist
 			await dbClient.announce.delete({
 				where: {
 					id: id,
@@ -120,10 +124,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				videoUrl: data?.videoUrl,
 			})
 		} catch (error) {
-			return new Reply<IAnnounceSucc>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new Reply<IAnnounceSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -153,15 +154,15 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(500, apiErrorMsg.e500, error)
 			)
 		}
 	}
 
 	async findManyByArtist(id: EntityId): Promise<Reply<IAnnouncesListSucc>> {
-		const artistId = id
-
 		try {
+			const artistId = id
+
 			const data = await dbClient.announce.findMany({
 				where: {
 					owner_id: artistId,
@@ -189,7 +190,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(500, apiErrorMsg.e500, error)
 			)
 		}
 	}

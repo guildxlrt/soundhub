@@ -10,7 +10,6 @@ import {
 	apiEndpts,
 	CreateEventReqDTO,
 	ErrorMsg,
-	noStatus,
 	ModifyEventParams,
 	IEventsListSucc,
 	DateParams,
@@ -20,98 +19,98 @@ import {
 
 export class EventsImplement implements EventsRepository {
 	async create(inputs: NewEventParams): Promise<Response<boolean>> {
-		const { planner, title, text, date, place, artists } = inputs.data
+		const { owner_id, title, text, date, place, artists } = inputs.data
 		try {
-			return await axios({
+			return (await axios({
 				method: "post",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.create}`,
 				withCredentials: true,
 				data: {
-					planner: planner,
+					owner_id: owner_id,
 					date: date,
 					place: place,
 					artists: artists,
 					title: title,
 					text: text,
 				} as CreateEventReqDTO,
-			})
+			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async modify(inputs: ModifyEventParams): Promise<Response<boolean>> {
-		const { planner, title, text, date, place, artists } = inputs.data
+		const { owner_id, title, text, date, place, artists } = inputs.data
 		try {
-			return await axios({
+			return (await axios({
 				method: "put",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.create}`,
 				withCredentials: true,
 				data: {
-					planner: planner,
+					owner_id: owner_id,
 					date: date,
 					place: place,
 					artists: artists,
 					title: title,
 					text: text,
 				} as CreateEventReqDTO,
-			})
+			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async delete(inputs: DeleteEventParams): Promise<Response<void>> {
 		try {
 			const { id } = inputs
-			return await axios({
+			return (await axios({
 				method: "delete",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.delete + id}`,
 				withCredentials: true,
-			})
+			})) as Response<void>
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<void>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async get(id: EntityId): Promise<Response<IEventSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.oneById + id}`,
 				withCredentials: true,
-			})
+			})) as Response<IEventSucc>
 		} catch (error) {
-			return new Response<IEventSucc>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<IEventSucc>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async getAll(): Promise<Response<IEventsListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.all}`,
 				withCredentials: true,
-			})
+			})) as Response<IEventsListSucc>
 		} catch (error) {
 			return new Response<IEventsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
 
 	async findManyByArtist(id: EntityId): Promise<Response<IEventsListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByArtist + id}`,
 				withCredentials: true,
-			})
+			})) as Response<IEventsListSucc>
 		} catch (error) {
 			return new Response<IEventsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
@@ -119,18 +118,18 @@ export class EventsImplement implements EventsRepository {
 	async findManyByDate(inputs: DateParams): Promise<Response<IEventsListSucc>> {
 		const { date } = inputs
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByDate}`,
 				withCredentials: true,
 				data: {
 					date: date,
 				},
-			})
+			})) as Response<IEventsListSucc>
 		} catch (error) {
 			return new Response<IEventsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
@@ -138,18 +137,18 @@ export class EventsImplement implements EventsRepository {
 	async findManyByPlace(inputs: PlaceParams): Promise<Response<IEventsListSucc>> {
 		const { place } = inputs
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByPlace}`,
 				withCredentials: true,
 				data: {
 					place: place,
 				},
-			})
+			})) as Response<IEventsListSucc>
 		} catch (error) {
 			return new Response<IEventsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}

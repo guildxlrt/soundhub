@@ -8,7 +8,6 @@ import {
 	apiRoot,
 	apiPath,
 	apiEndpts,
-	noStatus,
 	ErrorMsg,
 	CreateArtistReqDTO,
 	ModifyArtistReqDTO,
@@ -22,16 +21,16 @@ import axios from "axios"
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Response<INewArtistSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "post",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
 				withCredentials: true,
 				data: inputs as CreateArtistReqDTO,
-			})
+			})) as Response<INewArtistSucc>
 		} catch (error) {
 			return new Response<INewArtistSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
@@ -40,7 +39,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		try {
 			const { bio, genres, members, name } = inputs.profile
 
-			return await axios({
+			return (await axios({
 				method: "post",
 				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
 				withCredentials: true,
@@ -52,23 +51,23 @@ export class ArtistsImplement implements ArtistsRepository {
 					genres: genres,
 					avatar: null,
 				} as ModifyArtistReqDTO,
-			})
+			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(noStatus, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
 	async getById(id: ArtistId): Promise<Response<IArtistInfoSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneById + id}`,
 				withCredentials: true,
-			})
+			})) as Response<IArtistInfoSucc>
 		} catch (error) {
 			return new Response<IArtistInfoSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
@@ -76,46 +75,46 @@ export class ArtistsImplement implements ArtistsRepository {
 	async getByEmail(inputs: EmailParams): Promise<Response<IArtistInfoSucc>> {
 		const { email } = inputs
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneById}`,
 				data: { email: email },
 				withCredentials: true,
-			})
+			})) as Response<IArtistInfoSucc>
 		} catch (error) {
 			return new Response<IArtistInfoSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
 
 	async getAll(): Promise<Response<IArtistsListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.artists + apiEndpts.artists.all}`,
 				withCredentials: true,
-			})
+			})) as Response<IArtistsListSucc>
 		} catch (error) {
 			return new Response<IArtistsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}
 
 	async findManyByGenre(genre: GenreType): Promise<Response<IArtistsListSucc>> {
 		try {
-			return await axios({
+			return (await axios({
 				method: "get",
 				url: `${apiRoot + apiPath.artists + apiEndpts.artists.manyByGenre + genre}`,
 				withCredentials: true,
-			})
+			})) as Response<IArtistsListSucc>
 		} catch (error) {
 			return new Response<IArtistsListSucc>(
 				undefined,
-				new ErrorMsg(noStatus, "Error Calling API")
+				new ErrorMsg(undefined, "Error Calling API")
 			)
 		}
 	}

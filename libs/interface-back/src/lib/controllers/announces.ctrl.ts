@@ -32,6 +32,7 @@ export class AnnoncesController implements IAnnoncesController {
 
 			// Saving Profile
 			const announce = new Announce(undefined, user, title, text)
+
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
 			const { data, error } = await createAnnounce.execute(new NewAnnounceParams(announce))
 			if (error) throw error
