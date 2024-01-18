@@ -11,37 +11,55 @@ import {
 } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
+interface INewReleaseData {
+	owner_id: ArtistId
+	title: string
+	releaseType: ReleaseType
+	descript: string | null
+	price: ReleasePrice | null
+	genres: GenresArray
+}
+interface INewSong {
+	// audio: File
+	title: string
+	featuring: number[]
+	lyrics: string | null
+}
+
 // CREATE RELEASE
-export interface CreateReleaseReqDTO {
-	release: {
-		owner_id: ArtistId
-		title: string
-		releaseType: ReleaseType
-		descript: string | null
-		price: ReleasePrice | null
-		genres: GenresArray
+export class CreateReleaseReqDTO {
+	release: INewReleaseData
+	songs: INewSong[]
+
+	constructor(release: INewReleaseData, songs: INewSong[]) {
+		this.release = release
+		this.songs = songs
 	}
-	songs: {
-		// audio: File
-		title: string
-		featuring: number[]
-		lyrics: string | null
-	}[]
 }
 
 export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY
-export interface ModifyReleaseReqDTO {
+export class ModifyReleaseReqDTO {
 	id: ReleaseId
 	newAmount: ReleasePrice
+
+	constructor(id: ReleaseId, newAmount: ReleasePrice) {
+		this.id = id
+		this.newAmount = newAmount
+	}
 }
 export class ModifyReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // HIDE
-export interface HideReleaseReqDTO {
+export class HideReleaseReqDTO {
 	id: ReleaseId
 	isPublic: boolean
+
+	constructor(id: ReleaseId, isPublic: boolean) {
+		this.id = id
+		this.isPublic = isPublic
+	}
 }
 export class HideReleaseReplyDTO extends ReplyDTO<boolean> {}
 

@@ -1,24 +1,48 @@
-import { ArtistId, EventId, IEventSucc, IEventsListSucc } from "../utils"
+import { ArtistId, IEventSucc, IEventsListSucc } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
-export interface CreateEventReqDTO {
+export class CreateEventReqDTO {
 	owner_id: ArtistId
 	date: Date
 	place: string
 	artists: ArtistId[]
 	title: string
 	text: string
+
+	constructor(
+		owner_id: ArtistId,
+		date: Date,
+		place: string,
+		artists: ArtistId[],
+		title: string,
+		text: string
+	) {
+		this.owner_id = owner_id
+		this.date = date
+		this.place = place
+		this.artists = artists
+		this.title = title
+		this.text = text
+	}
 }
 export class CreateEventReplyDTO extends ReplyDTO<boolean> {}
 
 // CREATE POST
-export interface ModifyEventReqDTO {
+export class ModifyEventReqDTO {
 	date: Date
 	place: string
 	artists: ArtistId[]
 	title: string
 	text: string
+
+	constructor(date: Date, place: string, artists: ArtistId[], title: string, text: string) {
+		this.date = date
+		this.place = place
+		this.artists = artists
+		this.title = title
+		this.text = text
+	}
 }
 export class ModifyEventReplyDTO extends ReplyDTO<boolean> {}
 
@@ -27,28 +51,30 @@ export class ModifyEventReplyDTO extends ReplyDTO<boolean> {}
 export class DeleteEventReplyDTO extends ReplyDTO<void> {}
 
 // GET POST
-export interface GetEventReqDTO {
-	id: EventId
-}
 export class GetEventReplyDTO extends ReplyDTO<IEventSucc> {}
 
 // GET ALL
 export class GetAllEventsReplyDTO extends ReplyDTO<IEventsListSucc> {}
 
 // FIND MANY BY ARTIST
-export interface FindEventsByArtistReqDTO {
-	id: ArtistId
-}
 export class FindEventsByArtistReplyDTO extends ReplyDTO<IEventsListSucc> {}
 
 // FIND MANY BY DATE
-export interface FindEventsByDateReqDTO {
+export class FindEventsByDateReqDTO {
 	date: Date
+
+	constructor(date: Date) {
+		this.date = date
+	}
 }
 export class FindEventsByDateReplyDTO extends ReplyDTO<IEventsListSucc> {}
 
 // FIND MANY BY LOCATION
-export interface FindEventsByPlaceReqDTO {
+export class FindEventsByPlaceReqDTO {
 	place: string
+
+	constructor(place: string) {
+		this.place = place
+	}
 }
 export class FindEventsByPlaceReplyDTO extends ReplyDTO<IEventsListSucc> {}

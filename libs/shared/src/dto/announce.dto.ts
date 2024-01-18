@@ -2,16 +2,24 @@ import { IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
-export interface CreateAnnounceReqDTO {
+export class CreateAnnounceReqDTO {
 	title: string
 	text: string
+	constructor(title: string, text: string) {
+		this.title = title
+		this.text = text
+	}
 }
 export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // MODIFY POST
-export interface ModifyAnnounceReqDTO {
+export class ModifyAnnounceReqDTO {
 	title: string
 	text: string
+	constructor(title: string, text: string) {
+		this.title = title
+		this.text = text
+	}
 }
 export class ModifyAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
