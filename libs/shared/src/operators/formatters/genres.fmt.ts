@@ -9,9 +9,8 @@ export const genresFormat = (genres: GenresArray): GenresArray => {
 			const find = list.includes(value)
 
 			if (find !== true) {
-				if (index === 0) {
-					throw new ErrorMsg(404, `Genres: '${value}' is not a genre`)
-				} else return undefined
+				if (index === 0) throw new ErrorMsg(400, `Genres: '${value}' is not a genre`)
+				else return undefined
 			}
 			return genre
 		}) as GenresArray

@@ -56,7 +56,7 @@ model Event {
   createdAt DateTime @default(now())
 
   owner_id Int
-  owner  Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
 
   date     DateTime
   place    String

@@ -1,4 +1,4 @@
-import { IReleasesController } from "../../assets"
+import { IReleasesCtrl } from "../../assets"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -7,7 +7,7 @@ import {
 	GetReleaseUsecase,
 	HideReleaseUsecase,
 	ModifyReleaseUsecase,
-} from "Interactors"
+} from "Domain"
 import { databaseServices } from "Infra-backend"
 import {
 	CreateReleaseReqDTO,
@@ -21,7 +21,7 @@ import {
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
-export class ReleasesController implements IReleasesController {
+export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 

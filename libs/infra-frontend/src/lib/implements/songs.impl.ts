@@ -1,6 +1,7 @@
 import axios from "axios"
 import { Response } from "../../assets"
-import { EntityId, SongsRepository, ISongSucc, apiRoot, apiPath, apiEndpts, ErrorMsg } from "Shared"
+import { SongsRepository } from "Domain"
+import { EntityId, ISongSucc, apiRoot, apiPath, apiEndpts, ErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(id: EntityId): Promise<Response<ISongSucc>> {

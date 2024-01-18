@@ -1,3 +1,4 @@
+import { UserAuthsRepository } from "Domain"
 import {
 	ChangeEmailParams,
 	ChangeEmailReqDTO,
@@ -7,7 +8,6 @@ import {
 	ILoginRes,
 	LoginParams,
 	LoginReqDTO,
-	UserAuthsRepository,
 	apiEndpts,
 	apiPath,
 	apiRoot,

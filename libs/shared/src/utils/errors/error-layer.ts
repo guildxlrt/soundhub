@@ -1,4 +1,4 @@
-import { StatusType } from "../reply"
+import { StatusType } from "../replies"
 
 export class ErrorMsg extends Error {
 	status: StatusType

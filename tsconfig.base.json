@@ -15,9 +15,9 @@
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
+			"Domain": ["libs/domain/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],
 			"Infra-frontend": ["libs/infra-frontend/src/index.ts"],
-			"Interactors": ["libs/interactors/src/index.ts"],
 			"Interface-back": ["libs/interface-back/src/index.ts"],
 			"Interface-front": ["libs/interface-front/src/index.ts"],
 			"Shared": ["libs/shared/src/index.ts"]

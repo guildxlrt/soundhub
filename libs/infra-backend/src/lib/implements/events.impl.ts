@@ -1,7 +1,7 @@
+import { EventsRepository } from "Domain"
 import { Reply, dbClient, getArtistID } from "../../assets"
 import {
 	ErrorMsg,
-	EventsRepository,
 	IEventSucc,
 	IEventsListItemSucc,
 	IEventsListSucc,
@@ -34,7 +34,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -70,7 +70,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -95,6 +95,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 
+			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
 			const res = new Reply<void>(
@@ -124,7 +125,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IEventSucc>({
 				id: data?.id,
 				owner_id: data?.owner_id,
@@ -167,7 +168,7 @@ export class EventsImplement implements EventsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
 			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -206,7 +207,7 @@ export class EventsImplement implements EventsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
 			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -244,7 +245,7 @@ export class EventsImplement implements EventsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
 			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -282,7 +283,7 @@ export class EventsImplement implements EventsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
 			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))

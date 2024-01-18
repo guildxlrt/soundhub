@@ -1,8 +1,10 @@
+import axios from "axios"
+import { Response } from "../../assets"
+import { ArtistsRepository } from "Domain"
 import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	INewArtistSucc,
-	ArtistsRepository,
 	EmailParams,
 	GenreType,
 	apiRoot,
@@ -15,8 +17,6 @@ import {
 	NewArtistParams,
 	ModifyArtistParams,
 } from "Shared"
-import { Response } from "../../assets"
-import axios from "axios"
 
 export class ArtistsImplement implements ArtistsRepository {
 	async create(inputs: NewArtistParams): Promise<Response<INewArtistSucc>> {

@@ -1,17 +1,13 @@
 import {
-	Artist,
 	CreateArtistReqDTO,
 	GenreType,
 	GetArtistByEmailReqDTO,
 	ModifyArtistParams,
 	ModifyArtistReqDTO,
 	NewArtistParams,
-	UserAuth,
-	UserCookie,
 	apiErrorMsg,
 	encryptors,
 } from "Shared"
-
 import {
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
@@ -19,18 +15,11 @@ import {
 	GetArtistByEmailUsecase,
 	GetArtistByIdUsecase,
 	ModifyArtistUsecase,
-} from "Interactors"
+} from "Domain"
 import { databaseServices } from "Infra-backend"
-import {
-	IArtistController,
-	Token,
-	authExpires,
-	errHandler,
-	ApiRequest,
-	ApiReply,
-} from "../../assets"
+import { IArtistCtrl, Token, authExpires, errHandler, ApiRequest, ApiReply } from "../../assets"
 
-export class ArtistsController implements IArtistController {
+export class ArtistsController implements IArtistCtrl {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
@@ -43,16 +32,15 @@ export class ArtistsController implements IArtistController {
 
 			// Call DB
 			const { bio, genres, members, name } = profile
-			const artistProfile = new Artist(
-				undefined,
-				undefined,
-				name,
-				bio,
-				members,
-				genres,
-				undefined
-			)
-			const userAuth = new UserAuth(undefined, email, password)
+			const artistProfile = {
+				id: undefined,
+				user_auth_id: undefined,
+				name: name,
+				bio: bio,
+				members: members,
+				genres: genres,
+			}
+			const userAuth = { id: undefined, email: email, password: password }
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(
 				new NewArtistParams(artistProfile, userAuth, authConfirm, hashedPass)
@@ -87,15 +75,14 @@ export class ArtistsController implements IArtistController {
 			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
 
 			// Saving Changes
-			const artistProfile = new Artist(
-				undefined,
-				undefined,
-				name,
-				bio,
-				members,
-				genres,
-				undefined
-			)
+			const artistProfile = {
+				id: undefined,
+				user_auth_id: undefined,
+				name: name,
+				bio: bio,
+				members: members,
+				genres: genres,
+			}
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
 			const { data, error } = await modifyArtist.execute(
 				new ModifyArtistParams(artistProfile, user)

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { Response } from "../../assets"
+import { EventsRepository } from "Domain"
 import {
-	EventsRepository,
 	IEventSucc,
 	EntityId,
 	NewEventParams,

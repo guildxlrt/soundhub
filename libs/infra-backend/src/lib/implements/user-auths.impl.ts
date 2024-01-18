@@ -1,9 +1,9 @@
+import { UserAuthsRepository } from "Domain"
 import {
 	ChangeEmailParams,
 	ChangePassParams,
 	ErrorMsg,
 	LoginParams,
-	UserAuthsRepository,
 	apiErrorMsg,
 	ILoginRes,
 	ILoginResServer,
@@ -38,6 +38,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 			const encryptedPass = data?.password as string
 
+			// RESPONSE
 			return new Reply<ILoginResServer>({
 				email: email,
 				password: password,
@@ -51,6 +52,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 	async logout(): Promise<Reply<void>> {
 		try {
+			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
 			return new Reply<void>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -83,7 +85,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -118,7 +120,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))

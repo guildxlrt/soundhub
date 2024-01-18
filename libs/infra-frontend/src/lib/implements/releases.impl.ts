@@ -1,9 +1,9 @@
+import { ReleasesRepository } from "Domain"
 import {
 	GenreType,
 	EntityId,
 	NewReleaseParams,
 	ModifyReleaseParams,
-	ReleasesRepository,
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,

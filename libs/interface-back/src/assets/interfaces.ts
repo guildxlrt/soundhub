@@ -1,11 +1,11 @@
-export interface IAuthController {
+export interface IAuthCtrl {
 	login(req: unknown, res: unknown): Promise<unknown>
 	logout(req: unknown, res: unknown): Promise<unknown>
 	changeEmail(req: unknown, res: unknown): Promise<unknown>
 	changePass(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IArtistController {
+export interface IArtistCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	modify(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
@@ -14,7 +14,7 @@ export interface IArtistController {
 	findManyByGenre(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IReleasesController {
+export interface IReleasesCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	modify(req: unknown, res: unknown): Promise<unknown>
 	hide(req: unknown, res: unknown): Promise<unknown>
@@ -24,11 +24,11 @@ export interface IReleasesController {
 	findManyByGenre(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface ISongsController {
+export interface ISongsCtrl {
 	get(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IAnnoncesController {
+export interface IAnnoncesCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	modify(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
@@ -37,7 +37,7 @@ export interface IAnnoncesController {
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>
 }
 
-export interface IEventsController {
+export interface IEventsCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	modify(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>

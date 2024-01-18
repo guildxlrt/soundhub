@@ -1,10 +1,9 @@
+import { ReleasesRepository, Song } from "Domain"
 import {
 	GenreType,
 	EntityId,
 	NewReleaseParams,
 	ModifyReleaseParams,
-	ReleasesRepository,
-	Song,
 	ErrorMsg,
 	INewReleaseSucc,
 	IReleaseSucc,
@@ -50,7 +49,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<INewReleaseSucc>({ message: `${title} was created.`, id: data.id })
 		} catch (error) {
 			const res = new Reply<INewReleaseSucc>(
@@ -81,7 +80,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -107,7 +106,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -137,7 +136,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IReleaseSucc>({
 				id: id,
 				owner_id: id,
@@ -180,7 +179,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -216,7 +215,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -254,7 +253,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))

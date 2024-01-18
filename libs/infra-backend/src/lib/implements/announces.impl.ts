@@ -1,8 +1,8 @@
+import { AnnouncesRepository } from "Domain"
 import { Reply, getArtistID, dbClient } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
-	AnnouncesRepository,
 	EntityId,
 	NewAnnounceParams,
 	ModifyAnnounceParams,
@@ -31,7 +31,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -63,7 +63,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -88,6 +88,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				},
 			})
 
+			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
 			const res = new Reply<void>(
@@ -114,7 +115,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IAnnounceSucc>({
 				id: id,
 				owner_id: id,
@@ -149,7 +150,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(
@@ -185,7 +186,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(

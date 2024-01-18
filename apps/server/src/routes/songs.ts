@@ -1,10 +1,11 @@
 import { Router } from "express"
 import { controllers } from "Interface-back"
-import { apiEndpts } from "Shared"
+import { apiUrlEndpt } from "Shared"
 
 const router = Router()
 const controller = controllers.songs
+const endpts = apiUrlEndpt.songs
 
-router.get(apiEndpts.songs.oneById, controller.get)
+router.get(endpts.oneById, controller.get)
 
 export default router

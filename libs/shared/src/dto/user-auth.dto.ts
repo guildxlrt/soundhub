@@ -1,5 +1,4 @@
-import { UserAuth } from "../domain"
-import { UserEmail, UserPassword } from "../utils"
+import { IUserAuth, UserEmail, UserPassword } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // LOGIN
@@ -7,7 +6,7 @@ export interface LoginReqDTO {
 	readonly email: UserEmail
 	readonly password: UserPassword
 }
-export class LoginReplyDTO extends ReplyDTO<UserAuth> {}
+export class LoginReplyDTO extends ReplyDTO<IUserAuth> {}
 
 // LOGOUT
 export class LogoutReplyDTO extends ReplyDTO<void> {}

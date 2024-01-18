@@ -1,6 +1,6 @@
-import { IAuthController, Token, authExpires } from "../../assets"
+import { IAuthCtrl, Token, authExpires } from "../../assets"
 import { databaseServices } from "Infra-backend"
-import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Interactors"
+import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Domain"
 import {
 	ChangeEmailParams,
 	ChangeEmailReqDTO,
@@ -16,7 +16,7 @@ import {
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
-export class UserAuthController implements IAuthController {
+export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 

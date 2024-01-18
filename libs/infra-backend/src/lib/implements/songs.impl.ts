@@ -1,5 +1,6 @@
+import { SongsRepository } from "Domain"
 import { Reply, dbClient } from "../../assets"
-import { EntityId, SongsRepository, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
+import { EntityId, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(id: EntityId): Promise<Reply<ISongSucc>> {
@@ -17,7 +18,7 @@ export class SongsImplement implements SongsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<ISongSucc>({
 				id: id,
 				release_id: data?.release_id,

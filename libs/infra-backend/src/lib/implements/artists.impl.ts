@@ -1,3 +1,4 @@
+import { ArtistsRepository } from "Domain"
 import {
 	ErrorMsg,
 	IArtistInfoSucc,
@@ -5,7 +6,6 @@ import {
 	IArtistsListItemSucc,
 	apiErrorMsg,
 	INewArtistSucc,
-	ArtistsRepository,
 	EmailParams,
 	GenreType,
 	EntityId,
@@ -54,7 +54,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<INewArtistSucc>({
 				message: `Welcome, ${name} !!`,
 				userCookie: new UserCookie(data.id, profile?.id as number, "artist"),
@@ -95,7 +95,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply(true)
 		} catch (error) {
 			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -117,7 +117,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
 				id: id,
 				name: data?.name,
@@ -153,7 +153,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
 				id: data?.artists[0].id,
 				name: data?.artists[0].name,
@@ -193,7 +193,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -223,7 +223,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// Response
+			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))

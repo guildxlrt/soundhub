@@ -1,9 +1,9 @@
 import axios from "axios"
 import { Response } from "../../assets"
+import { AnnouncesRepository } from "Domain"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
-	AnnouncesRepository,
 	ErrorMsg,
 	ModifyAnnounceReqDTO,
 	apiRoot,

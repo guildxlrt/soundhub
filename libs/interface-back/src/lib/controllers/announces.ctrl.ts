@@ -1,4 +1,4 @@
-import { IAnnoncesController } from "../../assets"
+import { IAnnoncesCtrl } from "../../assets"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -6,20 +6,20 @@ import {
 	GetAllAnnouncesUsecase,
 	GetAnnounceUsecase,
 	ModifyAnnounceUsecase,
-} from "Interactors"
+} from "Domain"
 import { databaseServices } from "Infra-backend"
 import {
-	Announce,
 	apiErrorMsg,
 	CreateAnnounceReqDTO,
 	DeleteAnnounceParams,
+	IAnnounce,
 	ModifyAnnounceParams,
 	ModifyAnnounceReqDTO,
 	NewAnnounceParams,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
-export class AnnoncesController implements IAnnoncesController {
+export class AnnoncesController implements IAnnoncesCtrl {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
@@ -31,7 +31,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const announce = new Announce(undefined, user, title, text)
+			const announce: IAnnounce = {
+				id: undefined,
+				owner_id: user,
+				title: title,
+				text: text,
+			}
 
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
 			const { data, error } = await createAnnounce.execute(new NewAnnounceParams(announce))
@@ -55,8 +60,12 @@ export class AnnoncesController implements IAnnoncesController {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const announce = new Announce(undefined, user, title, text)
-
+			const announce: IAnnounce = {
+				id: undefined,
+				owner_id: user,
+				title: title,
+				text: text,
+			}
 			const ModifyAnnounce = new ModifyAnnounceUsecase(databaseServices)
 			const { data, error } = await ModifyAnnounce.execute(new ModifyAnnounceParams(announce))
 			if (error) throw error

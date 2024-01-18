@@ -5,7 +5,7 @@ import releasesRoutes from "./releases"
 import songsRoutes from "./songs"
 import announcesRoutes from "./announces"
 import eventsRoutes from "./events"
-import { apiPath } from "Shared"
+import { apiUrlPath } from "Shared"
 
 const router = express.Router()
 
@@ -14,11 +14,11 @@ router.get("/", (req, res) => {
 	res.send({ message: "Hello API" })
 })
 
-router.use(apiPath.auths, authRoutes)
-router.use(apiPath.artists, artistsRoutes)
-router.use(apiPath.releases, releasesRoutes)
-router.use(apiPath.songs, songsRoutes)
-router.use(apiPath.events, eventsRoutes)
-router.use(apiPath.announces, announcesRoutes)
+router.use(apiUrlPath.auths, authRoutes)
+router.use(apiUrlPath.artists, artistsRoutes)
+router.use(apiUrlPath.releases, releasesRoutes)
+router.use(apiUrlPath.songs, songsRoutes)
+router.use(apiUrlPath.events, eventsRoutes)
+router.use(apiUrlPath.announces, announcesRoutes)
 
 export default router

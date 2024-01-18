@@ -1,10 +1,10 @@
-import { ISongsController } from "../../assets"
+import { ISongsCtrl } from "../../assets"
 import { apiErrorMsg } from "Shared"
-import { GetSongUsecase } from "Interactors"
+import { GetSongUsecase } from "Domain"
 import { databaseServices } from "Infra-backend"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
-export class SongsController implements ISongsController {
+export class SongsController implements ISongsCtrl {
 	async get(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 

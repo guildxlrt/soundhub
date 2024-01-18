@@ -4,7 +4,7 @@
 	"sourceRoot": "libs/interface-front/src",
 	"projectType": "library",
 	"tags": ["type:shared", "scope:interface", "scope:ui"],
-	"implicitDependencies": ["shared", "infra-frontend", "interactors"],
+	"implicitDependencies": ["shared", "infra-frontend", "domain"],
 	"targets": {
 		"lint": {
 			"executor": "@nx/eslint:lint",

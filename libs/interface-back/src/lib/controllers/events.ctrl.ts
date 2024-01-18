@@ -1,4 +1,4 @@
-import { IEventsController } from "../../assets"
+import { IEventsCtrl } from "../../assets"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecase,
@@ -8,14 +8,14 @@ import {
 	GetAllEventsUsecase,
 	GetEventUsecase,
 	ModifyEventUsecase,
-} from "Interactors"
+} from "Domain"
 import { databaseServices } from "Infra-backend"
 import {
 	CreateEventReqDTO,
 	DeleteEventParams,
-	Event,
 	FindEventsByDateReqDTO,
 	FindEventsByPlaceReqDTO,
+	IEvent,
 	ModifyEventParams,
 	ModifyEventReqDTO,
 	NewEventParams,
@@ -23,7 +23,7 @@ import {
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 // return errHandler.reply
-export class EventsController implements IEventsController {
+export class EventsController implements IEventsCtrl {
 	async create(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
@@ -36,7 +36,15 @@ export class EventsController implements IEventsController {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const event = new Event(undefined, user, date, place, artists, title, text)
+			const event: IEvent = {
+				id: undefined,
+				owner_id: user,
+				date: date,
+				place: place,
+				artists: artists,
+				title: title,
+				text: text,
+			}
 			const createEvent = new CreateEventUsecase(databaseServices)
 			const { data, error } = await createEvent.execute(new NewEventParams(event))
 			if (error) throw error
@@ -61,8 +69,15 @@ export class EventsController implements IEventsController {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const event = new Event(undefined, user, date, place, artists, title, text)
-
+			const event: IEvent = {
+				id: undefined,
+				owner_id: user,
+				date: date,
+				place: place,
+				artists: artists,
+				title: title,
+				text: text,
+			}
 			const ModifyEvent = new ModifyEventUsecase(databaseServices)
 			const { data, error } = await ModifyEvent.execute(new ModifyEventParams(event, user))
 			if (error) throw error
