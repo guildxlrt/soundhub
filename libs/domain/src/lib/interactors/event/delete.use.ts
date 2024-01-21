@@ -1,4 +1,4 @@
-import { DeleteEventParams, DeleteEventReplyDTO, ErrorMsg } from "Shared"
+import { DeleteEventAdapter, DeleteEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 
 export class DeleteEventUsecase extends UsecaseLayer {
@@ -6,9 +6,10 @@ export class DeleteEventUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: DeleteEventParams): Promise<DeleteEventReplyDTO> {
+	async execute(inputs: DeleteEventAdapter): Promise<DeleteEventReplyDTO> {
 		try {
-			return await this.services.events.delete(inputs)
+			const { id, ownerID } = inputs
+			return await this.services.events.delete(id, ownerID as number)
 		} catch (error) {
 			return new DeleteEventReplyDTO(
 				undefined,

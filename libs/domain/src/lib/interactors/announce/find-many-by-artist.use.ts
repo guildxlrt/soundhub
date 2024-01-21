@@ -1,13 +1,12 @@
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { FindAnnouncesByArtistReplyDTO, ErrorMsg } from "Shared"
-import { EntityId } from "Shared"
+import { FindAnnouncesByArtistReplyDTO, ErrorMsg, ArtistID } from "Shared"
 
 export class FindAnnouncesByArtistUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(id: EntityId): Promise<FindAnnouncesByArtistReplyDTO> {
+	async execute(id: ArtistID): Promise<FindAnnouncesByArtistReplyDTO> {
 		try {
 			return await this.services.announces.findManyByArtist(id)
 		} catch (error) {

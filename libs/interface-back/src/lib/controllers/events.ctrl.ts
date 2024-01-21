@@ -12,13 +12,13 @@ import {
 import { databaseServices } from "Infra-backend"
 import {
 	CreateEventReqDTO,
-	DeleteEventParams,
+	DeleteEventAdapter,
 	FindEventsByDateReqDTO,
 	FindEventsByPlaceReqDTO,
 	IEvent,
-	ModifyEventParams,
+	ModifyEventAdapter,
 	ModifyEventReqDTO,
-	NewEventParams,
+	NewEventAdapter,
 	apiErrorMsg,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -28,25 +28,27 @@ export class EventsController implements IEventsCtrl {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId
+			const owner = req.auth?.profileID
 
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
 			// Operators
 			// ... doing some heathcheck
 
-			// Saving Profile
 			const event: IEvent = {
 				id: undefined,
-				owner_id: user,
+				owner_id: owner,
 				date: date,
 				place: place,
 				artists: artists,
 				title: title,
 				text: text,
+				imageUrl: null,
 			}
+
+			// Saving Profile
 			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(new NewEventParams(event))
+			const { data, error } = await createEvent.execute(new NewEventAdapter(event, undefined))
 			if (error) throw error
 
 			// Return infos
@@ -60,7 +62,7 @@ export class EventsController implements IEventsCtrl {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId
+			const owner = req.auth?.profileID as number
 
 			const { artists, date, place, text, title }: ModifyEventReqDTO =
 				req.body as ModifyEventReqDTO
@@ -68,18 +70,22 @@ export class EventsController implements IEventsCtrl {
 			// Operators
 			// ... doing some heathcheck
 
-			// Saving Profile
 			const event: IEvent = {
 				id: undefined,
-				owner_id: user,
+				owner_id: owner,
 				date: date,
 				place: place,
 				artists: artists,
 				title: title,
 				text: text,
+				imageUrl: null,
 			}
+
+			// Saving Changes
 			const ModifyEvent = new ModifyEventUsecase(databaseServices)
-			const { data, error } = await ModifyEvent.execute(new ModifyEventParams(event, user))
+			const { data, error } = await ModifyEvent.execute(
+				new ModifyEventAdapter(event, undefined)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -94,14 +100,14 @@ export class EventsController implements IEventsCtrl {
 
 		try {
 			const id = Number(req.params["id"])
-			const user = req.auth?.profileId
+			const owner = req.auth?.profileID as number
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
 			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(new DeleteEventParams(id, user))
+			const { data, error } = await deleteEvent.execute(new DeleteEventAdapter(id, owner))
 			if (error) throw error
 
 			// Return infos

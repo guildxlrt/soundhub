@@ -1,18 +1,17 @@
 import {
-	ArtistId,
-	GenreType,
+	ArtistID,
 	GenresArray,
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,
-	ReleaseId,
+	ReleaseID,
 	ReleasePrice,
 	ReleaseType,
 } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 interface INewReleaseData {
-	owner_id: ArtistId
+	owner_id: ArtistID
 	title: string
 	releaseType: ReleaseType
 	descript: string | null
@@ -20,7 +19,7 @@ interface INewReleaseData {
 	genres: GenresArray
 }
 interface INewSong {
-	// audio: File
+	audio: File
 	title: string
 	featuring: number[]
 	lyrics: string | null
@@ -41,22 +40,22 @@ export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY
 export class ModifyReleaseReqDTO {
-	id: ReleaseId
-	newAmount: ReleasePrice
+	release: INewReleaseData
+	songs: INewSong[]
 
-	constructor(id: ReleaseId, newAmount: ReleasePrice) {
-		this.id = id
-		this.newAmount = newAmount
+	constructor(release: INewReleaseData, songs: INewSong[]) {
+		this.release = release
+		this.songs = songs
 	}
 }
 export class ModifyReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // HIDE
 export class HideReleaseReqDTO {
-	id: ReleaseId
+	id: ReleaseID
 	isPublic: boolean
 
-	constructor(id: ReleaseId, isPublic: boolean) {
+	constructor(id: ReleaseID, isPublic: boolean) {
 		this.id = id
 		this.isPublic = isPublic
 	}
@@ -70,8 +69,6 @@ export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}
 export class GetAllReleasesReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY GENRE
-export type FindReleasesByGenreReqDTO = GenreType
-
 export class FindReleasesByGenreReplyDTO extends ReplyDTO<IReleasesListSucc> {}
 
 // FIND MANY BY ARTIST

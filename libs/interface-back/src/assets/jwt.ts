@@ -10,12 +10,12 @@ export class Token {
 		try {
 			if (!userCookie) throw new ErrorMsg(500, apiErrorMsg.e500)
 
-			const { id, profileId, profileType } = userCookie
+			const { id, profileID, profileType } = userCookie
 
 			return jwt.sign(
 				{
 					id: id,
-					profileId: profileId,
+					profileID: profileID,
 					profileType: profileType,
 				},
 				privateKey,
@@ -33,7 +33,7 @@ export class Token {
 
 			req.auth = {
 				id: decoded.id,
-				profileId: decoded.profileId,
+				profileID: decoded.profileID,
 				profileType: decoded.profileType,
 			}
 

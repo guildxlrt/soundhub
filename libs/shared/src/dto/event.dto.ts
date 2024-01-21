@@ -1,20 +1,20 @@
-import { ArtistId, IEventSucc, IEventsListSucc } from "../utils"
+import { ArtistID, IEventSucc, IEventsListSucc } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
 export class CreateEventReqDTO {
-	owner_id: ArtistId
+	owner_id: ArtistID
 	date: Date
 	place: string
-	artists: ArtistId[]
+	artists: ArtistID[]
 	title: string
 	text: string
 
 	constructor(
-		owner_id: ArtistId,
+		owner_id: ArtistID,
 		date: Date,
 		place: string,
-		artists: ArtistId[],
+		artists: ArtistID[],
 		title: string,
 		text: string
 	) {
@@ -32,11 +32,11 @@ export class CreateEventReplyDTO extends ReplyDTO<boolean> {}
 export class ModifyEventReqDTO {
 	date: Date
 	place: string
-	artists: ArtistId[]
+	artists: ArtistID[]
 	title: string
 	text: string
 
-	constructor(date: Date, place: string, artists: ArtistId[], title: string, text: string) {
+	constructor(date: Date, place: string, artists: ArtistID[], title: string, text: string) {
 		this.date = date
 		this.place = place
 		this.artists = artists

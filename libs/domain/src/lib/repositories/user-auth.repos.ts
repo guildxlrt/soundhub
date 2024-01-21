@@ -1,8 +1,15 @@
-import { ILoginRes, ReplyLayer } from "Shared"
+import { ILoginRes, ReplyLayer, UserAuthID } from "Shared"
 
 export interface UserAuthsRepository {
-	login(inputs: unknown): Promise<ReplyLayer<ILoginRes>>
+	login(email: string, password: string): Promise<ReplyLayer<ILoginRes>>
 	logout(): Promise<ReplyLayer<void>>
-	changeEmail(inputs: unknown): Promise<ReplyLayer<boolean>>
-	changePass(inputs: unknown): Promise<ReplyLayer<boolean>>
+	changeEmail(
+		data: { actual: string; newEmail: string; confirm?: string },
+		id?: UserAuthID
+	): Promise<ReplyLayer<boolean>>
+	changePass(
+		data: { actual: string; newPass: string; confirm?: string },
+		id?: UserAuthID,
+		hashedPass?: string
+	): Promise<ReplyLayer<boolean>>
 }

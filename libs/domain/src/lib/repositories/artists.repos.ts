@@ -1,10 +1,28 @@
-import { GenreType, IArtistInfoSucc, IArtistsListSucc, INewArtistSucc, ReplyLayer } from "Shared"
+import {
+	ArtistID,
+	GenreType,
+	IArtistInfoSucc,
+	IArtistsListSucc,
+	INewArtistSucc,
+	ReplyLayer,
+	UserEmail,
+	UserPassword,
+} from "Shared"
+import { Artist, UserAuth } from "../entities"
 
 export interface ArtistsRepository {
-	create(inputs: unknown): Promise<ReplyLayer<INewArtistSucc>>
-	modify(inputs: unknown): Promise<ReplyLayer<boolean>>
-	getById(inputs: unknown): Promise<ReplyLayer<IArtistInfoSucc>>
-	getByEmail(inputs: unknown): Promise<ReplyLayer<IArtistInfoSucc>>
+	create(
+		data: {
+			profile: Artist
+			userAuth: UserAuth
+			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
+			hashedPass?: string
+		},
+		file?: File
+	): Promise<ReplyLayer<INewArtistSucc>>
+	modify(data: { profile: Artist; userAuth?: number }, file?: File): Promise<ReplyLayer<boolean>>
+	getByID(id: ArtistID): Promise<ReplyLayer<IArtistInfoSucc>>
+	getByEmail(email: UserEmail): Promise<ReplyLayer<IArtistInfoSucc>>
 	getAll(): Promise<ReplyLayer<IArtistsListSucc>>
-	findManyByGenre(inputs: GenreType): Promise<ReplyLayer<IArtistsListSucc>>
+	findManyByGenre(genre: GenreType): Promise<ReplyLayer<IArtistsListSucc>>
 }

@@ -1,16 +1,16 @@
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { HideReleaseReplyDTO, ErrorMsg, HideReleaseParams } from "Shared"
+import { HideReleaseReplyDTO, ErrorMsg, HideReleaseAdapter } from "Shared"
 
 export class HideReleaseUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: HideReleaseParams): Promise<HideReleaseReplyDTO> {
+	async execute(inputs: HideReleaseAdapter): Promise<HideReleaseReplyDTO> {
 		try {
-			const { id, isPublic, userAuth } = inputs
+			const { id, isPublic, ownerID } = inputs
 
-			return await this.services.releases.hide(new HideReleaseParams(id, isPublic, userAuth))
+			return await this.services.releases.hide(id, isPublic, ownerID)
 		} catch (error) {
 			return new HideReleaseReplyDTO(
 				undefined,

@@ -1,11 +1,12 @@
-import { EntityId, IAnnounceSucc, IAnnouncesListSucc } from "Shared"
+import { AnnounceID, ArtistID, IAnnounceSucc, IAnnouncesListSucc, UserAuthID } from "Shared"
 import { ReplyLayer } from "Shared"
+import { Announce } from "../entities"
 
 export interface AnnouncesRepository {
-	create(inputs: unknown): Promise<ReplyLayer<boolean>>
-	modify(inputs: unknown): Promise<ReplyLayer<boolean>>
-	delete(inputs: unknown): Promise<ReplyLayer<void>>
-	get(inputs: EntityId): Promise<ReplyLayer<IAnnounceSucc>>
+	create(data: Announce, file?: File): Promise<ReplyLayer<boolean>>
+	modify(data: Announce, file?: File): Promise<ReplyLayer<boolean>>
+	delete(id: AnnounceID, userAuth?: UserAuthID): Promise<ReplyLayer<void>>
+	get(id: ArtistID): Promise<ReplyLayer<IAnnounceSucc>>
 	getAll(): Promise<ReplyLayer<IAnnouncesListSucc>>
-	findManyByArtist(inputs: EntityId): Promise<ReplyLayer<IAnnouncesListSucc>>
+	findManyByArtist(id: ArtistID): Promise<ReplyLayer<IAnnouncesListSucc>>
 }

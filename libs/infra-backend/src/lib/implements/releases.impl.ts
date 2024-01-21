@@ -1,39 +1,41 @@
-import { ReleasesRepository, Song } from "Domain"
+import { Release, ReleasesRepository, Song } from "Domain"
 import {
 	GenreType,
-	EntityId,
-	NewReleaseParams,
-	ModifyReleaseParams,
 	ErrorMsg,
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,
 	IReleasesListItemSucc,
 	apiErrorMsg,
-	HideReleaseParams,
+	UserAuthID,
+	ReleaseID,
 } from "Shared"
 import { getArtistID, dbClient } from "../../assets"
 import { Reply } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
-	async create(inputs: NewReleaseParams): Promise<Reply<INewReleaseSucc>> {
+	async create(
+		release: Release,
+		songs: { data: Song; audio: File }[]
+	): Promise<Reply<INewReleaseSucc>> {
 		try {
-			const { owner_id, title, releaseType, descript, price, genres } = inputs.release
-			const songs = inputs.songs
+			const { owner_id, title, releaseType, descript, price, genres } = release
 
 			// Storing files
 			// ...
 
-			const songsFormattedArray = songs.map((song): Omit<Song, "id" | "release_id"> => {
+			const songsFormattedArray = songs.map((song) => {
+				const { title, featuring, lyrics } = song.data
+
 				return {
 					audioUrl: "placeholder",
-					title: song.title,
-					featuring: song.featuring,
-					lyrics: song.lyrics,
+					title: title,
+					featuring: featuring,
+					lyrics: lyrics,
 				}
 			})
 
-			const data = await dbClient.release.create({
+			const newRelease = await dbClient.release.create({
 				data: {
 					owner_id: owner_id,
 					title: title,
@@ -50,7 +52,10 @@ export class ReleasesImplement implements ReleasesRepository {
 			})
 
 			// RESPONSE
-			return new Reply<INewReleaseSucc>({ message: `${title} was created.`, id: data.id })
+			return new Reply<INewReleaseSucc>({
+				message: `${title} was created.`,
+				id: newRelease.id,
+			})
 		} catch (error) {
 			const res = new Reply<INewReleaseSucc>(
 				undefined,
@@ -61,23 +66,38 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modify(inputs: ModifyReleaseParams): Promise<Reply<boolean>> {
+	async modify(release: Release, songs: Song[]): Promise<Reply<boolean>> {
 		try {
-			const { id, price, userAuth } = inputs
+			const { id, owner_id, price, descript, genres, coverUrl } = release
 
 			// owner verification
-			const release = await dbClient.release.findUnique(getArtistID(id))
-
-			if (userAuth !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			const data = await dbClient.release.findUnique(getArtistID(id as number))
+			if (owner_id !== data?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist
 			await dbClient.release.update({
 				where: {
-					id: id,
+					id: id as number,
+					owner_id: owner_id,
 				},
 				data: {
 					price: price,
+					descript: descript,
+					genres: genres as string[],
+					coverUrl: coverUrl,
 				},
+			})
+
+			songs.map(async (song) => {
+				await dbClient.song.update({
+					where: {
+						id: song.id as number,
+						release_id: id as number,
+					},
+					data: {
+						lyrics: song.lyrics,
+					},
+				})
 			})
 
 			// RESPONSE
@@ -87,14 +107,11 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async hide(inputs: HideReleaseParams): Promise<Reply<boolean>> {
+	async hide(id: ReleaseID, isPublic: boolean, ownerID?: UserAuthID): Promise<Reply<boolean>> {
 		try {
-			const { id, isPublic, userAuth } = inputs
-
 			// owner verification
 			const release = await dbClient.release.findUnique(getArtistID(id))
-
-			if (userAuth !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (ownerID !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist
 			await dbClient.release.update({
@@ -113,9 +130,9 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async get(id: EntityId): Promise<Reply<IReleaseSucc>> {
+	async get(id: ReleaseID): Promise<Reply<IReleaseSucc>> {
 		try {
-			const data = await dbClient.release.findUnique({
+			const release = await dbClient.release.findUnique({
 				where: {
 					id: id,
 				},
@@ -140,13 +157,13 @@ export class ReleasesImplement implements ReleasesRepository {
 			return new Reply<IReleaseSucc>({
 				id: id,
 				owner_id: id,
-				title: data?.title,
-				releaseType: data?.releaseType,
-				descript: data?.descript,
-				price: data?.price,
-				genres: data?.genres,
-				coverUrl: data?.coverUrl,
-				songs: data?.songs,
+				title: release?.title,
+				releaseType: release?.releaseType,
+				descript: release?.descript,
+				price: release?.price,
+				genres: release?.genres,
+				coverUrl: release?.coverUrl,
+				songs: release?.songs,
 			})
 		} catch (error) {
 			return new Reply<IReleaseSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -156,7 +173,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async getAll(): Promise<Reply<IReleasesListSucc>> {
 		try {
 			// Calling DB
-			const data = await dbClient.release.findMany({
+			const release = await dbClient.release.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -168,7 +185,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			})
 
 			// Reorganize
-			const list = data.map((release): IReleasesListItemSucc => {
+			const list = release.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
 					owner_id: release.owner_id,
@@ -189,7 +206,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async findManyByGenre(genre: GenreType): Promise<Reply<IReleasesListSucc>> {
 		try {
 			// Calling DB
-			const data = await dbClient.release.findMany({
+			const release = await dbClient.release.findMany({
 				where: {
 					genres: { has: genre },
 				},
@@ -204,7 +221,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			})
 
 			// Reorganize
-			const list = data.map((release): IReleasesListItemSucc => {
+			const list = release.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
 					owner_id: release.owner_id,
@@ -222,14 +239,14 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityId): Promise<Reply<IReleasesListSucc>> {
+	async findManyByArtist(id: ReleaseID): Promise<Reply<IReleasesListSucc>> {
 		try {
-			const artistId = id
+			const artistID = id
 
 			// Calling DB
-			const data = await dbClient.release.findMany({
+			const release = await dbClient.release.findMany({
 				where: {
-					owner_id: artistId,
+					owner_id: artistID,
 				},
 				select: {
 					id: true,
@@ -242,7 +259,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			})
 
 			// Reorganize
-			const list = data.map((release): IReleasesListItemSucc => {
+			const list = release.map((release): IReleasesListItemSucc => {
 				return {
 					id: release.id,
 					owner_id: release.owner_id,

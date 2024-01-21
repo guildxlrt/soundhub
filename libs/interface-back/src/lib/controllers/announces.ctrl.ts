@@ -11,11 +11,11 @@ import { databaseServices } from "Infra-backend"
 import {
 	apiErrorMsg,
 	CreateAnnounceReqDTO,
-	DeleteAnnounceParams,
+	DeleteAnnounceAdapter,
 	IAnnounce,
-	ModifyAnnounceParams,
+	ModifyAnnounceAdapter,
 	ModifyAnnounceReqDTO,
-	NewAnnounceParams,
+	NewAnnounceAdapter,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
@@ -24,22 +24,24 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		const { text, title } = req.body as CreateAnnounceReqDTO
-		const user = req.auth?.profileId
+		const owner = req.auth?.profileID as number
 
 		try {
 			// Operators
 			// ... doing some heathcheck
 
-			// Saving Profile
 			const announce: IAnnounce = {
-				id: undefined,
-				owner_id: user,
+				owner_id: owner,
 				title: title,
 				text: text,
+				imageUrl: null,
 			}
 
+			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
-			const { data, error } = await createAnnounce.execute(new NewAnnounceParams(announce))
+			const { data, error } = await createAnnounce.execute(
+				new NewAnnounceAdapter(announce, undefined)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -53,21 +55,24 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId
+			const owner = req.auth?.profileID as number
 
 			const { text, title } = req.body as ModifyAnnounceReqDTO
 			// Operators
 			// ... doing some heathcheck
 
-			// Saving Profile
 			const announce: IAnnounce = {
-				id: undefined,
-				owner_id: user,
+				owner_id: owner,
 				title: title,
 				text: text,
+				imageUrl: null,
 			}
+
+			// Saving Profile
 			const ModifyAnnounce = new ModifyAnnounceUsecase(databaseServices)
-			const { data, error } = await ModifyAnnounce.execute(new ModifyAnnounceParams(announce))
+			const { data, error } = await ModifyAnnounce.execute(
+				new ModifyAnnounceAdapter(announce, undefined)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -79,7 +84,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async delete(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
-		const user = req.auth?.profileId
+		const user = req.auth?.profileID as number
 		const id = Number(req.params["id"])
 
 		try {
@@ -88,7 +93,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
-			const { data, error } = await deleteAnnounce.execute(new DeleteAnnounceParams(id, user))
+			const { data, error } = await deleteAnnounce.execute(
+				new DeleteAnnounceAdapter(id, user)
+			)
 			if (error) throw error
 
 			// Return infos

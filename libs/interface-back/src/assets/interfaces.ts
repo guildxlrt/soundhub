@@ -9,7 +9,7 @@ export interface IArtistCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	modify(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
-	getById(req: unknown, res: unknown): Promise<unknown>
+	getByID(req: unknown, res: unknown): Promise<unknown>
 	getByEmail(req: unknown, res: unknown): Promise<unknown>
 	findManyByGenre(req: unknown, res: unknown): Promise<unknown>
 }

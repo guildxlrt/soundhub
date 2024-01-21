@@ -12,11 +12,12 @@ import { databaseServices } from "Infra-backend"
 import {
 	CreateReleaseReqDTO,
 	GenreType,
-	HideReleaseParams,
+	HideReleaseAdapter,
 	HideReleaseReqDTO,
-	ModifyReleaseParams,
+	IRelease,
+	ModifyReleaseAdapter,
 	ModifyReleaseReqDTO,
-	NewReleaseParams,
+	NewReleaseAdapter,
 	apiErrorMsg,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
@@ -26,15 +27,26 @@ export class ReleasesController implements IReleasesCtrl {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId as number
+			const user = req.auth?.profileID as number
 
-			const { release, songs }: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
+			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
-			release.owner_id = user
+			const { title, releaseType, price, descript, genres } = inputs.release
+			const release: IRelease = {
+				owner_id: user,
+				title: title,
+				releaseType: releaseType,
+				descript: descript,
+				price: price,
+				genres: genres,
+				coverUrl: null,
+			}
+			const { songs } = inputs
+
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(
-				new NewReleaseParams(release, songs, undefined)
+				new NewReleaseAdapter(release, songs, undefined)
 			)
 			if (error) throw error
 
@@ -49,13 +61,25 @@ export class ReleasesController implements IReleasesCtrl {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const { id, newAmount }: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
-			const user = req.auth?.profileId
+			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
+			const user = req.auth?.profileID as number
+
+			const { title, releaseType, price, descript, genres } = inputs.release
+			const release: IRelease = {
+				owner_id: user,
+				title: title,
+				releaseType: releaseType,
+				descript: descript,
+				price: price,
+				genres: genres,
+				coverUrl: null,
+			}
+			const { songs } = inputs
 
 			// Saving Profile
 			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
 			const { data, error } = await modifyRelease.execute(
-				new ModifyReleaseParams(id, newAmount, user)
+				new ModifyReleaseAdapter(release, songs)
 			)
 			if (error) throw error
 
@@ -70,13 +94,13 @@ export class ReleasesController implements IReleasesCtrl {
 		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId
+			const user = req.auth?.profileID
 			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
 
 			// Saving Profile
 			const hideRelease = new HideReleaseUsecase(databaseServices)
 			const { data, error } = await hideRelease.execute(
-				new HideReleaseParams(id, isPublic, user)
+				new HideReleaseAdapter(id, isPublic, user)
 			)
 			if (error) throw error
 

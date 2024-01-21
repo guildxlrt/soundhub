@@ -1,13 +1,13 @@
 import { GetEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { EntityId } from "Shared"
+import { EntityID } from "Shared"
 
 export class GetEventUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(id: EntityId): Promise<GetEventReplyDTO> {
+	async execute(id: EntityID): Promise<GetEventReplyDTO> {
 		try {
 			return await this.services.events.get(id)
 		} catch (error) {

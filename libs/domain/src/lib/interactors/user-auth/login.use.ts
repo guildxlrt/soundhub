@@ -1,15 +1,17 @@
 import { ErrorMsg, ReplyLayer, ILoginRes } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { LoginParams } from "Shared"
+import { LoginAdapter } from "Shared"
 
 export class LoginUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: LoginParams): Promise<ReplyLayer<ILoginRes>> {
+	async execute(inputs: LoginAdapter): Promise<ReplyLayer<ILoginRes>> {
 		try {
-			return await this.services.userAuths.login(inputs)
+			const { email, password } = inputs
+
+			return await this.services.userAuths.login(email, password)
 		} catch (error) {
 			return new ReplyLayer<ILoginRes>(
 				undefined,

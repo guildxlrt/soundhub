@@ -1,7 +1,7 @@
-import { ModifyArtistReplyDTO } from "Shared"
+import { ModifyArtistReplyDTO, genresFormatter } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ModifyArtistParams } from "Shared"
-import { ErrorMsg, formatters } from "Shared"
+import { ModifyArtistAdapter } from "Shared"
+import { ErrorMsg } from "Shared"
 import { Artist } from "../../entities"
 
 export class ModifyArtistUsecase extends UsecaseLayer {
@@ -9,21 +9,31 @@ export class ModifyArtistUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ModifyArtistParams): Promise<ModifyArtistReplyDTO> {
+	async execute(inputs: ModifyArtistAdapter): Promise<ModifyArtistReplyDTO> {
 		try {
-			const { genres, name, bio, members } = inputs.profile
-			const { userAuth } = inputs
+			const { genres, name, bio, members, user_auth_id } = inputs.profile
 
 			// SANITIZE
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = genresFormatter.format(genres)
 			// others data checking
 			// ... ( name)
 
 			// Saving
-			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres)
+			const userData = new Artist(
+				null,
+				user_auth_id as number,
+				name,
+				bio,
+				members,
+				cleanGenres,
+				null
+			)
 
-			return await this.services.artists.modify(new ModifyArtistParams(userData, userAuth))
+			return await this.services.artists.modify(
+				{ profile: userData, userAuth: user_auth_id as number },
+				inputs.file
+			)
 		} catch (error) {
 			return new ModifyArtistReplyDTO(
 				undefined,

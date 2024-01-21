@@ -1,17 +1,17 @@
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { GetArtistByIdReplyDTO, ErrorMsg } from "Shared"
-import { EntityId } from "Shared"
+import { GetArtistByIDReplyDTO, ErrorMsg } from "Shared"
+import { EntityID } from "Shared"
 
-export class GetArtistByIdUsecase extends UsecaseLayer {
+export class GetArtistByIDUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(id: EntityId): Promise<GetArtistByIdReplyDTO> {
+	async execute(id: EntityID): Promise<GetArtistByIDReplyDTO> {
 		try {
-			return await this.services.artists.getById(id)
+			return await this.services.artists.getByID(id)
 		} catch (error) {
-			return new GetArtistByIdReplyDTO(
+			return new GetArtistByIDReplyDTO(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)

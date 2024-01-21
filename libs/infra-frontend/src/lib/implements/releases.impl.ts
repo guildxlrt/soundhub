@@ -1,13 +1,13 @@
 import { ReleasesRepository } from "Domain"
 import {
 	GenreType,
-	EntityId,
-	NewReleaseParams,
-	ModifyReleaseParams,
+	EntityID,
+	NewReleaseAdapter,
+	ModifyReleaseAdapter,
 	INewReleaseSucc,
 	IReleaseSucc,
 	IReleasesListSucc,
-	HideReleaseParams,
+	HideReleaseAdapter,
 	apiRoot,
 	apiPath,
 	apiEndpts,
@@ -19,7 +19,7 @@ import { Response } from "../../assets"
 import axios from "axios"
 
 export class ReleasesImplement implements ReleasesRepository {
-	async create(inputs: NewReleaseParams): Promise<Response<INewReleaseSucc>> {
+	async create(inputs: NewReleaseAdapter): Promise<Response<INewReleaseSucc>> {
 		const { release, songs } = inputs
 		try {
 			return (await axios({
@@ -39,7 +39,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modify(inputs: ModifyReleaseParams): Promise<Response<boolean>> {
+	async modify(inputs: ModifyReleaseAdapter): Promise<Response<boolean>> {
 		const { price, id } = inputs
 		try {
 			return (await axios({
@@ -53,7 +53,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async hide(inputs: HideReleaseParams): Promise<Response<boolean>> {
+	async hide(inputs: HideReleaseAdapter): Promise<Response<boolean>> {
 		const { id } = inputs
 		try {
 			return (await axios({
@@ -66,11 +66,11 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async get(id: EntityId): Promise<Response<IReleaseSucc>> {
+	async get(id: EntityID): Promise<Response<IReleaseSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.releases.oneById + id}`,
+				url: `${apiRoot + apiPath.events + apiEndpts.releases.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IReleaseSucc>
 		} catch (error) {
@@ -111,7 +111,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityId): Promise<Response<IReleasesListSucc>> {
+	async findManyByArtist(id: EntityID): Promise<Response<IReleasesListSucc>> {
 		try {
 			return (await axios({
 				method: "get",

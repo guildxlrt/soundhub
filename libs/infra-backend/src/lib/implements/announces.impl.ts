@@ -1,33 +1,29 @@
-import { AnnouncesRepository } from "Domain"
+import { Announce, AnnouncesRepository } from "Domain"
 import { Reply, getArtistID, dbClient } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
-	EntityId,
-	NewAnnounceParams,
-	ModifyAnnounceParams,
 	ErrorMsg,
 	IAnnouncesListItemSucc,
-	DeleteAnnounceParams,
 	apiErrorMsg,
+	AnnounceID,
+	UserAuthID,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(inputs: NewAnnounceParams): Promise<Reply<boolean>> {
+	async create(data: Announce, file?: File): Promise<Reply<boolean>> {
 		try {
-			const { data } = inputs
-			const { owner_id, title, text, imageUrl, videoUrl } = data
+			const { owner_id, title, text } = data
 
 			// Storing files
-			// ...
+			console.log(file)
 
 			await dbClient.announce.create({
 				data: {
 					owner_id: owner_id as number,
 					title: title,
 					text: text,
-					imageUrl: imageUrl,
-					videoUrl: videoUrl,
+					imageUrl: "",
 				},
 			})
 
@@ -40,26 +36,27 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async modify(inputs: ModifyAnnounceParams): Promise<Reply<boolean>> {
+	async modify(data: Announce, file?: File): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, title, text, imageUrl, videoUrl, id } = inputs.data
+			const { owner_id, title, text, imageUrl, id } = data
 
 			// owner verification
-			const announce = await dbClient.announce.findUnique(getArtistID(id))
-
+			const announce = await dbClient.announce.findUnique(getArtistID(id as number))
 			if (owner_id !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// Storing files
+			console.log(file)
 
 			// persist
 			await dbClient.announce.update({
 				where: {
-					id: id,
+					id: id as number,
+					owner_id: owner_id,
 				},
 				data: {
-					owner_id: owner_id as number,
 					title: title,
 					text: text,
 					imageUrl: imageUrl,
-					videoUrl: videoUrl,
 				},
 			})
 
@@ -72,13 +69,10 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async delete(inputs: DeleteAnnounceParams): Promise<Reply<void>> {
+	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
 		try {
-			const { id, userAuth } = inputs
-
 			// owner verification
 			const announce = await dbClient.announce.findUnique(getArtistID(id))
-
 			if (userAuth !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist
@@ -100,9 +94,9 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async get(id: EntityId): Promise<Reply<IAnnounceSucc>> {
+	async get(id: AnnounceID): Promise<Reply<IAnnounceSucc>> {
 		try {
-			const data = await dbClient.announce.findUnique({
+			const announce = await dbClient.announce.findUnique({
 				where: {
 					id: id,
 				},
@@ -111,7 +105,6 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					title: true,
 					text: true,
 					imageUrl: true,
-					videoUrl: true,
 				},
 			})
 
@@ -119,10 +112,9 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			return new Reply<IAnnounceSucc>({
 				id: id,
 				owner_id: id,
-				title: data?.title,
-				text: data?.text,
-				imageUrl: data?.text,
-				videoUrl: data?.videoUrl,
+				title: announce?.title,
+				text: announce?.text,
+				imageUrl: announce?.imageUrl,
 			})
 		} catch (error) {
 			return new Reply<IAnnounceSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -131,7 +123,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async getAll(): Promise<Reply<IAnnouncesListSucc>> {
 		try {
-			const data = await dbClient.announce.findMany({
+			const announces = await dbClient.announce.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -141,7 +133,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			})
 
 			// Reorganize
-			const list = data.map((announce): IAnnouncesListItemSucc => {
+			const list = announces.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
 					owner_id: announce.owner_id,
@@ -160,13 +152,13 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityId): Promise<Reply<IAnnouncesListSucc>> {
+	async findManyByArtist(id: AnnounceID): Promise<Reply<IAnnouncesListSucc>> {
 		try {
-			const artistId = id
+			const artistID = id
 
-			const data = await dbClient.announce.findMany({
+			const announces = await dbClient.announce.findMany({
 				where: {
-					owner_id: artistId,
+					owner_id: artistID,
 				},
 				select: {
 					id: true,
@@ -177,7 +169,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			})
 
 			// Reorganize
-			const list = data.map((announce): IAnnouncesListItemSucc => {
+			const list = announces.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
 					owner_id: announce.owner_id,

@@ -9,16 +9,16 @@ import {
 	apiRoot,
 	apiPath,
 	apiEndpts,
-	AnnounceId,
-	ArtistId,
+	AnnounceID,
+	ArtistID,
 	CreateAnnounceReqDTO,
-	DeleteAnnounceParams,
-	NewAnnounceParams,
-	ModifyAnnounceParams,
+	DeleteAnnounceAdapter,
+	NewAnnounceAdapter,
+	ModifyAnnounceAdapter,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(inputs: NewAnnounceParams): Promise<Response<boolean>> {
+	async create(inputs: NewAnnounceAdapter): Promise<Response<boolean>> {
 		try {
 			const { text, title } = inputs.data
 
@@ -33,7 +33,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async modify(inputs: ModifyAnnounceParams): Promise<Response<boolean>> {
+	async modify(inputs: ModifyAnnounceAdapter): Promise<Response<boolean>> {
 		try {
 			const { text, title } = inputs.data
 
@@ -48,7 +48,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async delete(id: DeleteAnnounceParams): Promise<Response<void>> {
+	async delete(id: DeleteAnnounceAdapter): Promise<Response<void>> {
 		try {
 			return (await axios({
 				method: "delete",
@@ -60,11 +60,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async get(id: AnnounceId): Promise<Response<IAnnounceSucc>> {
+	async get(id: AnnounceID): Promise<Response<IAnnounceSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.oneById + id}`,
+				url: `${apiRoot + apiPath.announces + apiEndpts.announces.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IAnnounceSucc>
 		} catch (error) {
@@ -90,7 +90,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(id: ArtistId): Promise<Response<IAnnouncesListSucc>> {
+	async findManyByArtist(id: ArtistID): Promise<Response<IAnnouncesListSucc>> {
 		try {
 			return (await axios({
 				method: "get",

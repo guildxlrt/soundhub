@@ -1,7 +1,6 @@
-import { CreateReleaseReplyDTO } from "Shared"
+import { CreateReleaseReplyDTO, ErrorMsg, NewReleaseAdapter, genresFormatter } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { NewReleaseParams } from "Shared"
-import { ErrorMsg, formatters } from "Shared"
+
 import { Release, Song } from "Domain"
 
 export class CreateReleaseUsecase extends UsecaseLayer {
@@ -9,18 +8,18 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: NewReleaseParams): Promise<CreateReleaseReplyDTO> {
+	async execute(inputs: NewReleaseAdapter): Promise<CreateReleaseReplyDTO> {
 		try {
 			const { songs } = inputs
 			const { owner_id, title, releaseType, descript, price, genres } = inputs.release
 
 			// Operators
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = genresFormatter.format(genres)
 
 			// saving
 			const release = new Release(
-				undefined,
+				null,
 				owner_id,
 				title,
 				releaseType,
@@ -29,14 +28,15 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 				cleanGenres,
 				null
 			)
-			const newSongsArray = songs.map((song) => {
+			const newSongs = songs.map((song) => {
 				const { title, featuring, lyrics } = song
-				return new Song(undefined, undefined, "placeholder", title, featuring, lyrics)
+
+				const data = new Song(null, null, "placeholder", title, featuring, lyrics)
+
+				return { data: data, audio: song.audio }
 			})
 
-			return await this.services.releases.create(
-				new NewReleaseParams(release, newSongsArray, cleanGenres)
-			)
+			return await this.services.releases.create(release, newSongs)
 		} catch (error) {
 			return new CreateReleaseReplyDTO(
 				undefined,

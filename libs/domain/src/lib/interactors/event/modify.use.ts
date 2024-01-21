@@ -1,15 +1,29 @@
 import { ModifyEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ModifyEventParams } from "Shared"
+import { ModifyEventAdapter } from "Shared"
+import { Event } from "../../entities"
 
 export class ModifyEventUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyEventParams): Promise<ModifyEventReplyDTO> {
+	async execute(inputs: ModifyEventAdapter): Promise<ModifyEventReplyDTO> {
 		try {
-			return await this.services.events.modify(inputs)
+			const { owner_id, date, place, artists, title, text, id } = inputs.event
+
+			const event = new Event(
+				id as number,
+				owner_id as number,
+				date,
+				place,
+				artists,
+				title,
+				text,
+				null
+			)
+
+			return await this.services.events.modify(event, inputs.file)
 		} catch (error) {
 			return new ModifyEventReplyDTO(
 				undefined,

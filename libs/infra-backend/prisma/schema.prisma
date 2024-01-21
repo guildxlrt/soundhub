@@ -48,7 +48,6 @@ model Announce {
   title    String
   text     String
   imageUrl String?
-  videoUrl String?
 }
 
 model Event {

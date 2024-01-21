@@ -1,6 +1,6 @@
 import { ChangePassReplyDTO } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ChangePassParams } from "Shared"
+import { ChangePassAdapter } from "Shared"
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangePassUsecase extends UsecaseLayer {
@@ -8,7 +8,7 @@ export class ChangePassUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ChangePassParams): Promise<ChangePassReplyDTO> {
+	async execute(inputs: ChangePassAdapter): Promise<ChangePassReplyDTO> {
 		try {
 			const { actual, confirm, newPass, hashedPass, id } = inputs
 
@@ -17,7 +17,9 @@ export class ChangePassUsecase extends UsecaseLayer {
 
 			// return
 			return await this.services.userAuths.changePass(
-				new ChangePassParams(actual, confirm, newPass, id, hashedPass)
+				{ actual: actual, newPass: newPass },
+				id,
+				hashedPass
 			)
 		} catch (error) {
 			return new ChangePassReplyDTO(

@@ -1,11 +1,11 @@
 import { SongsRepository } from "Domain"
 import { Reply, dbClient } from "../../assets"
-import { EntityId, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
+import { SongID, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
 
 export class SongsImplement implements SongsRepository {
-	async get(id: EntityId): Promise<Reply<ISongSucc>> {
+	async get(id: SongID): Promise<Reply<ISongSucc>> {
 		try {
-			const data = await dbClient.song.findUnique({
+			const song = await dbClient.song.findUnique({
 				where: {
 					id: id,
 				},
@@ -21,11 +21,11 @@ export class SongsImplement implements SongsRepository {
 			// RESPONSE
 			return new Reply<ISongSucc>({
 				id: id,
-				release_id: data?.release_id,
-				audioUrl: data?.audioUrl,
-				title: data?.title,
-				featuring: data?.featuring,
-				lyrics: data?.lyrics,
+				release_id: song?.release_id,
+				audioUrl: song?.audioUrl,
+				title: song?.title,
+				featuring: song?.featuring,
+				lyrics: song?.lyrics,
 			})
 		} catch (error) {
 			return new Reply<ISongSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))

@@ -2,17 +2,18 @@ import { IAuthCtrl, Token, authExpires } from "../../assets"
 import { databaseServices } from "Infra-backend"
 import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Domain"
 import {
-	ChangeEmailParams,
+	ChangeEmailAdapter,
 	ChangeEmailReqDTO,
-	ChangePassParams,
+	ChangePassAdapter,
 	ChangePassReqDTO,
 	ErrorMsg,
-	ILoginResServer,
+	ILoginDbRes,
 	LoginReqDTO,
 	ReplyDTO,
 	UserCookie,
+	UserProfileEnum,
 	apiErrorMsg,
-	encryptors,
+	passEncryptor,
 } from "Shared"
 import { errHandler, ApiRequest, ApiReply } from "../../assets"
 
@@ -27,15 +28,17 @@ export class UserAuthController implements IAuthCtrl {
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
-			const { encryptedPass, userCookie } = data as ILoginResServer
+			const { encryptedPass, id, profileID } = data as ILoginDbRes
 
-			// Operations
+			// VERIFICATIONS
+			// password
 			const { password } = inputs
-			const compare = await encryptors.comparePass(password, encryptedPass as string)
+			const compare = await passEncryptor.compare(password, encryptedPass as string)
 			if (compare !== true) throw new ErrorMsg(401, apiErrorMsg.e401)
 
 			// Return infos
 			const expires = authExpires.oneYear
+			const userCookie = new UserCookie(id, profileID, UserProfileEnum.artist)
 			const token = new Token().generate(userCookie, expires)
 
 			return res
@@ -79,7 +82,7 @@ export class UserAuthController implements IAuthCtrl {
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
 			const { data, error } = await changeEmail.execute(
-				new ChangeEmailParams(actual, confirm, newEmail, user)
+				new ChangeEmailAdapter(actual, confirm, newEmail, user)
 			)
 			if (error) throw error
 
@@ -98,12 +101,12 @@ export class UserAuthController implements IAuthCtrl {
 			const user = req.auth?.id
 
 			// HashPass
-			const hashedPass = await encryptors.hashPass(newPass)
+			const hashedPass = await passEncryptor.hash(newPass)
 
 			// Saving Changes
 			const changePass = new ChangePassUsecase(databaseServices)
 			const { data, error } = await changePass.execute(
-				new ChangePassParams(actual, confirm, newPass, user, hashedPass)
+				new ChangePassAdapter(actual, confirm, newPass, user, hashedPass)
 			)
 
 			if (error) throw error

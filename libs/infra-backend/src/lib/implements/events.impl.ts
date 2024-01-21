@@ -1,26 +1,23 @@
-import { EventsRepository } from "Domain"
+import { Event, EventsRepository } from "Domain"
 import { Reply, dbClient, getArtistID } from "../../assets"
 import {
 	ErrorMsg,
 	IEventSucc,
 	IEventsListItemSucc,
 	IEventsListSucc,
-	EntityId,
-	ModifyEventParams,
-	NewEventParams,
-	PlaceParams,
-	DateParams,
-	DeleteEventParams,
+	EventID,
 	apiErrorMsg,
+	UserAuthID,
+	AnnounceID,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
-	async create(inputs: NewEventParams): Promise<Reply<boolean>> {
+	async create(data: Event, file?: File): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, date, place, artists, title, text, imageUrl } = inputs.data
+			const { owner_id, date, place, artists, title, text, imageUrl } = data
 
 			// Storing files
-			// ...
+			console.log(file)
 
 			await dbClient.event.create({
 				data: {
@@ -43,24 +40,26 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyEventParams): Promise<Reply<boolean>> {
+	async modify(data: Event, file?: File): Promise<Reply<boolean>> {
 		try {
-			const { id, owner_id, date, place, artists, title, text, imageUrl } = inputs.data
+			const { id, owner_id, date, place, artists, title, text, imageUrl } = data
 
-			const { userAuth } = inputs
+			const userAuth = data.owner_id
 
 			// owner verification
-			const event = await dbClient.event.findUnique(getArtistID(id))
-
+			const event = await dbClient.event.findUnique(getArtistID(id as number))
 			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// Storing files
+			console.log(file)
 
 			// persist
 			await dbClient.event.update({
 				where: {
-					id: id,
+					id: id as number,
+					owner_id: owner_id,
 				},
 				data: {
-					owner_id: owner_id,
 					date: date,
 					place: place,
 					artists: artists,
@@ -79,13 +78,10 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async delete(inputs: DeleteEventParams): Promise<Reply<void>> {
+	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
 		try {
-			const { id, userAuth } = inputs
-
 			// owner verification
 			const event = await dbClient.event.findUnique(getArtistID(id))
-
 			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist
@@ -107,9 +103,9 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async get(id: EntityId): Promise<Reply<IEventSucc>> {
+	async get(id: EventID): Promise<Reply<IEventSucc>> {
 		try {
-			const data = await dbClient.event.findUnique({
+			const event = await dbClient.event.findUnique({
 				where: {
 					id: id,
 				},
@@ -127,14 +123,14 @@ export class EventsImplement implements EventsRepository {
 
 			// RESPONSE
 			return new Reply<IEventSucc>({
-				id: data?.id,
-				owner_id: data?.owner_id,
-				date: data?.date,
-				place: data?.place,
-				artists: data?.artists,
-				title: data?.title,
-				text: data?.text,
-				imageUrl: data?.imageUrl,
+				id: event?.id,
+				owner_id: event?.owner_id,
+				date: event?.date,
+				place: event?.place,
+				artists: event?.artists,
+				title: event?.title,
+				text: event?.text,
+				imageUrl: event?.imageUrl,
 			})
 		} catch (error) {
 			return new Reply<IEventSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
@@ -143,7 +139,7 @@ export class EventsImplement implements EventsRepository {
 
 	async getAll(): Promise<Reply<IEventsListSucc>> {
 		try {
-			const data = await dbClient.event.findMany({
+			const event = await dbClient.event.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -156,7 +152,7 @@ export class EventsImplement implements EventsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((event): IEventsListItemSucc => {
+			const list = event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -175,13 +171,13 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityId): Promise<Reply<IEventsListSucc>> {
+	async findManyByArtist(id: EventID): Promise<Reply<IEventsListSucc>> {
 		try {
-			const artistId = id
+			const artistID = id
 
-			const data = await dbClient.event.findMany({
+			const event = await dbClient.event.findMany({
 				where: {
-					artists: { has: artistId },
+					artists: { has: artistID },
 				},
 				select: {
 					id: true,
@@ -195,7 +191,7 @@ export class EventsImplement implements EventsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((event): IEventsListItemSucc => {
+			const list = event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -214,11 +210,9 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByDate(inputs: DateParams): Promise<Reply<IEventsListSucc>> {
+	async findManyByDate(date: Date): Promise<Reply<IEventsListSucc>> {
 		try {
-			const date = inputs.date
-
-			const data = await dbClient.event.findMany({
+			const event = await dbClient.event.findMany({
 				where: {
 					date: date,
 				},
@@ -233,7 +227,7 @@ export class EventsImplement implements EventsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((event): IEventsListItemSucc => {
+			const list = event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -252,11 +246,9 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByPlace(inputs: PlaceParams): Promise<Reply<IEventsListSucc>> {
+	async findManyByPlace(place: string): Promise<Reply<IEventsListSucc>> {
 		try {
-			const place = inputs.place
-
-			const data = await dbClient.event.findMany({
+			const event = await dbClient.event.findMany({
 				where: {
 					place: place,
 				},
@@ -271,7 +263,7 @@ export class EventsImplement implements EventsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((event): IEventsListItemSucc => {
+			const list = event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,

@@ -1,28 +1,24 @@
-import { AnnounceId, ArtistId, IAnnounce } from "Shared"
+import { AnnounceID, ArtistID } from "Shared"
 import { EntityLayer } from "./layers"
 
-export class Announce extends EntityLayer implements IAnnounce {
-	owner_id: ArtistId | undefined
+export class Announce extends EntityLayer {
+	readonly owner_id: ArtistID
 	title: string
 	text: string
-	imageUrl?: string
-	videoUrl?: string
+	imageUrl: string | null
 
 	constructor(
-		id: AnnounceId | undefined,
-		owner_id: ArtistId | undefined,
+		id: AnnounceID | null,
+		owner_id: ArtistID,
 		title: string,
 		text: string,
-		imageUrl?: string,
-		videoUrl?: string,
-		createdAt?: Date
+		imageUrl: string | null
 	) {
-		super(id, createdAt)
+		super(id)
 
 		this.owner_id = owner_id
 		this.title = title
 		this.text = text
 		this.imageUrl = imageUrl
-		this.videoUrl = videoUrl
 	}
 }

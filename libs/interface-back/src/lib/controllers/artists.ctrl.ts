@@ -2,18 +2,20 @@ import {
 	CreateArtistReqDTO,
 	GenreType,
 	GetArtistByEmailReqDTO,
-	ModifyArtistParams,
+	IArtist,
+	IUserAuth,
+	ModifyArtistAdapter,
 	ModifyArtistReqDTO,
-	NewArtistParams,
+	NewArtistAdapter,
 	apiErrorMsg,
-	encryptors,
+	passEncryptor,
 } from "Shared"
 import {
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
 	GetAllArtistsUsecase,
 	GetArtistByEmailUsecase,
-	GetArtistByIdUsecase,
+	GetArtistByIDUsecase,
 	ModifyArtistUsecase,
 } from "Domain"
 import { databaseServices } from "Infra-backend"
@@ -28,22 +30,24 @@ export class ArtistsController implements IArtistCtrl {
 
 			// HashPass
 			const { password, email } = auth
-			const hashedPass = await encryptors.hashPass(password)
+			const hashedPass = await passEncryptor.hash(password)
 
-			// Call DB
+			// Data
 			const { bio, genres, members, name } = profile
-			const artistProfile = {
-				id: undefined,
-				user_auth_id: undefined,
+			const artistProfile: IArtist = {
+				user_auth_id: null,
 				name: name,
 				bio: bio,
 				members: members,
 				genres: genres,
+				avatarUrl: null,
 			}
-			const userAuth = { id: undefined, email: email, password: password }
+			const userAuth: IUserAuth = { email: email, password: password }
+
+			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(
-				new NewArtistParams(artistProfile, userAuth, authConfirm, hashedPass)
+				new NewArtistAdapter(artistProfile, userAuth, authConfirm, hashedPass)
 			)
 			if (error) throw error
 
@@ -71,21 +75,22 @@ export class ArtistsController implements IArtistCtrl {
 		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
-			const user = req.auth?.profileId
+			const user = req.auth?.profileID as number
 			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
 
-			// Saving Changes
-			const artistProfile = {
-				id: undefined,
-				user_auth_id: undefined,
+			const artistProfile: IArtist = {
+				user_auth_id: user,
 				name: name,
 				bio: bio,
 				members: members,
 				genres: genres,
+				avatarUrl: null,
 			}
+
+			// Saving Changes
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
 			const { data, error } = await modifyArtist.execute(
-				new ModifyArtistParams(artistProfile, user)
+				new ModifyArtistAdapter(artistProfile)
 			)
 			if (error) throw error
 
@@ -96,14 +101,14 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async getById(req: ApiRequest, res: ApiReply) {
+	async getByID(req: ApiRequest, res: ApiReply) {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const id = Number(req.params["id"])
 
-			const getArtistById = new GetArtistByIdUsecase(databaseServices)
-			const { data, error } = await getArtistById.execute(id)
+			const getArtistByID = new GetArtistByIDUsecase(databaseServices)
+			const { data, error } = await getArtistByID.execute(id)
 			if (error) throw error
 
 			// Return infos

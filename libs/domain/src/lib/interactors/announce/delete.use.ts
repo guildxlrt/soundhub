@@ -1,4 +1,4 @@
-import { DeleteAnnounceParams, DeleteAnnounceReplyDTO, ErrorMsg } from "Shared"
+import { DeleteAnnounceAdapter, DeleteAnnounceReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 
 export class DeleteAnnounceUsecase extends UsecaseLayer {
@@ -6,9 +6,11 @@ export class DeleteAnnounceUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: DeleteAnnounceParams): Promise<DeleteAnnounceReplyDTO> {
+	async execute(inputs: DeleteAnnounceAdapter): Promise<DeleteAnnounceReplyDTO> {
 		try {
-			return await this.services.announces.delete(inputs)
+			const { id, ownerID } = inputs
+
+			return await this.services.announces.delete(id, ownerID as number)
 		} catch (error) {
 			return new DeleteAnnounceReplyDTO(
 				undefined,

@@ -1,13 +1,13 @@
 import { GetSongReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { EntityId } from "Shared"
+import { EntityID } from "Shared"
 
 export class GetSongUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(id: EntityId): Promise<GetSongReplyDTO> {
+	async execute(id: EntityID): Promise<GetSongReplyDTO> {
 		try {
 			return await this.services.songs.get(id)
 		} catch (error) {

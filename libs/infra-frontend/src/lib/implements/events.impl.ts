@@ -3,22 +3,22 @@ import { Response } from "../../assets"
 import { EventsRepository } from "Domain"
 import {
 	IEventSucc,
-	EntityId,
-	NewEventParams,
+	EntityID,
+	NewEventAdapter,
 	apiRoot,
 	apiPath,
 	apiEndpts,
 	CreateEventReqDTO,
 	ErrorMsg,
-	ModifyEventParams,
+	ModifyEventAdapter,
 	IEventsListSucc,
-	DateParams,
-	PlaceParams,
-	DeleteEventParams,
+	DateAdapter,
+	PlaceAdapter,
+	DeleteEventAdapter,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
-	async create(inputs: NewEventParams): Promise<Response<boolean>> {
+	async create(inputs: NewEventAdapter): Promise<Response<boolean>> {
 		const { owner_id, title, text, date, place, artists } = inputs.data
 		try {
 			return (await axios({
@@ -39,7 +39,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyEventParams): Promise<Response<boolean>> {
+	async modify(inputs: ModifyEventAdapter): Promise<Response<boolean>> {
 		const { owner_id, title, text, date, place, artists } = inputs.data
 		try {
 			return (await axios({
@@ -60,7 +60,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async delete(inputs: DeleteEventParams): Promise<Response<void>> {
+	async delete(inputs: DeleteEventAdapter): Promise<Response<void>> {
 		try {
 			const { id } = inputs
 			return (await axios({
@@ -73,11 +73,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async get(id: EntityId): Promise<Response<IEventSucc>> {
+	async get(id: EntityID): Promise<Response<IEventSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.oneById + id}`,
+				url: `${apiRoot + apiPath.events + apiEndpts.events.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IEventSucc>
 		} catch (error) {
@@ -100,7 +100,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityId): Promise<Response<IEventsListSucc>> {
+	async findManyByArtist(id: EntityID): Promise<Response<IEventsListSucc>> {
 		try {
 			return (await axios({
 				method: "get",
@@ -115,7 +115,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByDate(inputs: DateParams): Promise<Response<IEventsListSucc>> {
+	async findManyByDate(inputs: DateAdapter): Promise<Response<IEventsListSucc>> {
 		const { date } = inputs
 		try {
 			return (await axios({
@@ -134,7 +134,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByPlace(inputs: PlaceParams): Promise<Response<IEventsListSucc>> {
+	async findManyByPlace(inputs: PlaceAdapter): Promise<Response<IEventsListSucc>> {
 		const { place } = inputs
 		try {
 			return (await axios({

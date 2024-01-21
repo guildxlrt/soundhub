@@ -1,12 +1,12 @@
 import { UserAuthsRepository } from "Domain"
 import {
-	ChangeEmailParams,
+	ChangeEmailAdapter,
 	ChangeEmailReqDTO,
-	ChangePassParams,
+	ChangePassAdapter,
 	ChangePassReqDTO,
 	ErrorMsg,
 	ILoginRes,
-	LoginParams,
+	LoginAdapter,
 	LoginReqDTO,
 	apiEndpts,
 	apiPath,
@@ -16,7 +16,7 @@ import { Response } from "../../assets"
 import axios from "axios"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(inputs: LoginParams): Promise<Response<ILoginRes>> {
+	async login(inputs: LoginAdapter): Promise<Response<ILoginRes>> {
 		try {
 			return (await axios({
 				method: "post",
@@ -41,7 +41,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		}
 	}
 
-	async changeEmail(inputs: ChangeEmailParams): Promise<Response<boolean>> {
+	async changeEmail(inputs: ChangeEmailAdapter): Promise<Response<boolean>> {
 		try {
 			return (await axios({
 				method: "put",
@@ -54,7 +54,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		}
 	}
 
-	async changePass(inputs: ChangePassParams): Promise<Response<boolean>> {
+	async changePass(inputs: ChangePassAdapter): Promise<Response<boolean>> {
 		try {
 			return (await axios({
 				method: "put",

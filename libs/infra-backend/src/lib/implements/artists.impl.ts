@@ -1,4 +1,4 @@
-import { ArtistsRepository } from "Domain"
+import { Artist, ArtistsRepository, UserAuth } from "Domain"
 import {
 	ErrorMsg,
 	IArtistInfoSucc,
@@ -6,27 +6,33 @@ import {
 	IArtistsListItemSucc,
 	apiErrorMsg,
 	INewArtistSucc,
-	EmailParams,
 	GenreType,
-	EntityId,
-	ModifyArtistParams,
-	NewArtistParams,
+	ArtistID,
 	UserCookie,
+	UserEmail,
 } from "Shared"
 import { dbClient, dbErrHandler, getAuthID, Reply } from "../../assets"
 
 export class ArtistsImplement implements ArtistsRepository {
-	async create(inputs: NewArtistParams): Promise<Reply<INewArtistSucc>> {
+	async create(
+		data: {
+			profile: Artist
+			userAuth: UserAuth
+			authConfirm: undefined
+			hashedPass?: string
+		},
+		file?: File
+	): Promise<Reply<INewArtistSucc>> {
 		try {
-			const { name, bio, members, genres } = inputs.profile
-			const { email } = inputs.auth
-			const password = inputs.hashedPass as string
+			const { name, bio, members, genres } = data.profile
+			const { email } = data.userAuth
+			const password = data.hashedPass as string
 
 			// Storing files
-			// ...
+			console.log(file)
 
-			// Persist data
-			const data = await dbClient.userAuth.create({
+			// PERSIST
+			const newUser = await dbClient.userAuth.create({
 				data: {
 					email: email,
 					password: password,
@@ -42,22 +48,21 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			if (!data?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
+			if (!newUser?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
 
-			// Find Profile Id
-			const profile = await dbClient.artist.findUnique({
+			// RESPONSE
+			const getProfile = await dbClient.artist.findUnique({
 				where: {
-					user_auth_id: data.id,
+					user_auth_id: newUser.id,
 				},
 				select: {
 					id: true,
 				},
 			})
 
-			// RESPONSE
 			return new Reply<INewArtistSucc>({
 				message: `Welcome, ${name} !!`,
-				userCookie: new UserCookie(data.id, profile?.id as number, "artist"),
+				userCookie: new UserCookie(newUser.id, getProfile?.id as number, "artist"),
 			})
 		} catch (error) {
 			const res = new Reply<INewArtistSucc>(
@@ -72,20 +77,26 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyArtistParams): Promise<Reply<boolean>> {
+	async modify(
+		data: { profile: Artist; userAuth?: number },
+		file?: File
+	): Promise<Reply<boolean>> {
 		try {
-			const { name, bio, members, genres, id } = inputs.profile
-			const { userAuth } = inputs
+			const { name, bio, members, genres, id } = data.profile
+			const userAuth = data.userAuth
+
+			// Storing files
+			console.log(file)
 
 			// AUTH
-			const profile = await getAuthID(id)
+			const authID = await getAuthID(id as number)
 
-			if (userAuth !== profile?.id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (userAuth !== authID) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// PERSIST
 			await dbClient.artist.update({
 				where: {
-					id: id,
+					id: id as number,
 				},
 				data: {
 					name: name,
@@ -102,9 +113,9 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getById(id: EntityId): Promise<Reply<IArtistInfoSucc>> {
+	async getByID(id: ArtistID): Promise<Reply<IArtistInfoSucc>> {
 		try {
-			const data = await dbClient.artist.findUnique({
+			const user = await dbClient.artist.findUnique({
 				where: {
 					id: id,
 				},
@@ -120,10 +131,10 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
 				id: id,
-				name: data?.name,
+				name: user?.name,
 				bio: null,
-				members: data?.members,
-				genres: [data?.genres[0], data?.genres[1], data?.genres[2]],
+				members: user?.members,
+				genres: [user?.genres[0], user?.genres[1], user?.genres[2]],
 				avatarUrl: null,
 			})
 		} catch (error) {
@@ -131,11 +142,9 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByEmail(inputs: EmailParams): Promise<Reply<IArtistInfoSucc>> {
+	async getByEmail(email: UserEmail): Promise<Reply<IArtistInfoSucc>> {
 		try {
-			const email = inputs.email
-
-			const data = await dbClient.userAuth.findUnique({
+			const user = await dbClient.userAuth.findUnique({
 				where: {
 					email: email,
 				},
@@ -155,14 +164,14 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
-				id: data?.artists[0].id,
-				name: data?.artists[0].name,
+				id: user?.artists[0].id,
+				name: user?.artists[0].name,
 				bio: null,
-				members: data?.artists[0].members,
+				members: user?.artists[0].members,
 				genres: [
-					data?.artists[0].genres[0],
-					data?.artists[0].genres[1],
-					data?.artists[0].genres[2],
+					user?.artists[0].genres[0],
+					user?.artists[0].genres[1],
+					user?.artists[0].genres[2],
 				],
 				avatarUrl: null,
 			})
@@ -174,7 +183,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	async getAll(): Promise<Reply<IArtistsListSucc>> {
 		try {
 			// Calling DB
-			const data = await dbClient.artist.findMany({
+			const artists = await dbClient.artist.findMany({
 				select: {
 					id: true,
 					name: true,
@@ -184,7 +193,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			})
 
 			// Reorganize
-			const list = data.map((artist): IArtistsListItemSucc => {
+			const list = artists.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -202,7 +211,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async findManyByGenre(genre: GenreType): Promise<Reply<IArtistsListSucc>> {
 		try {
-			const data = await dbClient.artist.findMany({
+			const artists = await dbClient.artist.findMany({
 				where: {
 					genres: { has: genre },
 				},
@@ -214,7 +223,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			const list = data.map((artist): IArtistsListItemSucc => {
+			const list = artists.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,

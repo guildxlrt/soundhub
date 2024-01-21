@@ -1,27 +1,33 @@
 import { EntityLayer } from "./layers"
-import { ArtistId, GenresArray, IRelease, ReleaseId, ReleasePrice, ReleaseType } from "Shared"
+import {
+	ArtistID,
+	GenresArray,
+	ReleaseID,
+	ReleasePrice,
+	ReleaseType,
+	genresFormatter,
+} from "Shared"
 
-export class Release extends EntityLayer implements IRelease {
-	owner_id: ArtistId
-	title: string
-	releaseType: ReleaseType
+export class Release extends EntityLayer {
+	readonly owner_id: ArtistID
+	readonly title: string
+	readonly releaseType: ReleaseType
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
 	coverUrl: string | null
 
 	constructor(
-		id: ReleaseId | undefined,
-		owner_id: ArtistId,
+		id: ReleaseID | null,
+		owner_id: ArtistID,
 		title: string,
 		releaseType: ReleaseType,
 		descript: string | null,
 		price: null | ReleasePrice,
 		genres: GenresArray,
-		coverUrl: string | null,
-		createdAt?: Date
+		coverUrl: string | null
 	) {
-		super(id, createdAt)
+		super(id)
 
 		this.owner_id = owner_id
 		this.title = title

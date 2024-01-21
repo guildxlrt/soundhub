@@ -1,27 +1,26 @@
-import { ArtistId, EventId, IEvent } from "Shared"
+import { ArtistID, EventID } from "Shared"
 import { EntityLayer } from "./layers"
 
-export class Event extends EntityLayer implements IEvent {
-	owner_id: ArtistId | undefined
+export class Event extends EntityLayer {
+	readonly owner_id: ArtistID
 	date: Date
 	place: string
-	artists: ArtistId[]
+	artists: ArtistID[]
 	title: string
 	text: string
-	imageUrl?: string
+	imageUrl: string  | null
 
 	constructor(
-		id: EventId | undefined,
-		owner_id: ArtistId | undefined,
+		id: EventID | null,
+		owner_id: ArtistID,
 		date: Date,
 		place: string,
-		artists: ArtistId[],
+		artists: ArtistID[],
 		title: string,
 		text: string,
-		imageUrl?: string,
-		createdAt?: Date
+		imageUrl: string  | null
 	) {
-		super(id, createdAt)
+		super(id)
 
 		this.owner_id = owner_id
 		this.date = date

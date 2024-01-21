@@ -5,7 +5,7 @@ import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	INewArtistSucc,
-	EmailParams,
+	EmailAdapter,
 	GenreType,
 	apiRoot,
 	apiPath,
@@ -13,13 +13,13 @@ import {
 	ErrorMsg,
 	CreateArtistReqDTO,
 	ModifyArtistReqDTO,
-	ArtistId,
-	NewArtistParams,
-	ModifyArtistParams,
+	ArtistID,
+	NewArtistAdapter,
+	ModifyArtistAdapter,
 } from "Shared"
 
 export class ArtistsImplement implements ArtistsRepository {
-	async create(inputs: NewArtistParams): Promise<Response<INewArtistSucc>> {
+	async create(inputs: NewArtistAdapter): Promise<Response<INewArtistSucc>> {
 		try {
 			return (await axios({
 				method: "post",
@@ -35,7 +35,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyArtistParams): Promise<Response<boolean>> {
+	async modify(inputs: ModifyArtistAdapter): Promise<Response<boolean>> {
 		try {
 			const { bio, genres, members, name } = inputs.profile
 
@@ -57,11 +57,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getById(id: ArtistId): Promise<Response<IArtistInfoSucc>> {
+	async getByID(id: ArtistID): Promise<Response<IArtistInfoSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneById + id}`,
+				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>
 		} catch (error) {
@@ -72,12 +72,12 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByEmail(inputs: EmailParams): Promise<Response<IArtistInfoSucc>> {
+	async getByEmail(inputs: EmailAdapter): Promise<Response<IArtistInfoSucc>> {
 		const { email } = inputs
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneById}`,
+				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneByID}`,
 				data: { email: email },
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>

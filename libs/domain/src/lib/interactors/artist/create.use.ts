@@ -1,7 +1,7 @@
-import { CreateArtistReplyDTO } from "Shared"
+import { CreateArtistReplyDTO, genresFormatter } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { NewArtistParams } from "Shared"
-import { ErrorMsg, validators, formatters } from "Shared"
+import { NewArtistAdapter } from "Shared"
+import { ErrorMsg, validators } from "Shared"
 import { Artist, UserAuth } from "../../entities"
 
 export class CreateArtistUsecase extends UsecaseLayer {
@@ -9,7 +9,7 @@ export class CreateArtistUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: NewArtistParams): Promise<CreateArtistReplyDTO> {
+	async execute(inputs: NewArtistAdapter): Promise<CreateArtistReplyDTO> {
 		try {
 			const { email, password } = inputs.auth
 			const { confirmEmail, confirmPass } = inputs.authConfirm
@@ -20,16 +20,21 @@ export class CreateArtistUsecase extends UsecaseLayer {
 			// auths
 			validators.signupAuths(email, password, confirmEmail, confirmPass)
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = genresFormatter.format(genres)
 			// others data checking
 			// ... ( name)
 
-			const userData = new Artist(undefined, undefined, name, bio, members, cleanGenres)
-			const userAuths = new UserAuth(undefined, email, password)
-			const authConfirm = inputs.authConfirm
+			const userData = new Artist(null, null, name, bio, members, cleanGenres, null)
+			const userAuths = new UserAuth(null, email, password)
 
 			return await this.services.artists.create(
-				new NewArtistParams(userData, userAuths, authConfirm, hashedPass)
+				{
+					profile: userData,
+					userAuth: userAuths,
+					authConfirm: undefined,
+					hashedPass: hashedPass,
+				},
+				inputs.file
 			)
 		} catch (error) {
 			return new CreateArtistReplyDTO(

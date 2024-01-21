@@ -1,15 +1,27 @@
-import { CreateEventReplyDTO, ErrorMsg } from "Shared"
+import { CreateEventReplyDTO, ErrorMsg, NewEventAdapter } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { NewEventParams } from "Shared"
+import { Event } from "../../entities"
 
 export class CreateEventUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: NewEventParams): Promise<CreateEventReplyDTO> {
+	async execute(inputs: NewEventAdapter): Promise<CreateEventReplyDTO> {
 		try {
-			return await this.services.events.create(inputs)
+			const { owner_id, date, place, artists, title, text } = inputs.data
+
+			const event = new Event(
+				null,
+				owner_id as number,
+				date,
+				place,
+				artists,
+				title,
+				text,
+				null
+			)
+			return await this.services.events.create(event, inputs.file)
 		} catch (error) {
 			return new CreateEventReplyDTO(
 				undefined,

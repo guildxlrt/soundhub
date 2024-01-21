@@ -12,7 +12,7 @@ export const getArtistID = (id: number | undefined) => {
 }
 
 export const getAuthID = async (id: number | undefined) => {
-	return await dbClient.artist.findUnique({
+	const user = await dbClient.artist.findUnique({
 		where: {
 			id: id,
 		},
@@ -20,4 +20,6 @@ export const getAuthID = async (id: number | undefined) => {
 			id: true,
 		},
 	})
+
+	return user?.id
 }

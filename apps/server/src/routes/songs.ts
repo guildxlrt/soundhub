@@ -6,6 +6,6 @@ const router = Router()
 const controller = controllers.songs
 const endpts = apiUrlEndpt.songs
 
-router.get(endpts.oneById, controller.get)
+router.get(endpts.oneByID, controller.get)
 
 export default router

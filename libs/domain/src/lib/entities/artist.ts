@@ -1,26 +1,24 @@
-import { ArtistId, GenresArray, IArtist, UserAuthId } from "Shared"
+import { ArtistID, GenresArray, UserAuthID } from "Shared"
 import { EntityLayer } from "./layers"
 
-export class Artist extends EntityLayer implements IArtist {
-	user_auth_id: UserAuthId | undefined
+export class Artist extends EntityLayer {
+	readonly user_auth_id: UserAuthID | null
 	name: string
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatarUrl?: string
+	avatarUrl: string  | null
 
 	constructor(
-		id: ArtistId | undefined,
-		user_auth_id: UserAuthId | undefined,
+		id: ArtistID | null,
+		user_auth_id: UserAuthID | null,
 		name: string,
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarUrl?: string,
-		createdAt?: Date
+		avatarUrl: string  | null
 	) {
-		super(id, createdAt)
-		if (!createdAt) this.createdAt = new Date()
+		super(id)
 
 		this.user_auth_id = user_auth_id
 		this.name = name

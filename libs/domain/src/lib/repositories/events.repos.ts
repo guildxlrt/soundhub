@@ -1,12 +1,13 @@
-import { ReplyLayer, EntityId, IEventSucc, IEventsListSucc } from "Shared"
+import { ReplyLayer, EventID, IEventSucc, IEventsListSucc, UserAuthID } from "Shared"
+import { Event } from "../entities"
 
 export interface EventsRepository {
-	create(inputs: unknown): Promise<ReplyLayer<boolean>>
-	modify(inputs: unknown): Promise<ReplyLayer<boolean>>
-	delete(inputs: unknown): Promise<ReplyLayer<void>>
-	get(inputs: EntityId): Promise<ReplyLayer<IEventSucc>>
+	create(data: Event, file?: File): Promise<ReplyLayer<boolean>>
+	modify(data: Event, file?: File): Promise<ReplyLayer<boolean>>
+	delete(id: EventID, userAuth?: UserAuthID): Promise<ReplyLayer<void>>
+	get(data: EventID): Promise<ReplyLayer<IEventSucc>>
 	getAll(): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByArtist(inputs: EntityId): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByDate(inputs: unknown): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByPlace(inputs: unknown): Promise<ReplyLayer<IEventsListSucc>>
+	findManyByArtist(id: EventID): Promise<ReplyLayer<IEventsListSucc>>
+	findManyByDate(date: Date): Promise<ReplyLayer<IEventsListSucc>>
+	findManyByPlace(place: string): Promise<ReplyLayer<IEventsListSucc>>
 }

@@ -1,14 +1,15 @@
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { FindEventsByDateReplyDTO, ErrorMsg, DateParams } from "Shared"
+import { FindEventsByDateReplyDTO, ErrorMsg, DateAdapter } from "Shared"
 
 export class FindEventsByDateUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: DateParams): Promise<FindEventsByDateReplyDTO> {
+	async execute(inputs: DateAdapter): Promise<FindEventsByDateReplyDTO> {
 		try {
-			return await this.services.events.findManyByDate(inputs)
+			const { date } = inputs
+			return await this.services.events.findManyByDate(date)
 		} catch (error) {
 			return new FindEventsByDateReplyDTO(
 				undefined,

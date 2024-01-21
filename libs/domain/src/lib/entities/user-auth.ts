@@ -1,12 +1,12 @@
-import { IUserAuth, UserEmail, UserPassword } from "Shared"
+import { UserEmail, UserPassword } from "Shared"
 import { EntityLayer } from "./layers"
 
-export class UserAuth extends EntityLayer implements IUserAuth {
+export class UserAuth extends EntityLayer {
 	email: UserEmail
 	password: UserPassword
 
-	constructor(id: number | undefined, email: string, password: string, createdAt?: Date) {
-		super(id, createdAt)
+	constructor(id: number | null, email: string, password: string) {
+		super(id)
 
 		this.email = email
 		this.password = password

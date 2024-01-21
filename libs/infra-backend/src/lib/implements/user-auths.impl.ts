@@ -1,25 +1,12 @@
 import { UserAuthsRepository } from "Domain"
-import {
-	ChangeEmailParams,
-	ChangePassParams,
-	ErrorMsg,
-	LoginParams,
-	apiErrorMsg,
-	ILoginRes,
-	ILoginResServer,
-	UserCookie,
-	encryptors,
-} from "Shared"
-import { Reply, dbClient } from "../../assets"
-import { getAuthID } from "../../assets/get-id"
+import { ErrorMsg, apiErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, passEncryptor } from "Shared"
+import { Reply, dbClient, getAuthID } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(inputs: LoginParams): Promise<Reply<ILoginRes>> {
+	async login(email: string): Promise<Reply<ILoginRes>> {
 		try {
-			const { email, password } = inputs
-
-			// find auth id
-			const data = await dbClient.userAuth.findUnique({
+			// Find Auth
+			const authData = await dbClient.userAuth.findUnique({
 				where: {
 					email: email,
 				},
@@ -30,23 +17,22 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (!data?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
-			if (!data?.email || !data?.password) throw new ErrorMsg(500, apiErrorMsg.e500)
+			if (!authData?.id) throw new ErrorMsg(404, apiErrorMsg.e404)
+			if (!authData?.email || !authData?.password) throw new ErrorMsg(500, apiErrorMsg.e500)
 
-			// Find Profile Id
-			const profile = await getAuthID(data?.id)
+			// Find Profile
+			const profile = (await getAuthID(authData?.id)) as number
 
-			const encryptedPass = data?.password as string
+			// // RESPONSE
+			const data = {
+				encryptedPass: authData?.password as string,
+				id: authData?.id as number,
+				profileID: profile,
+			}
 
-			// RESPONSE
-			return new Reply<ILoginResServer>({
-				email: email,
-				password: password,
-				encryptedPass: encryptedPass,
-				userCookie: new UserCookie(data?.id as number, profile?.id as number, "artist"),
-			})
+			return new Reply<ILoginDbRes>(data)
 		} catch (error) {
-			return new Reply<ILoginResServer>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<ILoginDbRes>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
 		}
 	}
 
@@ -59,12 +45,15 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		}
 	}
 
-	async changeEmail(inputs: ChangeEmailParams): Promise<Reply<boolean>> {
+	async changeEmail(
+		data: { actual: string; newEmail: string },
+		id?: UserAuthID
+	): Promise<Reply<boolean>> {
 		try {
-			const { actual, newEmail, id } = inputs
+			const { actual, newEmail } = data
 
-			// verify old
-			const data = await dbClient.userAuth.findUnique({
+			// AUTHENTIFICATION
+			const getEmail = await dbClient.userAuth.findUnique({
 				where: {
 					id: id,
 				},
@@ -73,9 +62,9 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (data?.email !== actual) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (getEmail?.email !== actual) throw new ErrorMsg(403, apiErrorMsg.e403)
 
-			// Persist data
+			// PERSIST
 			await dbClient.userAuth.update({
 				where: {
 					id: id,
@@ -92,12 +81,14 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		}
 	}
 
-	async changePass(inputs: ChangePassParams): Promise<Reply<boolean>> {
+	async changePass(
+		data: { actual: string; newPass: string },
+		id?: UserAuthID,
+		hashedPass?: string
+	): Promise<Reply<boolean>> {
 		try {
-			const { actual, newPass, id } = inputs
-
-			// verify old
-			const data = await dbClient.userAuth.findUnique({
+			// AUTHENTIFICATION
+			const getPass = await dbClient.userAuth.findUnique({
 				where: {
 					id: id,
 				},
@@ -105,18 +96,20 @@ export class UserAuthsImplement implements UserAuthsRepository {
 					password: true,
 				},
 			})
-			const encrypted = data?.password
-			const hashedPass = await encryptors.comparePass(actual, encrypted as string)
 
-			if (hashedPass !== true) throw new ErrorMsg(403, apiErrorMsg.e403)
+			const { actual } = data
+			const encryptedPass = getPass?.password
+			const auth = await passEncryptor.compare(actual, encryptedPass as string)
 
-			// Persist data
+			if (auth !== true) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// PERSIST
 			await dbClient.userAuth.update({
 				where: {
 					id: id,
 				},
 				data: {
-					password: newPass,
+					password: hashedPass,
 				},
 			})
 

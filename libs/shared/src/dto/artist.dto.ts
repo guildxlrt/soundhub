@@ -1,37 +1,24 @@
 import {
-	ArtistId,
+	ArtistID,
 	GenreType,
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	GenresArray,
 	UserEmail,
-	UserPassword,
 	INewArtistSucc,
+	IProfile,
+	IUserAuth,
+	IAuthConfirm,
 } from "../utils"
 import { ReplyDTO } from "./layers"
-
-interface IProfile {
-	name: string
-	bio: string
-	members: string[]
-	genres: GenresArray
-}
-interface IAuth {
-	email: UserEmail
-	password: UserPassword
-}
-interface IAuthConfirm {
-	confirmEmail: UserEmail
-	confirmPass: UserPassword
-}
 
 // CREATE ARTIST
 export class CreateArtistReqDTO {
 	profile: IProfile
-	auth: IAuth
+	auth: IUserAuth
 	authConfirm: IAuthConfirm
 
-	constructor(profile: IProfile, auth: IAuth, authConfirm: IAuthConfirm) {
+	constructor(profile: IProfile, auth: IUserAuth, authConfirm: IAuthConfirm) {
 		this.profile = profile
 		this.auth = auth
 		this.authConfirm = authConfirm
@@ -41,7 +28,7 @@ export class CreateArtistReplyDTO extends ReplyDTO<INewArtistSucc> {}
 
 // MODIFY ARTIST //
 export class ModifyArtistReqDTO {
-	id: ArtistId | undefined
+	id: ArtistID | undefined
 	name: string
 	bio: string
 	members: string[]
@@ -49,7 +36,7 @@ export class ModifyArtistReqDTO {
 	avatar: boolean | null // true = add, null = no changes, false = remove
 
 	constructor(
-		id: ArtistId | undefined,
+		id: ArtistID | undefined,
 		name: string,
 		bio: string,
 		members: string[],
@@ -68,7 +55,7 @@ export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
 
-export class GetArtistByIdReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
+export class GetArtistByIDReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // ARTIST BY EMAIL
 export class GetArtistByEmailReqDTO {
