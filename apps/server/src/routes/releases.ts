@@ -1,13 +1,13 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { authMiddleware, Controller, audioStorage, imageStorage } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
-const controller = controllers.releases
+const controller = Controller.releases()
 const endpts = apiUrlEndpt.releases
 
-router.post(endpts.create, authMiddleware, controller.create)
-router.put(endpts.modify, authMiddleware, controller.modify)
+router.post(endpts.create, authMiddleware, imageStorage, audioStorage, controller.create)
+router.put(endpts.modify, authMiddleware, imageStorage, controller.modify)
 router.patch(endpts.hide, authMiddleware, controller.hide)
 router.get(endpts.oneByID + "id", controller.get)
 router.get(endpts.all, controller.getAll)

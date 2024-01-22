@@ -1,10 +1,10 @@
-import { AnnounceID, ArtistID, IAnnounce } from "../utils"
+import { AnnounceID, ArtistID, FileType, IAnnounce } from "../utils"
 
 export class NewAnnounceAdapter {
 	data: IAnnounce
-	file?: File
+	file?: FileType
 
-	constructor(data: IAnnounce, file?: File) {
+	constructor(data: IAnnounce, file?: FileType) {
 		this.data = data
 		this.file = file
 	}
@@ -12,9 +12,9 @@ export class NewAnnounceAdapter {
 
 export class ModifyAnnounceAdapter {
 	data: IAnnounce
-	file?: File
+	file?: FileType
 
-	constructor(data: IAnnounce, file?: File) {
+	constructor(data: IAnnounce, file?: FileType) {
 		this.data = data
 		this.file = file
 	}

@@ -10,6 +10,7 @@ import {
 	ArtistID,
 	UserCookie,
 	UserEmail,
+	FileType,
 } from "Shared"
 import { dbClient, dbErrHandler, getAuthID, Reply } from "../../assets"
 
@@ -21,7 +22,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			authConfirm: undefined
 			hashedPass?: string
 		},
-		file?: File
+		file?: FileType
 	): Promise<Reply<INewArtistSucc>> {
 		try {
 			const { name, bio, members, genres } = data.profile
@@ -79,7 +80,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async modify(
 		data: { profile: Artist; userAuth?: number },
-		file?: File
+		file?: FileType
 	): Promise<Reply<boolean>> {
 		try {
 			const { name, bio, members, genres, id } = data.profile

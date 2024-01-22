@@ -1,14 +1,21 @@
 import {
+	CreateArtistReplyDTO,
 	CreateArtistReqDTO,
+	FindArtistsByGenreReplyDTO,
 	GenreType,
+	GetAllArtistsReplyDTO,
+	GetArtistByEmailReplyDTO,
 	GetArtistByEmailReqDTO,
+	GetArtistByIDReplyDTO,
 	IArtist,
 	IUserAuth,
 	ModifyArtistAdapter,
+	ModifyArtistReplyDTO,
 	ModifyArtistReqDTO,
 	NewArtistAdapter,
 	apiErrorMsg,
-	passEncryptor,
+	PassEncryptor,
+	FileType,
 } from "Shared"
 import {
 	CreateArtistUsecase,
@@ -19,18 +26,19 @@ import {
 	ModifyArtistUsecase,
 } from "Domain"
 import { databaseServices } from "Infra-backend"
-import { IArtistCtrl, Token, authExpires, errHandler, ApiRequest, ApiReply } from "../../assets"
+import { IArtistCtrl, Token, authExpires, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ArtistsController implements IArtistCtrl {
-	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
+			const file: FileType = req.file
 
 			// HashPass
 			const { password, email } = auth
-			const hashedPass = await passEncryptor.hash(password)
+			const hashedPass = await PassEncryptor.hash(password)
 
 			// Data
 			const { bio, genres, members, name } = profile
@@ -47,7 +55,7 @@ export class ArtistsController implements IArtistCtrl {
 			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(
-				new NewArtistAdapter(artistProfile, userAuth, authConfirm, hashedPass)
+				new NewArtistAdapter(artistProfile, userAuth, authConfirm, hashedPass, file)
 			)
 			if (error) throw error
 
@@ -65,18 +73,19 @@ export class ArtistsController implements IArtistCtrl {
 					secure: false,
 				})
 				.status(202)
-				.send(data)
+				.send(new CreateArtistReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const user = req.auth?.profileID as number
 			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
+			const file: FileType = req.file
 
 			const artistProfile: IArtist = {
 				user_auth_id: user,
@@ -90,21 +99,21 @@ export class ArtistsController implements IArtistCtrl {
 			// Saving Changes
 			const modifyArtist = new ModifyArtistUsecase(databaseServices)
 			const { data, error } = await modifyArtist.execute(
-				new ModifyArtistAdapter(artistProfile)
+				new ModifyArtistAdapter(artistProfile, file)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new ModifyArtistReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async getByID(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async getByID(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const id = Number(req.params["id"])
 
 			const getArtistByID = new GetArtistByIDUsecase(databaseServices)
@@ -112,16 +121,16 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetArtistByIDReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async getByEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async getByEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const inputs = req.body.email as GetArtistByEmailReqDTO
 
 			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
@@ -129,31 +138,31 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetArtistByEmailReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
 			const { data, error } = await getAllArtists.execute()
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetAllArtistsReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
+	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const params = req.params["genre"] as GenreType
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
@@ -161,9 +170,9 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new FindArtistsByGenreReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 }

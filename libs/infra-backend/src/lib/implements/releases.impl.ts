@@ -9,6 +9,7 @@ import {
 	apiErrorMsg,
 	UserAuthID,
 	ReleaseID,
+	FileType,
 } from "Shared"
 import { getArtistID, dbClient } from "../../assets"
 import { Reply } from "../../assets"
@@ -16,7 +17,7 @@ import { Reply } from "../../assets"
 export class ReleasesImplement implements ReleasesRepository {
 	async create(
 		release: Release,
-		songs: { data: Song; audio: File }[]
+		songs: { data: Song; audio: FileType }[]
 	): Promise<Reply<INewReleaseSucc>> {
 		try {
 			const { owner_id, title, releaseType, descript, price, genres } = release

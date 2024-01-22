@@ -1,4 +1,4 @@
-import { ModifyArtistReplyDTO, genresFormatter } from "Shared"
+import { ModifyArtistReplyDTO, Formatters } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 import { ModifyArtistAdapter } from "Shared"
 import { ErrorMsg } from "Shared"
@@ -15,7 +15,7 @@ export class ModifyArtistUsecase extends UsecaseLayer {
 
 			// SANITIZE
 			// genres
-			const cleanGenres = genresFormatter.format(genres)
+			const cleanGenres = Formatters.genres(genres)
 			// others data checking
 			// ... ( name)
 

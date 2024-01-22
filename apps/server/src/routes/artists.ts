@@ -1,13 +1,13 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { authMiddleware, Controller, imageStorage } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
-const controller = controllers.artists
+const controller = Controller.artists()
 const endpts = apiUrlEndpt.artists
 
-router.post(endpts.signup, controller.create)
-router.put(endpts.modify, authMiddleware, controller.modify)
+router.post(endpts.signup, imageStorage, controller.create)
+router.put(endpts.modify, authMiddleware, imageStorage, controller.modify)
 router.get(endpts.oneByID + "id", controller.getByID)
 router.get(endpts.oneByEmail, controller.getByEmail)
 router.get(endpts.all, controller.getAll)

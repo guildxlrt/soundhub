@@ -1,9 +1,9 @@
-import { ReplyLayer, EventID, IEventSucc, IEventsListSucc, UserAuthID } from "Shared"
+import { ReplyLayer, EventID, IEventSucc, IEventsListSucc, UserAuthID, FileType } from "Shared"
 import { Event } from "../entities"
 
 export interface EventsRepository {
-	create(data: Event, file?: File): Promise<ReplyLayer<boolean>>
-	modify(data: Event, file?: File): Promise<ReplyLayer<boolean>>
+	create(data: Event, file?: FileType): Promise<ReplyLayer<boolean>>
+	modify(data: Event, file?: FileType): Promise<ReplyLayer<boolean>>
 	delete(id: EventID, userAuth?: UserAuthID): Promise<ReplyLayer<void>>
 	get(data: EventID): Promise<ReplyLayer<IEventSucc>>
 	getAll(): Promise<ReplyLayer<IEventsListSucc>>

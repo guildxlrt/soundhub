@@ -1,11 +1,11 @@
 import { ISongsCtrl } from "../../assets"
-import { apiErrorMsg } from "Shared"
+import { GetSongReplyDTO, apiErrorMsg } from "Shared"
 import { GetSongUsecase } from "Domain"
 import { databaseServices } from "Infra-backend"
-import { errHandler, ApiRequest, ApiReply } from "../../assets"
+import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class SongsController implements ISongsCtrl {
-	async get(req: ApiRequest, res: ApiReply) {
+	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -15,9 +15,9 @@ export class SongsController implements ISongsCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetSongReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 }

@@ -1,18 +1,23 @@
-import { changeEmailValidator } from "./change-email.val"
-import { changePassValidator } from "./change-pass.val"
-import { mediaValidator } from "./media.val"
-import { signupAuthsValidator } from "./signup-auths.val"
-import { songValidator } from "./song.val"
-import { userImageValidator } from "./users-image.val"
+import { ChangeEmailValidator } from "./change-email.val"
+import { ChangePassValidator } from "./change-pass.val"
+import { SignupAuthsValidator } from "./signup-auths.val"
+import { ImageValidator } from "./image.val"
+import { AudioValidator } from "./song.val"
 
-// VALIDATORS
-export const validators = {
-	signupAuths: signupAuthsValidator,
-	changeEmail: changeEmailValidator,
-	changePass: changePassValidator,
-	userImg: userImageValidator,
-	media: mediaValidator,
-	song: songValidator,
+export class Validators {
+	static signupAuths(email: string, password: string, confirmEmail: string, confirmPass: string) {
+		return new SignupAuthsValidator().validate(email, password, confirmEmail, confirmPass)
+	}
+	static changeEmail(actual: string, newEmail: string, confirm: string) {
+		return new ChangeEmailValidator().validate(actual, newEmail, confirm)
+	}
+	static changePass(actual: string, newPass: string, confirm: string) {
+		return new ChangePassValidator().validate(actual, newPass, confirm)
+	}
+	static image(file?: File) {
+		return new ImageValidator().validate(file)
+	}
+	static audio(file?: File) {
+		return new AudioValidator().validate(file)
+	}
 }
-
-export type Validators = typeof validators

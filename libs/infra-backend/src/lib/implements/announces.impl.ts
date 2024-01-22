@@ -8,10 +8,11 @@ import {
 	apiErrorMsg,
 	AnnounceID,
 	UserAuthID,
+	FileType,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(data: Announce, file?: File): Promise<Reply<boolean>> {
+	async create(data: Announce, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { owner_id, title, text } = data
 
@@ -36,7 +37,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async modify(data: Announce, file?: File): Promise<Reply<boolean>> {
+	async modify(data: Announce, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { owner_id, title, text, imageUrl, id } = data
 

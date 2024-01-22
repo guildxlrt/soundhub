@@ -47,7 +47,6 @@ export class ModifyEventReqDTO {
 export class ModifyEventReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
-
 export class DeleteEventReplyDTO extends ReplyDTO<void> {}
 
 // GET POST

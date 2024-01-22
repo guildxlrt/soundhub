@@ -9,10 +9,11 @@ import {
 	apiErrorMsg,
 	UserAuthID,
 	AnnounceID,
+	FileType,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
-	async create(data: Event, file?: File): Promise<Reply<boolean>> {
+	async create(data: Event, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { owner_id, date, place, artists, title, text, imageUrl } = data
 
@@ -40,7 +41,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async modify(data: Event, file?: File): Promise<Reply<boolean>> {
+	async modify(data: Event, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { id, owner_id, date, place, artists, title, text, imageUrl } = data
 

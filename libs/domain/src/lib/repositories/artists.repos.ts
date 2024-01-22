@@ -1,5 +1,6 @@
 import {
 	ArtistID,
+	FileType,
 	GenreType,
 	IArtistInfoSucc,
 	IArtistsListSucc,
@@ -18,9 +19,12 @@ export interface ArtistsRepository {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 			hashedPass?: string
 		},
-		file?: File
+		file?: FileType
 	): Promise<ReplyLayer<INewArtistSucc>>
-	modify(data: { profile: Artist; userAuth?: number }, file?: File): Promise<ReplyLayer<boolean>>
+	modify(
+		data: { profile: Artist; userAuth?: number },
+		file?: FileType
+	): Promise<ReplyLayer<boolean>>
 	getByID(id: ArtistID): Promise<ReplyLayer<IArtistInfoSucc>>
 	getByEmail(email: UserEmail): Promise<ReplyLayer<IArtistInfoSucc>>
 	getAll(): Promise<ReplyLayer<IArtistsListSucc>>

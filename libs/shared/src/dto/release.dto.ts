@@ -2,8 +2,10 @@ import {
 	ArtistID,
 	GenresArray,
 	INewReleaseSucc,
+	IRelease,
 	IReleaseSucc,
 	IReleasesListSucc,
+	ISong,
 	ReleaseID,
 	ReleasePrice,
 	ReleaseType,
@@ -18,19 +20,13 @@ interface INewReleaseData {
 	price: ReleasePrice | null
 	genres: GenresArray
 }
-interface INewSong {
-	audio: File
-	title: string
-	featuring: number[]
-	lyrics: string | null
-}
 
 // CREATE RELEASE
 export class CreateReleaseReqDTO {
-	release: INewReleaseData
-	songs: INewSong[]
+	release: IRelease
+	songs: ISong[]
 
-	constructor(release: INewReleaseData, songs: INewSong[]) {
+	constructor(release: IRelease, songs: ISong[]) {
 		this.release = release
 		this.songs = songs
 	}
@@ -41,9 +37,9 @@ export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 // MODIFY
 export class ModifyReleaseReqDTO {
 	release: INewReleaseData
-	songs: INewSong[]
+	songs: ISong[]
 
-	constructor(release: INewReleaseData, songs: INewSong[]) {
+	constructor(release: INewReleaseData, songs: ISong[]) {
 		this.release = release
 		this.songs = songs
 	}

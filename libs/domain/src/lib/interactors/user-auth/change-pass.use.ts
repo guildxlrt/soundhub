@@ -1,7 +1,7 @@
 import { ChangePassReplyDTO } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 import { ChangePassAdapter } from "Shared"
-import { ErrorMsg, validators } from "Shared"
+import { ErrorMsg, Validators } from "Shared"
 
 export class ChangePassUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
@@ -13,7 +13,7 @@ export class ChangePassUsecase extends UsecaseLayer {
 			const { actual, confirm, newPass, hashedPass, id } = inputs
 
 			// Operators
-			validators.changePass(actual, confirm, newPass)
+			Validators.changePass(actual, confirm, newPass)
 
 			// return
 			return await this.services.userAuths.changePass(

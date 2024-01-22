@@ -1,5 +1,5 @@
 import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ModifyReleaseReplyDTO, ErrorMsg, genresFormatter, ModifyReleaseAdapter } from "Shared"
+import { ModifyReleaseReplyDTO, ErrorMsg, Formatters, ModifyReleaseAdapter } from "Shared"
 import { Release, Song } from "../../entities"
 
 export class ModifyReleaseUsecase extends UsecaseLayer {
@@ -10,16 +10,16 @@ export class ModifyReleaseUsecase extends UsecaseLayer {
 	async execute(inputs: ModifyReleaseAdapter): Promise<ModifyReleaseReplyDTO> {
 		try {
 			const { songs } = inputs
-			const { owner_id, title, releaseType, descript, price, genres } = inputs.release
+			const { owner_id, title, releaseType, descript, price, genres } = inputs.release.data
 
 			// Operators
 			// genres
-			const cleanGenres = genresFormatter.format(genres)
+			const cleanGenres = Formatters.genres(genres)
 
 			// saving
 			const release = new Release(
 				null,
-				owner_id,
+				owner_id as number,
 				title,
 				releaseType,
 				descript,

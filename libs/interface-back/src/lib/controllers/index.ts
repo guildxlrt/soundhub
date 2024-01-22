@@ -5,11 +5,23 @@ import { EventsController } from "./events.ctrl"
 import { ReleasesController } from "./releases.ctrl"
 import { SongsController } from "./songs.ctrl"
 
-export const controllers = {
-	annonces: new AnnoncesController(),
-	artists: new ArtistsController(),
-	auth: new UserAuthController(),
-	events: new EventsController(),
-	releases: new ReleasesController(),
-	songs: new SongsController(),
+export class Controller {
+	static annonces() {
+		return new AnnoncesController()
+	}
+	static artists() {
+		return new ArtistsController()
+	}
+	static auth() {
+		return new UserAuthController()
+	}
+	static events() {
+		return new EventsController()
+	}
+	static releases() {
+		return new ReleasesController()
+	}
+	static songs() {
+		return new SongsController()
+	}
 }

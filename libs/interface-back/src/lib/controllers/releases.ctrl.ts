@@ -10,29 +10,40 @@ import {
 } from "Domain"
 import { databaseServices } from "Infra-backend"
 import {
+	CreateReleaseReplyDTO,
 	CreateReleaseReqDTO,
+	FileType,
+	FilesArray,
+	FindReleasesByArtistReplyDTO,
+	FindReleasesByGenreReplyDTO,
 	GenreType,
+	GetAllReleasesReplyDTO,
+	GetReleaseReplyDTO,
 	HideReleaseAdapter,
+	HideReleaseReplyDTO,
 	HideReleaseReqDTO,
 	IRelease,
 	ModifyReleaseAdapter,
+	ModifyReleaseReplyDTO,
 	ModifyReleaseReqDTO,
 	NewReleaseAdapter,
 	apiErrorMsg,
 } from "Shared"
-import { errHandler, ApiRequest, ApiReply } from "../../assets"
+import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ReleasesController implements IReleasesCtrl {
-	async create(req: ApiRequest, res: ApiReply) {
+	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const user = req.auth?.profileID as number
-
+			const img: FileType = req.file
+			const audioFiles: FilesArray = req.files as FilesArray
 			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
 			const { title, releaseType, price, descript, genres } = inputs.release
-			const release: IRelease = {
+
+			const releaseData: IRelease = {
 				owner_id: user,
 				title: title,
 				releaseType: releaseType,
@@ -41,31 +52,45 @@ export class ReleasesController implements IReleasesCtrl {
 				genres: genres,
 				coverUrl: null,
 			}
-			const { songs } = inputs
+
+			const songsData = inputs.songs
+			const songs = songsData.map((song, index) => {
+				return {
+					data: { title: song.title, featuring: song.featuring, lyrics: song.lyrics },
+					audioFile: audioFiles[index],
+				}
+			})
 
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(
-				new NewReleaseAdapter(release, songs, undefined)
+				new NewReleaseAdapter(
+					{
+						data: releaseData,
+						imgFile: img,
+					},
+					songs
+				)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(data)
+			return res.status(202).send(new CreateReleaseReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply) {
+	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
 			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
 			const user = req.auth?.profileID as number
+			const img: FileType = req.file
 
 			const { title, releaseType, price, descript, genres } = inputs.release
-			const release: IRelease = {
+			const releaseData: IRelease = {
 				owner_id: user,
 				title: title,
 				releaseType: releaseType,
@@ -74,23 +99,37 @@ export class ReleasesController implements IReleasesCtrl {
 				genres: genres,
 				coverUrl: null,
 			}
-			const { songs } = inputs
+
+			const songsData = inputs.songs
+			const songs = songsData.map((song) => {
+				return {
+					title: song.title,
+					featuring: song.featuring,
+					lyrics: song.lyrics,
+				}
+			})
 
 			// Saving Profile
 			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
 			const { data, error } = await modifyRelease.execute(
-				new ModifyReleaseAdapter(release, songs)
+				new ModifyReleaseAdapter(
+					{
+						data: releaseData,
+						imgFile: img,
+					},
+					songs
+				)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(data)
+			return res.status(202).send(new ModifyReleaseReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async hide(req: ApiRequest, res: ApiReply) {
+	async hide(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -105,13 +144,13 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(data)
+			return res.status(202).send(new HideReleaseReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiReply) {
+	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -121,13 +160,13 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetReleaseReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply) {
+	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -136,13 +175,13 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new GetAllReleasesReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async findManyByArtist(req: ApiRequest, res: ApiReply) {
+	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -152,13 +191,13 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new FindReleasesByGenreReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiReply) {
+	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 		try {
@@ -168,9 +207,9 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(data)
+			return res.status(200).send(new FindReleasesByArtistReplyDTO(data))
 		} catch (error) {
-			return errHandler.reply(error, res)
+			return ApiErrHandler.reply(error, res)
 		}
 	}
 }

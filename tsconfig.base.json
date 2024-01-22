@@ -14,6 +14,7 @@
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
+		"esModuleInterop": true,
 		"paths": {
 			"Domain": ["libs/domain/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],

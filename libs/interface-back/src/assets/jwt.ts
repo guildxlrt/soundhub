@@ -1,6 +1,6 @@
 import * as jwt from "jsonwebtoken"
 import * as fs from "fs"
-import { ApiReply, ApiRequest } from "./params"
+import { ApiRequest } from "./params"
 import { ErrorMsg, UserCookie, apiErrorMsg } from "Shared"
 
 const privateKey = fs.readFileSync("private.pem", "utf8")

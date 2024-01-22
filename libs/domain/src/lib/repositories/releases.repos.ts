@@ -1,5 +1,6 @@
 import {
 	ArtistID,
+	FileType,
 	GenreType,
 	INewReleaseSucc,
 	IReleaseSucc,
@@ -13,7 +14,7 @@ import { Release, Song } from "../entities"
 export interface ReleasesRepository {
 	create(
 		release: Release,
-		songs: { data: Song; audio: File }[]
+		songs: { data: Song; audio: FileType }[]
 	): Promise<ReplyLayer<INewReleaseSucc>>
 	modify(release: Release, songs: Song[]): Promise<ReplyLayer<boolean>>
 	hide(id: ReleaseID, isPublic: boolean, userAuth?: UserAuthID): Promise<ReplyLayer<boolean>>

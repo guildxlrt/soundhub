@@ -1,47 +1,50 @@
-import { ArtistID, GenresArray, IRelease, ReleaseID } from "../utils"
+import { ArtistID, FileType, IRelease, ReleaseID } from "../utils"
 
 export class NewReleaseAdapter {
-	release: Omit<IRelease, "id" | "coverUrl">
+	release: {
+		data: Omit<IRelease, "id" | "coverUrl">
+		imgFile: FileType
+	}
 	songs: {
-		title: string
-		featuring: number[]
-		lyrics: string | null
-		audio: File
+		data: { title: string; featuring: number[]; lyrics: string | null }
+		audioFile: FileType
 	}[]
-	cleanGenres?: GenresArray
 
 	constructor(
-		release: Omit<IRelease, "id" | "coverUrl">,
+		release: {
+			data: Omit<IRelease, "id" | "coverUrl">
+			imgFile: FileType
+		},
 		songs: {
-			title: string
-			featuring: number[]
-			lyrics: string | null
-			audio: File
-		}[],
-		cleanGenres?: GenresArray
+			data: { title: string; featuring: number[]; lyrics: string | null }
+			audioFile: FileType
+		}[]
 	) {
 		this.release = release
 		this.songs = songs
-		this.cleanGenres = cleanGenres
 	}
 }
 
 export class ModifyReleaseAdapter {
-	release: Omit<IRelease, "id" | "coverUrl">
+	release: {
+		data: Omit<IRelease, "id" | "coverUrl">
+		imgFile: FileType
+	}
 	songs: {
 		title: string
 		featuring: ArtistID[]
 		lyrics: string | null
-		audio: File
 	}[]
 
 	constructor(
-		release: Omit<IRelease, "id" | "coverUrl">,
+		release: {
+			data: Omit<IRelease, "id" | "coverUrl">
+			imgFile: FileType
+		},
 		songs: {
 			title: string
 			featuring: ArtistID[]
 			lyrics: string | null
-			audio: File
 		}[]
 	) {
 		this.release = release

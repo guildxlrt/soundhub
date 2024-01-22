@@ -7,7 +7,7 @@ export class Artist extends EntityLayer {
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatarUrl: string  | null
+	avatarUrl: string | null
 
 	constructor(
 		id: ArtistID | null,
@@ -16,7 +16,7 @@ export class Artist extends EntityLayer {
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarUrl: string  | null
+		avatarUrl: string | null
 	) {
 		super(id)
 

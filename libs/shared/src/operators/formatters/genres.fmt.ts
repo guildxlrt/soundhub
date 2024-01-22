@@ -22,5 +22,3 @@ export class GenresFormatter {
 		}
 	}
 }
-
-export const genresFormatter = new GenresFormatter()

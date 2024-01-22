@@ -1,5 +1,5 @@
 import { UserAuthsRepository } from "Domain"
-import { ErrorMsg, apiErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, passEncryptor } from "Shared"
+import { ErrorMsg, apiErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, PassEncryptor } from "Shared"
 import { Reply, dbClient, getAuthID } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
@@ -99,7 +99,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 			const { actual } = data
 			const encryptedPass = getPass?.password
-			const auth = await passEncryptor.compare(actual, encryptedPass as string)
+			const auth = await PassEncryptor.compare(actual, encryptedPass as string)
 
 			if (auth !== true) throw new ErrorMsg(403, apiErrorMsg.e403)
 

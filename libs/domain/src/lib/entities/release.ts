@@ -1,12 +1,5 @@
 import { EntityLayer } from "./layers"
-import {
-	ArtistID,
-	GenresArray,
-	ReleaseID,
-	ReleasePrice,
-	ReleaseType,
-	genresFormatter,
-} from "Shared"
+import { ArtistID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
 
 export class Release extends EntityLayer {
 	readonly owner_id: ArtistID

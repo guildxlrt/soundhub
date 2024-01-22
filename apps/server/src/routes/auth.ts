@@ -1,9 +1,9 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { Controller, authMiddleware } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
-const controller = controllers.auth
+const controller = Controller.auth()
 const endpts = apiUrlEndpt.auth
 
 router.post(endpts.login, controller.login)

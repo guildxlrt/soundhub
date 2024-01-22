@@ -1,10 +1,10 @@
-import { ArtistID, EventID, IEvent } from "../utils"
+import { ArtistID, EventID, FileType, IEvent } from "../utils"
 
 export class NewEventAdapter {
 	data: IEvent
-	file?: File
+	file?: FileType
 
-	constructor(data: IEvent, file?: File) {
+	constructor(data: IEvent, file?: FileType) {
 		this.data = data
 		this.file = file
 	}
@@ -12,9 +12,9 @@ export class NewEventAdapter {
 
 export class ModifyEventAdapter {
 	event: IEvent
-	file?: File
+	file?: FileType
 
-	constructor(event: IEvent, file?: File) {
+	constructor(event: IEvent, file?: FileType) {
 		this.event = event
 		this.file = file
 	}

@@ -1,18 +1,18 @@
-import { IArtist, IUserAuth, UserEmail, UserPassword } from "../utils"
+import { FileType, IArtist, IUserAuth, UserEmail, UserPassword } from "../utils"
 
 export class NewArtistAdapter {
 	profile: IArtist
 	auth: IUserAuth
 	authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
 	hashedPass?: string
-	file?: File
+	file?: FileType
 
 	constructor(
 		profile: IArtist,
 		auth: IUserAuth,
 		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword },
 		hashedPass?: string,
-		file?: File
+		file?: FileType
 	) {
 		this.profile = profile
 		this.auth = auth
@@ -24,9 +24,9 @@ export class NewArtistAdapter {
 
 export class ModifyArtistAdapter {
 	profile: IArtist
-	file?: File
+	file?: FileType
 
-	constructor(profile: IArtist, file?: File) {
+	constructor(profile: IArtist, file?: FileType) {
 		this.profile = profile
 		this.file = file
 	}
