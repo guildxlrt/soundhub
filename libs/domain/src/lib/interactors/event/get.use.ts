@@ -2,8 +2,8 @@ import { GetEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType, IDUsecaseParams } from "../../../assets"
 
 export class GetEventUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: IDUsecaseParams): Promise<GetEventReplyDTO> {
@@ -11,10 +11,7 @@ export class GetEventUsecase extends UsecaseLayer {
 			const id = inputs.id
 			return await this.services.events.get(id)
 		} catch (error) {
-			return new GetEventReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new GetEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

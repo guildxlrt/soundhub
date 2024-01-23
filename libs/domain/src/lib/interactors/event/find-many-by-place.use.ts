@@ -2,8 +2,7 @@ import { UsecaseLayer, ServicesType, PlaceUsecaseParams } from "../../../assets"
 import { FindEventsByPlaceReplyDTO, ErrorMsg } from "Shared"
 
 export class FindEventsByPlaceUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
 	}
 
 	async execute(inputs: PlaceUsecaseParams): Promise<FindEventsByPlaceReplyDTO> {
@@ -14,7 +13,7 @@ export class FindEventsByPlaceUsecase extends UsecaseLayer {
 		} catch (error) {
 			return new FindEventsByPlaceReplyDTO(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(`Error: failed to persist`)
 			)
 		}
 	}

@@ -4,8 +4,8 @@ import { ErrorMsg } from "Shared"
 import { Artist } from "../../entities"
 
 export class UpdateArtistUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: UpdateArtistUsecaseParams): Promise<UpdateArtistReplyDTO> {
@@ -14,7 +14,7 @@ export class UpdateArtistUsecase extends UsecaseLayer {
 
 			// SANITIZE
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = formatters.genres(genres, this.backend)
 			// others data checking
 			// ... ( name)
 
@@ -34,10 +34,7 @@ export class UpdateArtistUsecase extends UsecaseLayer {
 				inputs.file
 			)
 		} catch (error) {
-			return new UpdateArtistReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new UpdateArtistReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

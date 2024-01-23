@@ -44,10 +44,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})) as Response<INewReleaseSucc>
 		} catch (error) {
-			return new Response<INewReleaseSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<INewReleaseSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -71,7 +68,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -84,7 +81,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				data: { id: id, isPublic: isPublic } as HideReleaseReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -96,10 +93,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})) as Response<IReleaseSucc>
 		} catch (error) {
-			return new Response<IReleaseSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IReleaseSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -111,10 +105,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})) as Response<IReleasesListSucc>
 		} catch (error) {
-			return new Response<IReleasesListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -128,10 +119,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})) as Response<IReleasesListSucc>
 		} catch (error) {
-			return new Response<IReleasesListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -143,10 +131,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})) as Response<IReleasesListSucc>
 		} catch (error) {
-			return new Response<IReleasesListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 }

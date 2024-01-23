@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client"
-import { ErrorMsg, apiErrorMsg } from "Shared"
+import { ErrorMsg, apiError } from "Shared"
 import { Reply } from "../interfaces/reply"
 
 export class DbErrHandler {
@@ -10,12 +10,7 @@ export class DbErrHandler {
 			res instanceof Reply &&
 			res.error instanceof ErrorMsg
 		) {
-			return (res.error = {
-				status: 409,
-				message: apiErrorMsg.e409.email,
-				name: "Unique constraint failed",
-				timestamp: new Date(),
-			})
+			return (res.error = ErrorMsg.apiError(apiError[409]))
 		}
 		return
 	}

@@ -1,1 +1,1 @@
-export type StatusType = number | undefined
+export type StatusType = number | null

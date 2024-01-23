@@ -4,13 +4,13 @@ import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	IArtistsListItemSucc,
-	apiErrorMsg,
 	INewArtistSucc,
 	GenreType,
 	ArtistID,
 	UserCookie,
 	UserEmail,
 	FileType,
+	apiError,
 } from "Shared"
 import { dbClient, DbErrHandler, FileManipulator, filePath, GetID, Reply } from "../../assets"
 
@@ -51,7 +51,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			if (!newUser?.id) throw new ErrorMsg(401, apiErrorMsg.e401)
+			if (!newUser?.id) throw ErrorMsg.apiError(apiError[401])
 
 			// RESPONSE
 			const getProfile = await dbClient.artist.findUnique({
@@ -68,10 +68,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				userCookie: new UserCookie(newUser.id, getProfile?.id as number, "artist"),
 			})
 		} catch (error) {
-			const res = new Reply<INewArtistSucc>(
-				undefined,
-				new ErrorMsg(500, apiErrorMsg.e500, error)
-			)
+			const res = new Reply<INewArtistSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 
 			// Email must be unique
 			DbErrHandler.uniqueEmail(error, res)
@@ -100,7 +97,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// AUTH
 			const authID = await GetID.auth(id as number)
 
-			if (userAuth !== authID) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (userAuth !== authID) throw ErrorMsg.apiError(apiError[403])
 
 			// PERSIST
 			await dbClient.artist.update({
@@ -119,7 +116,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -148,7 +145,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				avatarUrl: null,
 			})
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -186,7 +183,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				avatarUrl: null,
 			})
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -215,7 +212,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IArtistsListSucc>([], ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -245,7 +242,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IArtistsListSucc>([], ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

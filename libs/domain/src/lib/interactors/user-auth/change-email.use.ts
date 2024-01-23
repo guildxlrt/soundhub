@@ -3,8 +3,8 @@ import { UsecaseLayer, ServicesType, ChangeEmailUsecaseParams } from "../../../a
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
@@ -12,7 +12,14 @@ export class ChangeEmailUsecase extends UsecaseLayer {
 			const { actual, confirm, newEmail, id } = inputs
 
 			// Operators
-			validators.changeEmail(actual, confirm, newEmail)
+			validators.changeEmail(
+				{
+					actual: actual,
+					newEmail: newEmail,
+					confirm: confirm,
+				},
+				this.backend
+			)
 
 			// return
 			return await this.services.userAuths.changeEmail(
@@ -20,10 +27,7 @@ export class ChangeEmailUsecase extends UsecaseLayer {
 				id
 			)
 		} catch (error) {
-			return new ChangeEmailReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new ChangeEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

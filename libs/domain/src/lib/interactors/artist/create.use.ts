@@ -4,8 +4,8 @@ import { ErrorMsg, validators } from "Shared"
 import { Artist, UserAuth } from "../../entities"
 
 export class CreateArtistUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: NewArtistUsecaseParams): Promise<CreateArtistReplyDTO> {
@@ -17,9 +17,17 @@ export class CreateArtistUsecase extends UsecaseLayer {
 
 			// SANITIZE
 			// auths
-			validators.signupAuths(email, password, confirmEmail, confirmPass)
+			validators.signupAuths(
+				{
+					email: email,
+					password: password,
+					confirmEmail: confirmEmail,
+					confirmPass: confirmPass,
+				},
+				this.backend
+			)
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = formatters.genres(genres, this.backend)
 			// others data checking
 			// ... ( name)
 
@@ -36,10 +44,7 @@ export class CreateArtistUsecase extends UsecaseLayer {
 				inputs.file
 			)
 		} catch (error) {
-			return new CreateArtistReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new CreateArtistReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

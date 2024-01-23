@@ -2,8 +2,8 @@ import { GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType, EmailUsecaseParams } from "../../../assets"
 
 export class GetArtistByEmailUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: EmailUsecaseParams): Promise<GetArtistByEmailReplyDTO> {
@@ -11,10 +11,7 @@ export class GetArtistByEmailUsecase extends UsecaseLayer {
 			const { email } = inputs
 			return await this.services.artists.getByEmail(email)
 		} catch (error) {
-			return new GetArtistByEmailReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new GetArtistByEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

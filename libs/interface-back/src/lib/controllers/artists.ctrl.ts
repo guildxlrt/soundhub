@@ -12,9 +12,9 @@ import {
 	IUserAuth,
 	UpdateArtistReplyDTO,
 	UpdateArtistReqDTO,
-	apiErrorMsg,
 	PassEncryptor,
 	FileType,
+	apiError,
 } from "Shared"
 import {
 	UpdateArtistUsecaseParams,
@@ -33,7 +33,7 @@ import { IArtistCtrl, Token, authExpires, ApiErrHandler, ApiRequest, ApiReply } 
 export class ArtistsController implements IArtistCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
 			const file: FileType = req.file as FileType
@@ -55,7 +55,7 @@ export class ArtistsController implements IArtistCtrl {
 			const userAuth: IUserAuth = { email: email, password: password }
 
 			// Saving Profile
-			const createArtist = new CreateArtistUsecase(databaseServices)
+			const createArtist = new CreateArtistUsecase(databaseServices, true)
 			const { data, error } = await createArtist.execute(
 				new NewArtistUsecaseParams(artistProfile, userAuth, authConfirm, hashedPass, file)
 			)
@@ -83,7 +83,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async update(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
 
 			const user = req.auth?.profileID as number
 			const { bio, genres, members, name } = req.body as UpdateArtistReqDTO
@@ -99,7 +99,7 @@ export class ArtistsController implements IArtistCtrl {
 			}
 
 			// Saving Changes
-			const editArtist = new UpdateArtistUsecase(databaseServices)
+			const editArtist = new UpdateArtistUsecase(databaseServices, true)
 			const { data, error } = await editArtist.execute(
 				new UpdateArtistUsecaseParams(artistProfile, file)
 			)
@@ -114,11 +114,11 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByID(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
 
-			const getArtistByID = new GetArtistByIDUsecase(databaseServices)
+			const getArtistByID = new GetArtistByIDUsecase(databaseServices, true)
 			const { data, error } = await getArtistByID.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
@@ -131,11 +131,11 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const inputs = req.body.email as GetArtistByEmailReqDTO
 
-			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
+			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices, true)
 			const { data, error } = await getArtistByEmail.execute(inputs)
 			if (error) throw error
 
@@ -148,9 +148,9 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
-			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
+			const getAllArtists = new GetAllArtistsUsecase(databaseServices, true)
 			const { data, error } = await getAllArtists.execute()
 			if (error) throw error
 
@@ -163,11 +163,11 @@ export class ArtistsController implements IArtistCtrl {
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const genre = req.params["genre"] as GenreType
 
-			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
+			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices, true)
 			const { data, error } = await findArtistsByGenre.execute(new GenreUsecaseParams(genre))
 			if (error) throw error
 

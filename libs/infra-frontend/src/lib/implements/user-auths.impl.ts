@@ -22,7 +22,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				data: { email: email, password: password } as LoginReqDTO,
 			})) as Response<ILoginRes>
 		} catch (error) {
-			return new Response<ILoginRes>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<ILoginRes>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -34,7 +34,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<void>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -47,7 +47,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				data: data as ChangeEmailReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(false, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(false, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -60,7 +60,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				data: data as ChangePassReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(false, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(false, new ErrorMsg("Error Calling API"))
 		}
 	}
 }

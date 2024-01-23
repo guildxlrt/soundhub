@@ -2,8 +2,7 @@ import { UsecaseLayer, ServicesType, HideReleaseUsecaseParams } from "../../../a
 import { HideReleaseReplyDTO, ErrorMsg } from "Shared"
 
 export class HideReleaseUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
 	}
 
 	async execute(inputs: HideReleaseUsecaseParams): Promise<HideReleaseReplyDTO> {
@@ -12,10 +11,7 @@ export class HideReleaseUsecase extends UsecaseLayer {
 
 			return await this.services.releases.hide(id, isPublic, ownerID)
 		} catch (error) {
-			return new HideReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new HideReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

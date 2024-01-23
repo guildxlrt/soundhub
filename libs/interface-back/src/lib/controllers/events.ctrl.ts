@@ -27,14 +27,14 @@ import {
 	IEvent,
 	EditEventReplyDTO,
 	EditEventReqDTO,
-	apiErrorMsg,
+	apiError,
 } from "Shared"
 import { IEventsCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 // return ApiErrHandler.reply
 export class EventsController implements IEventsCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const owner = req.auth?.profileID
 			const file: FileType = req.file as FileType
@@ -55,7 +55,7 @@ export class EventsController implements IEventsCtrl {
 			}
 
 			// Saving Profile
-			const createEvent = new CreateEventUsecase(databaseServices)
+			const createEvent = new CreateEventUsecase(databaseServices, true)
 			const { data, error } = await createEvent.execute(new EventUsecaseParams(event, file))
 			if (error) throw error
 
@@ -68,7 +68,7 @@ export class EventsController implements IEventsCtrl {
 
 	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
 
 			const owner = req.auth?.profileID as number
 			const file: FileType = req.file as FileType
@@ -90,7 +90,7 @@ export class EventsController implements IEventsCtrl {
 			}
 
 			// Saving Changes
-			const EditEvent = new EditEventUsecase(databaseServices)
+			const EditEvent = new EditEventUsecase(databaseServices, true)
 			const { data, error } = await EditEvent.execute(new EventUsecaseParams(event, file))
 			if (error) throw error
 
@@ -103,7 +103,8 @@ export class EventsController implements IEventsCtrl {
 
 	async delete(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "DELETE")
+				return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
 			const owner = req.auth?.profileID as number
@@ -112,7 +113,7 @@ export class EventsController implements IEventsCtrl {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const deleteEvent = new DeleteEventUsecase(databaseServices)
+			const deleteEvent = new DeleteEventUsecase(databaseServices, true)
 			const { data, error } = await deleteEvent.execute(
 				new DeleteEventUsecaseParams(id, owner)
 			)
@@ -127,11 +128,11 @@ export class EventsController implements IEventsCtrl {
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
 
-			const getEvent = new GetEventUsecase(databaseServices)
+			const getEvent = new GetEventUsecase(databaseServices, true)
 			const { data, error } = await getEvent.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
@@ -144,9 +145,9 @@ export class EventsController implements IEventsCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
-			const getAllEvents = new GetAllEventsUsecase(databaseServices)
+			const getAllEvents = new GetAllEventsUsecase(databaseServices, true)
 			const { data, error } = await getAllEvents.execute()
 			if (error) throw error
 
@@ -159,10 +160,10 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
-			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
+			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices, true)
 			const { data, error } = await findEventsByArtist.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
@@ -175,10 +176,10 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByDate(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const inputs: FindEventsByDateReqDTO = req.body as FindEventsByDateReqDTO
-			const findEventsByDate = new FindEventsByDateUsecase(databaseServices)
+			const findEventsByDate = new FindEventsByDateUsecase(databaseServices, true)
 			const { data, error } = await findEventsByDate.execute(inputs)
 			if (error) throw error
 
@@ -191,10 +192,10 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByPlace(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const inputs: FindEventsByPlaceReqDTO = req.body as FindEventsByPlaceReqDTO
-			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseServices)
+			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseServices, true)
 			const { data, error } = await findEventsByPlace.execute(inputs)
 			if (error) throw error
 

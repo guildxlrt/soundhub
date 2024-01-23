@@ -4,7 +4,7 @@ import * as fs from "fs"
 export class FileManipulator {
 	static async move(origin: string, store: string) {
 		return fs.rename(origin, store, (error) => {
-			if (error) return new ErrorMsg(500, "Error: cannot move file")
+			if (error) return new ErrorMsg("Error: cannot move file", 500)
 			else return
 		})
 	}

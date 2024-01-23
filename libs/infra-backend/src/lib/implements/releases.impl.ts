@@ -6,10 +6,10 @@ import {
 	IReleaseSucc,
 	IReleasesListSucc,
 	IReleasesListItemSucc,
-	apiErrorMsg,
 	UserAuthID,
 	ReleaseID,
 	FileType,
+	apiError,
 } from "Shared"
 import { FileManipulator, GetID, dbClient, filePath } from "../../assets"
 import { Reply } from "../../assets"
@@ -75,10 +75,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				id: newRelease.id,
 			})
 		} catch (error) {
-			const res = new Reply<INewReleaseSucc>(
-				undefined,
-				new ErrorMsg(500, apiErrorMsg.e500, error)
-			)
+			const res = new Reply<INewReleaseSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 
 			return res
 		}
@@ -95,7 +92,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			// owner verification
 			const data = await dbClient.release.findUnique(GetID.artist(id as number))
-			if (owner_id !== data?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (owner_id !== data?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// ... get the old path
 			const releaseData = await dbClient.release.findUnique({
@@ -148,7 +145,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -156,7 +153,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			// owner verification
 			const release = await dbClient.release.findUnique(GetID.artist(id))
-			if (ownerID !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (ownerID !== release?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// persist
 			await dbClient.release.update({
@@ -171,7 +168,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -211,7 +208,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				songs: release?.songs,
 			})
 		} catch (error) {
-			return new Reply<IReleaseSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IReleaseSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -244,7 +241,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -280,7 +277,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -318,7 +315,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

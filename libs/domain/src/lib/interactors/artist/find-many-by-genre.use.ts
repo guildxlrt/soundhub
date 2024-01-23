@@ -2,8 +2,8 @@ import { UsecaseLayer, ServicesType, GenreUsecaseParams } from "../../../assets"
 import { FindArtistsByGenreReplyDTO, ErrorMsg } from "Shared"
 
 export class FindArtistsByGenreUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: GenreUsecaseParams): Promise<FindArtistsByGenreReplyDTO> {
@@ -14,7 +14,7 @@ export class FindArtistsByGenreUsecase extends UsecaseLayer {
 		} catch (error) {
 			return new FindArtistsByGenreReplyDTO(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(`Error: failed to persist`)
 			)
 		}
 	}

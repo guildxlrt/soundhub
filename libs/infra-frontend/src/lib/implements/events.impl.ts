@@ -26,7 +26,7 @@ export class EventsImplement implements EventsRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -43,7 +43,7 @@ export class EventsImplement implements EventsRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -55,7 +55,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<void>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -67,7 +67,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})) as Response<IEventSucc>
 		} catch (error) {
-			return new Response<IEventSucc>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<IEventSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -79,10 +79,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})) as Response<IEventsListSucc>
 		} catch (error) {
-			return new Response<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IEventsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -94,10 +91,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})) as Response<IEventsListSucc>
 		} catch (error) {
-			return new Response<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IEventsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -112,10 +106,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})) as Response<IEventsListSucc>
 		} catch (error) {
-			return new Response<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IEventsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -130,10 +121,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})) as Response<IEventsListSucc>
 		} catch (error) {
-			return new Response<IEventsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IEventsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 }

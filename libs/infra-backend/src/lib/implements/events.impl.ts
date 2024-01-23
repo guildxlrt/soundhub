@@ -6,10 +6,10 @@ import {
 	IEventsListItemSucc,
 	IEventsListSucc,
 	EventID,
-	apiErrorMsg,
 	UserAuthID,
 	AnnounceID,
 	FileType,
+	apiError,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
@@ -37,7 +37,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 
 			return res
 		}
@@ -51,7 +51,7 @@ export class EventsImplement implements EventsRepository {
 
 			// owner verification
 			const event = await dbClient.event.findUnique(GetID.artist(id as number))
-			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (userAuth !== event?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// STORING FILE
 			const fileOrigin = filePath.origin.image + file?.filename
@@ -81,7 +81,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 
 			return res
 		}
@@ -91,7 +91,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			// owner verification
 			const event = await dbClient.event.findUnique(GetID.artist(id))
-			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (userAuth !== event?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// persist
 			await dbClient.event.delete({
@@ -103,10 +103,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
-			const res = new Reply<void>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to delete`, error)
-			)
+			const res = new Reply<void>(undefined, new ErrorMsg(`Error: failed to delete`, 500))
 
 			return res
 		}
@@ -142,7 +139,7 @@ export class EventsImplement implements EventsRepository {
 				imageUrl: event?.imageUrl,
 			})
 		} catch (error) {
-			return new Reply<IEventSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IEventSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -176,7 +173,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -215,7 +212,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -251,7 +248,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -287,7 +284,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

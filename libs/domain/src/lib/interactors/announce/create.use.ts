@@ -3,8 +3,8 @@ import { UsecaseLayer, ServicesType, AnnounceUsecaseParams } from "../../../asse
 import { Announce } from "../../entities"
 
 export class CreateAnnounceUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: AnnounceUsecaseParams): Promise<CreateAnnounceReplyDTO> {
@@ -14,10 +14,7 @@ export class CreateAnnounceUsecase extends UsecaseLayer {
 			const data = new Announce(null, owner_id as number, title, text, null)
 			return await this.services.announces.create(data, inputs.file)
 		} catch (error) {
-			return new CreateAnnounceReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new CreateAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

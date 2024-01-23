@@ -18,19 +18,19 @@ import {
 	LogoutReplyDTO,
 	UserCookie,
 	UserProfileEnum,
-	apiErrorMsg,
 	PassEncryptor,
+	apiError,
 } from "Shared"
 import { ApiRequest, ApiReply, ApiErrHandler, IAuthCtrl, Token, authExpires } from "../../assets"
 
 export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const inputs = req.body as LoginReqDTO
 
-			const login = new LoginUsecase(databaseServices)
+			const login = new LoginUsecase(databaseServices, true)
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
@@ -40,7 +40,7 @@ export class UserAuthController implements IAuthCtrl {
 			// password
 			const { password } = inputs
 			const compare = await PassEncryptor.compare(password, encryptedPass as string)
-			if (compare !== true) throw new ErrorMsg(401, apiErrorMsg.e401)
+			if (compare !== true) throw ErrorMsg.apiError(apiError[401])
 
 			// Return infos
 			const expires = authExpires.oneYear
@@ -63,16 +63,17 @@ export class UserAuthController implements IAuthCtrl {
 
 	async logout(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "DELETE")
+				return res.status(405).send({ error: apiError[405].message })
 
-			const logout = new LogoutUsecase(databaseServices)
+			const logout = new LogoutUsecase(databaseServices, true)
 			const { error } = await logout.execute()
 			if (error) throw error
 
 			// Return infos
 			if (req.cookies.jwt)
 				return res.clearCookie("jwt").status(202).json(new LogoutReplyDTO())
-			else return res.status(401).json(apiErrorMsg.e401)
+			else return res.status(401).json(ErrorMsg.apiError(apiError[401]))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -80,13 +81,13 @@ export class UserAuthController implements IAuthCtrl {
 
 	async changeEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
 
 			const { actual, confirm, newEmail } = req.body as ChangeEmailReqDTO
 			const user = req.auth?.id
 
 			// Saving changes
-			const changeEmail = new ChangeEmailUsecase(databaseServices)
+			const changeEmail = new ChangeEmailUsecase(databaseServices, true)
 			const { data, error } = await changeEmail.execute(
 				new ChangeEmailUsecaseParams(actual, confirm, newEmail, user)
 			)
@@ -101,7 +102,7 @@ export class UserAuthController implements IAuthCtrl {
 
 	async changePass(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
 
 			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
 			const user = req.auth?.id
@@ -110,7 +111,7 @@ export class UserAuthController implements IAuthCtrl {
 			const hashedPass = await PassEncryptor.hash(newPass)
 
 			// Saving Changes
-			const changePass = new ChangePassUsecase(databaseServices)
+			const changePass = new ChangePassUsecase(databaseServices, true)
 			const { data, error } = await changePass.execute(
 				new ChangePassUsecaseParams(actual, confirm, newPass, user, hashedPass)
 			)

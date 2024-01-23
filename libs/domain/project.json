@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared", "scope:logic"],
-	"implicitDependencies": ["shared"]
+	"implicitDependencies": []
 }

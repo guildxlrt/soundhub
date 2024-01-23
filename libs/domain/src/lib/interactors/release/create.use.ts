@@ -4,8 +4,8 @@ import { UsecaseLayer, ServicesType, NewReleaseUsecaseParams } from "../../../as
 import { Release, Song } from "Domain"
 
 export class CreateReleaseUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: NewReleaseUsecaseParams): Promise<CreateReleaseReplyDTO> {
@@ -16,7 +16,7 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 
 			// Operators
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = formatters.genres(genres, this.backend)
 
 			// saving
 			const release = new Release(
@@ -39,10 +39,7 @@ export class CreateReleaseUsecase extends UsecaseLayer {
 
 			return await this.services.releases.create({ data: release, cover: cover }, newSongs)
 		} catch (error) {
-			return new CreateReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new CreateReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

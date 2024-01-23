@@ -1,6 +1,6 @@
 import { SongsRepository } from "Domain"
 import { Reply, dbClient } from "../../assets"
-import { SongID, ISongSucc, ErrorMsg, apiErrorMsg } from "Shared"
+import { SongID, ISongSucc, ErrorMsg, apiError } from "Shared"
 
 export class SongsImplement implements SongsRepository {
 	async get(id: SongID): Promise<Reply<ISongSucc>> {
@@ -28,7 +28,7 @@ export class SongsImplement implements SongsRepository {
 				lyrics: song?.lyrics,
 			})
 		} catch (error) {
-			return new Reply<ISongSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<ISongSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

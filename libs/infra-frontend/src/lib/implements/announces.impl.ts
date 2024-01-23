@@ -27,7 +27,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -44,7 +44,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -56,7 +56,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<void>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -68,10 +68,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})) as Response<IAnnounceSucc>
 		} catch (error) {
-			return new Response<IAnnounceSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IAnnounceSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -83,10 +80,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})) as Response<IAnnouncesListSucc>
 		} catch (error) {
-			return new Response<IAnnouncesListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IAnnouncesListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -100,10 +94,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})) as Response<IAnnouncesListSucc>
 		} catch (error) {
-			return new Response<IAnnouncesListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IAnnouncesListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 }

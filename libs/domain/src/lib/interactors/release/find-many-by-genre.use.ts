@@ -3,8 +3,7 @@ import { FindReleasesByGenreReplyDTO, ErrorMsg } from "Shared"
 import { GenreType } from "Shared"
 
 export class FindReleasesByGenreUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
 	}
 
 	async execute(inputs: { genre: GenreType }): Promise<FindReleasesByGenreReplyDTO> {
@@ -14,7 +13,7 @@ export class FindReleasesByGenreUsecase extends UsecaseLayer {
 		} catch (error) {
 			return new FindReleasesByGenreReplyDTO(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(`Error: failed to persist`)
 			)
 		}
 	}

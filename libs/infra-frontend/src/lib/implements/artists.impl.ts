@@ -43,10 +43,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})) as Response<INewArtistSucc>
 		} catch (error) {
-			return new Response<INewArtistSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<INewArtistSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -65,7 +62,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -77,10 +74,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>
 		} catch (error) {
-			return new Response<IArtistInfoSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IArtistInfoSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -93,10 +87,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>
 		} catch (error) {
-			return new Response<IArtistInfoSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IArtistInfoSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -108,10 +99,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})) as Response<IArtistsListSucc>
 		} catch (error) {
-			return new Response<IArtistsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IArtistsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 
@@ -123,10 +111,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})) as Response<IArtistsListSucc>
 		} catch (error) {
-			return new Response<IArtistsListSucc>(
-				undefined,
-				new ErrorMsg(undefined, "Error Calling API")
-			)
+			return new Response<IArtistsListSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 }

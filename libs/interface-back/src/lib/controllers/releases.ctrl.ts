@@ -28,14 +28,14 @@ import {
 	IRelease,
 	EditReleaseReplyDTO,
 	EditReleaseReqDTO,
-	apiErrorMsg,
+	apiError,
 } from "Shared"
 import { IReleasesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const user = req.auth?.profileID as number
 			const cover: FileType = req.file as FileType
@@ -63,7 +63,7 @@ export class ReleasesController implements IReleasesCtrl {
 			})
 
 			// Saving Profile
-			const createRelease = new CreateReleaseUsecase(databaseServices)
+			const createRelease = new CreateReleaseUsecase(databaseServices, true)
 			const { data, error } = await createRelease.execute(
 				new NewReleaseUsecaseParams(
 					{
@@ -84,7 +84,8 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "DELETE")
+				return res.status(405).send({ error: apiError[405].message })
 
 			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
 			const user = req.auth?.profileID as number
@@ -111,7 +112,7 @@ export class ReleasesController implements IReleasesCtrl {
 			})
 
 			// Saving Profile
-			const editRelease = new EditReleaseUsecase(databaseServices)
+			const editRelease = new EditReleaseUsecase(databaseServices, true)
 			const { data, error } = await editRelease.execute(
 				new EditReleaseUsecaseParams(
 					{
@@ -132,13 +133,14 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async hide(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "PATCH")
+				return res.status(405).send({ error: apiError[405].message })
 
 			const user = req.auth?.profileID
 			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
 
 			// Saving Profile
-			const hideRelease = new HideReleaseUsecase(databaseServices)
+			const hideRelease = new HideReleaseUsecase(databaseServices, true)
 			const { data, error } = await hideRelease.execute(
 				new HideReleaseUsecaseParams(id, isPublic, user)
 			)
@@ -153,10 +155,10 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
-			const getRelease = new GetReleaseUsecase(databaseServices)
+			const getRelease = new GetReleaseUsecase(databaseServices, true)
 			const { data, error } = await getRelease.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
@@ -169,9 +171,9 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
-			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
+			const getAllReleases = new GetAllReleasesUsecase(databaseServices, true)
 			const { data, error } = await getAllReleases.execute()
 			if (error) throw error
 
@@ -184,10 +186,10 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
-			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
+			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices, true)
 			const { data, error } = await findReleasesByArtist.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
@@ -200,10 +202,10 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const genre = req.params["genre"] as GenreType
-			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
+			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices, true)
 			const { data, error } = await findReleasesByGenre.execute(new GenreUsecaseParams(genre))
 			if (error) throw error
 

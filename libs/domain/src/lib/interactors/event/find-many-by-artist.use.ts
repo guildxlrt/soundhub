@@ -2,8 +2,7 @@ import { UsecaseLayer, ServicesType, IDUsecaseParams } from "../../../assets"
 import { FindEventsByArtistReplyDTO, ErrorMsg } from "Shared"
 
 export class FindEventsByArtistUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
 	}
 
 	async execute(inputs: IDUsecaseParams): Promise<FindEventsByArtistReplyDTO> {
@@ -13,7 +12,7 @@ export class FindEventsByArtistUsecase extends UsecaseLayer {
 		} catch (error) {
 			return new FindEventsByArtistReplyDTO(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(`Error: failed to persist`)
 			)
 		}
 	}

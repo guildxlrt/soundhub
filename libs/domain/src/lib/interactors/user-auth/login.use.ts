@@ -2,8 +2,8 @@ import { ErrorMsg, ReplyLayer, ILoginRes } from "Shared"
 import { UsecaseLayer, ServicesType, LoginUsecaseParams } from "../../../assets"
 
 export class LoginUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: LoginUsecaseParams): Promise<ReplyLayer<ILoginRes>> {
@@ -12,10 +12,7 @@ export class LoginUsecase extends UsecaseLayer {
 
 			return await this.services.userAuths.login(email, password)
 		} catch (error) {
-			return new ReplyLayer<ILoginRes>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new ReplyLayer<ILoginRes>(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

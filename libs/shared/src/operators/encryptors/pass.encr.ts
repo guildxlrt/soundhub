@@ -9,14 +9,14 @@ export class PassEncryptor {
 
 			return hash
 		} catch (error) {
-			throw new ErrorMsg(500, "error during hashing pass", error)
+			throw new ErrorMsg("error during hashing pass", 500)
 		}
 	}
-	static async compare(password: string, encrypted: string): Promise<boolean> {
+	static async compare(password: string, encrypted: string) {
 		try {
 			return await bcrypt.compare(password, encrypted)
 		} catch (error) {
-			throw new ErrorMsg(500, "error during decode pass", error)
+			throw new ErrorMsg("error during Genres format", 500).treatError(error)
 		}
 	}
 }

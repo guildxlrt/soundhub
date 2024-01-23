@@ -3,8 +3,7 @@ import { UsecaseLayer, ServicesType, EventUsecaseParams } from "../../../assets"
 import { Event } from "../../entities"
 
 export class EditEventUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
 	}
 
 	async execute(inputs: EventUsecaseParams): Promise<EditEventReplyDTO> {
@@ -26,7 +25,7 @@ export class EditEventUsecase extends UsecaseLayer {
 		} catch (error) {
 			return new EditEventReplyDTO(
 				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
+				new ErrorMsg(`Error: failed to persist`)
 			)
 		}
 	}

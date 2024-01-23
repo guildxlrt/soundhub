@@ -11,7 +11,6 @@ import {
 	IDUsecaseParams,
 } from "Domain"
 import {
-	apiErrorMsg,
 	CreateAnnounceReplyDTO,
 	CreateAnnounceReqDTO,
 	DeleteAnnounceReplyDTO,
@@ -22,13 +21,14 @@ import {
 	IAnnounce,
 	EditAnnounceReplyDTO,
 	EditAnnounceReqDTO,
+	apiError,
 } from "Shared"
 import { IAnnoncesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class AnnoncesController implements IAnnoncesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const { text, title } = req.body as CreateAnnounceReqDTO
 			const owner = req.auth?.profileID as number
@@ -45,7 +45,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			}
 
 			// Saving Profile
-			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
+			const createAnnounce = new CreateAnnounceUsecase(databaseServices, true)
 			const { data, error } = await createAnnounce.execute(
 				new AnnounceUsecaseParams(announce, file)
 			)
@@ -60,7 +60,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
 
 			const file: FileType = req.file as FileType
 			const owner = req.auth?.profileID as number
@@ -77,7 +77,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			}
 
 			// Saving Profile
-			const EditAnnounce = new EditAnnounceUsecase(databaseServices)
+			const EditAnnounce = new EditAnnounceUsecase(databaseServices, true)
 			const { data, error } = await EditAnnounce.execute(
 				new AnnounceUsecaseParams(announce, file)
 			)
@@ -92,7 +92,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async delete(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "DELETE")
+				return res.status(405).send({ error: apiError[405].message })
 			const user = req.auth?.profileID as number
 			const id = Number(req.params["id"])
 
@@ -100,7 +101,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
+			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices, true)
 			const { data, error } = await deleteAnnounce.execute(
 				new DeleteAnnounceUsecaseParams(id, user)
 			)
@@ -115,10 +116,10 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
-			const getAnnounce = new GetAnnounceUsecase(databaseServices)
+			const getAnnounce = new GetAnnounceUsecase(databaseServices, true)
 			const { data, error } = await getAnnounce.execute(new IDUsecaseParams(id))
 
 			if (error) throw error
@@ -132,9 +133,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
-			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
+			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices, true)
 			const { data, error } = await getAllAnnounces.execute()
 
 			if (error) throw error
@@ -148,10 +149,10 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
 
 			const id = Number(req.params["id"])
-			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
+			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices, true)
 			const { data, error } = await findAnnouncesByArtist.execute(new IDUsecaseParams(id))
 
 			if (error) throw error

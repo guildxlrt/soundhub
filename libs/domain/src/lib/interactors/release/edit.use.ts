@@ -3,8 +3,8 @@ import { EditReleaseReplyDTO, ErrorMsg, formatters } from "Shared"
 import { Release, Song } from "../../entities"
 
 export class EditReleaseUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
@@ -15,7 +15,7 @@ export class EditReleaseUsecase extends UsecaseLayer {
 
 			// Operators
 			// genres
-			const cleanGenres = formatters.genres(genres)
+			const cleanGenres = formatters.genres(genres, this.backend)
 
 			// saving
 			const release = new Release(
@@ -36,10 +36,7 @@ export class EditReleaseUsecase extends UsecaseLayer {
 
 			return await this.services.releases.edit({ data: release, cover: cover }, newSongs)
 		} catch (error) {
-			return new EditReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new EditReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

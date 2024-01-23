@@ -3,8 +3,8 @@ import { UsecaseLayer, ServicesType, ChangePassUsecaseParams } from "../../../as
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangePassUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: ChangePassUsecaseParams): Promise<ChangePassReplyDTO> {
@@ -12,7 +12,14 @@ export class ChangePassUsecase extends UsecaseLayer {
 			const { actual, confirm, newPass, hashedPass, id } = inputs
 
 			// Operators
-			validators.changePass(actual, confirm, newPass)
+			validators.changePass(
+				{
+					actual: actual,
+					newPass: newPass,
+					confirm: confirm,
+				},
+				this.backend
+			)
 
 			// return
 			return await this.services.userAuths.changePass(
@@ -21,10 +28,7 @@ export class ChangePassUsecase extends UsecaseLayer {
 				hashedPass
 			)
 		} catch (error) {
-			return new ChangePassReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new ChangePassReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

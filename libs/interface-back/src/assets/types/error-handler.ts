@@ -1,4 +1,4 @@
-import { ErrorMsg, ReplyDTO, apiErrorMsg } from "Shared"
+import { ErrorMsg, ReplyDTO, apiError } from "Shared"
 import { ApiReply } from "./params"
 
 export class ApiErrHandler {
@@ -7,6 +7,6 @@ export class ApiErrHandler {
 			return res.status(error.status).send(new ReplyDTO(error.message))
 		}
 
-		return res.status(500).send(new ReplyDTO(apiErrorMsg.e500))
+		return res.status(500).send(new ReplyDTO(apiError[500]))
 	}
 }

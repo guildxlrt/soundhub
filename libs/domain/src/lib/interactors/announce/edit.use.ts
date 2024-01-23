@@ -3,8 +3,8 @@ import { UsecaseLayer, ServicesType, AnnounceUsecaseParams } from "../../../asse
 import { Announce } from "../../entities"
 
 export class EditAnnounceUsecase extends UsecaseLayer {
-	constructor(services: ServicesType) {
-		super(services)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: AnnounceUsecaseParams): Promise<EditAnnounceReplyDTO> {
@@ -15,10 +15,7 @@ export class EditAnnounceUsecase extends UsecaseLayer {
 
 			return await this.services.announces.edit(data, inputs.file)
 		} catch (error) {
-			return new EditAnnounceReplyDTO(
-				undefined,
-				new ErrorMsg(500, `Error: failed to persist`, error)
-			)
+			return new EditAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}
 	}
 }

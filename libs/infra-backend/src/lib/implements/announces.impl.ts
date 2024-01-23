@@ -5,10 +5,10 @@ import {
 	IAnnouncesListSucc,
 	ErrorMsg,
 	IAnnouncesListItemSucc,
-	apiErrorMsg,
 	AnnounceID,
 	UserAuthID,
 	FileType,
+	apiError,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
@@ -33,7 +33,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 
 			return res
 		}
@@ -45,7 +45,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 			// owner verification
 			const announce = await dbClient.announce.findUnique(GetID.artist(id as number))
-			if (owner_id !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (owner_id !== announce?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// STORING FILE
 			const fileOrigin = filePath.origin.image + file?.filename
@@ -72,7 +72,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 
 			return res
 		}
@@ -82,7 +82,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			// owner verification
 			const announce = await dbClient.announce.findUnique(GetID.artist(id))
-			if (userAuth !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (userAuth !== announce?.owner_id) throw ErrorMsg.apiError(apiError[403])
 
 			// persist
 			await dbClient.announce.delete({
@@ -94,10 +94,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
-			const res = new Reply<void>(
-				undefined,
-				new ErrorMsg(500, `Error: failed to delete`, error)
-			)
+			const res = new Reply<void>(undefined, new ErrorMsg(`Error: failed to delete`, 500))
 
 			return res
 		}
@@ -126,7 +123,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				imageUrl: announce?.imageUrl,
 			})
 		} catch (error) {
-			return new Reply<IAnnounceSucc>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<IAnnounceSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -154,10 +151,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(
-				undefined,
-				new ErrorMsg(500, apiErrorMsg.e500, error)
-			)
+			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -190,10 +184,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(
-				undefined,
-				new ErrorMsg(500, apiErrorMsg.e500, error)
-			)
+			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

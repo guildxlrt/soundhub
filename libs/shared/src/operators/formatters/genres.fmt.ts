@@ -1,7 +1,7 @@
 import { ErrorMsg, GenresArray, GenresEnum } from "../../utils"
 
 export class GenresFormatter {
-	format(genres: GenresArray | string[]): GenresArray {
+	format(genres: GenresArray | string[], backend: boolean): GenresArray {
 		try {
 			const list = Object.keys(GenresEnum)
 
@@ -10,7 +10,7 @@ export class GenresFormatter {
 				const find = list.includes(value)
 
 				if (find !== true) {
-					if (index === 0) throw new ErrorMsg(400, `Genres: '${value}' is not a genre`)
+					if (index === 0) throw new ErrorMsg(`Genres: '${value}' is not a genre`)
 					else return undefined
 				}
 				return genre
@@ -18,7 +18,9 @@ export class GenresFormatter {
 
 			return [formattedArray[0], formattedArray[1], formattedArray[0]]
 		} catch (error) {
-			throw new ErrorMsg(500, "error during Genres format", error)
+			throw new ErrorMsg("error during Genres format", backend ? 400 : undefined).treatError(
+				error
+			)
 		}
 	}
 }

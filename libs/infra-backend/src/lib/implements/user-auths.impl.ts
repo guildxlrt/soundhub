@@ -1,5 +1,5 @@
 import { UserAuthsRepository } from "Domain"
-import { ErrorMsg, apiErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, PassEncryptor } from "Shared"
+import { ErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, PassEncryptor, apiError } from "Shared"
 import { GetID, Reply, dbClient } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
@@ -17,8 +17,8 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (!authData?.id) throw new ErrorMsg(404, apiErrorMsg.e404)
-			if (!authData?.email || !authData?.password) throw new ErrorMsg(500, apiErrorMsg.e500)
+			if (!authData?.id) throw ErrorMsg.apiError(apiError[404])
+			if (!authData?.email || !authData?.password) throw ErrorMsg.apiError(apiError[500])
 
 			// Find Profile
 			const profile = (await GetID.auth(authData?.id)) as number
@@ -32,7 +32,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 
 			return new Reply<ILoginDbRes>(data)
 		} catch (error) {
-			return new Reply<ILoginDbRes>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<ILoginDbRes>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -41,7 +41,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
-			return new Reply<void>(undefined, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<void>(undefined, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -62,7 +62,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (getEmail?.email !== actual) throw new ErrorMsg(403, apiErrorMsg.e403)
+			if (getEmail?.email !== actual) throw ErrorMsg.apiError(apiError[403])
 
 			// PERSIST
 			await dbClient.userAuth.update({
@@ -77,7 +77,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 
@@ -101,8 +101,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			const encryptedPass = getPass?.password
 			const auth = await PassEncryptor.compare(actual, encryptedPass as string)
 
-			if (auth !== true) throw new ErrorMsg(403, apiErrorMsg.e403)
-
+			if (auth !== true) throw ErrorMsg.apiError(apiError[403])
 			// PERSIST
 			await dbClient.userAuth.update({
 				where: {
@@ -116,7 +115,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, new ErrorMsg(500, apiErrorMsg.e500, error))
+			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
 		}
 	}
 }

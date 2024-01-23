@@ -1,12 +1,25 @@
-export const apiErrorMsg = {
-	e400: "Bad Request",
-	e401: "Unauthorized",
-	e403: "Forbidden",
-	e404: "Ressource not fount",
-	e405: "Request method is not Allowed",
-	e409: {
-		email: "A new user cannot be created with this email",
+export interface ApiError {
+	value: number
+	message: string
+}
+
+export interface IApiErrors {
+	[key: number]: ApiError
+}
+
+export const apiError: IApiErrors = {
+	400: {
+		value: 400,
+		message: "Bad Request",
 	},
-	e418: "I'm a teapot",
-	e500: "Internal server error",
+	401: { value: 401, message: "Unauthorized" },
+	403: { value: 403, message: "Forbidden" },
+	404: { value: 404, message: "Ressource not fount" },
+	405: { value: 405, message: "Request method is not Allowed" },
+	409: {
+		value: 409,
+		message: "A new user cannot be created with this email",
+	},
+	418: { value: 418, message: "I'm a teapot" },
+	500: { value: 500, message: "Internal server error" },
 }

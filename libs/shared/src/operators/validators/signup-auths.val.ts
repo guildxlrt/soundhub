@@ -3,16 +3,27 @@ import { ErrorMsg } from "../../utils"
 
 // NEW AUTHS
 export class SignupAuthsValidator {
-	validate(email: string, password: string, confirmEmail: string, confirmPass: string): void {
-		// Email
-		const validEmail = validator.isEmail(email)
-		if (!validEmail) throw new ErrorMsg(400, "invalid email format")
-		if (email !== confirmEmail) throw new ErrorMsg(400, "emails don't match")
+	validate(
+		auths: { email: string; password: string; confirmEmail: string; confirmPass: string },
+		backend?: boolean
+	): void {
+		try {
+			const { email, password, confirmEmail, confirmPass } = auths
 
-		// Password
-		const validPass = validator.isStrongPassword(password)
-		if (!validPass) throw new ErrorMsg(400, "weak Password")
-		if (password !== confirmPass) throw new ErrorMsg(400, "passwords don't match")
-		else return
+			// Email
+			const validEmail = validator.isEmail(email)
+			if (!validEmail) throw new ErrorMsg("invalid email format", 400)
+			if (email !== confirmEmail) throw new ErrorMsg("emails don't match", 400)
+
+			// Password
+			const validPass = validator.isStrongPassword(password)
+			if (!validPass) throw new ErrorMsg("weak Password", 400)
+			if (password !== confirmPass) throw new ErrorMsg("passwords don't match", 400)
+			else return
+		} catch (error) {
+			throw new ErrorMsg("error during Genres format", backend ? 500 : undefined).treatError(
+				error
+			)
+		}
 	}
 }

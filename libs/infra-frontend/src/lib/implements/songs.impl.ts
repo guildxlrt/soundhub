@@ -12,7 +12,7 @@ export class SongsImplement implements SongsRepository {
 				withCredentials: true,
 			})) as Response<ISongSucc>
 		} catch (error) {
-			return new Response<ISongSucc>(undefined, new ErrorMsg(undefined, "Error Calling API"))
+			return new Response<ISongSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 }
