@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client"
 import { ErrorMsg, apiErrorMsg } from "Shared"
-import { Reply } from "./reply"
+import { Reply } from "../interfaces/reply"
 
-export const dbErrHandler = {
-	uniqueEmail: (error: unknown, res: unknown): ErrorMsg | void => {
+export class DbErrHandler {
+	static uniqueEmail(error: unknown, res: unknown): ErrorMsg | void {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code === "P2002" &&
@@ -18,5 +18,5 @@ export const dbErrHandler = {
 			})
 		}
 		return
-	},
+	}
 }

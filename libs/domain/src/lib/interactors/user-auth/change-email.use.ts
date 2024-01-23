@@ -1,7 +1,7 @@
 import { ChangeEmailReplyDTO } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 import { ChangeEmailAdapter } from "Shared"
-import { ErrorMsg, Validators } from "Shared"
+import { ErrorMsg, validators } from "Shared"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
@@ -13,7 +13,7 @@ export class ChangeEmailUsecase extends UsecaseLayer {
 			const { actual, confirm, newEmail, id } = inputs
 
 			// Operators
-			Validators.changeEmail(actual, confirm, newEmail)
+			validators.changeEmail(actual, confirm, newEmail)
 
 			// return
 			return await this.services.userAuths.changeEmail(

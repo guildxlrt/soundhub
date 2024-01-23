@@ -21,9 +21,9 @@ import { ApiRequest, ApiReply } from "../../assets"
 
 export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const inputs = req.body as LoginReqDTO
 
 			const login = new LoginUsecase(databaseServices)
@@ -41,7 +41,7 @@ export class UserAuthController implements IAuthCtrl {
 			// Return infos
 			const expires = authExpires.oneYear
 			const userCookie = new UserCookie(id, profileID, UserProfileEnum.artist)
-			const token = new Token().generate(userCookie, expires)
+			const token = Token.generate(userCookie, expires)
 
 			return res
 				.cookie("jwt", token, {
@@ -58,9 +58,9 @@ export class UserAuthController implements IAuthCtrl {
 	}
 
 	async logout(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const logout = new LogoutUsecase(databaseServices)
 			const { error } = await logout.execute()
 			if (error) throw error
@@ -75,9 +75,9 @@ export class UserAuthController implements IAuthCtrl {
 	}
 
 	async changeEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const { actual, confirm, newEmail } = req.body as ChangeEmailReqDTO
 			const user = req.auth?.id
 
@@ -96,9 +96,9 @@ export class UserAuthController implements IAuthCtrl {
 	}
 
 	async changePass(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
 			const user = req.auth?.id
 

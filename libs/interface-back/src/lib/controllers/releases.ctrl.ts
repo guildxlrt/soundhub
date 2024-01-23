@@ -33,11 +33,11 @@ import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const user = req.auth?.profileID as number
-			const img: FileType = req.file
+			const cover: FileType = req.file as FileType
 			const audioFiles: FilesArray = req.files as FilesArray
 			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
@@ -67,7 +67,7 @@ export class ReleasesController implements IReleasesCtrl {
 				new NewReleaseAdapter(
 					{
 						data: releaseData,
-						imgFile: img,
+						cover: cover,
 					},
 					songs
 				)
@@ -82,12 +82,12 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
 			const user = req.auth?.profileID as number
-			const img: FileType = req.file
+			const cover: FileType = req.file as FileType
 
 			const { title, releaseType, price, descript, genres } = inputs.release
 			const releaseData: IRelease = {
@@ -115,7 +115,7 @@ export class ReleasesController implements IReleasesCtrl {
 				new ModifyReleaseAdapter(
 					{
 						data: releaseData,
-						imgFile: img,
+						cover: cover,
 					},
 					songs
 				)
@@ -130,9 +130,9 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async hide(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "PATCH") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const user = req.auth?.profileID
 			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
 
@@ -151,9 +151,9 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const id = Number(req.params["id"])
 			const getRelease = new GetReleaseUsecase(databaseServices)
 			const { data, error } = await getRelease.execute(id)
@@ -167,9 +167,9 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices)
 			const { data, error } = await getAllReleases.execute()
 			if (error) throw error
@@ -182,9 +182,9 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const id = Number(req.params["id"])
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
 			const { data, error } = await findReleasesByArtist.execute(id)
@@ -198,9 +198,9 @@ export class ReleasesController implements IReleasesCtrl {
 	}
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
-		if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
-
 		try {
+			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
+
 			const id = req.params["genre"] as GenreType
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
 			const { data, error } = await findReleasesByGenre.execute(id)

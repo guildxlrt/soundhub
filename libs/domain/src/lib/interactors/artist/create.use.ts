@@ -1,7 +1,7 @@
-import { CreateArtistReplyDTO, Formatters } from "Shared"
+import { CreateArtistReplyDTO, formatters } from "Shared"
 import { UsecaseLayer, ServicesType } from "../../../assets"
 import { NewArtistAdapter } from "Shared"
-import { ErrorMsg, Validators } from "Shared"
+import { ErrorMsg, validators } from "Shared"
 import { Artist, UserAuth } from "../../entities"
 
 export class CreateArtistUsecase extends UsecaseLayer {
@@ -18,9 +18,9 @@ export class CreateArtistUsecase extends UsecaseLayer {
 
 			// SANITIZE
 			// auths
-			Validators.signupAuths(email, password, confirmEmail, confirmPass)
+			validators.signupAuths(email, password, confirmEmail, confirmPass)
 			// genres
-			const cleanGenres = Formatters.genres(genres)
+			const cleanGenres = formatters.genres(genres)
 			// others data checking
 			// ... ( name)
 

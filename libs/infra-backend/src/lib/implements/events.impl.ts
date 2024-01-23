@@ -1,5 +1,5 @@
 import { Event, EventsRepository } from "Domain"
-import { Reply, dbClient, getArtistID } from "../../assets"
+import { Reply, dbClient, GetID, filePath, FileManipulator } from "../../assets"
 import {
 	ErrorMsg,
 	IEventSucc,
@@ -15,10 +15,12 @@ import {
 export class EventsImplement implements EventsRepository {
 	async create(data: Event, file?: FileType): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, date, place, artists, title, text, imageUrl } = data
+			const { owner_id, date, place, artists, title, text } = data
 
 			// Storing files
-			console.log(file)
+			const fileOrigin = filePath.origin.image + file?.filename
+			const fileStore = filePath.store.event + file?.filename
+			FileManipulator.move(fileOrigin, fileStore)
 
 			await dbClient.event.create({
 				data: {
@@ -28,7 +30,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imageUrl: imageUrl,
+					imageUrl: fileStore,
 				},
 			})
 
@@ -43,16 +45,22 @@ export class EventsImplement implements EventsRepository {
 
 	async modify(data: Event, file?: FileType): Promise<Reply<boolean>> {
 		try {
-			const { id, owner_id, date, place, artists, title, text, imageUrl } = data
+			const { id, owner_id, date, place, artists, title, text } = data
 
 			const userAuth = data.owner_id
 
 			// owner verification
-			const event = await dbClient.event.findUnique(getArtistID(id as number))
+			const event = await dbClient.event.findUnique(GetID.artist(id as number))
 			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
-			// Storing files
-			console.log(file)
+			// STORING FILE
+			const fileOrigin = filePath.origin.image + file?.filename
+			const fileStore = filePath.store.event + file?.filename
+			FileManipulator.move(fileOrigin, fileStore)
+
+			// DELETE OLD FILE
+			// ... get the id
+			FileManipulator.delete("")
 
 			// persist
 			await dbClient.event.update({
@@ -66,7 +74,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imageUrl: imageUrl,
+					imageUrl: fileStore,
 				},
 			})
 
@@ -82,7 +90,7 @@ export class EventsImplement implements EventsRepository {
 	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
 		try {
 			// owner verification
-			const event = await dbClient.event.findUnique(getArtistID(id))
+			const event = await dbClient.event.findUnique(GetID.artist(id))
 			if (userAuth !== event?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist

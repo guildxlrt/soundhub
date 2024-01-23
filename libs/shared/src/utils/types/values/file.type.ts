@@ -1,4 +1,13 @@
-import { Multer } from "multer"
-
-export type FileType = unknown
-export type FilesArray = unknown[]
+export interface FileType extends File {
+	fieldname: string
+	originalname: string
+	encoding: string
+	mimetype: string
+	size: number
+	stream: any
+	destination: string
+	filename: string
+	path: string
+	buffer: Buffer
+}
+export type FilesArray = FileType[]

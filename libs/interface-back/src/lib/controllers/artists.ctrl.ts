@@ -34,7 +34,7 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 
 			// HashPass
 			const { password, email } = auth
@@ -63,7 +63,7 @@ export class ArtistsController implements IArtistCtrl {
 			const expires = authExpires.oneYear
 			const userCookie = data?.userCookie
 
-			const token = new Token().generate(userCookie, expires)
+			const token = Token.generate(userCookie, expires)
 
 			return res
 				.cookie("jwt", token, {
@@ -85,7 +85,7 @@ export class ArtistsController implements IArtistCtrl {
 
 			const user = req.auth?.profileID as number
 			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 
 			const artistProfile: IArtist = {
 				user_auth_id: user,

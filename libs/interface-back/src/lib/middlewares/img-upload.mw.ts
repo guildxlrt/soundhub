@@ -3,7 +3,7 @@ import { ApiErrHandler, ApiNext, ApiReply, ApiRequest, IMG_MIME_TYPES } from "..
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
-		callback(null, "images")
+		callback(null, "tmp/images")
 	},
 	filename: (req, file, callback) => {
 		callback(null, "IMG_" + Date.now() + "." + IMG_MIME_TYPES[file.mimetype])

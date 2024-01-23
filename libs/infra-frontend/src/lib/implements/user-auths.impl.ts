@@ -1,28 +1,25 @@
 import { UserAuthsRepository } from "Domain"
 import {
-	ChangeEmailAdapter,
 	ChangeEmailReqDTO,
-	ChangePassAdapter,
 	ChangePassReqDTO,
 	ErrorMsg,
 	ILoginRes,
-	LoginAdapter,
 	LoginReqDTO,
-	apiEndpts,
-	apiPath,
-	apiRoot,
+	apiUrlEndpt,
+	apiUrlPath,
+	apiUrlRoot,
 } from "Shared"
 import { Response } from "../../assets"
 import axios from "axios"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(inputs: LoginAdapter): Promise<Response<ILoginRes>> {
+	async login(email: string, password: string): Promise<Response<ILoginRes>> {
 		try {
 			return (await axios({
 				method: "post",
-				url: `${apiRoot + apiPath.announces + apiEndpts.auth.login}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.login}`,
 				withCredentials: true,
-				data: inputs as LoginReqDTO,
+				data: { email: email, password: password } as LoginReqDTO,
 			})) as Response<ILoginRes>
 		} catch (error) {
 			return new Response<ILoginRes>(undefined, new ErrorMsg(undefined, "Error Calling API"))
@@ -33,7 +30,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		try {
 			return (await axios({
 				method: "delete",
-				url: `${apiRoot + apiPath.announces + apiEndpts.auth.logout}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.logout}`,
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
@@ -41,26 +38,26 @@ export class UserAuthsImplement implements UserAuthsRepository {
 		}
 	}
 
-	async changeEmail(inputs: ChangeEmailAdapter): Promise<Response<boolean>> {
+	async changeEmail(data: { actual: string; newEmail: string }): Promise<Response<boolean>> {
 		try {
 			return (await axios({
 				method: "put",
-				url: `${apiRoot + apiPath.announces + apiEndpts.auth.changeEmail}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changeEmail}`,
 				withCredentials: true,
-				data: inputs as ChangeEmailReqDTO,
+				data: data as ChangeEmailReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(false, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
-	async changePass(inputs: ChangePassAdapter): Promise<Response<boolean>> {
+	async changePass(data: { actual: string; newPass: string }): Promise<Response<boolean>> {
 		try {
 			return (await axios({
 				method: "put",
-				url: `${apiRoot + apiPath.announces + apiEndpts.auth.changePass}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changePass}`,
 				withCredentials: true,
-				data: inputs as ChangePassReqDTO,
+				data: data as ChangePassReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(false, new ErrorMsg(undefined, "Error Calling API"))

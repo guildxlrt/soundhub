@@ -1,58 +1,58 @@
 import axios from "axios"
-import { Response } from "../../assets"
-import { AnnouncesRepository } from "Domain"
+import { ToFormData, Response } from "../../assets"
+import { Announce, AnnouncesRepository } from "Domain"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	ErrorMsg,
-	ModifyAnnounceReqDTO,
-	apiRoot,
-	apiPath,
-	apiEndpts,
 	AnnounceID,
 	ArtistID,
-	CreateAnnounceReqDTO,
-	DeleteAnnounceAdapter,
-	NewAnnounceAdapter,
-	ModifyAnnounceAdapter,
+	FileType,
+	apiUrlRoot,
+	apiUrlPath,
+	apiUrlEndpt,
 } from "Shared"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(inputs: NewAnnounceAdapter): Promise<Response<boolean>> {
+	async create(data: Announce, file?: FileType): Promise<Response<boolean>> {
 		try {
-			const { text, title } = inputs.data
+			const formData = new FormData()
+			ToFormData.file(formData, file as FileType)
+			ToFormData.object(formData, data)
 
 			return (await axios({
 				method: "post",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
 				withCredentials: true,
-				data: { title: title, text: text } as CreateAnnounceReqDTO,
+				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
-	async modify(inputs: ModifyAnnounceAdapter): Promise<Response<boolean>> {
+	async modify(data: Announce, file?: FileType): Promise<Response<boolean>> {
 		try {
-			const { text, title } = inputs.data
+			const formData = new FormData()
+			ToFormData.file(formData, file as FileType)
+			ToFormData.object(formData, data)
 
 			return (await axios({
 				method: "put",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.modify}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.modify}`,
 				withCredentials: true,
-				data: { title: title, text: text } as ModifyAnnounceReqDTO,
+				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
-	async delete(id: DeleteAnnounceAdapter): Promise<Response<void>> {
+	async delete(id: number): Promise<Response<void>> {
 		try {
 			return (await axios({
 				method: "delete",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.delete + id}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.delete + id}`,
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
@@ -64,7 +64,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.oneByID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IAnnounceSucc>
 		} catch (error) {
@@ -79,7 +79,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.all}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.all}`,
 				withCredentials: true,
 			})) as Response<IAnnouncesListSucc>
 		} catch (error) {
@@ -94,7 +94,9 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.manyByArtist + id}`,
+				url: `${
+					apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.manyByArtist + id
+				}`,
 				withCredentials: true,
 			})) as Response<IAnnouncesListSucc>
 		} catch (error) {

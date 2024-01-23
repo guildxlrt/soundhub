@@ -38,7 +38,7 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const owner = req.auth?.profileID
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
 			// Operators
@@ -72,7 +72,7 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const owner = req.auth?.profileID as number
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 			const { artists, date, place, text, title }: ModifyEventReqDTO =
 				req.body as ModifyEventReqDTO
 

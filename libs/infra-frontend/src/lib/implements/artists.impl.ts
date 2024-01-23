@@ -1,31 +1,46 @@
 import axios from "axios"
-import { Response } from "../../assets"
-import { ArtistsRepository } from "Domain"
+import { ToFormData, Response } from "../../assets"
+import { Artist, ArtistsRepository, UserAuth } from "Domain"
 import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	INewArtistSucc,
-	EmailAdapter,
 	GenreType,
-	apiRoot,
-	apiPath,
-	apiEndpts,
+	apiUrlRoot,
+	apiUrlPath,
+	apiUrlEndpt,
 	ErrorMsg,
-	CreateArtistReqDTO,
-	ModifyArtistReqDTO,
 	ArtistID,
-	NewArtistAdapter,
-	ModifyArtistAdapter,
+	FileType,
 } from "Shared"
 
 export class ArtistsImplement implements ArtistsRepository {
-	async create(inputs: NewArtistAdapter): Promise<Response<INewArtistSucc>> {
+	async create(
+		data: {
+			profile: Artist
+			userAuth: UserAuth
+			authConfirm: { confirmEmail: string; confirmPass: string }
+		},
+		file?: FileType
+	): Promise<Response<INewArtistSucc>> {
 		try {
+			const { profile, userAuth, authConfirm } = data
+
+			const formData = new FormData()
+			ToFormData.file(formData, file as FileType)
+			ToFormData.object(formData, profile)
+			ToFormData.object(formData, userAuth)
+			ToFormData.object(formData, authConfirm)
+
 			return (await axios({
 				method: "post",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
 				withCredentials: true,
-				data: inputs as CreateArtistReqDTO,
+				data: {
+					profile: profile,
+					auth: userAuth,
+					authConfirm: authConfirm,
+				},
 			})) as Response<INewArtistSucc>
 		} catch (error) {
 			return new Response<INewArtistSucc>(
@@ -35,22 +50,19 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(inputs: ModifyArtistAdapter): Promise<Response<boolean>> {
+	async modify(data: { profile: Artist }, file?: FileType): Promise<Response<boolean>> {
 		try {
-			const { bio, genres, members, name } = inputs.profile
+			const { profile } = data
+
+			const formData = new FormData()
+			ToFormData.file(formData, file as FileType)
+			ToFormData.object(formData, profile)
 
 			return (await axios({
 				method: "post",
-				url: `${apiRoot + apiPath.announces + apiEndpts.announces.create}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
 				withCredentials: true,
-				data: {
-					id: undefined,
-					name: name,
-					bio: bio,
-					members: members,
-					genres: genres,
-					avatar: null,
-				} as ModifyArtistReqDTO,
+				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
@@ -61,7 +73,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneByID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>
 		} catch (error) {
@@ -72,12 +84,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByEmail(inputs: EmailAdapter): Promise<Response<IArtistInfoSucc>> {
-		const { email } = inputs
+	async getByEmail(email: string): Promise<Response<IArtistInfoSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.oneByID}`,
+				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID}`,
 				data: { email: email },
 				withCredentials: true,
 			})) as Response<IArtistInfoSucc>
@@ -93,7 +104,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.all}`,
+				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.all}`,
 				withCredentials: true,
 			})) as Response<IArtistsListSucc>
 		} catch (error) {
@@ -108,7 +119,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.artists + apiEndpts.artists.manyByGenre + genre}`,
+				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.manyByGenre + genre}`,
 				withCredentials: true,
 			})) as Response<IArtistsListSucc>
 		} catch (error) {

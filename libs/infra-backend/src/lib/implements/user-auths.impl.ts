@@ -1,6 +1,6 @@
 import { UserAuthsRepository } from "Domain"
 import { ErrorMsg, apiErrorMsg, ILoginRes, ILoginDbRes, UserAuthID, PassEncryptor } from "Shared"
-import { Reply, dbClient, getAuthID } from "../../assets"
+import { GetID, Reply, dbClient } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsRepository {
 	async login(email: string): Promise<Reply<ILoginRes>> {
@@ -21,7 +21,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			if (!authData?.email || !authData?.password) throw new ErrorMsg(500, apiErrorMsg.e500)
 
 			// Find Profile
-			const profile = (await getAuthID(authData?.id)) as number
+			const profile = (await GetID.auth(authData?.id)) as number
 
 			// // RESPONSE
 			const data = {

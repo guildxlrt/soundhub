@@ -1,16 +1,16 @@
 import { Router } from "express"
-import { authMiddleware, Controller, imageStorage } from "Interface-back"
+import { authMiddleware, controller, imageStorage } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
-const controller = Controller.annonces()
+const ctrl = controller.announces
 const endpts = apiUrlEndpt.announces
 
-router.post(endpts.create, authMiddleware, imageStorage, controller.create)
-router.put(endpts.modify, authMiddleware, imageStorage, controller.modify)
-router.delete(endpts.delete + "id", authMiddleware, controller.delete)
-router.get(endpts.oneByID + "id", controller.get)
-router.get(endpts.all, controller.getAll)
-router.get(endpts.manyByArtist + "id", controller.findManyByArtist)
+router.post(endpts.create, authMiddleware, imageStorage, ctrl.create)
+router.put(endpts.modify, authMiddleware, imageStorage, ctrl.modify)
+router.delete(endpts.delete + "id", authMiddleware, ctrl.delete)
+router.get(endpts.oneByID + "id", ctrl.get)
+router.get(endpts.all, ctrl.getAll)
+router.get(endpts.manyByArtist + "id", ctrl.findManyByArtist)
 
 export default router

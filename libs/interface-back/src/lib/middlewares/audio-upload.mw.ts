@@ -3,7 +3,7 @@ import { AUDIO_MIME_TYPES, ApiErrHandler, ApiNext, ApiReply, ApiRequest } from "
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
-		callback(null, "audios")
+		callback(null, "tmp/audio")
 	},
 	filename: (req, file, callback) => {
 		callback(null, "IMG_" + Date.now() + "." + AUDIO_MIME_TYPES[file.mimetype])

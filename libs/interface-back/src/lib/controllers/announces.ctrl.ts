@@ -33,7 +33,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const { text, title } = req.body as CreateAnnounceReqDTO
 			const owner = req.auth?.profileID as number
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 
 			// Operators
 			// ... doing some heathcheck
@@ -63,7 +63,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		try {
 			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
-			const file: FileType = req.file
+			const file: FileType = req.file as FileType
 			const owner = req.auth?.profileID as number
 
 			const { text, title } = req.body as ModifyAnnounceReqDTO

@@ -11,25 +11,42 @@ import {
 	ReleaseID,
 	FileType,
 } from "Shared"
-import { getArtistID, dbClient } from "../../assets"
+import { FileManipulator, GetID, dbClient, filePath } from "../../assets"
 import { Reply } from "../../assets"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(
-		release: Release,
+		release: { data: Release; cover: FileType },
 		songs: { data: Song; audio: FileType }[]
 	): Promise<Reply<INewReleaseSucc>> {
 		try {
-			const { owner_id, title, releaseType, descript, price, genres } = release
+			const { owner_id, title, releaseType, descript, price, genres } = release.data
+			const cover = release.cover
 
-			// Storing files
-			// ...
+			const releaseFolder = FileManipulator.randomReleaseFolder()
 
+			// STORING
+			// songs
+			songs.forEach((song) => {
+				const filename = song.audio?.filename
+				const coverOrigin = filePath.origin.image + filename
+				const coverStore = filePath.store.release + releaseFolder + filename
+				FileManipulator.move(coverOrigin, coverStore)
+			})
+
+			// release
+			const coverOrigin = filePath.origin.image + cover?.filename
+			const coverStore = filePath.store.release + releaseFolder + cover?.filename
+			FileManipulator.move(coverOrigin, coverStore)
+
+			// PERSIST
 			const songsFormattedArray = songs.map((song) => {
 				const { title, featuring, lyrics } = song.data
 
+				const coverStore = filePath.store.release + song.audio?.filename
+
 				return {
-					audioUrl: "placeholder",
+					audioUrl: coverStore,
 					title: title,
 					featuring: featuring,
 					lyrics: lyrics,
@@ -44,7 +61,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					coverUrl: null,
+					coverUrl: coverStore,
 					isPublic: true,
 					songs: {
 						create: songsFormattedArray,
@@ -67,13 +84,40 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modify(release: Release, songs: Song[]): Promise<Reply<boolean>> {
+	async modify(
+		release: { data: Release; cover?: FileType },
+		songs: Song[]
+	): Promise<Reply<boolean>> {
 		try {
-			const { id, owner_id, price, descript, genres, coverUrl } = release
+			const { id, owner_id, price, descript, genres } = release.data
+
+			const cover = release.cover
 
 			// owner verification
-			const data = await dbClient.release.findUnique(getArtistID(id as number))
+			const data = await dbClient.release.findUnique(GetID.artist(id as number))
 			if (owner_id !== data?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
+
+			// ... get the old path
+			const releaseData = await dbClient.release.findUnique({
+				where: {
+					id: id as number,
+					owner_id: owner_id,
+				},
+				select: {
+					coverUrl: true,
+				},
+			})
+
+			const coverUrl = releaseData?.coverUrl as string
+			const releaseFolder = FileManipulator.getReleaseFolder(coverUrl)
+
+			// STORING FILE
+			const coverOrigin = filePath.origin.image + cover?.filename
+			const coverStore = filePath.store.release + releaseFolder + cover?.filename
+			FileManipulator.move(coverOrigin, coverStore)
+
+			// DELETE OLD FILE
+			FileManipulator.delete(releaseFolder as string)
 
 			// persist
 			await dbClient.release.update({
@@ -85,7 +129,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					price: price,
 					descript: descript,
 					genres: genres as string[],
-					coverUrl: coverUrl,
+					coverUrl: coverStore,
 				},
 			})
 
@@ -111,7 +155,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async hide(id: ReleaseID, isPublic: boolean, ownerID?: UserAuthID): Promise<Reply<boolean>> {
 		try {
 			// owner verification
-			const release = await dbClient.release.findUnique(getArtistID(id))
+			const release = await dbClient.release.findUnique(GetID.artist(id))
 			if (ownerID !== release?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist

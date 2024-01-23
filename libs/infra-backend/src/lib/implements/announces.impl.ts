@@ -1,5 +1,5 @@
 import { Announce, AnnouncesRepository } from "Domain"
-import { Reply, getArtistID, dbClient } from "../../assets"
+import { Reply, GetID, dbClient, FileManipulator, filePath } from "../../assets"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
@@ -16,15 +16,17 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			const { owner_id, title, text } = data
 
-			// Storing files
-			console.log(file)
+			// STORING FILE
+			const fileOrigin = filePath.origin.image + file?.filename
+			const fileStore = filePath.store.announce + file?.filename
+			FileManipulator.move(fileOrigin, fileStore)
 
 			await dbClient.announce.create({
 				data: {
 					owner_id: owner_id as number,
 					title: title,
 					text: text,
-					imageUrl: "",
+					imageUrl: fileStore,
 				},
 			})
 
@@ -39,14 +41,20 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async modify(data: Announce, file?: FileType): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, title, text, imageUrl, id } = data
+			const { owner_id, title, text, id } = data
 
 			// owner verification
-			const announce = await dbClient.announce.findUnique(getArtistID(id as number))
+			const announce = await dbClient.announce.findUnique(GetID.artist(id as number))
 			if (owner_id !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
-			// Storing files
-			console.log(file)
+			// STORING FILE
+			const fileOrigin = filePath.origin.image + file?.filename
+			const fileStore = filePath.store.announce + file?.filename
+			FileManipulator.move(fileOrigin, fileStore)
+
+			// DELETE OLD FILE
+			// ... get the id
+			FileManipulator.delete("")
 
 			// persist
 			await dbClient.announce.update({
@@ -57,7 +65,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: {
 					title: title,
 					text: text,
-					imageUrl: imageUrl,
+					imageUrl: fileStore,
 				},
 			})
 
@@ -73,7 +81,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
 		try {
 			// owner verification
-			const announce = await dbClient.announce.findUnique(getArtistID(id))
+			const announce = await dbClient.announce.findUnique(GetID.artist(id))
 			if (userAuth !== announce?.owner_id) throw new ErrorMsg(403, apiErrorMsg.e403)
 
 			// persist

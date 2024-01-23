@@ -12,7 +12,7 @@ import {
 	UserEmail,
 	FileType,
 } from "Shared"
-import { dbClient, dbErrHandler, getAuthID, Reply } from "../../assets"
+import { dbClient, DbErrHandler, FileManipulator, filePath, GetID, Reply } from "../../assets"
 
 export class ArtistsImplement implements ArtistsRepository {
 	async create(
@@ -30,7 +30,9 @@ export class ArtistsImplement implements ArtistsRepository {
 			const password = data.hashedPass as string
 
 			// Storing files
-			console.log(file)
+			const origin = filePath.origin.image + file?.filename
+			const store = filePath.store.artist + file?.filename
+			FileManipulator.move(origin, store)
 
 			// PERSIST
 			const newUser = await dbClient.userAuth.create({
@@ -43,7 +45,7 @@ export class ArtistsImplement implements ArtistsRepository {
 							bio: bio,
 							members: members,
 							genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-							avatarUrl: null,
+							avatarUrl: store,
 						},
 					},
 				},
@@ -72,7 +74,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			)
 
 			// Email must be unique
-			dbErrHandler.uniqueEmail(error, res)
+			DbErrHandler.uniqueEmail(error, res)
 
 			return res
 		}
@@ -86,11 +88,17 @@ export class ArtistsImplement implements ArtistsRepository {
 			const { name, bio, members, genres, id } = data.profile
 			const userAuth = data.userAuth
 
-			// Storing files
-			console.log(file)
+			// STORING FILE
+			const fileOrigin = filePath.origin.image + file?.filename
+			const fileStore = filePath.store.artist + file?.filename
+			FileManipulator.move(fileOrigin, fileStore)
+
+			// DELETE OLD FILE
+			// ... get the id
+			FileManipulator.delete("")
 
 			// AUTH
-			const authID = await getAuthID(id as number)
+			const authID = await GetID.auth(id as number)
 
 			if (userAuth !== authID) throw new ErrorMsg(403, apiErrorMsg.e403)
 
@@ -104,6 +112,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					bio: bio,
 					members: members,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
+					avatarUrl: fileStore,
 				},
 			})
 

@@ -1,12 +1,12 @@
 import * as jwt from "jsonwebtoken"
 import * as fs from "fs"
-import { ApiRequest } from "./params"
 import { ErrorMsg, UserCookie, apiErrorMsg } from "Shared"
+import { ApiRequest } from "./types"
 
 const privateKey = fs.readFileSync("private.pem", "utf8")
 
 export class Token {
-	generate(userCookie: UserCookie | undefined, expires: string | number | undefined) {
+	static generate(userCookie: UserCookie | undefined, expires: string | number | undefined) {
 		try {
 			if (!userCookie) throw new ErrorMsg(500, apiErrorMsg.e500)
 
@@ -26,7 +26,7 @@ export class Token {
 		}
 	}
 
-	decode(req: ApiRequest) {
+	static decode(req: ApiRequest) {
 		try {
 			const token = req.cookies.jwt
 			const decoded = jwt.verify(token, privateKey) as UserCookie

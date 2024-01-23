@@ -1,14 +1,14 @@
 import { Router } from "express"
-import { Controller, authMiddleware } from "Interface-back"
+import { controller, authMiddleware } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
-const controller = Controller.auth()
+const ctrl = controller.auth
 const endpts = apiUrlEndpt.auth
 
-router.post(endpts.login, controller.login)
-router.delete(endpts.logout, controller.logout)
-router.put(endpts.changeEmail, authMiddleware, controller.changeEmail)
-router.put(endpts.changePass, authMiddleware, controller.changePass)
+router.post(endpts.login, ctrl.login)
+router.delete(endpts.logout, ctrl.logout)
+router.put(endpts.changeEmail, authMiddleware, ctrl.changeEmail)
+router.put(endpts.changePass, authMiddleware, ctrl.changePass)
 
 export default router

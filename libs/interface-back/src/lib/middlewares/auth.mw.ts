@@ -3,7 +3,7 @@ import { ApiNext, ApiReply, ApiRequest, Token, ApiErrHandler } from "../../asset
 
 export const authMiddleware = (req: ApiRequest, res: ApiReply, next: ApiNext) => {
 	try {
-		new Token().decode(req)
+		Token.decode(req)
 		if (!req.auth) throw new ErrorMsg(401, apiErrorMsg.e401)
 
 		next()

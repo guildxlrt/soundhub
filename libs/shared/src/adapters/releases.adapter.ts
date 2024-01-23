@@ -3,7 +3,7 @@ import { ArtistID, FileType, IRelease, ReleaseID } from "../utils"
 export class NewReleaseAdapter {
 	release: {
 		data: Omit<IRelease, "id" | "coverUrl">
-		imgFile: FileType
+		cover: FileType
 	}
 	songs: {
 		data: { title: string; featuring: number[]; lyrics: string | null }
@@ -13,7 +13,7 @@ export class NewReleaseAdapter {
 	constructor(
 		release: {
 			data: Omit<IRelease, "id" | "coverUrl">
-			imgFile: FileType
+			cover: FileType
 		},
 		songs: {
 			data: { title: string; featuring: number[]; lyrics: string | null }
@@ -28,7 +28,7 @@ export class NewReleaseAdapter {
 export class ModifyReleaseAdapter {
 	release: {
 		data: Omit<IRelease, "id" | "coverUrl">
-		imgFile: FileType
+		cover: FileType
 	}
 	songs: {
 		title: string
@@ -39,7 +39,7 @@ export class ModifyReleaseAdapter {
 	constructor(
 		release: {
 			data: Omit<IRelease, "id" | "coverUrl">
-			imgFile: FileType
+			cover: FileType
 		},
 		songs: {
 			title: string

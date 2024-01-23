@@ -13,10 +13,13 @@ import { Release, Song } from "../entities"
 
 export interface ReleasesRepository {
 	create(
-		release: Release,
+		release: { data: Release; cover: FileType },
 		songs: { data: Song; audio: FileType }[]
 	): Promise<ReplyLayer<INewReleaseSucc>>
-	modify(release: Release, songs: Song[]): Promise<ReplyLayer<boolean>>
+	modify(
+		release: { data: Release; cover?: FileType },
+		songs: Song[]
+	): Promise<ReplyLayer<boolean>>
 	hide(id: ReleaseID, isPublic: boolean, userAuth?: UserAuthID): Promise<ReplyLayer<boolean>>
 	get(data: ReleaseID): Promise<ReplyLayer<IReleaseSucc>>
 	getAll(): Promise<ReplyLayer<IReleasesListSucc>>

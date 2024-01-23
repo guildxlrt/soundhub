@@ -1,71 +1,57 @@
 import axios from "axios"
-import { Response } from "../../assets"
-import { EventsRepository } from "Domain"
+import { ToFormData, Response } from "../../assets"
+import { Event, EventsRepository } from "Domain"
 import {
 	IEventSucc,
 	EntityID,
-	NewEventAdapter,
-	apiRoot,
-	apiPath,
-	apiEndpts,
-	CreateEventReqDTO,
+	apiUrlRoot,
+	apiUrlPath,
+	apiUrlEndpt,
 	ErrorMsg,
-	ModifyEventAdapter,
 	IEventsListSucc,
-	DateAdapter,
-	PlaceAdapter,
-	DeleteEventAdapter,
+	FileType,
 } from "Shared"
 
 export class EventsImplement implements EventsRepository {
-	async create(inputs: NewEventAdapter): Promise<Response<boolean>> {
-		const { owner_id, title, text, date, place, artists } = inputs.data
+	async create(data: Event, file?: FileType): Promise<Response<boolean>> {
+		const formData = new FormData()
+		ToFormData.file(formData, file as FileType)
+		ToFormData.object(formData, data)
+
 		try {
 			return (await axios({
 				method: "post",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.create}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.create}`,
 				withCredentials: true,
-				data: {
-					owner_id: owner_id,
-					date: date,
-					place: place,
-					artists: artists,
-					title: title,
-					text: text,
-				} as CreateEventReqDTO,
+				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
-	async modify(inputs: ModifyEventAdapter): Promise<Response<boolean>> {
-		const { owner_id, title, text, date, place, artists } = inputs.data
+	async modify(data: Event, file?: FileType): Promise<Response<boolean>> {
+		const formData = new FormData()
+		ToFormData.file(formData, file as FileType)
+		ToFormData.object(formData, data)
+
 		try {
 			return (await axios({
 				method: "put",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.create}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.create}`,
 				withCredentials: true,
-				data: {
-					owner_id: owner_id,
-					date: date,
-					place: place,
-					artists: artists,
-					title: title,
-					text: text,
-				} as CreateEventReqDTO,
+				data: formData,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg(undefined, "Error Calling API"))
 		}
 	}
 
-	async delete(inputs: DeleteEventAdapter): Promise<Response<void>> {
+	async delete(id: number): Promise<Response<void>> {
 		try {
-			const { id } = inputs
 			return (await axios({
 				method: "delete",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.delete + id}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.delete + id}`,
 				withCredentials: true,
 			})) as Response<void>
 		} catch (error) {
@@ -77,7 +63,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.oneByID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.oneByID + id}`,
 				withCredentials: true,
 			})) as Response<IEventSucc>
 		} catch (error) {
@@ -89,7 +75,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.all}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.all}`,
 				withCredentials: true,
 			})) as Response<IEventsListSucc>
 		} catch (error) {
@@ -104,7 +90,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByArtist + id}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByArtist + id}`,
 				withCredentials: true,
 			})) as Response<IEventsListSucc>
 		} catch (error) {
@@ -115,12 +101,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByDate(inputs: DateAdapter): Promise<Response<IEventsListSucc>> {
-		const { date } = inputs
+	async findManyByDate(date: Date): Promise<Response<IEventsListSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByDate}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByDate}`,
 				withCredentials: true,
 				data: {
 					date: date,
@@ -134,12 +119,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByPlace(inputs: PlaceAdapter): Promise<Response<IEventsListSucc>> {
-		const { place } = inputs
+	async findManyByPlace(place: string): Promise<Response<IEventsListSucc>> {
 		try {
 			return (await axios({
 				method: "get",
-				url: `${apiRoot + apiPath.events + apiEndpts.events.manyByPlace}`,
+				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByPlace}`,
 				withCredentials: true,
 				data: {
 					place: place,
