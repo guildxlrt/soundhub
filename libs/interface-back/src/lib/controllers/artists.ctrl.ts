@@ -1,3 +1,4 @@
+import { databaseServices } from "Infra-backend"
 import {
 	CreateArtistReplyDTO,
 	CreateArtistReqDTO,
@@ -9,23 +10,24 @@ import {
 	GetArtistByIDReplyDTO,
 	IArtist,
 	IUserAuth,
-	ModifyArtistAdapter,
-	ModifyArtistReplyDTO,
-	ModifyArtistReqDTO,
-	NewArtistAdapter,
+	UpdateArtistReplyDTO,
+	UpdateArtistReqDTO,
 	apiErrorMsg,
 	PassEncryptor,
 	FileType,
 } from "Shared"
 import {
+	UpdateArtistUsecaseParams,
+	NewArtistUsecaseParams,
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
 	GetAllArtistsUsecase,
 	GetArtistByEmailUsecase,
 	GetArtistByIDUsecase,
-	ModifyArtistUsecase,
+	UpdateArtistUsecase,
+	IDUsecaseParams,
+	GenreUsecaseParams,
 } from "Domain"
-import { databaseServices } from "Infra-backend"
 import { IArtistCtrl, Token, authExpires, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ArtistsController implements IArtistCtrl {
@@ -55,7 +57,7 @@ export class ArtistsController implements IArtistCtrl {
 			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices)
 			const { data, error } = await createArtist.execute(
-				new NewArtistAdapter(artistProfile, userAuth, authConfirm, hashedPass, file)
+				new NewArtistUsecaseParams(artistProfile, userAuth, authConfirm, hashedPass, file)
 			)
 			if (error) throw error
 
@@ -79,12 +81,12 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async update(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const user = req.auth?.profileID as number
-			const { bio, genres, members, name } = req.body as ModifyArtistReqDTO
+			const { bio, genres, members, name } = req.body as UpdateArtistReqDTO
 			const file: FileType = req.file as FileType
 
 			const artistProfile: IArtist = {
@@ -97,14 +99,14 @@ export class ArtistsController implements IArtistCtrl {
 			}
 
 			// Saving Changes
-			const modifyArtist = new ModifyArtistUsecase(databaseServices)
-			const { data, error } = await modifyArtist.execute(
-				new ModifyArtistAdapter(artistProfile, file)
+			const editArtist = new UpdateArtistUsecase(databaseServices)
+			const { data, error } = await editArtist.execute(
+				new UpdateArtistUsecaseParams(artistProfile, file)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(200).send(new ModifyArtistReplyDTO(data))
+			return res.status(200).send(new UpdateArtistReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -117,7 +119,7 @@ export class ArtistsController implements IArtistCtrl {
 			const id = Number(req.params["id"])
 
 			const getArtistByID = new GetArtistByIDUsecase(databaseServices)
-			const { data, error } = await getArtistByID.execute(id)
+			const { data, error } = await getArtistByID.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos
@@ -163,10 +165,10 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
-			const params = req.params["genre"] as GenreType
+			const genre = req.params["genre"] as GenreType
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
-			const { data, error } = await findArtistsByGenre.execute(params)
+			const { data, error } = await findArtistsByGenre.execute(new GenreUsecaseParams(genre))
 			if (error) throw error
 
 			// Return infos

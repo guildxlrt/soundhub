@@ -1,6 +1,6 @@
-import { FileType, IArtist, IUserAuth, UserEmail, UserPassword } from "../utils"
+import { FileType, IArtist, IUserAuth, UserEmail, UserPassword } from "Shared"
 
-export class NewArtistAdapter {
+export class NewArtistUsecaseParams {
 	profile: IArtist
 	auth: IUserAuth
 	authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
@@ -22,7 +22,7 @@ export class NewArtistAdapter {
 	}
 }
 
-export class ModifyArtistAdapter {
+export class UpdateArtistUsecaseParams {
 	profile: IArtist
 	file?: FileType
 
@@ -32,7 +32,7 @@ export class ModifyArtistAdapter {
 	}
 }
 
-export class EmailAdapter {
+export class EmailUsecaseParams {
 	email: string
 
 	constructor(email: string) {

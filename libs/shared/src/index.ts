@@ -1,6 +1,5 @@
 export * from "./utils"
 export * from "./operators"
 export * from "./dto"
-export * from "./adapters"
 export * from "./envs"
 export * from "./api-url"

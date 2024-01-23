@@ -80,7 +80,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(
+	async update(
 		data: { profile: Artist; userAuth?: number },
 		file?: FileType
 	): Promise<Reply<boolean>> {

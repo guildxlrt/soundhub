@@ -1,13 +1,12 @@
 import { GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { EmailAdapter } from "Shared"
+import { UsecaseLayer, ServicesType, EmailUsecaseParams } from "../../../assets"
 
 export class GetArtistByEmailUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: EmailAdapter): Promise<GetArtistByEmailReplyDTO> {
+	async execute(inputs: EmailUsecaseParams): Promise<GetArtistByEmailReplyDTO> {
 		try {
 			const { email } = inputs
 			return await this.services.artists.getByEmail(email)

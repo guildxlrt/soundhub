@@ -21,7 +21,7 @@ export interface ArtistsRepository {
 		},
 		file?: FileType
 	): Promise<ReplyLayer<INewArtistSucc>>
-	modify(
+	update(
 		data: { profile: Artist; userAuth?: number },
 		file?: FileType
 	): Promise<ReplyLayer<boolean>>

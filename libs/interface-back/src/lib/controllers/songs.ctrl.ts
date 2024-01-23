@@ -1,8 +1,7 @@
-import { ISongsCtrl } from "../../assets"
-import { GetSongReplyDTO, apiErrorMsg } from "Shared"
-import { GetSongUsecase } from "Domain"
 import { databaseServices } from "Infra-backend"
-import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { GetSongReplyDTO, apiErrorMsg } from "Shared"
+import { GetSongUsecase, IDUsecaseParams } from "Domain"
+import { ISongsCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class SongsController implements ISongsCtrl {
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -11,7 +10,7 @@ export class SongsController implements ISongsCtrl {
 
 			const id = Number(req.params["id"])
 			const getSong = new GetSongUsecase(databaseServices)
-			const { data, error } = await getSong.execute(id)
+			const { data, error } = await getSong.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos

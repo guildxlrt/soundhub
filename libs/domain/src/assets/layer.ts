@@ -1,3 +1,4 @@
+import { IAnyObject } from "../lib"
 import { ServicesType } from "./types"
 
 export abstract class UsecaseLayer {
@@ -7,5 +8,5 @@ export abstract class UsecaseLayer {
 		this.services = services
 	}
 
-	abstract execute(inputs: unknown): Promise<unknown>
+	abstract execute(inputs: IAnyObject): Promise<unknown>
 }

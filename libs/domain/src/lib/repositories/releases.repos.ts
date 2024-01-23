@@ -16,7 +16,7 @@ export interface ReleasesRepository {
 		release: { data: Release; cover: FileType },
 		songs: { data: Song; audio: FileType }[]
 	): Promise<ReplyLayer<INewReleaseSucc>>
-	modify(
+	edit(
 		release: { data: Release; cover?: FileType },
 		songs: Song[]
 	): Promise<ReplyLayer<boolean>>

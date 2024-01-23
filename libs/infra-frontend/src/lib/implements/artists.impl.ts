@@ -50,7 +50,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async modify(data: { profile: Artist }, file?: FileType): Promise<Response<boolean>> {
+	async update(data: { profile: Artist }, file?: FileType): Promise<Response<boolean>> {
 		try {
 			const { profile } = data
 

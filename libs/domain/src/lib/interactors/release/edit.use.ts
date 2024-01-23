@@ -1,13 +1,13 @@
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ModifyReleaseReplyDTO, ErrorMsg, formatters, ModifyReleaseAdapter } from "Shared"
+import { UsecaseLayer, ServicesType, EditReleaseUsecaseParams } from "../../../assets"
+import { EditReleaseReplyDTO, ErrorMsg, formatters } from "Shared"
 import { Release, Song } from "../../entities"
 
-export class ModifyReleaseUsecase extends UsecaseLayer {
+export class EditReleaseUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyReleaseAdapter): Promise<ModifyReleaseReplyDTO> {
+	async execute(inputs: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
 		try {
 			const { songs } = inputs
 			const { cover, data } = inputs.release
@@ -34,9 +34,9 @@ export class ModifyReleaseUsecase extends UsecaseLayer {
 				return new Song(null, null, "placeholder", title, featuring, lyrics)
 			})
 
-			return await this.services.releases.modify({ data: release, cover: cover }, newSongs)
+			return await this.services.releases.edit({ data: release, cover: cover }, newSongs)
 		} catch (error) {
-			return new ModifyReleaseReplyDTO(
+			return new EditReleaseReplyDTO(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)

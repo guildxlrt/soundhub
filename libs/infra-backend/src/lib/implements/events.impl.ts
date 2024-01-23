@@ -43,7 +43,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async modify(data: Event, file?: FileType): Promise<Reply<boolean>> {
+	async edit(data: Event, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { id, owner_id, date, place, artists, title, text } = data
 

@@ -7,8 +7,9 @@ export class FindReleasesByGenreUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(genre: GenreType): Promise<FindReleasesByGenreReplyDTO> {
+	async execute(inputs: { genre: GenreType }): Promise<FindReleasesByGenreReplyDTO> {
 		try {
+			const genre = inputs.genre
 			return await this.services.releases.findManyByGenre(genre)
 		} catch (error) {
 			return new FindReleasesByGenreReplyDTO(

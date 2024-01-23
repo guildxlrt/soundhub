@@ -13,7 +13,7 @@ export class CreateAnnounceReqDTO {
 export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // MODIFY POST
-export class ModifyAnnounceReqDTO {
+export class EditAnnounceReqDTO {
 	title: string
 	text: string
 	constructor(title: string, text: string) {
@@ -21,7 +21,7 @@ export class ModifyAnnounceReqDTO {
 		this.text = text
 	}
 }
-export class ModifyAnnounceReplyDTO extends ReplyDTO<boolean> {}
+export class EditAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
 export type DeleteAnnounceReqDTO = UrlParams

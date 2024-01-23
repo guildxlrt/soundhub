@@ -1,30 +1,29 @@
-import { IAnnoncesCtrl } from "../../assets"
+import { databaseServices } from "Infra-backend"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
 	FindAnnouncesByArtistUsecase,
 	GetAllAnnouncesUsecase,
 	GetAnnounceUsecase,
-	ModifyAnnounceUsecase,
+	EditAnnounceUsecase,
+	DeleteAnnounceUsecaseParams,
+	AnnounceUsecaseParams,
+	IDUsecaseParams,
 } from "Domain"
-import { databaseServices } from "Infra-backend"
 import {
 	apiErrorMsg,
 	CreateAnnounceReplyDTO,
 	CreateAnnounceReqDTO,
-	DeleteAnnounceAdapter,
 	DeleteAnnounceReplyDTO,
 	FileType,
 	FindAnnouncesByArtistReplyDTO,
 	GetAllAnnouncesReplyDTO,
 	GetAnnounceReplyDTO,
 	IAnnounce,
-	ModifyAnnounceAdapter,
-	ModifyAnnounceReplyDTO,
-	ModifyAnnounceReqDTO,
-	NewAnnounceAdapter,
+	EditAnnounceReplyDTO,
+	EditAnnounceReqDTO,
 } from "Shared"
-import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IAnnoncesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class AnnoncesController implements IAnnoncesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -48,7 +47,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
 			const { data, error } = await createAnnounce.execute(
-				new NewAnnounceAdapter(announce, file)
+				new AnnounceUsecaseParams(announce, file)
 			)
 			if (error) throw error
 
@@ -59,14 +58,14 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "POST") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const file: FileType = req.file as FileType
 			const owner = req.auth?.profileID as number
 
-			const { text, title } = req.body as ModifyAnnounceReqDTO
+			const { text, title } = req.body as EditAnnounceReqDTO
 			// Operators
 			// ... doing some heathcheck
 
@@ -78,14 +77,14 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			}
 
 			// Saving Profile
-			const ModifyAnnounce = new ModifyAnnounceUsecase(databaseServices)
-			const { data, error } = await ModifyAnnounce.execute(
-				new ModifyAnnounceAdapter(announce, file)
+			const EditAnnounce = new EditAnnounceUsecase(databaseServices)
+			const { data, error } = await EditAnnounce.execute(
+				new AnnounceUsecaseParams(announce, file)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(new ModifyAnnounceReplyDTO(data))
+			return res.status(202).send(new EditAnnounceReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -103,7 +102,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
 			const { data, error } = await deleteAnnounce.execute(
-				new DeleteAnnounceAdapter(id, user)
+				new DeleteAnnounceUsecaseParams(id, user)
 			)
 			if (error) throw error
 
@@ -120,7 +119,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const id = Number(req.params["id"])
 			const getAnnounce = new GetAnnounceUsecase(databaseServices)
-			const { data, error } = await getAnnounce.execute(id)
+			const { data, error } = await getAnnounce.execute(new IDUsecaseParams(id))
 
 			if (error) throw error
 
@@ -153,7 +152,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const id = Number(req.params["id"])
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
-			const { data, error } = await findAnnouncesByArtist.execute(id)
+			const { data, error } = await findAnnouncesByArtist.execute(new IDUsecaseParams(id))
 
 			if (error) throw error
 

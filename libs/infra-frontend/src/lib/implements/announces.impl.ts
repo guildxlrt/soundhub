@@ -31,7 +31,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async modify(data: Announce, file?: FileType): Promise<Response<boolean>> {
+	async edit(data: Announce, file?: FileType): Promise<Response<boolean>> {
 		try {
 			const formData = new FormData()
 			ToFormData.file(formData, file as FileType)
@@ -39,7 +39,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 			return (await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.modify}`,
+				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.edit}`,
 				withCredentials: true,
 				data: formData,
 			})) as Response<boolean>

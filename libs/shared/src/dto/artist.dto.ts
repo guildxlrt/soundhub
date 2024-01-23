@@ -27,7 +27,7 @@ export class CreateArtistReqDTO {
 export class CreateArtistReplyDTO extends ReplyDTO<INewArtistSucc> {}
 
 // MODIFY ARTIST //
-export class ModifyArtistReqDTO {
+export class UpdateArtistReqDTO {
 	id: ArtistID | undefined
 	name: string
 	bio: string
@@ -51,7 +51,7 @@ export class ModifyArtistReqDTO {
 		this.avatar = avatar
 	}
 }
-export class ModifyArtistReplyDTO extends ReplyDTO<boolean> {}
+export class UpdateArtistReplyDTO extends ReplyDTO<boolean> {}
 
 // ARTIST BY ID
 

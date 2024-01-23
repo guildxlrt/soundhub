@@ -1,6 +1,6 @@
-import { ArtistID, FileType, IRelease, ReleaseID } from "../utils"
+import { ArtistID, FileType, IRelease, ReleaseID } from "Shared"
 
-export class NewReleaseAdapter {
+export class NewReleaseUsecaseParams {
 	release: {
 		data: Omit<IRelease, "id" | "coverUrl">
 		cover: FileType
@@ -25,7 +25,7 @@ export class NewReleaseAdapter {
 	}
 }
 
-export class ModifyReleaseAdapter {
+export class EditReleaseUsecaseParams {
 	release: {
 		data: Omit<IRelease, "id" | "coverUrl">
 		cover: FileType
@@ -52,7 +52,7 @@ export class ModifyReleaseAdapter {
 	}
 }
 
-export class HideReleaseAdapter {
+export class HideReleaseUsecaseParams {
 	id: ReleaseID
 	isPublic: boolean
 	ownerID?: ArtistID

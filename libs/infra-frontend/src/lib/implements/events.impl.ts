@@ -30,7 +30,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async modify(data: Event, file?: FileType): Promise<Response<boolean>> {
+	async edit(data: Event, file?: FileType): Promise<Response<boolean>> {
 		const formData = new FormData()
 		ToFormData.file(formData, file as FileType)
 		ToFormData.object(formData, data)

@@ -51,7 +51,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modify(
+	async edit(
 		release: { data: Release; cover?: FileType | undefined },
 		songs: Song[]
 	): Promise<Response<boolean>> {
@@ -66,7 +66,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			return (await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.modify}`,
+				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.edit}`,
 				withCredentials: true,
 				data: formData,
 			})) as Response<boolean>

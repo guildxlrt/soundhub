@@ -20,7 +20,7 @@ export const apiUrlEndpt = {
 	},
 	artists: {
 		signup: "/signup",
-		modify: "/update",
+		edit: "/update",
 		oneByID: "/:",
 		oneByEmail: "/by-email",
 		all: "/",
@@ -28,7 +28,7 @@ export const apiUrlEndpt = {
 	},
 	releases: {
 		create: "/new",
-		modify: "/edit",
+		edit: "/edit",
 		hide: "/hide",
 		oneByID: "/:",
 		all: "/",
@@ -37,7 +37,7 @@ export const apiUrlEndpt = {
 	},
 	events: {
 		create: "/new",
-		modify: "/edit",
+		edit: "/edit",
 		delete: "/delete",
 		oneByID: "/:",
 		all: "/",
@@ -47,7 +47,7 @@ export const apiUrlEndpt = {
 	},
 	announces: {
 		create: "/new",
-		modify: "/edit",
+		edit: "/edit",
 		delete: "/delete/:",
 		oneByID: "/:",
 		all: "/",

@@ -7,7 +7,7 @@ const ctrl = controller.artists
 const endpts = apiUrlEndpt.artists
 
 router.post(endpts.signup, imageStorage, ctrl.create)
-router.put(endpts.modify, authMiddleware, imageStorage, ctrl.modify)
+router.put(endpts.edit, authMiddleware, imageStorage, ctrl.update)
 router.get(endpts.oneByID + "id", ctrl.getByID)
 router.get(endpts.oneByEmail, ctrl.getByEmail)
 router.get(endpts.all, ctrl.getAll)

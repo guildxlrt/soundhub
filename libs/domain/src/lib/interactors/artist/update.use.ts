@@ -1,15 +1,14 @@
-import { ModifyArtistReplyDTO, formatters } from "Shared"
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ModifyArtistAdapter } from "Shared"
+import { UpdateArtistReplyDTO, formatters } from "Shared"
+import { UsecaseLayer, ServicesType, UpdateArtistUsecaseParams } from "../../../assets"
 import { ErrorMsg } from "Shared"
 import { Artist } from "../../entities"
 
-export class ModifyArtistUsecase extends UsecaseLayer {
+export class UpdateArtistUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: ModifyArtistAdapter): Promise<ModifyArtistReplyDTO> {
+	async execute(inputs: UpdateArtistUsecaseParams): Promise<UpdateArtistReplyDTO> {
 		try {
 			const { genres, name, bio, members, user_auth_id } = inputs.profile
 
@@ -30,12 +29,12 @@ export class ModifyArtistUsecase extends UsecaseLayer {
 				null
 			)
 
-			return await this.services.artists.modify(
+			return await this.services.artists.update(
 				{ profile: userData, userAuth: user_auth_id as number },
 				inputs.file
 			)
 		} catch (error) {
-			return new ModifyArtistReplyDTO(
+			return new UpdateArtistReplyDTO(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)

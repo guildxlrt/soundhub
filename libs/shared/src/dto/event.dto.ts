@@ -29,7 +29,7 @@ export class CreateEventReqDTO {
 export class CreateEventReplyDTO extends ReplyDTO<boolean> {}
 
 // CREATE POST
-export class ModifyEventReqDTO {
+export class EditEventReqDTO {
 	date: Date
 	place: string
 	artists: ArtistID[]
@@ -44,7 +44,7 @@ export class ModifyEventReqDTO {
 		this.text = text
 	}
 }
-export class ModifyEventReplyDTO extends ReplyDTO<boolean> {}
+export class EditEventReplyDTO extends ReplyDTO<boolean> {}
 
 // DELETE POST
 export class DeleteEventReplyDTO extends ReplyDTO<void> {}

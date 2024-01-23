@@ -35,7 +35,7 @@ export class CreateReleaseReqDTO {
 export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY
-export class ModifyReleaseReqDTO {
+export class EditReleaseReqDTO {
 	release: INewReleaseData
 	songs: ISong[]
 
@@ -44,7 +44,7 @@ export class ModifyReleaseReqDTO {
 		this.songs = songs
 	}
 }
-export class ModifyReleaseReplyDTO extends ReplyDTO<boolean> {}
+export class EditReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // HIDE
 export class HideReleaseReqDTO {

@@ -3,7 +3,7 @@ import { Event } from "../entities"
 
 export interface EventsRepository {
 	create(data: Event, file?: FileType): Promise<ReplyLayer<boolean>>
-	modify(data: Event, file?: FileType): Promise<ReplyLayer<boolean>>
+	edit(data: Event, file?: FileType): Promise<ReplyLayer<boolean>>
 	delete(id: EventID, userAuth?: UserAuthID): Promise<ReplyLayer<void>>
 	get(data: EventID): Promise<ReplyLayer<IEventSucc>>
 	getAll(): Promise<ReplyLayer<IEventsListSucc>>

@@ -1,13 +1,12 @@
-import { UsecaseLayer, ServicesType } from "../../../assets"
+import { UsecaseLayer, ServicesType, PlaceUsecaseParams } from "../../../assets"
 import { FindEventsByPlaceReplyDTO, ErrorMsg } from "Shared"
-import { PlaceAdapter } from "Shared"
 
 export class FindEventsByPlaceUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: PlaceAdapter): Promise<FindEventsByPlaceReplyDTO> {
+	async execute(inputs: PlaceUsecaseParams): Promise<FindEventsByPlaceReplyDTO> {
 		try {
 			const { place } = inputs
 

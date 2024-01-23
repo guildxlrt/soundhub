@@ -84,7 +84,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async modify(
+	async edit(
 		release: { data: Release; cover?: FileType },
 		songs: Song[]
 	): Promise<Reply<boolean>> {

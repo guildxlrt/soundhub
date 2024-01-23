@@ -1,6 +1,5 @@
 import { CreateAnnounceReplyDTO, ErrorMsg } from "Shared"
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { NewAnnounceAdapter } from "Shared"
+import { UsecaseLayer, ServicesType, AnnounceUsecaseParams } from "../../../assets"
 import { Announce } from "../../entities"
 
 export class CreateAnnounceUsecase extends UsecaseLayer {
@@ -8,7 +7,7 @@ export class CreateAnnounceUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: NewAnnounceAdapter): Promise<CreateAnnounceReplyDTO> {
+	async execute(inputs: AnnounceUsecaseParams): Promise<CreateAnnounceReplyDTO> {
 		try {
 			const { owner_id, title, text } = inputs.data
 

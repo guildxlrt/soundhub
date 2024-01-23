@@ -1,19 +1,20 @@
-import { IEventsCtrl } from "../../assets"
+import { databaseServices } from "Infra-backend"
 import {
 	CreateEventUsecase,
+	DeleteEventUsecaseParams,
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
 	FindEventsByPlaceUsecase,
 	GetAllEventsUsecase,
 	GetEventUsecase,
-	ModifyEventUsecase,
+	EditEventUsecase,
+	EventUsecaseParams,
+	IDUsecaseParams,
 } from "Domain"
-import { databaseServices } from "Infra-backend"
 import {
 	CreateEventReplyDTO,
 	CreateEventReqDTO,
-	DeleteEventAdapter,
 	DeleteEventReplyDTO,
 	FileType,
 	FindEventsByArtistReplyDTO,
@@ -24,13 +25,11 @@ import {
 	GetAllEventsReplyDTO,
 	GetEventReplyDTO,
 	IEvent,
-	ModifyEventAdapter,
-	ModifyEventReplyDTO,
-	ModifyEventReqDTO,
-	NewEventAdapter,
+	EditEventReplyDTO,
+	EditEventReqDTO,
 	apiErrorMsg,
 } from "Shared"
-import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IEventsCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 // return ApiErrHandler.reply
 export class EventsController implements IEventsCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -57,7 +56,7 @@ export class EventsController implements IEventsCtrl {
 
 			// Saving Profile
 			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(new NewEventAdapter(event, file))
+			const { data, error } = await createEvent.execute(new EventUsecaseParams(event, file))
 			if (error) throw error
 
 			// Return infos
@@ -67,14 +66,14 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: apiErrorMsg.e405 })
 
 			const owner = req.auth?.profileID as number
 			const file: FileType = req.file as FileType
-			const { artists, date, place, text, title }: ModifyEventReqDTO =
-				req.body as ModifyEventReqDTO
+			const { artists, date, place, text, title }: EditEventReqDTO =
+				req.body as EditEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
@@ -91,12 +90,12 @@ export class EventsController implements IEventsCtrl {
 			}
 
 			// Saving Changes
-			const ModifyEvent = new ModifyEventUsecase(databaseServices)
-			const { data, error } = await ModifyEvent.execute(new ModifyEventAdapter(event, file))
+			const EditEvent = new EditEventUsecase(databaseServices)
+			const { data, error } = await EditEvent.execute(new EventUsecaseParams(event, file))
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(new ModifyEventReplyDTO(data))
+			return res.status(202).send(new EditEventReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -114,7 +113,9 @@ export class EventsController implements IEventsCtrl {
 
 			// Saving Profile
 			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(new DeleteEventAdapter(id, owner))
+			const { data, error } = await deleteEvent.execute(
+				new DeleteEventUsecaseParams(id, owner)
+			)
 			if (error) throw error
 
 			// Return infos
@@ -131,7 +132,7 @@ export class EventsController implements IEventsCtrl {
 			const id = Number(req.params["id"])
 
 			const getEvent = new GetEventUsecase(databaseServices)
-			const { data, error } = await getEvent.execute(id)
+			const { data, error } = await getEvent.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos
@@ -162,7 +163,7 @@ export class EventsController implements IEventsCtrl {
 
 			const id = Number(req.params["id"])
 			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
-			const { data, error } = await findEventsByArtist.execute(id)
+			const { data, error } = await findEventsByArtist.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos

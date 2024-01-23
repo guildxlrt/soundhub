@@ -1,5 +1,0 @@
-export * from "./artists.adapter"
-export * from "./user-auth.adapter"
-export * from "./releases.adapter"
-export * from "./announces.adapter"
-export * from "./events.adapter"

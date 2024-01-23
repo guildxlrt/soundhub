@@ -39,7 +39,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async modify(data: Announce, file?: FileType): Promise<Reply<boolean>> {
+	async edit(data: Announce, file?: FileType): Promise<Reply<boolean>> {
 		try {
 			const { owner_id, title, text, id } = data
 

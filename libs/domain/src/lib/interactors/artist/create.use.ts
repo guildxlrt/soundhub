@@ -1,6 +1,5 @@
 import { CreateArtistReplyDTO, formatters } from "Shared"
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { NewArtistAdapter } from "Shared"
+import { UsecaseLayer, ServicesType, NewArtistUsecaseParams } from "../../../assets"
 import { ErrorMsg, validators } from "Shared"
 import { Artist, UserAuth } from "../../entities"
 
@@ -9,7 +8,7 @@ export class CreateArtistUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: NewArtistAdapter): Promise<CreateArtistReplyDTO> {
+	async execute(inputs: NewArtistUsecaseParams): Promise<CreateArtistReplyDTO> {
 		try {
 			const { email, password } = inputs.auth
 			const { confirmEmail, confirmPass } = inputs.authConfirm

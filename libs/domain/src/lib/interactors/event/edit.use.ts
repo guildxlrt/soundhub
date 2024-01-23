@@ -1,18 +1,18 @@
-import { CreateEventReplyDTO, ErrorMsg } from "Shared"
+import { EditEventReplyDTO, ErrorMsg } from "Shared"
 import { UsecaseLayer, ServicesType, EventUsecaseParams } from "../../../assets"
 import { Event } from "../../entities"
 
-export class CreateEventUsecase extends UsecaseLayer {
+export class EditEventUsecase extends UsecaseLayer {
 	constructor(services: ServicesType) {
 		super(services)
 	}
 
-	async execute(inputs: EventUsecaseParams): Promise<CreateEventReplyDTO> {
+	async execute(inputs: EventUsecaseParams): Promise<EditEventReplyDTO> {
 		try {
-			const { owner_id, date, place, artists, title, text } = inputs.data
+			const { owner_id, date, place, artists, title, text, id } = inputs.data
 
 			const event = new Event(
-				null,
+				id as number,
 				owner_id as number,
 				date,
 				place,
@@ -21,9 +21,10 @@ export class CreateEventUsecase extends UsecaseLayer {
 				text,
 				null
 			)
-			return await this.services.events.create(event, inputs.file)
+
+			return await this.services.events.edit(event, inputs.file)
 		} catch (error) {
-			return new CreateEventReplyDTO(
+			return new EditEventReplyDTO(
 				undefined,
 				new ErrorMsg(500, `Error: failed to persist`, error)
 			)

@@ -7,7 +7,7 @@ export interface IAuthCtrl {
 
 export interface IArtistCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
-	modify(req: unknown, res: unknown): Promise<unknown>
+	update(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	getByID(req: unknown, res: unknown): Promise<unknown>
 	getByEmail(req: unknown, res: unknown): Promise<unknown>
@@ -16,7 +16,7 @@ export interface IArtistCtrl {
 
 export interface IReleasesCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
-	modify(req: unknown, res: unknown): Promise<unknown>
+	edit(req: unknown, res: unknown): Promise<unknown>
 	hide(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
@@ -30,7 +30,7 @@ export interface ISongsCtrl {
 
 export interface IAnnoncesCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
-	modify(req: unknown, res: unknown): Promise<unknown>
+	edit(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
@@ -39,7 +39,7 @@ export interface IAnnoncesCtrl {
 
 export interface IEventsCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
-	modify(req: unknown, res: unknown): Promise<unknown>
+	edit(req: unknown, res: unknown): Promise<unknown>
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>

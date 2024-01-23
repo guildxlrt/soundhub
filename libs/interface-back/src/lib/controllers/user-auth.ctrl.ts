@@ -1,11 +1,15 @@
-import { ApiErrHandler, IAuthCtrl, Token, authExpires } from "../../assets"
 import { databaseServices } from "Infra-backend"
-import { ChangeEmailUsecase, ChangePassUsecase, LoginUsecase, LogoutUsecase } from "Domain"
 import {
-	ChangeEmailAdapter,
+	ChangeEmailUsecaseParams,
+	ChangeEmailUsecase,
+	ChangePassUsecaseParams,
+	ChangePassUsecase,
+	LoginUsecase,
+	LogoutUsecase,
+} from "Domain"
+import {
 	ChangeEmailReplyDTO,
 	ChangeEmailReqDTO,
-	ChangePassAdapter,
 	ChangePassReqDTO,
 	ErrorMsg,
 	ILoginDbRes,
@@ -17,7 +21,7 @@ import {
 	apiErrorMsg,
 	PassEncryptor,
 } from "Shared"
-import { ApiRequest, ApiReply } from "../../assets"
+import { ApiRequest, ApiReply, ApiErrHandler, IAuthCtrl, Token, authExpires } from "../../assets"
 
 export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -84,7 +88,7 @@ export class UserAuthController implements IAuthCtrl {
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(databaseServices)
 			const { data, error } = await changeEmail.execute(
-				new ChangeEmailAdapter(actual, confirm, newEmail, user)
+				new ChangeEmailUsecaseParams(actual, confirm, newEmail, user)
 			)
 			if (error) throw error
 
@@ -108,7 +112,7 @@ export class UserAuthController implements IAuthCtrl {
 			// Saving Changes
 			const changePass = new ChangePassUsecase(databaseServices)
 			const { data, error } = await changePass.execute(
-				new ChangePassAdapter(actual, confirm, newPass, user, hashedPass)
+				new ChangePassUsecaseParams(actual, confirm, newPass, user, hashedPass)
 			)
 
 			if (error) throw error

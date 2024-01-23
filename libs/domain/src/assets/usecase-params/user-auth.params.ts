@@ -1,6 +1,6 @@
 import { UserAuthID } from "Shared"
 
-export class LoginAdapter {
+export class LoginUsecaseParams {
 	email: string
 	password: string
 	encrypted?: string
@@ -12,7 +12,7 @@ export class LoginAdapter {
 	}
 }
 
-export class ChangeEmailAdapter {
+export class ChangeEmailUsecaseParams {
 	actual: string
 	confirm: string
 	newEmail: string
@@ -26,7 +26,7 @@ export class ChangeEmailAdapter {
 	}
 }
 
-export class ChangePassAdapter {
+export class ChangePassUsecaseParams {
 	actual: string
 	confirm: string
 	newPass: string

@@ -1,6 +1,5 @@
 import { ChangeEmailReplyDTO } from "Shared"
-import { UsecaseLayer, ServicesType } from "../../../assets"
-import { ChangeEmailAdapter } from "Shared"
+import { UsecaseLayer, ServicesType, ChangeEmailUsecaseParams } from "../../../assets"
 import { ErrorMsg, validators } from "Shared"
 
 export class ChangeEmailUsecase extends UsecaseLayer {
@@ -8,7 +7,7 @@ export class ChangeEmailUsecase extends UsecaseLayer {
 		super(services)
 	}
 
-	async execute(inputs: ChangeEmailAdapter): Promise<ChangeEmailReplyDTO> {
+	async execute(inputs: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
 		try {
 			const { actual, confirm, newEmail, id } = inputs
 

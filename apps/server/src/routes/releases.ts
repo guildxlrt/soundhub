@@ -7,7 +7,7 @@ const ctrl = controller.releases
 const endpts = apiUrlEndpt.releases
 
 router.post(endpts.create, authMiddleware, imageStorage, audioStorage, ctrl.create)
-router.put(endpts.modify, authMiddleware, imageStorage, ctrl.modify)
+router.put(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
 router.patch(endpts.hide, authMiddleware, ctrl.hide)
 router.get(endpts.oneByID + "id", ctrl.get)
 router.get(endpts.all, ctrl.getAll)

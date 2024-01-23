@@ -1,6 +1,6 @@
-import { ArtistID, EventID, FileType, IEvent } from "../utils"
+import { ArtistID, EventID, FileType, IEvent } from "Shared"
 
-export class NewEventAdapter {
+export class EventUsecaseParams {
 	data: IEvent
 	file?: FileType
 
@@ -10,17 +10,7 @@ export class NewEventAdapter {
 	}
 }
 
-export class ModifyEventAdapter {
-	event: IEvent
-	file?: FileType
-
-	constructor(event: IEvent, file?: FileType) {
-		this.event = event
-		this.file = file
-	}
-}
-
-export class DeleteEventAdapter {
+export class DeleteEventUsecaseParams {
 	id: EventID
 	ownerID: ArtistID | null
 
@@ -30,7 +20,7 @@ export class DeleteEventAdapter {
 	}
 }
 
-export class DateAdapter {
+export class DateUsecaseParams {
 	date: Date
 
 	constructor(date: Date) {
@@ -38,7 +28,7 @@ export class DateAdapter {
 	}
 }
 
-export class PlaceAdapter {
+export class PlaceUsecaseParams {
 	place: string
 
 	constructor(place: string) {

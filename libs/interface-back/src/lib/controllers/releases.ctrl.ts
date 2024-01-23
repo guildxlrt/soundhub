@@ -1,4 +1,4 @@
-import { IReleasesCtrl } from "../../assets"
+import { databaseServices } from "Infra-backend"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -6,9 +6,13 @@ import {
 	GetAllReleasesUsecase,
 	GetReleaseUsecase,
 	HideReleaseUsecase,
-	ModifyReleaseUsecase,
+	EditReleaseUsecase,
+	NewReleaseUsecaseParams,
+	EditReleaseUsecaseParams,
+	HideReleaseUsecaseParams,
+	IDUsecaseParams,
+	GenreUsecaseParams,
 } from "Domain"
-import { databaseServices } from "Infra-backend"
 import {
 	CreateReleaseReplyDTO,
 	CreateReleaseReqDTO,
@@ -19,17 +23,14 @@ import {
 	GenreType,
 	GetAllReleasesReplyDTO,
 	GetReleaseReplyDTO,
-	HideReleaseAdapter,
 	HideReleaseReplyDTO,
 	HideReleaseReqDTO,
 	IRelease,
-	ModifyReleaseAdapter,
-	ModifyReleaseReplyDTO,
-	ModifyReleaseReqDTO,
-	NewReleaseAdapter,
+	EditReleaseReplyDTO,
+	EditReleaseReqDTO,
 	apiErrorMsg,
 } from "Shared"
-import { ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IReleasesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
 
 export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -64,7 +65,7 @@ export class ReleasesController implements IReleasesCtrl {
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices)
 			const { data, error } = await createRelease.execute(
-				new NewReleaseAdapter(
+				new NewReleaseUsecaseParams(
 					{
 						data: releaseData,
 						cover: cover,
@@ -81,11 +82,11 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "DELETE") return res.status(405).send({ error: apiErrorMsg.e405 })
 
-			const inputs: ModifyReleaseReqDTO = req.body as ModifyReleaseReqDTO
+			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
 			const user = req.auth?.profileID as number
 			const cover: FileType = req.file as FileType
 
@@ -110,9 +111,9 @@ export class ReleasesController implements IReleasesCtrl {
 			})
 
 			// Saving Profile
-			const modifyRelease = new ModifyReleaseUsecase(databaseServices)
-			const { data, error } = await modifyRelease.execute(
-				new ModifyReleaseAdapter(
+			const editRelease = new EditReleaseUsecase(databaseServices)
+			const { data, error } = await editRelease.execute(
+				new EditReleaseUsecaseParams(
 					{
 						data: releaseData,
 						cover: cover,
@@ -123,7 +124,7 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(new ModifyReleaseReplyDTO(data))
+			return res.status(202).send(new EditReleaseReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -139,7 +140,7 @@ export class ReleasesController implements IReleasesCtrl {
 			// Saving Profile
 			const hideRelease = new HideReleaseUsecase(databaseServices)
 			const { data, error } = await hideRelease.execute(
-				new HideReleaseAdapter(id, isPublic, user)
+				new HideReleaseUsecaseParams(id, isPublic, user)
 			)
 			if (error) throw error
 
@@ -156,7 +157,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 			const id = Number(req.params["id"])
 			const getRelease = new GetReleaseUsecase(databaseServices)
-			const { data, error } = await getRelease.execute(id)
+			const { data, error } = await getRelease.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos
@@ -187,7 +188,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 			const id = Number(req.params["id"])
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices)
-			const { data, error } = await findReleasesByArtist.execute(id)
+			const { data, error } = await findReleasesByArtist.execute(new IDUsecaseParams(id))
 			if (error) throw error
 
 			// Return infos
@@ -201,9 +202,9 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: apiErrorMsg.e405 })
 
-			const id = req.params["genre"] as GenreType
+			const genre = req.params["genre"] as GenreType
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices)
-			const { data, error } = await findReleasesByGenre.execute(id)
+			const { data, error } = await findReleasesByGenre.execute(new GenreUsecaseParams(genre))
 			if (error) throw error
 
 			// Return infos
