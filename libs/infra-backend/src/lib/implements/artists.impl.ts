@@ -45,7 +45,7 @@ export class ArtistsImplement implements ArtistsRepository {
 							bio: bio,
 							members: members,
 							genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-							avatarUrl: store,
+							avatarPath: store,
 						},
 					},
 				},
@@ -109,7 +109,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					bio: bio,
 					members: members,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					avatarUrl: fileStore,
+					avatarPath: fileStore,
 				},
 			})
 
@@ -131,7 +131,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					bio: true,
 					members: true,
 					genres: true,
-					avatarUrl: true,
+					avatarPath: true,
 				},
 			})
 
@@ -142,7 +142,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				bio: null,
 				members: user?.members,
 				genres: [user?.genres[0], user?.genres[1], user?.genres[2]],
-				avatarUrl: null,
+				avatarPath: null,
 			})
 		} catch (error) {
 			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
@@ -163,7 +163,7 @@ export class ArtistsImplement implements ArtistsRepository {
 							bio: true,
 							members: true,
 							genres: true,
-							avatarUrl: true,
+							avatarPath: true,
 						},
 					},
 				},
@@ -180,7 +180,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					user?.artists[0].genres[1],
 					user?.artists[0].genres[2],
 				],
-				avatarUrl: null,
+				avatarPath: null,
 			})
 		} catch (error) {
 			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
@@ -195,7 +195,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					id: true,
 					name: true,
 					genres: true,
-					avatarUrl: true,
+					avatarPath: true,
 				},
 			})
 
@@ -205,7 +205,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					id: artist.id,
 					name: artist.name,
 					genres: [artist.genres[0], artist.genres[1], artist.genres[2]],
-					avatarUrl: null,
+					avatarPath: null,
 				}
 			})
 
@@ -226,7 +226,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					id: true,
 					name: true,
 					genres: true,
-					avatarUrl: true,
+					avatarPath: true,
 				},
 			})
 
@@ -235,7 +235,7 @@ export class ArtistsImplement implements ArtistsRepository {
 					id: artist.id,
 					name: artist.name,
 					genres: [artist.genres[0], artist.genres[1], artist.genres[2]],
-					avatarUrl: null,
+					avatarPath: null,
 				}
 			})
 

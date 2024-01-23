@@ -31,7 +31,7 @@ model Artist {
   bio       String?
   members   String[]
   genres    String[]
-  avatarUrl String?
+  avatarPath String?
 
   releases Release[]
   announce Announce[]
@@ -47,7 +47,7 @@ model Announce {
 
   title    String
   text     String
-  imageUrl String?
+  imagePath String?
 }
 
 model Event {
@@ -62,7 +62,7 @@ model Event {
   artists  Int[]
   title    String
   text     String
-  imageUrl String?
+  imagePath String?
 }
 
 model Release {

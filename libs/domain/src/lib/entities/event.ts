@@ -8,7 +8,7 @@ export class Event extends EntityLayer {
 	artists: ArtistID[]
 	title: string
 	text: string
-	imageUrl: string | null
+	imagePath: string | null
 
 	constructor(
 		id: EventID | null,
@@ -18,7 +18,7 @@ export class Event extends EntityLayer {
 		artists: ArtistID[],
 		title: string,
 		text: string,
-		imageUrl: string | null
+		imagePath: string | null
 	) {
 		super(id)
 
@@ -28,6 +28,6 @@ export class Event extends EntityLayer {
 		this.place = place
 		this.title = title
 		this.text = text
-		this.imageUrl = imageUrl
+		this.imagePath = imagePath
 	}
 }

@@ -26,7 +26,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					owner_id: owner_id as number,
 					title: title,
 					text: text,
-					imageUrl: fileStore,
+					imagePath: fileStore,
 				},
 			})
 
@@ -65,7 +65,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: {
 					title: title,
 					text: text,
-					imageUrl: fileStore,
+					imagePath: fileStore,
 				},
 			})
 
@@ -110,7 +110,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					owner_id: true,
 					title: true,
 					text: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -120,7 +120,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				owner_id: id,
 				title: announce?.title,
 				text: announce?.text,
-				imageUrl: announce?.imageUrl,
+				imagePath: announce?.imagePath,
 			})
 		} catch (error) {
 			return new Reply<IAnnounceSucc>(undefined, ErrorMsg.apiError(apiError[500]))
@@ -134,7 +134,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: true,
 					owner_id: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -144,7 +144,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: announce.id,
 					owner_id: announce.owner_id,
 					title: announce.title,
-					imageUrl: announce.imageUrl,
+					imagePath: announce.imagePath,
 				}
 			})
 
@@ -167,7 +167,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: true,
 					owner_id: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -177,7 +177,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 					id: announce.id,
 					owner_id: announce.owner_id,
 					title: announce.title,
-					imageUrl: announce.imageUrl,
+					imagePath: announce.imagePath,
 				}
 			})
 

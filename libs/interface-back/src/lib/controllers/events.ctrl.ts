@@ -51,7 +51,7 @@ export class EventsController implements IEventsCtrl {
 				artists: artists,
 				title: title,
 				text: text,
-				imageUrl: null,
+				imagePath: null,
 			}
 
 			// Saving Profile
@@ -86,7 +86,7 @@ export class EventsController implements IEventsCtrl {
 				artists: artists,
 				title: title,
 				text: text,
-				imageUrl: null,
+				imagePath: null,
 			}
 
 			// Saving Changes

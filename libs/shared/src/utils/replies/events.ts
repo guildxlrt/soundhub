@@ -9,7 +9,7 @@ export interface IEventSucc {
 	artists: ArtistID[] | undefined
 	title: string | undefined
 	text: string | undefined
-	imageUrl: string | null | undefined
+	imagePath: string | null | undefined
 }
 
 export type IEventsListSucc = Omit<IEventSucc, "text">[]

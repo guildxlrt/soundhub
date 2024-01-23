@@ -30,7 +30,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imageUrl: fileStore,
+					imagePath: fileStore,
 				},
 			})
 
@@ -74,7 +74,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imageUrl: fileStore,
+					imagePath: fileStore,
 				},
 			})
 
@@ -123,7 +123,7 @@ export class EventsImplement implements EventsRepository {
 					artists: true,
 					title: true,
 					text: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -136,7 +136,7 @@ export class EventsImplement implements EventsRepository {
 				artists: event?.artists,
 				title: event?.title,
 				text: event?.text,
-				imageUrl: event?.imageUrl,
+				imagePath: event?.imagePath,
 			})
 		} catch (error) {
 			return new Reply<IEventSucc>(undefined, ErrorMsg.apiError(apiError[500]))
@@ -153,7 +153,7 @@ export class EventsImplement implements EventsRepository {
 					place: true,
 					artists: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -166,7 +166,7 @@ export class EventsImplement implements EventsRepository {
 					place: event.place,
 					artists: event.artists,
 					title: event.title,
-					imageUrl: event.imageUrl,
+					imagePath: event.imagePath,
 				}
 			})
 
@@ -192,7 +192,7 @@ export class EventsImplement implements EventsRepository {
 					place: true,
 					artists: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -205,7 +205,7 @@ export class EventsImplement implements EventsRepository {
 					place: event.place,
 					artists: event.artists,
 					title: event.title,
-					imageUrl: event.imageUrl,
+					imagePath: event.imagePath,
 				}
 			})
 
@@ -228,7 +228,7 @@ export class EventsImplement implements EventsRepository {
 					place: true,
 					artists: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -241,7 +241,7 @@ export class EventsImplement implements EventsRepository {
 					place: event.place,
 					artists: event.artists,
 					title: event.title,
-					imageUrl: event.imageUrl,
+					imagePath: event.imagePath,
 				}
 			})
 
@@ -264,7 +264,7 @@ export class EventsImplement implements EventsRepository {
 					date: true,
 					artists: true,
 					title: true,
-					imageUrl: true,
+					imagePath: true,
 				},
 			})
 
@@ -277,7 +277,7 @@ export class EventsImplement implements EventsRepository {
 					place: place,
 					artists: event.artists,
 					title: event.title,
-					imageUrl: event.imageUrl,
+					imagePath: event.imagePath,
 				}
 			})
 

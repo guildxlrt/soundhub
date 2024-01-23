@@ -12,7 +12,7 @@ export type IArtistInfoSucc = null | {
 	bio: string | null
 	members: string[] | undefined
 	genres: [string | undefined, string | undefined, string | undefined]
-	avatarUrl: string | null
+	avatarPath: string | null
 }
 
 export type IArtistsListSucc = Omit<IArtistInfoSucc, "bio" | "members">[]

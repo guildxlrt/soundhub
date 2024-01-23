@@ -9,7 +9,7 @@ export interface IEvent {
 	artists: number[]
 	title: string
 	text: string
-	imageUrl: string | null
+	imagePath: string | null
 }
 
 export interface IAnnounce {
@@ -17,7 +17,7 @@ export interface IAnnounce {
 	owner_id: ArtistID | null
 	title: string
 	text: string
-	imageUrl: string | null
+	imagePath: string | null
 }
 
 export interface IRelease {

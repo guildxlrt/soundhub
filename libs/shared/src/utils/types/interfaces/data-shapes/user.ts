@@ -7,7 +7,7 @@ export interface IArtist {
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatarUrl: string | null
+	avatarPath: string | null
 }
 
 export interface IProfile {

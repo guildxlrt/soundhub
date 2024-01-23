@@ -41,7 +41,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 				owner_id: owner,
 				title: title,
 				text: text,
-				imageUrl: null,
+				imagePath: null,
 			}
 
 			// Saving Profile
@@ -73,7 +73,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 				owner_id: owner,
 				title: title,
 				text: text,
-				imageUrl: null,
+				imagePath: null,
 			}
 
 			// Saving Profile

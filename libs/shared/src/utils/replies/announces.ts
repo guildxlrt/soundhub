@@ -6,7 +6,7 @@ export interface IAnnounceSucc {
 	owner_id: ArtistID
 	title: string | undefined
 	text: string | undefined
-	imageUrl: string | null | undefined
+	imagePath: string | null | undefined
 }
 
 export type IAnnouncesListSucc = Omit<IAnnounceSucc, "text" | "videoUrl">[]

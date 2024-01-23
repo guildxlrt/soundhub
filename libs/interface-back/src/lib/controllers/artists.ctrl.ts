@@ -50,7 +50,7 @@ export class ArtistsController implements IArtistCtrl {
 				bio: bio,
 				members: members,
 				genres: genres,
-				avatarUrl: null,
+				avatarPath: null,
 			}
 			const userAuth: IUserAuth = { email: email, password: password }
 
@@ -95,7 +95,7 @@ export class ArtistsController implements IArtistCtrl {
 				bio: bio,
 				members: members,
 				genres: genres,
-				avatarUrl: null,
+				avatarPath: null,
 			}
 
 			// Saving Changes

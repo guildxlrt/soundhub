@@ -7,7 +7,7 @@ export class Artist extends EntityLayer {
 	bio: string
 	members: string[]
 	genres: GenresArray
-	avatarUrl: string | null
+	avatarPath: string | null
 
 	constructor(
 		id: ArtistID | null,
@@ -16,7 +16,7 @@ export class Artist extends EntityLayer {
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarUrl: string | null
+		avatarPath: string | null
 	) {
 		super(id)
 
@@ -27,6 +27,6 @@ export class Artist extends EntityLayer {
 		members !== null && members.length >= 1 ? (this.members = members) : (this.members = [])
 
 		this.genres = genres
-		this.avatarUrl = avatarUrl
+		this.avatarPath = avatarPath
 	}
 }
