@@ -1,4 +1,4 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiReply, databaseServices } from "Infra-backend"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecaseParams,
@@ -11,6 +11,7 @@ import {
 	EditEventUsecase,
 	EventUsecaseParams,
 	IDUsecaseParams,
+	Event,
 } from "Domain"
 import {
 	CreateEventReplyDTO,
@@ -24,13 +25,12 @@ import {
 	FindEventsByPlaceReqDTO,
 	GetAllEventsReplyDTO,
 	GetEventReplyDTO,
-	IEvent,
 	EditEventReplyDTO,
 	EditEventReqDTO,
 	apiError,
 } from "Shared"
-import { IEventsCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
-// return ApiErrHandler.reply
+import { IEventsCtrl } from "../../assets"
+
 export class EventsController implements IEventsCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
@@ -43,16 +43,7 @@ export class EventsController implements IEventsCtrl {
 			// Operators
 			// ... doing some heathcheck
 
-			const event: IEvent = {
-				id: undefined,
-				owner_id: owner as number,
-				date: date,
-				place: place,
-				artists: artists,
-				title: title,
-				text: text,
-				imagePath: null,
-			}
+			const event = new Event(null, owner as number, date, place, artists, title, text, null)
 
 			// Saving Profile
 			const createEvent = new CreateEventUsecase(databaseServices, true)
@@ -72,22 +63,22 @@ export class EventsController implements IEventsCtrl {
 
 			const owner = req.auth?.profileID as number
 			const file: FileType = req.file as FileType
-			const { artists, date, place, text, title }: EditEventReqDTO =
+			const { artists, date, place, text, title, id, imagePath }: EditEventReqDTO =
 				req.body as EditEventReqDTO
 
 			// Operators
 			// ... doing some heathcheck
 
-			const event: IEvent = {
-				id: undefined,
-				owner_id: owner,
-				date: date,
-				place: place,
-				artists: artists,
-				title: title,
-				text: text,
-				imagePath: null,
-			}
+			const event = new Event(
+				id,
+				owner as number,
+				date,
+				place,
+				artists,
+				title,
+				text,
+				imagePath
+			)
 
 			// Saving Changes
 			const EditEvent = new EditEventUsecase(databaseServices, true)

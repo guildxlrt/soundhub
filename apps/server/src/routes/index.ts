@@ -1,4 +1,5 @@
 import * as express from "express"
+import { authMiddleware, imageStorage } from "Infra-backend"
 import authRoutes from "./auth"
 import artistsRoutes from "./artists"
 import releasesRoutes from "./releases"

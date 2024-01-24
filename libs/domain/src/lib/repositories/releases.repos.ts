@@ -16,10 +16,7 @@ export interface ReleasesRepository {
 		release: { data: Release; cover: FileType },
 		songs: { data: Song; audio: FileType }[]
 	): Promise<ReplyLayer<INewReleaseSucc>>
-	edit(
-		release: { data: Release; cover?: FileType },
-		songs: Song[]
-	): Promise<ReplyLayer<boolean>>
+	edit(release: { data: Release; cover?: FileType }, songs: Song[]): Promise<ReplyLayer<boolean>>
 	hide(id: ReleaseID, isPublic: boolean, userAuth?: UserAuthID): Promise<ReplyLayer<boolean>>
 	get(data: ReleaseID): Promise<ReplyLayer<IReleaseSucc>>
 	getAll(): Promise<ReplyLayer<IReleasesListSucc>>

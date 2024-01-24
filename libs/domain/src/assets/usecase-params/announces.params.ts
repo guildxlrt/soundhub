@@ -1,10 +1,11 @@
-import { AnnounceID, ArtistID, FileType, IAnnounce } from "Shared"
+import { AnnounceID, ArtistID, FileType } from "Shared"
+import { Announce } from "../../lib"
 
 export class AnnounceUsecaseParams {
-	data: IAnnounce
+	data: Announce
 	file?: FileType
 
-	constructor(data: IAnnounce, file?: FileType) {
+	constructor(data: Announce, file?: FileType) {
 		this.data = data
 		this.file = file
 	}

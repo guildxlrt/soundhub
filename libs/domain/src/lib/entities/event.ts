@@ -8,7 +8,7 @@ export class Event extends EntityLayer {
 	artists: ArtistID[]
 	title: string
 	text: string
-	imagePath: string | null
+	readonly imagePath: string | null
 
 	constructor(
 		id: EventID | null,

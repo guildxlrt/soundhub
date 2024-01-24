@@ -3,7 +3,8 @@ import { FindReleasesByGenreReplyDTO, ErrorMsg } from "Shared"
 import { GenreType } from "Shared"
 
 export class FindReleasesByGenreUsecase extends UsecaseLayer {
-	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: { genre: GenreType }): Promise<FindReleasesByGenreReplyDTO> {

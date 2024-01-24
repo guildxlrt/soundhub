@@ -5,7 +5,7 @@ export class Announce extends EntityLayer {
 	readonly owner_id: ArtistID
 	title: string
 	text: string
-	imagePath: string | null
+	readonly imagePath: string | null
 
 	constructor(
 		id: AnnounceID | null,

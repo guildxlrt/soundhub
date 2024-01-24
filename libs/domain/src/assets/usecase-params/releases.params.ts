@@ -1,23 +1,24 @@
-import { ArtistID, FileType, IRelease, ReleaseID } from "Shared"
+import { ArtistID, FileType, ReleaseID } from "Shared"
+import { Release, Song } from "../../lib"
 
 export class NewReleaseUsecaseParams {
 	release: {
-		data: Omit<IRelease, "id" | "coverUrl">
+		data: Release
 		cover: FileType
 	}
 	songs: {
-		data: { title: string; featuring: number[]; lyrics: string | null }
-		audioFile: FileType
+		data: Song
+		audio: FileType
 	}[]
 
 	constructor(
 		release: {
-			data: Omit<IRelease, "id" | "coverUrl">
+			data: Release
 			cover: FileType
 		},
 		songs: {
-			data: { title: string; featuring: number[]; lyrics: string | null }
-			audioFile: FileType
+			data: Song
+			audio: FileType
 		}[]
 	) {
 		this.release = release
@@ -27,25 +28,17 @@ export class NewReleaseUsecaseParams {
 
 export class EditReleaseUsecaseParams {
 	release: {
-		data: Omit<IRelease, "id" | "coverUrl">
-		cover: FileType
+		data: Release
+		cover?: FileType
 	}
-	songs: {
-		title: string
-		featuring: ArtistID[]
-		lyrics: string | null
-	}[]
+	songs: Song[]
 
 	constructor(
 		release: {
-			data: Omit<IRelease, "id" | "coverUrl">
+			data: Release
 			cover: FileType
 		},
-		songs: {
-			title: string
-			featuring: ArtistID[]
-			lyrics: string | null
-		}[]
+		songs: Song[]
 	) {
 		this.release = release
 		this.songs = songs

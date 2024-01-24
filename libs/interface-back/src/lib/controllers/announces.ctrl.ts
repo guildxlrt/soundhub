@@ -1,4 +1,4 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiReply, databaseServices } from "Infra-backend"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -9,6 +9,7 @@ import {
 	DeleteAnnounceUsecaseParams,
 	AnnounceUsecaseParams,
 	IDUsecaseParams,
+	Announce,
 } from "Domain"
 import {
 	CreateAnnounceReplyDTO,
@@ -18,12 +19,11 @@ import {
 	FindAnnouncesByArtistReplyDTO,
 	GetAllAnnouncesReplyDTO,
 	GetAnnounceReplyDTO,
-	IAnnounce,
 	EditAnnounceReplyDTO,
 	EditAnnounceReqDTO,
 	apiError,
 } from "Shared"
-import { IAnnoncesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IAnnoncesCtrl } from "../../assets"
 
 export class AnnoncesController implements IAnnoncesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -37,12 +37,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			// Operators
 			// ... doing some heathcheck
 
-			const announce: IAnnounce = {
-				owner_id: owner,
-				title: title,
-				text: text,
-				imagePath: null,
-			}
+			const announce = new Announce(null, owner, title, text, null)
 
 			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(databaseServices, true)
@@ -65,16 +60,11 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const file: FileType = req.file as FileType
 			const owner = req.auth?.profileID as number
 
-			const { text, title } = req.body as EditAnnounceReqDTO
+			const { text, title, id, imagePath } = req.body as EditAnnounceReqDTO
 			// Operators
 			// ... doing some heathcheck
 
-			const announce: IAnnounce = {
-				owner_id: owner,
-				title: title,
-				text: text,
-				imagePath: null,
-			}
+			const announce = new Announce(id, owner, title, text, imagePath)
 
 			// Saving Profile
 			const EditAnnounce = new EditAnnounceUsecase(databaseServices, true)

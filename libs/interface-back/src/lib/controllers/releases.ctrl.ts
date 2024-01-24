@@ -1,4 +1,4 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiReply, databaseServices } from "Infra-backend"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -12,6 +12,8 @@ import {
 	HideReleaseUsecaseParams,
 	IDUsecaseParams,
 	GenreUsecaseParams,
+	Release,
+	Song,
 } from "Domain"
 import {
 	CreateReleaseReplyDTO,
@@ -25,12 +27,12 @@ import {
 	GetReleaseReplyDTO,
 	HideReleaseReplyDTO,
 	HideReleaseReqDTO,
-	IRelease,
 	EditReleaseReplyDTO,
 	EditReleaseReqDTO,
 	apiError,
+	formatters,
 } from "Shared"
-import { IReleasesCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IReleasesCtrl } from "../../assets"
 
 export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -44,23 +46,29 @@ export class ReleasesController implements IReleasesCtrl {
 
 			const { title, releaseType, price, descript, genres } = inputs.release
 
-			const releaseData: IRelease = {
-				owner_id: user,
-				title: title,
-				releaseType: releaseType,
-				descript: descript,
-				price: price,
-				genres: genres,
-				coverUrl: null,
-			}
+			const releaseData = new Release(
+				null,
+				user,
+				title,
+				releaseType,
+				descript,
+				price,
+				genres,
+				null
+			)
 
 			const songsData = inputs.songs
 			const songs = songsData.map((song, index) => {
 				return {
-					data: { title: song.title, featuring: song.featuring, lyrics: song.lyrics },
-					audioFile: audioFiles[index],
+					data: new Song(null, null, null, song.title, song.featuring, song.lyrics),
+					audio: audioFiles[index],
 				}
 			})
+
+			// Operators
+			// genres
+			const cleanGenres = formatters.genres(genres, true)
+			releaseData.setGenres(cleanGenres)
 
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices, true)
@@ -91,25 +99,27 @@ export class ReleasesController implements IReleasesCtrl {
 			const user = req.auth?.profileID as number
 			const cover: FileType = req.file as FileType
 
-			const { title, releaseType, price, descript, genres } = inputs.release
-			const releaseData: IRelease = {
-				owner_id: user,
-				title: title,
-				releaseType: releaseType,
-				descript: descript,
-				price: price,
-				genres: genres,
-				coverUrl: null,
-			}
+			const { title, releaseType, price, descript, genres, id, coverUrl } = inputs.release
+			const releaseData = new Release(
+				id,
+				user,
+				title,
+				releaseType,
+				descript,
+				price,
+				genres,
+				coverUrl
+			)
 
 			const songsData = inputs.songs
 			const songs = songsData.map((song) => {
-				return {
-					title: song.title,
-					featuring: song.featuring,
-					lyrics: song.lyrics,
-				}
+				return new Song(song.id, id, null, song.title, song.featuring, song.lyrics)
 			})
+
+			// Operators
+			// genres
+			const cleanGenres = formatters.genres(genres, true)
+			releaseData.setGenres(cleanGenres)
 
 			// Saving Profile
 			const editRelease = new EditReleaseUsecase(databaseServices, true)

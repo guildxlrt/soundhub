@@ -1,4 +1,4 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiReply, databaseServices } from "Infra-backend"
 import {
 	CreateArtistReplyDTO,
 	CreateArtistReqDTO,
@@ -8,13 +8,13 @@ import {
 	GetArtistByEmailReplyDTO,
 	GetArtistByEmailReqDTO,
 	GetArtistByIDReplyDTO,
-	IArtist,
-	IUserAuth,
 	UpdateArtistReplyDTO,
 	UpdateArtistReqDTO,
-	PassEncryptor,
 	FileType,
 	apiError,
+	Cookie,
+	validators,
+	formatters,
 } from "Shared"
 import {
 	UpdateArtistUsecaseParams,
@@ -27,8 +27,10 @@ import {
 	UpdateArtistUsecase,
 	IDUsecaseParams,
 	GenreUsecaseParams,
+	Artist,
+	UserAuth,
 } from "Domain"
-import { IArtistCtrl, Token, authExpires, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { IArtistCtrl } from "../../assets"
 
 export class ArtistsController implements IArtistCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -38,42 +40,43 @@ export class ArtistsController implements IArtistCtrl {
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
 			const file: FileType = req.file as FileType
 
-			// HashPass
-			const { password, email } = auth
-			const hashedPass = await PassEncryptor.hash(password)
-
 			// Data
+			const { password, email } = auth
+			const { confirmEmail, confirmPass } = authConfirm
 			const { bio, genres, members, name } = profile
-			const artistProfile: IArtist = {
-				user_auth_id: null,
-				name: name,
-				bio: bio,
-				members: members,
-				genres: genres,
-				avatarPath: null,
-			}
-			const userAuth: IUserAuth = { email: email, password: password }
+			const artistProfile = new Artist(null, null, name, bio, members, genres, null)
+
+			const userAuth = new UserAuth(null, email, password)
+
+			// SANITIZE
+			// auths
+			validators.signupAuths(
+				{
+					email: email,
+					password: password,
+					confirmEmail: confirmEmail,
+					confirmPass: confirmPass,
+				},
+				true
+			)
+			// genres
+			const cleanGenres = formatters.genres(genres, true)
+			artistProfile.setGenres(cleanGenres)
+
+			// others data checking
+			// ... ( name)
 
 			// Saving Profile
 			const createArtist = new CreateArtistUsecase(databaseServices, true)
 			const { data, error } = await createArtist.execute(
-				new NewArtistUsecaseParams(artistProfile, userAuth, authConfirm, hashedPass, file)
+				new NewArtistUsecaseParams(artistProfile, userAuth, authConfirm, file)
 			)
 			if (error) throw error
 
 			// Return infos
-			const expires = authExpires.oneYear
-			const userCookie = data?.userCookie
-
-			const token = Token.generate(userCookie, expires)
-
+			const cookie = data as Cookie
 			return res
-				.cookie("jwt", token, {
-					maxAge: expires,
-					httpOnly: true,
-					sameSite: "lax",
-					secure: false,
-				})
+				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
 				.send(new CreateArtistReplyDTO(data))
 		} catch (error) {
@@ -86,22 +89,27 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
 
 			const user = req.auth?.profileID as number
-			const { bio, genres, members, name } = req.body as UpdateArtistReqDTO
+			const { bio, genres, members, name, id, avatarPath, avatarDel } =
+				req.body as UpdateArtistReqDTO
 			const file: FileType = req.file as FileType
 
-			const artistProfile: IArtist = {
-				user_auth_id: user,
-				name: name,
-				bio: bio,
-				members: members,
-				genres: genres,
-				avatarPath: null,
-			}
+			const artistProfile = new Artist(id, user, name, bio, members, genres, avatarPath)
+
+			// SANITIZE
+			// genres
+			// genres
+			const cleanGenres = formatters.genres(genres, true)
+			artistProfile.setGenres(cleanGenres)
+			// others data checking
+			// ... ( name)
 
 			// Saving Changes
 			const editArtist = new UpdateArtistUsecase(databaseServices, true)
 			const { data, error } = await editArtist.execute(
-				new UpdateArtistUsecaseParams(artistProfile, file)
+				new UpdateArtistUsecaseParams(
+					{ profile: artistProfile, avatarDel: avatarDel },
+					file
+				)
 			)
 			if (error) throw error
 

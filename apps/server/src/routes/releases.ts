@@ -1,5 +1,6 @@
 import { Router } from "express"
-import { authMiddleware, controller, audioStorage, imageStorage } from "Interface-back"
+import { audioStorage, authMiddleware, imageStorage } from "Infra-backend"
+import { controller } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()

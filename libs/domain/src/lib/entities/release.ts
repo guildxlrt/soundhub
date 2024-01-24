@@ -30,4 +30,8 @@ export class Release extends EntityLayer {
 		this.genres = genres
 		this.coverUrl = coverUrl
 	}
+
+	setGenres(genres: GenresArray | string[]) {
+		this.genres = genres as GenresArray
+	}
 }

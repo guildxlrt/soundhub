@@ -2,31 +2,44 @@ import {
 	ArtistID,
 	GenresArray,
 	INewReleaseSucc,
-	IRelease,
 	IReleaseSucc,
 	IReleasesListSucc,
-	ISong,
 	ReleaseID,
-	ReleasePrice,
 	ReleaseType,
 } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
-interface INewReleaseData {
-	owner_id: ArtistID
-	title: string
-	releaseType: ReleaseType
-	descript: string | null
-	price: ReleasePrice | null
-	genres: GenresArray
-}
-
 // CREATE RELEASE
 export class CreateReleaseReqDTO {
-	release: IRelease
-	songs: ISong[]
+	readonly release: {
+		readonly owner_id: ArtistID
+		readonly title: string
+		readonly releaseType: ReleaseType
+		readonly descript: string | null
+		readonly price: null | number
+		readonly genres: GenresArray
+	}
+	readonly songs: {
+		readonly title: string
+		readonly featuring: number[]
+		readonly lyrics: string | null
+	}[]
 
-	constructor(release: IRelease, songs: ISong[]) {
+	constructor(
+		release: {
+			owner_id: ArtistID
+			title: string
+			releaseType: ReleaseType
+			descript: string | null
+			price: null | number
+			genres: GenresArray
+		},
+		songs: {
+			title: string
+			featuring: number[]
+			lyrics: string | null
+		}[]
+	) {
 		this.release = release
 		this.songs = songs
 	}
@@ -36,10 +49,43 @@ export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 
 // MODIFY
 export class EditReleaseReqDTO {
-	release: INewReleaseData
-	songs: ISong[]
+	readonly release: {
+		readonly id: ReleaseID
+		readonly owner_id: ArtistID
+		readonly title: string
+		readonly releaseType: ReleaseType
+		readonly descript: string | null
+		readonly price: null | number
+		readonly genres: GenresArray
+		readonly coverUrl: string | null
+	}
+	readonly songs: {
+		readonly id: number
+		readonly release_id: ReleaseID
+		readonly title: string
+		readonly featuring: number[]
+		readonly lyrics: string | null
+	}[]
 
-	constructor(release: INewReleaseData, songs: ISong[]) {
+	constructor(
+		release: {
+			id: ReleaseID
+			owner_id: ArtistID
+			title: string
+			releaseType: ReleaseType
+			descript: string | null
+			price: null | number
+			genres: GenresArray
+			coverUrl: string | null
+		},
+		songs: {
+			id: number
+			release_id: ReleaseID
+			title: string
+			featuring: number[]
+			lyrics: string | null
+		}[]
+	) {
 		this.release = release
 		this.songs = songs
 	}
@@ -48,8 +94,8 @@ export class EditReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // HIDE
 export class HideReleaseReqDTO {
-	id: ReleaseID
-	isPublic: boolean
+	readonly id: ReleaseID
+	readonly isPublic: boolean
 
 	constructor(id: ReleaseID, isPublic: boolean) {
 		this.id = id

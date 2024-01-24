@@ -5,50 +5,60 @@ import {
 	IArtistsListSucc,
 	GenresArray,
 	UserEmail,
-	INewArtistSucc,
-	IProfile,
-	IUserAuth,
-	IAuthConfirm,
+	UserPassword,
+	Cookie,
 } from "../utils"
 import { ReplyDTO } from "./layers"
 
 // CREATE ARTIST
 export class CreateArtistReqDTO {
-	profile: IProfile
-	auth: IUserAuth
-	authConfirm: IAuthConfirm
+	readonly profile: {
+		readonly name: string
+		readonly bio: string
+		readonly members: string[]
+		readonly genres: GenresArray
+	}
+	readonly auth: { readonly email: UserEmail; readonly password: UserPassword }
+	readonly authConfirm: { readonly confirmEmail: UserEmail; readonly confirmPass: UserPassword }
 
-	constructor(profile: IProfile, auth: IUserAuth, authConfirm: IAuthConfirm) {
+	constructor(
+		profile: { name: string; bio: string; members: string[]; genres: GenresArray },
+		auth: { email: UserEmail; password: UserPassword },
+		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
+	) {
 		this.profile = profile
 		this.auth = auth
 		this.authConfirm = authConfirm
 	}
 }
-export class CreateArtistReplyDTO extends ReplyDTO<INewArtistSucc> {}
+export class CreateArtistReplyDTO extends ReplyDTO<Cookie> {}
 
 // MODIFY ARTIST //
 export class UpdateArtistReqDTO {
-	id: ArtistID | undefined
-	name: string
-	bio: string
-	members: string[]
-	genres: GenresArray
-	avatar: boolean | null // true = add, null = no changes, false = remove
+	readonly id: ArtistID
+	readonly name: string
+	readonly bio: string
+	readonly members: string[]
+	readonly genres: GenresArray
+	readonly avatarPath: string
+	readonly avatarDel: boolean
 
 	constructor(
-		id: ArtistID | undefined,
+		id: ArtistID,
 		name: string,
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatar: boolean | null // true = add, null = no changes, false = remove
+		avatarPath: string,
+		avatarDel: boolean
 	) {
 		this.id = id
 		this.name = name
 		this.bio = bio
 		this.members = members
 		this.genres = genres
-		this.avatar = avatar
+		this.avatarPath = avatarPath
+		this.avatarDel = avatarDel
 	}
 }
 export class UpdateArtistReplyDTO extends ReplyDTO<boolean> {}
@@ -59,7 +69,7 @@ export class GetArtistByIDReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
 
 // ARTIST BY EMAIL
 export class GetArtistByEmailReqDTO {
-	email: UserEmail
+	readonly email: UserEmail
 
 	constructor(email: UserEmail) {
 		this.email = email

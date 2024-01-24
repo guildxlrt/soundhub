@@ -1,10 +1,11 @@
-import { ArtistID, EventID, FileType, IEvent } from "Shared"
+import { ArtistID, EventID, FileType } from "Shared"
+import { Event } from "../../lib"
 
 export class EventUsecaseParams {
-	data: IEvent
+	data: Event
 	file?: FileType
 
-	constructor(data: IEvent, file?: FileType) {
+	constructor(data: Event, file?: FileType) {
 		this.data = data
 		this.file = file
 	}

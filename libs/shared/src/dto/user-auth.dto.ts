@@ -1,4 +1,4 @@
-import { UserCookie, UserEmail, UserPassword } from "../utils"
+import { UserTokenData, UserEmail, UserPassword } from "../utils"
 import { ReplyDTO } from "./layers/reply"
 
 // LOGIN
@@ -11,7 +11,7 @@ export class LoginReqDTO {
 		this.password = password
 	}
 }
-export class LoginReplyDTO extends ReplyDTO<UserCookie> {}
+export class LoginReplyDTO extends ReplyDTO<UserTokenData> {}
 
 // LOGOUT
 export class LogoutReplyDTO extends ReplyDTO<void> {}

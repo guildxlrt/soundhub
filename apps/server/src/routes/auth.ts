@@ -1,5 +1,6 @@
 import { Router } from "express"
-import { controller, authMiddleware } from "Interface-back"
+import { authMiddleware } from "Infra-backend"
+import { controller } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()

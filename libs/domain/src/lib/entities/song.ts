@@ -3,7 +3,7 @@ import { EntityLayer } from "./layers"
 
 export class Song extends EntityLayer {
 	readonly release_id: ReleaseID | null
-	readonly audioUrl: string
+	readonly audioUrl: string | null
 	readonly title: string
 	readonly featuring: ArtistID[]
 	lyrics: string | null
@@ -11,7 +11,7 @@ export class Song extends EntityLayer {
 	constructor(
 		id: SongID | null,
 		release_id: ReleaseID | null,
-		audioUrl: string,
+		audioUrl: string | null,
 		title: string,
 		featuring: ArtistID[],
 		lyrics: string | null

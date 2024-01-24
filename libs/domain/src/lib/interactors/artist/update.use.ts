@@ -1,4 +1,4 @@
-import { UpdateArtistReplyDTO, formatters } from "Shared"
+import { UpdateArtistReplyDTO } from "Shared"
 import { UsecaseLayer, ServicesType, UpdateArtistUsecaseParams } from "../../../assets"
 import { ErrorMsg } from "Shared"
 import { Artist } from "../../entities"
@@ -10,13 +10,7 @@ export class UpdateArtistUsecase extends UsecaseLayer {
 
 	async execute(inputs: UpdateArtistUsecaseParams): Promise<UpdateArtistReplyDTO> {
 		try {
-			const { genres, name, bio, members, user_auth_id } = inputs.profile
-
-			// SANITIZE
-			// genres
-			const cleanGenres = formatters.genres(genres, this.backend)
-			// others data checking
-			// ... ( name)
+			const { genres, name, bio, members, user_auth_id } = inputs.data.profile
 
 			// Saving
 			const userData = new Artist(
@@ -25,7 +19,7 @@ export class UpdateArtistUsecase extends UsecaseLayer {
 				name,
 				bio,
 				members,
-				cleanGenres,
+				genres,
 				null
 			)
 

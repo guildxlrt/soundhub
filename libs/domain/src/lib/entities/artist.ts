@@ -29,4 +29,8 @@ export class Artist extends EntityLayer {
 		this.genres = genres
 		this.avatarPath = avatarPath
 	}
+
+	setGenres(genres: GenresArray | string[]) {
+		this.genres = genres as GenresArray
+	}
 }

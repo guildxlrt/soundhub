@@ -1,7 +1,7 @@
-import { ILoginRes, ReplyLayer, UserAuthID } from "Shared"
+import { Cookie, ReplyLayer, UserAuthID } from "Shared"
 
 export interface UserAuthsRepository {
-	login(email: string, password: string): Promise<ReplyLayer<ILoginRes>>
+	login(email: string, password: string): Promise<ReplyLayer<Cookie>>
 	logout(): Promise<ReplyLayer<void>>
 	changeEmail(
 		data: { actual: string; newEmail: string; confirm?: string },

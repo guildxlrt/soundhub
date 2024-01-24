@@ -2,7 +2,8 @@ import { UsecaseLayer, ServicesType, HideReleaseUsecaseParams } from "../../../a
 import { HideReleaseReplyDTO, ErrorMsg } from "Shared"
 
 export class HideReleaseUsecase extends UsecaseLayer {
-	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: HideReleaseUsecaseParams): Promise<HideReleaseReplyDTO> {

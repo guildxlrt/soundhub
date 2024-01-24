@@ -9,7 +9,7 @@ export class ChangePassUsecase extends UsecaseLayer {
 
 	async execute(inputs: ChangePassUsecaseParams): Promise<ChangePassReplyDTO> {
 		try {
-			const { actual, confirm, newPass, hashedPass, id } = inputs
+			const { actual, confirm, newPass, id } = inputs
 
 			// Operators
 			validators.changePass(
@@ -24,8 +24,7 @@ export class ChangePassUsecase extends UsecaseLayer {
 			// return
 			return await this.services.userAuths.changePass(
 				{ actual: actual, newPass: newPass },
-				id,
-				hashedPass
+				id
 			)
 		} catch (error) {
 			return new ChangePassReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))

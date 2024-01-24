@@ -1,7 +1,7 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiReply, ApiRequest, databaseServices } from "Infra-backend"
 import { GetSongReplyDTO, apiError } from "Shared"
 import { GetSongUsecase, IDUsecaseParams } from "Domain"
-import { ISongsCtrl, ApiErrHandler, ApiRequest, ApiReply } from "../../assets"
+import { ISongsCtrl } from "../../assets"
 
 export class SongsController implements ISongsCtrl {
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {

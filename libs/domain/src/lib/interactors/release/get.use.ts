@@ -2,7 +2,8 @@ import { UsecaseLayer, ServicesType, IDUsecaseParams } from "../../../assets"
 import { GetReleaseReplyDTO, ErrorMsg } from "Shared"
 
 export class GetReleaseUsecase extends UsecaseLayer {
-	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: IDUsecaseParams): Promise<GetReleaseReplyDTO> {

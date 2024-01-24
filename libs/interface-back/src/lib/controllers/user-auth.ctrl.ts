@@ -11,17 +11,15 @@ import {
 	ChangeEmailReplyDTO,
 	ChangeEmailReqDTO,
 	ChangePassReqDTO,
+	Cookie,
+	CreateArtistReplyDTO,
 	ErrorMsg,
-	ILoginDbRes,
-	LoginReplyDTO,
 	LoginReqDTO,
 	LogoutReplyDTO,
-	UserCookie,
-	UserProfileEnum,
-	PassEncryptor,
 	apiError,
 } from "Shared"
-import { ApiRequest, ApiReply, ApiErrHandler, IAuthCtrl, Token, authExpires } from "../../assets"
+import { IAuthCtrl } from "../../assets"
+import { ApiErrHandler, ApiRequest, ApiReply } from "Infra-backend"
 
 export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
@@ -34,28 +32,12 @@ export class UserAuthController implements IAuthCtrl {
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
-			const { encryptedPass, id, profileID } = data as ILoginDbRes
-
-			// VERIFICATIONS
-			// password
-			const { password } = inputs
-			const compare = await PassEncryptor.compare(password, encryptedPass as string)
-			if (compare !== true) throw ErrorMsg.apiError(apiError[401])
-
 			// Return infos
-			const expires = authExpires.oneYear
-			const userCookie = new UserCookie(id, profileID, UserProfileEnum.artist)
-			const token = Token.generate(userCookie, expires)
-
+			const cookie = data as Cookie
 			return res
-				.cookie("jwt", token, {
-					maxAge: expires,
-					httpOnly: true,
-					sameSite: "lax",
-					secure: false,
-				})
+				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
-				.send(new LoginReplyDTO(userCookie))
+				.send(new CreateArtistReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}
@@ -107,13 +89,10 @@ export class UserAuthController implements IAuthCtrl {
 			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
 			const user = req.auth?.id
 
-			// HashPass
-			const hashedPass = await PassEncryptor.hash(newPass)
-
 			// Saving Changes
 			const changePass = new ChangePassUsecase(databaseServices, true)
 			const { data, error } = await changePass.execute(
-				new ChangePassUsecaseParams(actual, confirm, newPass, user, hashedPass)
+				new ChangePassUsecaseParams(actual, confirm, newPass, user)
 			)
 
 			if (error) throw error

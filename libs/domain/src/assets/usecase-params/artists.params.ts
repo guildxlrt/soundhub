@@ -1,33 +1,31 @@
-import { FileType, IArtist, IUserAuth, UserEmail, UserPassword } from "Shared"
+import { FileType, UserEmail, UserPassword } from "Shared"
+import { Artist, UserAuth } from "../../lib"
 
 export class NewArtistUsecaseParams {
-	profile: IArtist
-	auth: IUserAuth
+	profile: Artist
+	auth: UserAuth
 	authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
-	hashedPass?: string
 	file?: FileType
 
 	constructor(
-		profile: IArtist,
-		auth: IUserAuth,
+		profile: Artist,
+		auth: UserAuth,
 		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword },
-		hashedPass?: string,
 		file?: FileType
 	) {
 		this.profile = profile
 		this.auth = auth
 		this.authConfirm = authConfirm
-		this.hashedPass = hashedPass
 		this.file = file
 	}
 }
 
 export class UpdateArtistUsecaseParams {
-	profile: IArtist
+	data: { profile: Artist; avatarDel: boolean }
 	file?: FileType
 
-	constructor(profile: IArtist, file?: FileType) {
-		this.profile = profile
+	constructor(data: { profile: Artist; avatarDel: boolean }, file?: FileType) {
+		this.data = data
 		this.file = file
 	}
 }

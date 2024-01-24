@@ -9,32 +9,10 @@ export class EditReleaseUsecase extends UsecaseLayer {
 
 	async execute(inputs: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
 		try {
-			const { songs } = inputs
-			const { cover, data } = inputs.release
-			const { owner_id, title, releaseType, descript, price, genres } = data
+			const { songs, release } = inputs
+			const { cover, data } = release
 
-			// Operators
-			// genres
-			const cleanGenres = formatters.genres(genres, this.backend)
-
-			// saving
-			const release = new Release(
-				null,
-				owner_id as number,
-				title,
-				releaseType,
-				descript,
-				price,
-				cleanGenres,
-				null
-			)
-			const newSongs = songs.map((song) => {
-				const { title, featuring, lyrics } = song
-
-				return new Song(null, null, "placeholder", title, featuring, lyrics)
-			})
-
-			return await this.services.releases.edit({ data: release, cover: cover }, newSongs)
+			return await this.services.releases.edit({ data: data, cover }, songs)
 		} catch (error) {
 			return new EditReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

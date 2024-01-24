@@ -2,7 +2,8 @@ import { UsecaseLayer, ServicesType, IDUsecaseParams } from "../../../assets"
 import { FindReleasesByArtistReplyDTO, ErrorMsg } from "Shared"
 
 export class FindReleasesByArtistUsecase extends UsecaseLayer {
-	constructor(services: ServicesType, backend: boolean) {		super(services, backend)
+	constructor(services: ServicesType, backend: boolean) {
+		super(services, backend)
 	}
 
 	async execute(inputs: IDUsecaseParams): Promise<FindReleasesByArtistReplyDTO> {

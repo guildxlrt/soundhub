@@ -1,9 +1,9 @@
-import { ArtistID, UserCookie } from "../types"
+import { ArtistID, UserTokenData } from "../types"
 
 // ARTIST
 export interface INewArtistSucc {
 	message: string
-	userCookie: UserCookie
+	userCookie: UserTokenData
 }
 
 export type IArtistInfoSucc = null | {

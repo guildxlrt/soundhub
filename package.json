@@ -4,10 +4,10 @@
 	"license": "MIT",
 	"scripts": {
 		"format": "nx format:write && prisma format",
-		"lint": "nx run-many -t lint --projects=tag:type:shared,tag:scope:api",
+		"lint": "nx run-many -t lint --all",
 		"prepare": "husky install",
-		"build": "nx run-many -t build --projects=tag:type:backend",
-		"serve": "nx run server:serve",
+		"build": "nx run-many -t build --all",
+		"serve": "nx run-many -t serve --all",
 		"graph": "nx graph",
 		"migrate": "prisma migrate dev --name init"
 	},
