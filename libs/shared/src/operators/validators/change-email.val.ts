@@ -1,4 +1,4 @@
-import validator from "validator"
+import validators from "validators"
 import { ErrorMsg } from "../../utils"
 
 // CHANGE EMAIL
@@ -16,7 +16,7 @@ export class ChangeEmailValidator {
 			if (newEmail === actual) throw new ErrorMsg("new and old emails must be different", 400)
 
 			// Conformity
-			const validEmail = validator.isEmail(newEmail)
+			const validEmail = validators.isEmail(newEmail)
 			if (!validEmail) throw new ErrorMsg("invalid email format", 400)
 			else return
 		} catch (error) {

@@ -1,13 +1,13 @@
 import multer, { Multer } from "multer"
 import { ApiErrHandler, ApiNext, ApiReply, ApiRequest } from "../utils"
-import { IMG_MIME_TYPES } from "Shared"
+import { IMAGE_MIME_TYPES } from "Shared"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
 		callback(null, "tmp/images")
 	},
 	filename: (req, file, callback) => {
-		callback(null, "IMG_" + Date.now() + "." + IMG_MIME_TYPES[file.mimetype])
+		callback(null, "IMG_" + Date.now() + "." + IMAGE_MIME_TYPES[file.mimetype])
 	},
 })
 

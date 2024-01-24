@@ -28,6 +28,8 @@ import {
 	EditEventReplyDTO,
 	EditEventReqDTO,
 	apiError,
+	validators,
+	IMAGE_MIME_TYPES,
 } from "Shared"
 import { IEventsCtrl } from "../../assets"
 
@@ -41,7 +43,8 @@ export class EventsController implements IEventsCtrl {
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
 			// Operators
-			// ... doing some heathcheck
+			// file
+			if (file) validators.file(file, IMAGE_MIME_TYPES, true)
 
 			const event = new Event(null, owner as number, date, place, artists, title, text, null)
 
@@ -67,7 +70,8 @@ export class EventsController implements IEventsCtrl {
 				req.body as EditEventReqDTO
 
 			// Operators
-			// ... doing some heathcheck
+			// file
+			if (file) validators.file(file, IMAGE_MIME_TYPES, true)
 
 			const event = new Event(
 				id,

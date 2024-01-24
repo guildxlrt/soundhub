@@ -1,4 +1,4 @@
-import validator from "validator"
+import validators from "validators"
 import { ErrorMsg } from "../../utils"
 
 // CHANGE PASS
@@ -20,7 +20,7 @@ export class ChangePassValidator {
 			if (newPass === actual) throw new ErrorMsg("new and old emails must be different", 400)
 
 			// Conformity
-			const validPass = validator.isStrongPassword(newPass)
+			const validPass = validators.isStrongPassword(newPass)
 			if (validPass) throw new ErrorMsg("weak Password")
 			else return
 		} catch (error) {

@@ -31,6 +31,9 @@ import {
 	EditReleaseReqDTO,
 	apiError,
 	formatters,
+	IMAGE_MIME_TYPES,
+	validators,
+	AUDIO_MIME_TYPES,
 } from "Shared"
 import { IReleasesCtrl } from "../../assets"
 
@@ -65,10 +68,15 @@ export class ReleasesController implements IReleasesCtrl {
 				}
 			})
 
-			// Operators
+			// OPERATORS
 			// genres
 			const cleanGenres = formatters.genres(genres, true)
 			releaseData.setGenres(cleanGenres)
+			// cover
+			if (cover) validators.file(cover, IMAGE_MIME_TYPES, true)
+			songs.forEach((song) => {
+				if (song.audio) validators.file(song.audio, AUDIO_MIME_TYPES, true)
+			})
 
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(databaseServices, true)
@@ -116,7 +124,7 @@ export class ReleasesController implements IReleasesCtrl {
 				return new Song(song.id, id, null, song.title, song.featuring, song.lyrics)
 			})
 
-			// Operators
+			// OPERATORS
 			// genres
 			const cleanGenres = formatters.genres(genres, true)
 			releaseData.setGenres(cleanGenres)

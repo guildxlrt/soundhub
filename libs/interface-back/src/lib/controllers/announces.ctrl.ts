@@ -22,6 +22,8 @@ import {
 	EditAnnounceReplyDTO,
 	EditAnnounceReqDTO,
 	apiError,
+	IMAGE_MIME_TYPES,
+	validators,
 } from "Shared"
 import { IAnnoncesCtrl } from "../../assets"
 
@@ -34,8 +36,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const owner = req.auth?.profileID as number
 			const file: FileType = req.file as FileType
 
-			// Operators
-			// ... doing some heathcheck
+			// OPERATORS
+			// file
+			if (file) validators.file(file, IMAGE_MIME_TYPES, true)
 
 			const announce = new Announce(null, owner, title, text, null)
 

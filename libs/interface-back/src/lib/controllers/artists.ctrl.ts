@@ -14,6 +14,7 @@ import {
 	apiError,
 	Cookie,
 	validators,
+	IMAGE_MIME_TYPES,
 	formatters,
 } from "Shared"
 import {
@@ -48,7 +49,7 @@ export class ArtistsController implements IArtistCtrl {
 
 			const userAuth = new UserAuth(null, email, password)
 
-			// SANITIZE
+			// OPERATORS
 			// auths
 			validators.signupAuths(
 				{
@@ -62,7 +63,8 @@ export class ArtistsController implements IArtistCtrl {
 			// genres
 			const cleanGenres = formatters.genres(genres, true)
 			artistProfile.setGenres(cleanGenres)
-
+			// file
+			if (file) validators.file(file, IMAGE_MIME_TYPES, true)
 			// others data checking
 			// ... ( name)
 
@@ -95,11 +97,12 @@ export class ArtistsController implements IArtistCtrl {
 
 			const artistProfile = new Artist(id, user, name, bio, members, genres, avatarPath)
 
-			// SANITIZE
-			// genres
+			// OPERATORS
 			// genres
 			const cleanGenres = formatters.genres(genres, true)
 			artistProfile.setGenres(cleanGenres)
+			// file
+			if (file) validators.file(file, IMAGE_MIME_TYPES, true)
 			// others data checking
 			// ... ( name)
 
