@@ -1,4 +1,4 @@
-import { databaseServices } from "Infra-backend"
+import { ApiErrHandler, ApiReply, ApiRequest, databaseServices } from "Infra-backend"
 import {
 	ChangeEmailUsecaseParams,
 	ChangeEmailUsecase,
@@ -19,7 +19,6 @@ import {
 	apiError,
 } from "Shared"
 import { IAuthCtrl } from "../../assets"
-import { ApiErrHandler, ApiRequest, ApiReply } from "Infra-backend"
 
 export class UserAuthController implements IAuthCtrl {
 	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {

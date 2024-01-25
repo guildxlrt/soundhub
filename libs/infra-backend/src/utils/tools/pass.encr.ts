@@ -11,7 +11,7 @@ export class PassEncryptor {
 
 			return hash
 		} catch (error) {
-			throw new ErrorMsg("error during hashing pass", 500)
+			throw new ErrorMsg("error during hashing pass", 500).treatError(error)
 		}
 	}
 	static async compare(password: string, encrypted: string) {

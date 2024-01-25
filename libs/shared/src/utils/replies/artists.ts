@@ -1,4 +1,4 @@
-import { ArtistID, UserTokenData } from "../types"
+import { ArtistID, UserTokenData } from "../typing"
 
 // ARTIST
 export interface INewArtistSucc {

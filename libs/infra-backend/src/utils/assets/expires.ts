@@ -4,4 +4,4 @@ export const authExpires = {
 	oneWeek: 604800000,
 	oneDay: 86400000,
 	none: undefined, // no expiration
-}
+} as const

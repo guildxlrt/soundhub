@@ -1,5 +1,5 @@
 import { ErrorMsg, ReplyDTO, apiError } from "Shared"
-import { ApiReply } from "./params"
+import { ApiReply } from "../assets"
 
 export class ApiErrHandler {
 	static async reply(error: unknown, res: ApiReply) {

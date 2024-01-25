@@ -1,4 +1,4 @@
-import { ReleaseID, SongID } from "../types"
+import { ReleaseID, SongID } from "../typing"
 
 // SONG
 export interface ISongSucc {

@@ -64,6 +64,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const owner = req.auth?.profileID as number
 
 			const { text, title, id, imagePath } = req.body as EditAnnounceReqDTO
+
 			// Operators
 			// ... doing some heathcheck
 

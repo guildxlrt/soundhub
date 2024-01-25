@@ -1,4 +1,4 @@
-import validators from "validators"
+import validators from "validator"
 import { ErrorMsg } from "../../utils"
 
 // NEW AUTHS

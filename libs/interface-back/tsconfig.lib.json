@@ -5,6 +5,11 @@
 		"declaration": true,
 		"types": ["node"]
 	},
-	"include": ["src/**/*.ts", "../shared/src/utils/types/enums/mimetypes.ts", "../shared/src/infrastructure/api-error-handler.ts", "../shared/src/infrastructure/params.ts"],
+	"include": [
+		"src/**/*.ts",
+		"../shared/src/utils/types/enums/mimetypes.ts",
+		"../shared/src/infrastructure/api-error-handler.ts",
+		"../shared/src/infrastructure/params.ts"
+	],
 	"exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

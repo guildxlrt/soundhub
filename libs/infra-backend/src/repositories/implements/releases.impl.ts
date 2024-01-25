@@ -24,15 +24,18 @@ export class ReleasesImplement implements ReleasesRepository {
 			const { owner_id, title, releaseType, descript, price, genres } = release.data
 			const cover = release.cover
 
-			const releaseFolder = FileManipulator.randomReleaseFolder()
+			const releaseFolder: string = await FileManipulator.newFolder(filePath.store.release)
+			if (!releaseFolder) ErrorMsg.apiError(apiError[500])
 
 			// STORING
 			// songs
 			songs.forEach((song) => {
 				const filename = song.audio?.filename
-				const coverOrigin = filePath.origin.image + filename
-				const coverStore = filePath.store.release + releaseFolder + filename
-				FileManipulator.move(coverOrigin, coverStore)
+
+				FileManipulator.move(
+					filePath.origin.image + filename,
+					filePath.store.release + releaseFolder + filename
+				)
 			})
 
 			// release
@@ -106,8 +109,8 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			const coverUrl = releaseData?.coverUrl as string
-			const releaseFolder = FileManipulator.getReleaseFolder(coverUrl)
+			const oldFilePath = releaseData?.coverUrl as string
+			const releaseFolder = FileManipulator.getReleaseFolder(oldFilePath)
 
 			// STORING FILE
 			const coverOrigin = filePath.origin.image + cover?.filename
@@ -115,7 +118,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			FileManipulator.move(coverOrigin, coverStore)
 
 			// DELETE OLD FILE
-			FileManipulator.delete(releaseFolder as string)
+			FileManipulator.delete(oldFilePath)
 
 			// persist
 			await dbClient.release.update({

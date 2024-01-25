@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { ErrorMsg, apiError } from "Shared"
-import { Reply } from "./reply"
+import { Reply } from "../assets"
 
 export class DbErrHandler {
 	static uniqueEmail(error: unknown, res: unknown): ErrorMsg | void {
