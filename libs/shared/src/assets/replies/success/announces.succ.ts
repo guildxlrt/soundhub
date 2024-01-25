@@ -1,4 +1,4 @@
-import { AnnounceID, ArtistID } from "../typing"
+import { AnnounceID, ArtistID } from "../../types"
 
 // ANNOUNCE
 export interface IAnnounceSucc {

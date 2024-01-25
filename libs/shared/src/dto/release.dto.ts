@@ -57,7 +57,7 @@ export class EditReleaseReqDTO {
 		readonly descript: string | null
 		readonly price: null | number
 		readonly genres: GenresArray
-		readonly coverUrl: string | null
+		readonly coverPath: string | null
 	}
 	readonly songs: {
 		readonly id: number
@@ -76,7 +76,7 @@ export class EditReleaseReqDTO {
 			descript: string | null
 			price: null | number
 			genres: GenresArray
-			coverUrl: string | null
+			coverPath: string | null
 		},
 		songs: {
 			id: number

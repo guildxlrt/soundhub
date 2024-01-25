@@ -60,7 +60,7 @@ CREATE TABLE "Release" (
     "price" INTEGER,
     "genres" TEXT[],
     "songs" INTEGER[],
-    "coverUrl" TEXT,
+    "coverPath" TEXT,
 
     CONSTRAINT "Release_pkey" PRIMARY KEY ("id")
 );
@@ -71,7 +71,7 @@ CREATE TABLE "Song" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "release_id" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
-    "audioUrl" TEXT NOT NULL,
+    "audioApth" TEXT NOT NULL,
     "featuring" INTEGER[],
     "lyrics" TEXT,
 

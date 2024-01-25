@@ -1,4 +1,4 @@
-import { ErrorMsg } from "../../errors"
+import { ErrorMsg } from "../errors"
 
 export class ReplyLayer<D> {
 	readonly data?: D

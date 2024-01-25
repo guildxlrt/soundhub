@@ -1,10 +1,10 @@
 import { UserAuthsRepository } from "Domain"
-import { ErrorMsg, UserAuthID, apiError, UserTokenData, Cookie } from "Shared"
+import { ErrorMsg, UserAuthID, htmlError, UserTokenData, ILoginSucc } from "Shared"
 import { PassEncryptor, Reply, Token, authExpires } from "../../utils"
 import { GetID, dbClient } from "../../database"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(email: string, password: string): Promise<Reply<Cookie>> {
+	async login(email: string, password: string): Promise<Reply<ILoginSucc>> {
 		try {
 			// Find Auth
 			const authData = await dbClient.userAuth.findUnique({
@@ -18,17 +18,17 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (!authData?.id) throw ErrorMsg.apiError(apiError[404])
-			if (!authData?.email || !authData?.password) throw ErrorMsg.apiError(apiError[500])
+			if (!authData?.id) throw ErrorMsg.htmlError(htmlError[404])
+			if (!authData?.email || !authData?.password) throw ErrorMsg.htmlError(htmlError[500])
 
 			// password
 			const encryptedPass = authData?.password
 			const compare = await PassEncryptor.compare(password, encryptedPass)
-			if (compare !== true) throw ErrorMsg.apiError(apiError[401])
+			if (compare !== true) throw ErrorMsg.htmlError(htmlError[401])
 
 			// RESPONSE
-			const profile = await GetID.user(authData?.id as number, "profile")
-			if (!profile) throw ErrorMsg.apiError(apiError[404])
+			const profile = await GetID.profile(authData?.id)
+			if (!profile) throw ErrorMsg.htmlError(htmlError[404])
 
 			// token gen
 			const expires = authExpires.oneYear
@@ -36,8 +36,8 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			const token = Token.generate(userCookie, expires)
 
 			// return cookie
-			return new Reply<Cookie>(
-				new Cookie("jwt", token as string, {
+			return new Reply<ILoginSucc>(
+				new ILoginSucc("jwt", token as string, {
 					maxAge: expires,
 					httpOnly: true,
 					sameSite: "lax",
@@ -45,7 +45,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				})
 			)
 		} catch (error) {
-			return new Reply<Cookie>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<ILoginSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -54,7 +54,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
-			return new Reply<void>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<void>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -75,7 +75,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 				},
 			})
 
-			if (getEmail?.email !== actual) throw ErrorMsg.apiError(apiError[403])
+			if (getEmail?.email !== actual) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
 			await dbClient.userAuth.update({
@@ -90,7 +90,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -114,7 +114,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			const encryptedPass = getPass?.password
 			const auth = await PassEncryptor.compare(actual, encryptedPass as string)
 
-			if (auth !== true) throw ErrorMsg.apiError(apiError[403])
+			if (auth !== true) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
 			const hashedPass = await PassEncryptor.hash(actual)
@@ -131,7 +131,7 @@ export class UserAuthsImplement implements UserAuthsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

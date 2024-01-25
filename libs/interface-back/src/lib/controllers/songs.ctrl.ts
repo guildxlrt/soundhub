@@ -1,12 +1,12 @@
 import { ApiErrHandler, ApiReply, ApiRequest, databaseServices } from "Infra-backend"
-import { GetSongReplyDTO, apiError } from "Shared"
+import { GetSongReplyDTO, htmlError } from "Shared"
 import { GetSongUsecase, IDUsecaseParams } from "Domain"
 import { ISongsCtrl } from "../../assets"
 
 export class SongsController implements ISongsCtrl {
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 			const getSong = new GetSongUsecase(databaseServices, true)

@@ -1,13 +1,13 @@
-export interface ApiError {
+export interface HtmlError {
 	value: number
 	message: string
 }
 
-export interface IApiErrors {
-	[key: number]: ApiError
+export interface IHtmlError {
+	[key: number]: HtmlError
 }
 
-export const apiError: IApiErrors = {
+export const htmlError: IHtmlError = {
 	400: {
 		value: 400,
 		message: "Bad Request",

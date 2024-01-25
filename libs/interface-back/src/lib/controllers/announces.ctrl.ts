@@ -21,7 +21,7 @@ import {
 	GetAnnounceReplyDTO,
 	EditAnnounceReplyDTO,
 	EditAnnounceReqDTO,
-	apiError,
+	htmlError,
 	IMAGE_MIME_TYPES,
 	validators,
 } from "Shared"
@@ -30,7 +30,8 @@ import { IAnnoncesCtrl } from "../../assets"
 export class AnnoncesController implements IAnnoncesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "POST")
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const { text, title } = req.body as CreateAnnounceReqDTO
 			const owner = req.auth?.profileID as number
@@ -58,7 +59,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "POST")
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const file: FileType = req.file as FileType
 			const owner = req.auth?.profileID as number
@@ -87,7 +89,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 	async delete(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "DELETE")
-				return res.status(405).send({ error: apiError[405].message })
+				return res.status(405).send({ error: htmlError[405].message })
 			const user = req.auth?.profileID as number
 			const id = Number(req.params["id"])
 
@@ -110,7 +112,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 			const getAnnounce = new GetAnnounceUsecase(databaseServices, true)
@@ -127,7 +129,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices, true)
 			const { data, error } = await getAllAnnounces.execute()
@@ -143,7 +145,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices, true)

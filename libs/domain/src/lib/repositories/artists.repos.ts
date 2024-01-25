@@ -1,6 +1,5 @@
 import {
 	ArtistID,
-	Cookie,
 	FileType,
 	GenreType,
 	IArtistInfoSucc,
@@ -20,7 +19,7 @@ export interface ArtistsRepository {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: FileType
-	): Promise<ReplyLayer<Cookie>>
+	): Promise<ReplyLayer<INewArtistSucc>>
 	update(
 		data: { profile: Artist; userAuth?: number },
 		file?: FileType

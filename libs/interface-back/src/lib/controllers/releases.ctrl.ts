@@ -29,7 +29,7 @@ import {
 	HideReleaseReqDTO,
 	EditReleaseReplyDTO,
 	EditReleaseReqDTO,
-	apiError,
+	htmlError,
 	formatters,
 	IMAGE_MIME_TYPES,
 	validators,
@@ -40,7 +40,8 @@ import { IReleasesCtrl } from "../../assets"
 export class ReleasesController implements IReleasesCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "POST")
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
 			const cover: FileType = req.file as FileType
@@ -101,13 +102,13 @@ export class ReleasesController implements IReleasesCtrl {
 	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "DELETE")
-				return res.status(405).send({ error: apiError[405].message })
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
 			const user = req.auth?.profileID as number
 			const cover: FileType = req.file as FileType
 
-			const { title, releaseType, price, descript, genres, id, coverUrl } = inputs.release
+			const { title, releaseType, price, descript, genres, id, coverPath } = inputs.release
 			const releaseData = new Release(
 				id,
 				user,
@@ -116,7 +117,7 @@ export class ReleasesController implements IReleasesCtrl {
 				descript,
 				price,
 				genres,
-				coverUrl
+				coverPath
 			)
 
 			const songsData = inputs.songs
@@ -152,7 +153,7 @@ export class ReleasesController implements IReleasesCtrl {
 	async hide(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "PATCH")
-				return res.status(405).send({ error: apiError[405].message })
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID
 			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
@@ -173,7 +174,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 			const getRelease = new GetReleaseUsecase(databaseServices, true)
@@ -189,7 +190,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const getAllReleases = new GetAllReleasesUsecase(databaseServices, true)
 			const { data, error } = await getAllReleases.execute()
@@ -204,7 +205,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseServices, true)
@@ -220,7 +221,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const genre = req.params["genre"] as GenreType
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseServices, true)

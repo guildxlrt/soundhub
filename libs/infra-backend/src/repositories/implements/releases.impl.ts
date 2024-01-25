@@ -9,7 +9,7 @@ import {
 	UserAuthID,
 	ReleaseID,
 	FileType,
-	apiError,
+	htmlError,
 } from "Shared"
 import { FileManipulator, filePath } from "../../utils"
 import { Reply } from "../../utils"
@@ -25,38 +25,36 @@ export class ReleasesImplement implements ReleasesRepository {
 			const cover = release.cover
 
 			const releaseFolder: string = await FileManipulator.newFolder(filePath.store.release)
-			if (!releaseFolder) ErrorMsg.apiError(apiError[500])
+			if (!releaseFolder) ErrorMsg.htmlError(htmlError[500])
 
 			// STORING
 			// songs
-			songs.forEach((song) => {
-				const filename = song.audio?.filename
+			const songsData = await Promise.all(
+				songs.map(async (song) => {
+					const { title, featuring, lyrics } = song.data
 
-				FileManipulator.move(
-					filePath.origin.image + filename,
-					filePath.store.release + releaseFolder + filename
-				)
-			})
+					const filename = song.audio.filename
+					const location = filePath.origin.audio + filename
+					const destination = filePath.store.release + releaseFolder + filename
 
-			// release
+					// move audiofiles
+					const audioApth = await FileManipulator.move(location, destination)
+
+					return {
+						audioApth: audioApth as string,
+						title: title,
+						featuring: featuring,
+						lyrics: lyrics,
+					}
+				})
+			)
+
+			// cover
 			const coverOrigin = filePath.origin.image + cover?.filename
 			const coverStore = filePath.store.release + releaseFolder + cover?.filename
-			FileManipulator.move(coverOrigin, coverStore)
+			await FileManipulator.move(coverOrigin, coverStore)
 
 			// PERSIST
-			const songsFormattedArray = songs.map((song) => {
-				const { title, featuring, lyrics } = song.data
-
-				const coverStore = filePath.store.release + song.audio?.filename
-
-				return {
-					audioUrl: coverStore,
-					title: title,
-					featuring: featuring,
-					lyrics: lyrics,
-				}
-			})
-
 			const newRelease = await dbClient.release.create({
 				data: {
 					owner_id: owner_id,
@@ -65,10 +63,10 @@ export class ReleasesImplement implements ReleasesRepository {
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					coverUrl: coverStore,
+					coverPath: coverStore,
 					isPublic: true,
 					songs: {
-						create: songsFormattedArray,
+						create: songsData,
 					},
 				},
 			})
@@ -79,7 +77,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				id: newRelease.id,
 			})
 		} catch (error) {
-			const res = new Reply<INewReleaseSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<INewReleaseSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 
 			return res
 		}
@@ -96,7 +94,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			// owner verification
 			const releaseOwner = await GetID.owner(id as number, "release")
-			if (owner_id !== releaseOwner) throw ErrorMsg.apiError(apiError[403])
+			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// ... get the old path
 			const releaseData = await dbClient.release.findUnique({
@@ -105,20 +103,20 @@ export class ReleasesImplement implements ReleasesRepository {
 					owner_id: owner_id,
 				},
 				select: {
-					coverUrl: true,
+					coverPath: true,
 				},
 			})
 
-			const oldFilePath = releaseData?.coverUrl as string
+			const oldFilePath = releaseData?.coverPath as string
 			const releaseFolder = FileManipulator.getReleaseFolder(oldFilePath)
 
 			// STORING FILE
-			const coverOrigin = filePath.origin.image + cover?.filename
-			const coverStore = filePath.store.release + releaseFolder + cover?.filename
-			FileManipulator.move(coverOrigin, coverStore)
+			const location = filePath.origin.image + cover?.filename
+			const destination = filePath.store.release + releaseFolder + cover?.filename
+			const coverPath = await FileManipulator.move(location, destination)
 
 			// DELETE OLD FILE
-			FileManipulator.delete(oldFilePath)
+			await FileManipulator.delete(oldFilePath)
 
 			// persist
 			await dbClient.release.update({
@@ -130,7 +128,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					price: price,
 					descript: descript,
 					genres: genres as string[],
-					coverUrl: coverStore,
+					coverPath: coverPath,
 				},
 			})
 
@@ -149,7 +147,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -157,7 +155,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			// owner verification
 			const releaseOwner = await GetID.owner(id as number, "release")
-			if (ownerID !== releaseOwner) throw ErrorMsg.apiError(apiError[403])
+			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
 			await dbClient.release.update({
@@ -172,7 +170,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -189,10 +187,10 @@ export class ReleasesImplement implements ReleasesRepository {
 					descript: true,
 					price: true,
 					genres: true,
-					coverUrl: true,
+					coverPath: true,
 					songs: {
 						select: {
-							audioUrl: true,
+							audioApth: true,
 							title: true,
 						},
 					},
@@ -208,11 +206,11 @@ export class ReleasesImplement implements ReleasesRepository {
 				descript: release?.descript,
 				price: release?.price,
 				genres: release?.genres,
-				coverUrl: release?.coverUrl,
+				coverPath: release?.coverPath,
 				songs: release?.songs,
 			})
 		} catch (error) {
-			return new Reply<IReleaseSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IReleaseSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -226,7 +224,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverUrl: true,
+					coverPath: true,
 				},
 			})
 
@@ -238,14 +236,14 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverUrl: null,
+					coverPath: null,
 				}
 			})
 
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -262,7 +260,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverUrl: true,
+					coverPath: true,
 				},
 			})
 
@@ -274,14 +272,14 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverUrl: null,
+					coverPath: null,
 				}
 			})
 
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -300,7 +298,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverUrl: true,
+					coverPath: true,
 				},
 			})
 
@@ -312,14 +310,14 @@ export class ReleasesImplement implements ReleasesRepository {
 					title: release.title,
 					releaseType: release.releaseType,
 					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverUrl: null,
+					coverPath: null,
 				}
 			})
 
 			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
-			return new Reply<IReleasesListSucc>([], ErrorMsg.apiError(apiError[500]))
+			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

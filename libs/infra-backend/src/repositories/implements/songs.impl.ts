@@ -1,6 +1,6 @@
 import { SongsRepository } from "Domain"
 import { Reply } from "../../utils"
-import { SongID, ISongSucc, ErrorMsg, apiError } from "Shared"
+import { SongID, ISongSucc, ErrorMsg, htmlError } from "Shared"
 import { dbClient } from "../../database"
 
 export class SongsImplement implements SongsRepository {
@@ -12,7 +12,7 @@ export class SongsImplement implements SongsRepository {
 				},
 				select: {
 					release_id: true,
-					audioUrl: true,
+					audioApth: true,
 					title: true,
 					featuring: true,
 					lyrics: true,
@@ -23,13 +23,13 @@ export class SongsImplement implements SongsRepository {
 			return new Reply<ISongSucc>({
 				id: id,
 				release_id: song?.release_id,
-				audioUrl: song?.audioUrl,
+				audioApth: song?.audioApth,
 				title: song?.title,
 				featuring: song?.featuring,
 				lyrics: song?.lyrics,
 			})
 		} catch (error) {
-			return new Reply<ISongSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<ISongSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

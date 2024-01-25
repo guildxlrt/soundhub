@@ -11,7 +11,7 @@ import {
 	UpdateArtistReplyDTO,
 	UpdateArtistReqDTO,
 	FileType,
-	apiError,
+	htmlError,
 	Cookie,
 	validators,
 	IMAGE_MIME_TYPES,
@@ -36,7 +36,8 @@ import { IArtistCtrl } from "../../assets"
 export class ArtistsController implements IArtistCtrl {
 	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "POST") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "POST")
+				return res.status(405).send({ error: htmlError[405].message })
 
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
 			const file: FileType = req.file as FileType
@@ -88,7 +89,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async update(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
 			const { bio, genres, members, name, id, avatarPath, avatarDel } =
@@ -125,7 +126,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByID(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
 
@@ -142,7 +143,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const inputs = req.body.email as GetArtistByEmailReqDTO
 
@@ -159,7 +160,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const getAllArtists = new GetAllArtistsUsecase(databaseServices, true)
 			const { data, error } = await getAllArtists.execute()
@@ -174,7 +175,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: apiError[405].message })
+			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const genre = req.params["genre"] as GenreType
 

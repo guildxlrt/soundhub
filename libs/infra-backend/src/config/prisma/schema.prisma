@@ -77,7 +77,7 @@ model Release {
   descript    String?
   price       Int?
   genres      String[]
-  coverUrl    String?
+  coverPath   String?
   isPublic    Boolean
 
   songs Song[]
@@ -91,7 +91,7 @@ model Song {
   release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
 
   title     String
-  audioUrl  String
+  audioApth String
   featuring Int[]
   lyrics    String?
 }

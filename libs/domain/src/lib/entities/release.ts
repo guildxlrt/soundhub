@@ -8,7 +8,7 @@ export class Release extends EntityLayer {
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
-	coverUrl: string | null
+	coverPath: string | null
 
 	constructor(
 		id: ReleaseID | null,
@@ -18,7 +18,7 @@ export class Release extends EntityLayer {
 		descript: string | null,
 		price: null | ReleasePrice,
 		genres: GenresArray,
-		coverUrl: string | null
+		coverPath: string | null
 	) {
 		super(id)
 
@@ -28,7 +28,7 @@ export class Release extends EntityLayer {
 		this.descript = descript
 		this.price = price
 		this.genres = genres
-		this.coverUrl = coverUrl
+		this.coverPath = coverPath
 	}
 
 	setGenres(genres: GenresArray | string[]) {

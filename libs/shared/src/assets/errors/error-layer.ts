@@ -1,5 +1,5 @@
-import { StatusType } from "../replies"
-import { ApiError } from "./html-err-msg"
+import { StatusType } from "../types"
+import { HtmlError } from "./html-err"
 
 export class ErrorMsg extends Error {
 	readonly timestamp: Date
@@ -20,7 +20,7 @@ export class ErrorMsg extends Error {
 		}
 	}
 
-	static apiError(apiError: ApiError) {
-		return new ErrorMsg(apiError.message, apiError.value)
+	static htmlError(htmlError: HtmlError) {
+		return new ErrorMsg(htmlError.message, htmlError.value)
 	}
 }

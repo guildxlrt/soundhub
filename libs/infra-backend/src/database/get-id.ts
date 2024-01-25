@@ -25,31 +25,29 @@ export class GetID {
 		} else throw new ErrorMsg("Error verifying auths")
 	}
 
-	static async user(id: number, target: "profile" | "auth") {
-		if (target === "auth") {
-			const user = await dbClient.artist.findUnique({
-				where: {
-					id: id,
-				},
-				select: {
-					id: true,
-				},
-			})
+	static async profile(id: number) {
+		const user = await dbClient.artist.findUnique({
+			where: {
+				user_auth_id: id,
+			},
+			select: {
+				id: true,
+			},
+		})
 
-			return user?.id
-		}
+		return user?.id
+	}
 
-		if (target === "profile") {
-			const user = await dbClient.userAuth.findUnique({
-				where: {
-					id: id,
-				},
-				select: {
-					id: true,
-				},
-			})
+	static async auth(id: number) {
+		const user = await dbClient.artist.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				id: true,
+			},
+		})
 
-			return user?.id
-		} else throw new ErrorMsg("Error verifying auths")
+		return user?.id
 	}
 }

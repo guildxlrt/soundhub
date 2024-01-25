@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client"
-import { ErrorMsg, apiError } from "Shared"
+import { ErrorMsg, htmlError } from "Shared"
 import { Reply } from "../assets"
 
 export class DbErrHandler {
@@ -10,7 +10,7 @@ export class DbErrHandler {
 			res instanceof Reply &&
 			res.error instanceof ErrorMsg
 		) {
-			return (res.error = ErrorMsg.apiError(apiError[409]))
+			return (res.error = ErrorMsg.htmlError(htmlError[409]))
 		}
 		return
 	}

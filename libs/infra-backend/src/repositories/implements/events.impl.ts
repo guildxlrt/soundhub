@@ -9,7 +9,7 @@ import {
 	UserAuthID,
 	AnnounceID,
 	FileType,
-	apiError,
+	htmlError,
 } from "Shared"
 import { GetID, dbClient } from "../../database"
 
@@ -21,7 +21,7 @@ export class EventsImplement implements EventsRepository {
 			// Storing files
 			const fileOrigin = filePath.origin.image + file?.filename
 			const fileStore = filePath.store.event + file?.filename
-			FileManipulator.move(fileOrigin, fileStore)
+			await FileManipulator.move(fileOrigin, fileStore)
 
 			await dbClient.event.create({
 				data: {
@@ -38,7 +38,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 
 			return res
 		}
@@ -52,16 +52,16 @@ export class EventsImplement implements EventsRepository {
 
 			// owner verification
 			const eventOwner = await GetID.owner(id as number, "event")
-			if (userAuth !== eventOwner) throw ErrorMsg.apiError(apiError[403])
+			if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// STORING FILE
 			const fileOrigin = filePath.origin.image + file?.filename
 			const fileStore = filePath.store.event + file?.filename
-			FileManipulator.move(fileOrigin, fileStore)
+			await FileManipulator.move(fileOrigin, fileStore)
 
 			// DELETE OLD FILE
 			// ... get the id
-			FileManipulator.delete("")
+			await FileManipulator.delete("")
 
 			// persist
 			await dbClient.event.update({
@@ -82,7 +82,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 
 			return res
 		}
@@ -92,7 +92,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			// owner verification
 			const eventOwner = await GetID.owner(id as number, "event")
-			if (userAuth !== eventOwner) throw ErrorMsg.apiError(apiError[403])
+			if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
 			await dbClient.event.delete({
@@ -140,7 +140,7 @@ export class EventsImplement implements EventsRepository {
 				imagePath: event?.imagePath,
 			})
 		} catch (error) {
-			return new Reply<IEventSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IEventSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -174,7 +174,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -213,7 +213,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -249,7 +249,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -285,7 +285,7 @@ export class EventsImplement implements EventsRepository {
 			// RESPONSE
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

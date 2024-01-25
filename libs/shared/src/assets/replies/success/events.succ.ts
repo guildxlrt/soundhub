@@ -1,4 +1,4 @@
-import { ArtistID, EventID } from "../typing"
+import { ArtistID, EventID } from "../../types"
 
 // EVENT
 export interface IEventSucc {

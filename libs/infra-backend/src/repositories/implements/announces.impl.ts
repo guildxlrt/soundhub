@@ -8,7 +8,7 @@ import {
 	AnnounceID,
 	UserAuthID,
 	FileType,
-	apiError,
+	htmlError,
 } from "Shared"
 import { GetID, dbClient } from "../../database"
 
@@ -20,7 +20,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// STORING FILE
 			const fileOrigin = filePath.origin.image + file?.filename
 			const fileStore = filePath.store.announce + file?.filename
-			FileManipulator.move(fileOrigin, fileStore)
+			await FileManipulator.move(fileOrigin, fileStore)
 
 			await dbClient.announce.create({
 				data: {
@@ -34,7 +34,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 
 			return res
 		}
@@ -46,16 +46,16 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 			// owner verification
 			const announceOwner = await GetID.owner(id as number, "announce")
-			if (owner_id !== announceOwner) throw ErrorMsg.apiError(apiError[403])
+			if (owner_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// STORING FILE
 			const fileOrigin = filePath.origin.image + file?.filename
 			const fileStore = filePath.store.announce + file?.filename
-			FileManipulator.move(fileOrigin, fileStore)
+			await FileManipulator.move(fileOrigin, fileStore)
 
 			// DELETE OLD FILE
 			// ... get the id
-			FileManipulator.delete("")
+			await FileManipulator.delete("")
 
 			// persist
 			await dbClient.announce.update({
@@ -73,7 +73,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 
 			return res
 		}
@@ -83,7 +83,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		try {
 			// owner verification
 			const announceOwner = await GetID.owner(id as number, "announce")
-			if (userAuth !== announceOwner) throw ErrorMsg.apiError(apiError[403])
+			if (userAuth !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
 			await dbClient.announce.delete({
@@ -124,7 +124,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				imagePath: announce?.imagePath,
 			})
 		} catch (error) {
-			return new Reply<IAnnounceSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IAnnounceSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -152,7 +152,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -185,7 +185,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

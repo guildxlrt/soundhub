@@ -4,14 +4,13 @@ import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	IArtistsListItemSucc,
-	INewArtistSucc,
 	GenreType,
 	ArtistID,
 	UserEmail,
 	FileType,
-	apiError,
-	Cookie,
+	htmlError,
 	UserTokenData,
+	INewArtistSucc,
 } from "Shared"
 import {
 	PassEncryptor,
@@ -32,19 +31,14 @@ export class ArtistsImplement implements ArtistsRepository {
 			authConfirm: undefined
 		},
 		file?: FileType
-	): Promise<Reply<Cookie>> {
+	): Promise<Reply<INewArtistSucc>> {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
 			const hashedPass = await PassEncryptor.hash(password)
 
-			// Storing files
-			const origin = filePath.origin.image + file?.filename
-			const store = filePath.store.artist + file?.filename
-			FileManipulator.move(origin, store)
-
 			// PERSIST
-			const newUser = await dbClient.userAuth.create({
+			const newUserAuth = await dbClient.userAuth.create({
 				data: {
 					email: email,
 					password: hashedPass,
@@ -54,27 +48,40 @@ export class ArtistsImplement implements ArtistsRepository {
 							bio: bio,
 							members: members,
 							genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-							avatarPath: store,
 						},
 					},
 				},
 			})
 
-			if (!newUser?.id) throw ErrorMsg.apiError(apiError[401])
+			if (!newUserAuth?.id) throw ErrorMsg.htmlError(htmlError[401])
+
+			const getProfile = await GetID.profile(newUserAuth.id)
+			if (!getProfile) throw ErrorMsg.htmlError(htmlError[404])
+
+			// Storing files
+			const store = filePath.origin.image + file?.filename
+			const destination = filePath.store.artist + file?.filename
+			const avatarPath = await FileManipulator.move(store, destination)
+
+			await dbClient.artist.update({
+				where: {
+					id: getProfile,
+				},
+				data: {
+					avatarPath: avatarPath,
+				},
+			})
 
 			// RESPONSE
-			const getProfile = await GetID.user(newUser.id, "profile")
-			if (!getProfile) throw ErrorMsg.apiError(apiError[404])
-
 			// token gen
 			const expires = authExpires.oneYear
-			const userCookie = new UserTokenData(newUser.id, getProfile as number, "artist")
+			const userCookie = new UserTokenData(newUserAuth.id, getProfile as number, "artist")
 
 			const token = Token.generate(userCookie, expires)
 
 			// return cookie
-			return new Reply<Cookie>(
-				new Cookie("jwt", token as string, {
+			return new Reply<INewArtistSucc>(
+				new INewArtistSucc("jwt", token as string, {
 					maxAge: expires,
 					httpOnly: true,
 					sameSite: "lax",
@@ -82,7 +89,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				})
 			)
 		} catch (error) {
-			const res = new Reply<Cookie>(undefined, ErrorMsg.apiError(apiError[500]))
+			const res = new Reply<INewArtistSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 
 			// Email must be unique
 			DbErrHandler.uniqueEmail(error, res)
@@ -97,21 +104,11 @@ export class ArtistsImplement implements ArtistsRepository {
 	): Promise<Reply<boolean>> {
 		try {
 			const { name, bio, members, genres, id } = data.profile
-			const userAuth = data.userAuth
-
-			// STORING FILE
-			const fileOrigin = filePath.origin.image + file?.filename
-			const fileStore = filePath.store.artist + file?.filename
-			FileManipulator.move(fileOrigin, fileStore)
-
-			// DELETE OLD FILE
-			// ... get the id
-			FileManipulator.delete("")
+			const userAuth = data.userAuth as number
 
 			// AUTH
-			const authID = await GetID.user(id as number, "auth")
-
-			if (userAuth !== authID) throw ErrorMsg.apiError(apiError[403])
+			const getProfile = await GetID.profile(userAuth)
+			if (userAuth !== getProfile) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
 			await dbClient.artist.update({
@@ -123,14 +120,42 @@ export class ArtistsImplement implements ArtistsRepository {
 					bio: bio,
 					members: members,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					avatarPath: fileStore,
 				},
 			})
+
+			// STORING FILE
+			if (file) {
+				// move file
+				const store = filePath.origin.image + file?.filename
+				const destination = filePath.store.artist + file?.filename
+				const avatarPath = await FileManipulator.move(store, destination)
+
+				// delete old file
+				const oldAvatarPath = await dbClient.artist.findUnique({
+					where: {
+						id: getProfile,
+					},
+					select: {
+						avatarPath: true,
+					},
+				})
+				await FileManipulator.delete(oldAvatarPath?.avatarPath as string)
+
+				// save new path
+				await dbClient.artist.update({
+					where: {
+						id: id as number,
+					},
+					data: {
+						avatarPath: avatarPath,
+					},
+				})
+			}
 
 			// RESPONSE
 			return new Reply(true)
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.apiError(apiError[500]))
+			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -159,7 +184,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				avatarPath: null,
 			})
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -197,7 +222,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				avatarPath: null,
 			})
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.apiError(apiError[500]))
+			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -226,7 +251,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], ErrorMsg.apiError(apiError[500]))
+			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
@@ -256,7 +281,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], ErrorMsg.apiError(apiError[500]))
+			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 }

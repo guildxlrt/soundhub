@@ -1,10 +1,10 @@
-import { ErrorMsg, apiError } from "Shared"
+import { ErrorMsg, htmlError } from "Shared"
 import * as bcrypt from "bcrypt"
 
 export class PassEncryptor {
 	static async hash(password: unknown): Promise<string> {
 		try {
-			if (typeof password !== "string") throw ErrorMsg.apiError(apiError[400])
+			if (typeof password !== "string") throw ErrorMsg.htmlError(htmlError[400])
 
 			const saltRounds = 10
 			const hash = await bcrypt.hash(password, saltRounds)
@@ -16,8 +16,8 @@ export class PassEncryptor {
 	}
 	static async compare(password: string, encrypted: string) {
 		try {
-			if (typeof password !== "string") throw ErrorMsg.apiError(apiError[400])
-			if (typeof encrypted !== "string") throw ErrorMsg.apiError(apiError[500])
+			if (typeof password !== "string") throw ErrorMsg.htmlError(htmlError[400])
+			if (typeof encrypted !== "string") throw ErrorMsg.htmlError(htmlError[500])
 
 			return await bcrypt.compare(password, encrypted)
 		} catch (error) {

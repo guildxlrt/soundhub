@@ -1,4 +1,4 @@
-import { ArtistID, ReleaseID } from "../typing"
+import { ArtistID, ReleaseID } from "../../types"
 
 // RELEASE
 export interface INewReleaseSucc {
@@ -14,8 +14,8 @@ export interface IReleaseSucc {
 	descript: string | null | undefined
 	price: number | null | undefined
 	genres: string[] | undefined
-	songs: { audioUrl: string; title: string }[] | undefined
-	coverUrl: string | null | undefined
+	songs: { audioApth: string; title: string }[] | undefined
+	coverPath: string | null | undefined
 }
 export type IReleasesListSucc = Omit<IReleaseSucc, "descript" | "price" | "songs">[]
 export type IReleasesListItemSucc = IReleasesListSucc[0]

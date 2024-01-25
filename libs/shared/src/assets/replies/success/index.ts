@@ -1,0 +1,6 @@
+export * from "./announces.succ"
+export * from "./artists.succ"
+export * from "./events.succ"
+export * from "./releases.succ"
+export * from "./songs.succ"
+export * from "./auth.succ"

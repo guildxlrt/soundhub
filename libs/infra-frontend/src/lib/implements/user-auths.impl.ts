@@ -3,7 +3,7 @@ import {
 	ChangeEmailReqDTO,
 	ChangePassReqDTO,
 	ErrorMsg,
-	ILoginRes,
+	ILoginSucc,
 	LoginReqDTO,
 	apiUrlEndpt,
 	apiUrlPath,
@@ -13,16 +13,16 @@ import { Response } from "../../assets"
 import axios from "axios"
 
 export class UserAuthsImplement implements UserAuthsRepository {
-	async login(email: string, password: string): Promise<Response<ILoginRes>> {
+	async login(email: string, password: string): Promise<Response<ILoginSucc>> {
 		try {
 			return (await axios({
 				method: "post",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.login}`,
 				withCredentials: true,
 				data: { email: email, password: password } as LoginReqDTO,
-			})) as Response<ILoginRes>
+			})) as Response<ILoginSucc>
 		} catch (error) {
-			return new Response<ILoginRes>(undefined, new ErrorMsg("Error Calling API"))
+			return new Response<ILoginSucc>(undefined, new ErrorMsg("Error Calling API"))
 		}
 	}
 

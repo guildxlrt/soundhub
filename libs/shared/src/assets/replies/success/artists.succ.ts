@@ -1,10 +1,7 @@
-import { ArtistID, UserTokenData } from "../typing"
+import { ArtistID, Cookie } from "../../types"
 
 // ARTIST
-export interface INewArtistSucc {
-	message: string
-	userCookie: UserTokenData
-}
+export class INewArtistSucc extends Cookie {}
 
 export type IArtistInfoSucc = null | {
 	id: ArtistID | undefined
