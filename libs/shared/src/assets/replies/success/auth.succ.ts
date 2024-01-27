@@ -1,3 +1,3 @@
-import { Cookie } from "Shared"
+import { UserCookie } from "../../types"
 
-export class ILoginSucc extends Cookie {}
+export class ILoginSucc extends UserCookie {}

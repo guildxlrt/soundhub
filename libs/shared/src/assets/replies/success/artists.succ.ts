@@ -1,7 +1,11 @@
-import { ArtistID, Cookie } from "../../types"
+import { ArtistID, CookieOptions, UserCookie } from "../../types"
 
 // ARTIST
-export class INewArtistSucc extends Cookie {}
+export class INewArtistSucc extends UserCookie {
+	constructor(name: string, val: string, options: CookieOptions) {
+		super(name, val, options)
+	}
+}
 
 export type IArtistInfoSucc = null | {
 	id: ArtistID | undefined

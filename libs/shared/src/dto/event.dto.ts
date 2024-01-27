@@ -1,4 +1,4 @@
-import { ArtistID, IEventSucc, IEventsListSucc } from "../utils"
+import { ArtistID, IEventSucc, IEventsListSucc } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 export class CreateEventReqDTO {

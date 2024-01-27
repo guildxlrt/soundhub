@@ -6,8 +6,8 @@ import {
 	GenresArray,
 	UserEmail,
 	UserPassword,
-	Cookie,
-} from "../utils"
+	ILoginSucc,
+} from "../assets"
 import { ReplyDTO } from "./layers"
 
 // CREATE ARTIST
@@ -31,7 +31,7 @@ export class CreateArtistReqDTO {
 		this.authConfirm = authConfirm
 	}
 }
-export class CreateArtistReplyDTO extends ReplyDTO<Cookie> {}
+export class CreateArtistReplyDTO extends ReplyDTO<ILoginSucc> {}
 
 // MODIFY ARTIST //
 export class UpdateArtistReqDTO {

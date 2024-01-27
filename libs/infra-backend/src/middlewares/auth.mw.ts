@@ -1,5 +1,6 @@
 import { ErrorMsg, htmlError } from "Shared"
-import { ApiNext, ApiReply, ApiRequest, Token, ApiErrHandler } from "../utils"
+import { Token, ApiErrHandler } from "../utils"
+import { ApiNext, ApiReply, ApiRequest } from "../config"
 
 export const authMiddleware = (req: ApiRequest, res: ApiReply, next: ApiNext) => {
 	try {

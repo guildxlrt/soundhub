@@ -1,4 +1,4 @@
-import { UserTokenData, UserEmail, UserPassword } from "../utils"
+import { UserTokenData, UserEmail, UserPassword } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // LOGIN

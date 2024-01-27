@@ -1,4 +1,4 @@
-import { ErrorMsg, GenresArray, GenresEnum } from "../../utils"
+import { ErrorMsg, GenresArray, GenresEnum } from "../../assets"
 
 export class GenresFormatter {
 	format(genres: GenresArray | string[], backend: boolean): GenresArray {

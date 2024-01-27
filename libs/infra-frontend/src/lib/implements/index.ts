@@ -1,6 +1,0 @@
-export * from "./user-auths.impl"
-export * from "./artists.impl"
-export * from "./releases.impl"
-export * from "./songs.impl"
-export * from "./announces.impl"
-export * from "./events.impl"

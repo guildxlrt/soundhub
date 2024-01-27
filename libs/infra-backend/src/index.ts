@@ -1,3 +1,5 @@
-export * from "./repositories"
 export * from "./middlewares"
+export * from "./repositories"
+export * from "./services"
 export * from "./utils"
+export * from "./config/express"

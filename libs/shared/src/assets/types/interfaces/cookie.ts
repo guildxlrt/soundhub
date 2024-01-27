@@ -3,16 +3,16 @@ import { UserProfileType } from "../enums"
 export class UserTokenData {
 	id: number
 	profileID: number
-	profileType: UserProfileType
+	profileType?: UserProfileType
 
-	constructor(id: number, profileID: number, profileType: UserProfileType) {
+	constructor(id: number, profileID: number, profileType?: UserProfileType) {
 		this.id = id
 		this.profileID = profileID
 		this.profileType = profileType
 	}
 }
 
-interface CookieOptions {
+export interface CookieOptions {
 	maxAge?: number | undefined
 	signed?: boolean | undefined
 	expires?: Date | undefined
@@ -24,7 +24,7 @@ interface CookieOptions {
 	sameSite?: boolean | "lax" | "strict" | "none" | undefined
 }
 
-export class Cookie {
+export class UserCookie {
 	name: string
 	val: string
 	options: CookieOptions
@@ -34,9 +34,4 @@ export class Cookie {
 		this.val = val
 		this.options = options
 	}
-	// gen("jwt", token, {
-	// 	maxAge: expires,
-	// 	httpOnly: true,
-	// 	sameSite: "lax",
-	// 	secure: false,}) {}
 }

@@ -6,7 +6,7 @@ import {
 	IReleasesListSucc,
 	ReleaseID,
 	ReleaseType,
-} from "../utils"
+} from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE RELEASE

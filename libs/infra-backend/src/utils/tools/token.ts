@@ -3,14 +3,24 @@ import * as fs from "fs"
 import { ErrorMsg, UserTokenData, htmlError } from "Shared"
 import { ApiRequest } from "../assets"
 
-const privateKey = fs.readFileSync("private.pem", "utf8")
-
 export class Token {
-	static generate(userCookie: UserTokenData | undefined, expires: string | number | undefined) {
+	static async generate(
+		userCookie: UserTokenData | undefined,
+		expires: string | number | undefined
+	) {
 		try {
 			if (!userCookie) throw ErrorMsg.htmlError(htmlError[400])
 
 			const { id, profileID, profileType } = userCookie
+
+			const privateKey = fs.promises
+				.readFile("private.pem", "utf8")
+				.then((data) => {
+					return data
+				})
+				.catch((error) => {
+					console.error("Error:", error.message)
+				})
 
 			return jwt.sign(
 				{
@@ -18,7 +28,7 @@ export class Token {
 					profileID: profileID,
 					profileType: profileType,
 				},
-				privateKey,
+				(await privateKey) as string,
 				{ expiresIn: expires, algorithm: "RS256" }
 			)
 		} catch (error) {
@@ -26,12 +36,21 @@ export class Token {
 		}
 	}
 
-	static decode(req: ApiRequest) {
+	static async decode(req: ApiRequest) {
 		try {
 			const token = req.cookies.jwt
 			if (!token) ErrorMsg.htmlError(htmlError[400])
 
-			const decoded = jwt.verify(token, privateKey) as UserTokenData
+			const privateKey = fs.promises
+				.readFile("private.pem", "utf8")
+				.then((data) => {
+					return data
+				})
+				.catch((error) => {
+					console.error("Error:", error.message)
+				})
+
+			const decoded = jwt.verify(token, (await privateKey) as string) as UserTokenData
 
 			req.auth = {
 				id: decoded.id,

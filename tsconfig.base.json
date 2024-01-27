@@ -17,6 +17,7 @@
 		"esModuleInterop": true,
 		"paths": {
 			"Domain": ["libs/domain/src/index.ts"],
+			"Application": ["libs/application/src/index.ts"],
 			"Infra-backend": ["libs/infra-backend/src/index.ts"],
 			"Infra-frontend": ["libs/infra-frontend/src/index.ts"],
 			"Interface-back": ["libs/interface-back/src/index.ts"],

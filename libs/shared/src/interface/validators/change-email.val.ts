@@ -1,11 +1,11 @@
 import validators from "validator"
-import { ErrorMsg } from "../../utils"
+import { ErrorMsg } from "../../assets"
 
 // CHANGE EMAIL
 export class ChangeEmailValidator {
 	validate(
 		emails: { actual: string; newEmail: string; confirm: string },
-		backend?: boolean
+		backend: boolean
 	): void {
 		try {
 			const { newEmail, actual, confirm } = emails

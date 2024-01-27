@@ -1,4 +1,4 @@
-import { ArtistID, IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../utils"
+import { ArtistID, IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST

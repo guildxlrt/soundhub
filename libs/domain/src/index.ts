@@ -1,2 +1,2 @@
-export * from "./assets/usecase-params"
-export * from "./lib"
+export * from "./entities"
+export * from "./repositories"

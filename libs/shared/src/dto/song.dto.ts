@@ -1,4 +1,4 @@
-import { ISongSucc } from "../utils"
+import { ISongSucc } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // GET SONG

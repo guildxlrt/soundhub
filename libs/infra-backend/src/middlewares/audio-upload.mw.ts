@@ -1,6 +1,7 @@
 import multer, { Multer } from "multer"
-import { ApiErrHandler, ApiNext, ApiReply, ApiRequest } from "../utils"
+import { ApiErrHandler } from "../utils"
 import { AUDIO_MIME_TYPES } from "Shared"
+import { ApiNext, ApiReply, ApiRequest } from "../config"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {

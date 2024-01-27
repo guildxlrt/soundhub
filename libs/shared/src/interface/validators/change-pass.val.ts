@@ -1,5 +1,5 @@
 import validators from "validator"
-import { ErrorMsg } from "../../utils"
+import { ErrorMsg } from "../../assets"
 
 // CHANGE PASS
 export class ChangePassValidator {

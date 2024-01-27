@@ -1,2 +1,1 @@
-export * from "./implements"
-export * from "./api-services"
+export * from "./repositories"

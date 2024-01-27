@@ -1,4 +1,4 @@
-import { ErrorMsg, FileType, IMimetypes } from "../../utils"
+import { ErrorMsg, FileType, IMimetypes } from "../../assets"
 
 // SONG
 export class FileValidator {
