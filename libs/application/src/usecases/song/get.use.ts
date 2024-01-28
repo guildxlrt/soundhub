@@ -1,15 +1,17 @@
 import { GetSongReplyDTO, ErrorMsg } from "Shared"
-import { UsecaseLayer, RepositoriesType, IDUsecaseParams } from "../../assets"
+import { IDUsecaseParams } from "../../assets"
+import { SongsService } from "../../services"
 
 export class GetSongUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	songsService: SongsService
+	constructor(songsService: SongsService) {
+		this.songsService = songsService
 	}
 
 	async execute(input: IDUsecaseParams): Promise<GetSongReplyDTO> {
 		try {
 			const id = input.id
-			return await this.services.songs.get(id)
+			return await this.songsService.get(id)
 		} catch (error) {
 			return new GetSongReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

@@ -1,10 +1,11 @@
-import { UsecaseLayer, RepositoriesType, EditReleaseUsecaseParams } from "../../assets"
-import { EditReleaseReplyDTO, ErrorMsg, formatters } from "Shared"
-import { Release, Song } from "Domain"
+import { EditReleaseUsecaseParams } from "../../assets"
+import { EditReleaseReplyDTO, ErrorMsg } from "Shared"
+import { ReleasesService } from "../../services"
 
 export class EditReleaseUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	releasesService: ReleasesService
+	constructor(releasesService: ReleasesService) {
+		this.releasesService = releasesService
 	}
 
 	async execute(input: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
@@ -12,7 +13,7 @@ export class EditReleaseUsecase {
 			const { songs, release } = input
 			const { cover, data } = release
 
-			return await this.services.releases.edit({ data: data, cover }, songs)
+			return await this.releasesService.edit({ data: data, cover }, songs)
 		} catch (error) {
 			return new EditReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

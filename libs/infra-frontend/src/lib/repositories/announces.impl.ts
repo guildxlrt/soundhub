@@ -6,8 +6,8 @@ import {
 	IAnnouncesListSucc,
 	ErrorMsg,
 	AnnounceID,
-	ArtistID,
-	FileType,
+	ProfileID,
+	IFile,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
@@ -15,10 +15,10 @@ import {
 import { AnnouncesRepository } from "Domain"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(data: Announce, file?: FileType): Promise<Response<boolean>> {
+	async create(data: Announce, file?: IFile): Promise<Response<boolean>> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, file as FileType)
+			ToFormData.file(formData, file as IFile)
 			ToFormData.object(formData, data)
 
 			return (await axios({
@@ -32,10 +32,10 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async edit(data: Announce, file?: FileType): Promise<Response<boolean>> {
+	async edit(data: Announce, file?: IFile): Promise<Response<boolean>> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, file as FileType)
+			ToFormData.file(formData, file as IFile)
 			ToFormData.object(formData, data)
 
 			return (await axios({
@@ -85,7 +85,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(id: ArtistID): Promise<Response<IAnnouncesListSucc>> {
+	async findManyByArtist(id: ProfileID): Promise<Response<IAnnouncesListSucc>> {
 		try {
 			return (await axios({
 				method: "get",

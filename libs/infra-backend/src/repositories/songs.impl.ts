@@ -4,9 +4,11 @@ import { SongID, ISongSucc, ErrorMsg, htmlError } from "Shared"
 import { dbClient } from "../database"
 
 export class SongsImplement implements SongsRepository {
+	private song = dbClient.song
+
 	async get(id: SongID): Promise<Reply<ISongSucc>> {
 		try {
-			const song = await dbClient.song.findUnique({
+			const song = await this.song.findUniqueOrThrow({
 				where: {
 					id: id,
 				},

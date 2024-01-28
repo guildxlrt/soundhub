@@ -6,26 +6,26 @@ import {
 	FindReleasesByGenreUsecase,
 	GetAllReleasesUsecase,
 	GetReleaseUsecase,
-	HideReleaseUsecase,
+	SetPrivStatusReleaseUsecase,
 	EditReleaseUsecase,
 	NewReleaseUsecaseParams,
 	EditReleaseUsecaseParams,
-	HideReleaseUsecaseParams,
+	SetPrivStatusReleaseUsecaseParams,
 	IDUsecaseParams,
 	GenreUsecaseParams,
 } from "Application"
 import {
 	CreateReleaseReplyDTO,
 	CreateReleaseReqDTO,
-	FileType,
+	IFile,
 	FilesArray,
 	FindReleasesByArtistReplyDTO,
 	FindReleasesByGenreReplyDTO,
 	GenreType,
 	GetAllReleasesReplyDTO,
 	GetReleaseReplyDTO,
-	HideReleaseReplyDTO,
-	HideReleaseReqDTO,
+	SetPrivStatusReleaseReplyDTO,
+	SetPrivStatusReleaseReqDTO,
 	EditReleaseReplyDTO,
 	EditReleaseReqDTO,
 	htmlError,
@@ -43,7 +43,7 @@ export class ReleasesController implements IReleasesCtrl {
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
-			const cover: FileType = req.file as FileType
+			const cover: IFile = req.file as IFile
 			const audioFiles: FilesArray = req.files as FilesArray
 			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
 
@@ -105,7 +105,7 @@ export class ReleasesController implements IReleasesCtrl {
 
 			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
 			const user = req.auth?.profileID as number
-			const cover: FileType = req.file as FileType
+			const cover: IFile = req.file as IFile
 
 			const { title, releaseType, price, descript, genres, id, coverPath } = inputs.release
 			const releaseData = new Release(
@@ -149,23 +149,23 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async hide(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async setPrivStatus(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
 		try {
 			if (req.method !== "PATCH")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID
-			const { id, isPublic }: HideReleaseReqDTO = req.body as HideReleaseReqDTO
+			const { id, isPublic }: SetPrivStatusReleaseReqDTO = req.body as SetPrivStatusReleaseReqDTO
 
 			// Saving Profile
-			const hideRelease = new HideReleaseUsecase(databaseRepos)
-			const { data, error } = await hideRelease.execute(
-				new HideReleaseUsecaseParams(id, isPublic, user)
+			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(databaseRepos)
+			const { data, error } = await setPrivStatusRelease.execute(
+				new SetPrivStatusReleaseUsecaseParams(id, isPublic, user)
 			)
 			if (error) throw error
 
 			// Return infos
-			return res.status(202).send(new HideReleaseReplyDTO(data))
+			return res.status(202).send(new SetPrivStatusReleaseReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}

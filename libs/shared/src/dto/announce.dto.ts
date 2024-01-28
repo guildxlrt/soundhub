@@ -1,4 +1,4 @@
-import { ArtistID, IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../assets"
+import { ProfileID, IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST
@@ -16,14 +16,14 @@ export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 // MODIFY POST
 export class EditAnnounceReqDTO {
 	readonly id: number
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	readonly title: string
 	readonly text: string
 	readonly imagePath: string | null
 
 	constructor(
 		id: number,
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		title: string,
 		text: string,
 		imagePath: string | null

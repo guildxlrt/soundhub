@@ -1,5 +1,5 @@
 import {
-	ArtistID,
+	ProfileID,
 	GenresArray,
 	INewReleaseSucc,
 	IReleaseSucc,
@@ -12,7 +12,7 @@ import { ReplyDTO } from "./layers/reply"
 // CREATE RELEASE
 export class CreateReleaseReqDTO {
 	readonly release: {
-		readonly owner_id: ArtistID
+		readonly owner_id: ProfileID
 		readonly title: string
 		readonly releaseType: ReleaseType
 		readonly descript: string | null
@@ -27,7 +27,7 @@ export class CreateReleaseReqDTO {
 
 	constructor(
 		release: {
-			owner_id: ArtistID
+			owner_id: ProfileID
 			title: string
 			releaseType: ReleaseType
 			descript: string | null
@@ -51,7 +51,7 @@ export class CreateReleaseReplyDTO extends ReplyDTO<INewReleaseSucc> {}
 export class EditReleaseReqDTO {
 	readonly release: {
 		readonly id: ReleaseID
-		readonly owner_id: ArtistID
+		readonly owner_id: ProfileID
 		readonly title: string
 		readonly releaseType: ReleaseType
 		readonly descript: string | null
@@ -70,7 +70,7 @@ export class EditReleaseReqDTO {
 	constructor(
 		release: {
 			id: ReleaseID
-			owner_id: ArtistID
+			owner_id: ProfileID
 			title: string
 			releaseType: ReleaseType
 			descript: string | null
@@ -93,7 +93,7 @@ export class EditReleaseReqDTO {
 export class EditReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // HIDE
-export class HideReleaseReqDTO {
+export class SetPrivStatusReleaseReqDTO {
 	readonly id: ReleaseID
 	readonly isPublic: boolean
 
@@ -102,7 +102,7 @@ export class HideReleaseReqDTO {
 		this.isPublic = isPublic
 	}
 }
-export class HideReleaseReplyDTO extends ReplyDTO<boolean> {}
+export class SetPrivStatusReleaseReplyDTO extends ReplyDTO<boolean> {}
 
 // GET
 export class GetReleaseReplyDTO extends ReplyDTO<IReleaseSucc> {}

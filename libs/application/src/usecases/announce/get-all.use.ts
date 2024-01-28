@@ -1,14 +1,14 @@
-import { UsecaseLayer, RepositoriesType } from "../../assets"
 import { GetAllAnnouncesReplyDTO, ErrorMsg } from "Shared"
+import { AnnouncesService } from "../../services"
 
 export class GetAllAnnouncesUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	releasesService: AnnouncesService
+	constructor(releasesService: AnnouncesService) {
+		this.releasesService = releasesService
 	}
-
 	async execute(): Promise<GetAllAnnouncesReplyDTO> {
 		try {
-			return await this.services.announces.getAll()
+			return await this.releasesService.getAll()
 		} catch (error) {
 			return new GetAllAnnouncesReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

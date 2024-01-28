@@ -17,7 +17,7 @@ export interface IArtistCtrl {
 export interface IReleasesCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	edit(req: unknown, res: unknown): Promise<unknown>
-	hide(req: unknown, res: unknown): Promise<unknown>
+	setPrivStatus(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>

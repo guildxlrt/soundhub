@@ -1,36 +1,65 @@
 import { ErrorMsg, ILoginSucc, ReplyLayer, htmlError } from "Shared"
 import { LoginUsecaseParams } from "../../assets"
-import { AuthServices, UserAuthService } from "../../services"
+import { ArtistsService, AuthService, UserAuthService } from "../../services"
 
 export class LoginUsecase {
 	private userAuthService: UserAuthService
-	private authService?: AuthServices
+	private authService?: AuthService
+	private profileService?: ArtistsService
 
-	constructor(userAuthService: UserAuthService, authService?: AuthServices) {
+	constructor(userAuthService: UserAuthService, authService?: AuthService, profileService?: any) {
 		this.userAuthService = userAuthService
 		this.authService = authService
+		this.profileService = profileService
 	}
 
 	async execute(input: LoginUsecaseParams): Promise<ReplyLayer<ILoginSucc>> {
 		try {
+			if (this.authService && this.profileService)
+				return await this.backend(this.authService, this.profileService, input)
+			else if (!this.authService && !this.profileService) return await this.frontend(input)
+			else throw new Error()
+		} catch (error) {
+			return new ReplyLayer<ILoginSucc>(undefined, new ErrorMsg(`Error: failed to persist`))
+		}
+	}
+
+	async backend(
+		authService: AuthService,
+		profileService: ArtistsService,
+		input: LoginUsecaseParams
+	) {
+		try {
 			const { email, password } = input
 
-			if (this.authService) {
-				const data = await this.authService.getByEmail(email)
+			// VERIFY CREDS
+			const data = await authService.getByEmail(email)
+			const comparePass = await authService.comparePass(data.password, password)
+			const compareEmails = await authService.compareEmails(data.email, email)
 
-				const comparePass = await this.authService.comparePass(data.email, data.password)
-				const compareEmails = await this.authService.compareEmails(
-					data.email,
-					data.password
-				)
+			if (!compareEmails || !comparePass) throw ErrorMsg.htmlError(htmlError[403])
 
-				if (!compareEmails || !comparePass) throw ErrorMsg.htmlError(htmlError[403])
+			// GET THE PROFILE
+			const userData = await profileService.getByAuth(data.id)
 
-				// GET THE PROFILE
-				// ... logic
+			// Cookie
+			const userCookie = await authService.genCookie(
+				data.id,
+				userData.profile.id as number,
+				"artist"
+			)
 
-				return await this.userAuthService.login({ id: data.id, profile: 0 })
-			} else return await this.userAuthService.login({ email: email, password: password })
+			return await this.userAuthService.login(userCookie)
+		} catch (error) {
+			return new ReplyLayer<ILoginSucc>(undefined, new ErrorMsg(`Error: failed to persist`))
+		}
+	}
+
+	async frontend(input: LoginUsecaseParams) {
+		try {
+			const { email, password } = input
+
+			return await this.userAuthService.login({ email: email, password: password })
 		} catch (error) {
 			return new ReplyLayer<ILoginSucc>(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

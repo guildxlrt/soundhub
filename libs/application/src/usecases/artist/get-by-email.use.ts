@@ -1,15 +1,17 @@
 import { GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
-import { UsecaseLayer, RepositoriesType, EmailUsecaseParams } from "../../assets"
+import { EmailUsecaseParams } from "../../assets"
+import { ArtistsService } from "../../services"
 
 export class GetArtistByEmailUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	artistsService: ArtistsService
+	constructor(artistsService: ArtistsService) {
+		this.artistsService = artistsService
 	}
 
 	async execute(input: EmailUsecaseParams): Promise<GetArtistByEmailReplyDTO> {
 		try {
 			const { email } = input
-			return await this.services.artists.getByEmail(email)
+			return await this.artistsService.getByEmail(email)
 		} catch (error) {
 			return new GetArtistByEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

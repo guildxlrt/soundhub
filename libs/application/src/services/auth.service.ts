@@ -1,7 +1,15 @@
-import { AuthRepository } from "Domain"
-import { ErrorMsg, UserAuthID, UserEmail, UserPassword, htmlError } from "Shared"
+import { AuthRepository, UserCookie } from "Domain"
+import {
+	ProfileID,
+	ErrorMsg,
+	UserAuthID,
+	UserEmail,
+	UserPassword,
+	UserProfileType,
+	htmlError,
+} from "Shared"
 
-export class AuthServices {
+export class AuthService implements AuthRepository {
 	private service: AuthRepository
 
 	constructor(service: AuthRepository) {
@@ -9,6 +17,18 @@ export class AuthServices {
 	}
 
 	// SERVIVES
+	async genCookie(
+		id: UserAuthID,
+		profile: ProfileID,
+		profileType: UserProfileType
+	): Promise<UserCookie> {
+		try {
+			return await this.service.genCookie(id, profile, profileType)
+		} catch (error) {
+			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+		}
+	}
+
 	async getByID(id: UserAuthID): Promise<{
 		id: number
 		email: string
@@ -49,6 +69,14 @@ export class AuthServices {
 	async compareEmails(dbEmail: UserPassword, inputedEmail: UserPassword): Promise<boolean> {
 		try {
 			return await this.service.compareEmails(dbEmail, inputedEmail)
+		} catch (error) {
+			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+		}
+	}
+
+	async hashPass(pass: string): Promise<string> {
+		try {
+			return await this.service.hashPass(pass)
 		} catch (error) {
 			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
 		}

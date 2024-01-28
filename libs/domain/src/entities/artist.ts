@@ -1,4 +1,4 @@
-import { ArtistID, GenresArray, UserAuthID } from "Shared"
+import { ProfileID, GenresArray, UserAuthID } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Artist extends EntityLayer {
@@ -10,7 +10,7 @@ export class Artist extends EntityLayer {
 	avatarPath: string | null
 
 	constructor(
-		id: ArtistID | null,
+		id: ProfileID | null,
 		user_auth_id: UserAuthID | null,
 		name: string,
 		bio: string,

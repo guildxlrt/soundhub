@@ -1,8 +1,8 @@
-import { ErrorMsg, FileType, IMimetypes } from "../../assets"
+import { ErrorMsg, IFile, IMimetypes } from "../../assets"
 
 // SONG
 export class FileValidator {
-	validate(file: FileType, mimetypes: IMimetypes, backend?: boolean): void {
+	validate(file: IFile, mimetypes: IMimetypes, backend?: boolean): void {
 		try {
 			const check = Object.keys(mimetypes).find((mimetype) => mimetype === file.mimetype)
 			if (!check)

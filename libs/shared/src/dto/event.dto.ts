@@ -1,16 +1,16 @@
-import { ArtistID, IEventSucc, IEventsListSucc } from "../assets"
+import { ProfileID, IEventSucc, IEventsListSucc } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 export class CreateEventReqDTO {
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	readonly date: Date
 	readonly place: string
-	readonly artists: ArtistID[]
+	readonly artists: ProfileID[]
 	readonly title: string
 	readonly text: string
 
 	constructor(
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		date: Date,
 		place: string,
 		artists: number[],
@@ -29,7 +29,7 @@ export class CreateEventReplyDTO extends ReplyDTO<boolean> {}
 
 export class EditEventReqDTO {
 	readonly id: number
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	readonly date: Date
 	readonly place: string
 	readonly artists: number[]
@@ -39,7 +39,7 @@ export class EditEventReqDTO {
 
 	constructor(
 		id: number,
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		date: Date,
 		place: string,
 		artists: number[],

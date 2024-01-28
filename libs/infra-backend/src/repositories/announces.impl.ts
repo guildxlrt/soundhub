@@ -1,38 +1,43 @@
-import { AnnouncesRepository } from "Domain"
+import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import { Reply, FileManipulator, filePath } from "../utils"
+import { Reply } from "../utils"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
 	ErrorMsg,
 	IAnnouncesListItemSucc,
 	AnnounceID,
-	UserAuthID,
-	FileType,
 	htmlError,
 } from "Shared"
-import { GetID, dbClient } from "../database"
+import { dbClient } from "../database"
 
-export class AnnouncesImplement implements AnnouncesRepository {
-	async create(data: Announce, file?: FileType): Promise<Reply<boolean>> {
+export class AnnouncesImplement implements AnnouncesBackendRepos {
+	private announce = dbClient.announce
+
+	async create(data: Announce): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, title, text } = data
+			const { owner_id, title, text, imagePath } = data
 
-			// STORING FILE
-			const fileOrigin = filePath.origin.image + file?.filename
-			const fileStore = filePath.store.announce + file?.filename
-			await FileManipulator.move(fileOrigin, fileStore)
+			if (imagePath) {
+				await this.announce.create({
+					data: {
+						owner_id: owner_id as number,
+						title: title,
+						text: text,
+						imagePath: imagePath,
+					},
+				})
+			} else {
+				await this.announce.create({
+					data: {
+						owner_id: owner_id as number,
+						title: title,
+						text: text,
+					},
+				})
+			}
 
-			await dbClient.announce.create({
-				data: {
-					owner_id: owner_id as number,
-					title: title,
-					text: text,
-					imagePath: fileStore,
-				},
-			})
-
-			// RESPONSE
+			// RESPO NSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
@@ -41,37 +46,35 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async edit(data: Announce, file?: FileType): Promise<Reply<boolean>> {
+	async edit(data: Announce): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, title, text, id } = data
+			const { owner_id, title, text, id, imagePath } = data
 
-			// owner verification
-			const announceOwner = await GetID.owner(id as number, "announce")
-			if (owner_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (imagePath || imagePath === null) {
+				await this.announce.update({
+					where: {
+						id: id as number,
+						owner_id: owner_id,
+					},
+					data: {
+						title: title,
+						text: text,
+						imagePath: imagePath,
+					},
+				})
+			} else {
+				await this.announce.update({
+					where: {
+						id: id as number,
+						owner_id: owner_id,
+					},
+					data: {
+						title: title,
+						text: text,
+					},
+				})
+			}
 
-			// STORING FILE
-			const fileOrigin = filePath.origin.image + file?.filename
-			const fileStore = filePath.store.announce + file?.filename
-			await FileManipulator.move(fileOrigin, fileStore)
-
-			// DELETE OLD FILE
-			// ... get the id
-			await FileManipulator.delete("")
-
-			// persist
-			await dbClient.announce.update({
-				where: {
-					id: id as number,
-					owner_id: owner_id,
-				},
-				data: {
-					title: title,
-					text: text,
-					imagePath: fileStore,
-				},
-			})
-
-			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
@@ -80,20 +83,14 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
+	async delete(id: AnnounceID): Promise<Reply<void>> {
 		try {
-			// owner verification
-			const announceOwner = await GetID.owner(id as number, "announce")
-			if (userAuth !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// persist
-			await dbClient.announce.delete({
+			await this.announce.delete({
 				where: {
 					id: id,
 				},
 			})
 
-			// RESPONSE
 			return new Reply<void>()
 		} catch (error) {
 			const res = new Reply<void>(undefined, new ErrorMsg(`Error: failed to delete`, 500))
@@ -104,7 +101,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async get(id: AnnounceID): Promise<Reply<IAnnounceSucc>> {
 		try {
-			const announce = await dbClient.announce.findUnique({
+			const announce = await this.announce.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -116,7 +113,6 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				},
 			})
 
-			// RESPONSE
 			return new Reply<IAnnounceSucc>({
 				id: id,
 				owner_id: id,
@@ -131,7 +127,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async getAll(): Promise<Reply<IAnnouncesListSucc>> {
 		try {
-			const announces = await dbClient.announce.findMany({
+			const announces = await this.announce.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -150,7 +146,6 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
@@ -159,11 +154,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async findManyByArtist(id: AnnounceID): Promise<Reply<IAnnouncesListSucc>> {
 		try {
-			const artistID = id
+			const profileID = id
 
-			const announces = await dbClient.announce.findMany({
+			const announces = await this.announce.findMany({
 				where: {
-					owner_id: artistID,
+					owner_id: profileID,
 				},
 				select: {
 					id: true,
@@ -183,10 +178,41 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
 			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+		}
+	}
+
+	async getOwner(id: AnnounceID): Promise<number> {
+		try {
+			const announce = await this.announce.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					owner_id: true,
+				},
+			})
+			return announce?.owner_id
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+		}
+	}
+
+	async getImagePath(id: AnnounceID): Promise<string | null> {
+		try {
+			const announce = await this.announce.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					imagePath: true,
+				},
+			})
+			return announce?.imagePath
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
 		}
 	}
 }

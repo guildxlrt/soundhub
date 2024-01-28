@@ -1,4 +1,4 @@
-import { ArtistID, ReleaseID } from "../../types"
+import { ProfileID, ReleaseID } from "../../types"
 
 // RELEASE
 export interface INewReleaseSucc {
@@ -8,7 +8,7 @@ export interface INewReleaseSucc {
 
 export interface IReleaseSucc {
 	id: ReleaseID
-	owner_id: ArtistID
+	owner_id: ProfileID
 	title: string | undefined
 	releaseType: string | undefined
 	descript: string | null | undefined

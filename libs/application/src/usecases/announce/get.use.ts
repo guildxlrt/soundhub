@@ -1,16 +1,18 @@
 import { GetAnnounceReplyDTO, ErrorMsg } from "Shared"
-import { UsecaseLayer, RepositoriesType, IDUsecaseParams } from "../../assets"
+import { IDUsecaseParams } from "../../assets"
+import { AnnouncesService } from "../../services"
 
 export class GetAnnounceUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	releasesService: AnnouncesService
+	constructor(releasesService: AnnouncesService) {
+		this.releasesService = releasesService
 	}
 
 	async execute(input: IDUsecaseParams): Promise<GetAnnounceReplyDTO> {
 		try {
 			const id = input.id
 
-			return await this.services.announces.get(id)
+			return await this.releasesService.get(id)
 		} catch (error) {
 			return new GetAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

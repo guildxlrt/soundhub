@@ -1,30 +1,29 @@
-import { EventsRepository } from "Domain"
+import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import { Reply, filePath, FileManipulator } from "../utils"
+import { Reply } from "../utils"
 import {
 	ErrorMsg,
 	IEventSucc,
 	IEventsListItemSucc,
 	IEventsListSucc,
 	EventID,
-	UserAuthID,
-	AnnounceID,
-	FileType,
 	htmlError,
 } from "Shared"
-import { GetID, dbClient } from "../database"
+import { dbClient } from "../database"
 
-export class EventsImplement implements EventsRepository {
-	async create(data: Event, file?: FileType): Promise<Reply<boolean>> {
+export class EventsImplement implements EventsBackendRepos {
+	private event = dbClient.event
+
+	async create(data: Event): Promise<Reply<boolean>> {
 		try {
 			const { owner_id, date, place, artists, title, text } = data
 
-			// Storing files
-			const fileOrigin = filePath.origin.image + file?.filename
-			const fileStore = filePath.store.event + file?.filename
-			await FileManipulator.move(fileOrigin, fileStore)
+			// // Storing files
+			// const fileOrigin = filePath.origin.image + file?.filename
+			// const fileStore = filePath.store.event + file?.filename
+			// await FileManipulator.move(fileOrigin, fileStore)
 
-			await dbClient.event.create({
+			await this.event.create({
 				data: {
 					owner_id: owner_id as number,
 					date: date,
@@ -32,7 +31,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imagePath: fileStore,
+					// imagePath: fileStore,
 				},
 			})
 
@@ -45,27 +44,25 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async edit(data: Event, file?: FileType): Promise<Reply<boolean>> {
+	async edit(data: Event): Promise<Reply<boolean>> {
 		try {
 			const { id, owner_id, date, place, artists, title, text } = data
 
-			const userAuth = data.owner_id
+			// // owner verification
+			// const eventOwner = await GetID.owner(id as number, "event")
+			// if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			// owner verification
-			const eventOwner = await GetID.owner(id as number, "event")
-			if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// // STORING FILE
+			// const fileOrigin = filePath.origin.image + file?.filename
+			// const fileStore = filePath.store.event + file?.filename
+			// await FileManipulator.move(fileOrigin, fileStore)
 
-			// STORING FILE
-			const fileOrigin = filePath.origin.image + file?.filename
-			const fileStore = filePath.store.event + file?.filename
-			await FileManipulator.move(fileOrigin, fileStore)
-
-			// DELETE OLD FILE
-			// ... get the id
-			await FileManipulator.delete("")
+			// // DELETE OLD FILE
+			// // ... get the id
+			// await FileManipulator.delete("")
 
 			// persist
-			await dbClient.event.update({
+			await this.event.update({
 				where: {
 					id: id as number,
 					owner_id: owner_id,
@@ -76,7 +73,7 @@ export class EventsImplement implements EventsRepository {
 					artists: artists,
 					title: title,
 					text: text,
-					imagePath: fileStore,
+					// imagePath: fileStore,
 				},
 			})
 
@@ -89,14 +86,14 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async delete(id: AnnounceID, userAuth?: UserAuthID): Promise<Reply<void>> {
+	async delete(id: EventID): Promise<Reply<void>> {
 		try {
-			// owner verification
-			const eventOwner = await GetID.owner(id as number, "event")
-			if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// // owner verification
+			// const eventOwner = await GetID.owner(id as number, "event")
+			// if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
-			await dbClient.event.delete({
+			await this.event.delete({
 				where: {
 					id: id,
 				},
@@ -113,7 +110,7 @@ export class EventsImplement implements EventsRepository {
 
 	async get(id: EventID): Promise<Reply<IEventSucc>> {
 		try {
-			const event = await dbClient.event.findUnique({
+			const event = await this.event.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -147,7 +144,7 @@ export class EventsImplement implements EventsRepository {
 
 	async getAll(): Promise<Reply<IEventsListSucc>> {
 		try {
-			const event = await dbClient.event.findMany({
+			const event = await this.event.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -181,11 +178,11 @@ export class EventsImplement implements EventsRepository {
 
 	async findManyByArtist(id: EventID): Promise<Reply<IEventsListSucc>> {
 		try {
-			const artistID = id
+			const profileID = id
 
-			const event = await dbClient.event.findMany({
+			const event = await this.event.findMany({
 				where: {
-					artists: { has: artistID },
+					artists: { has: profileID },
 				},
 				select: {
 					id: true,
@@ -220,7 +217,7 @@ export class EventsImplement implements EventsRepository {
 
 	async findManyByDate(date: Date): Promise<Reply<IEventsListSucc>> {
 		try {
-			const event = await dbClient.event.findMany({
+			const event = await this.event.findMany({
 				where: {
 					date: date,
 				},
@@ -256,7 +253,7 @@ export class EventsImplement implements EventsRepository {
 
 	async findManyByPlace(place: string): Promise<Reply<IEventsListSucc>> {
 		try {
-			const event = await dbClient.event.findMany({
+			const event = await this.event.findMany({
 				where: {
 					place: place,
 				},
@@ -287,6 +284,38 @@ export class EventsImplement implements EventsRepository {
 			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
 			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+		}
+	}
+
+	async getOwner(id: number) {
+		try {
+			const event = await this.event.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					owner_id: true,
+				},
+			})
+			return event?.owner_id
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+		}
+	}
+
+	async getImagePath(id: EventID): Promise<string | null> {
+		try {
+			const event = await this.event.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					imagePath: true,
+				},
+			})
+			return event?.imagePath
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
 		}
 	}
 }

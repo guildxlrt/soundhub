@@ -1,1 +1,1 @@
-import { ArtistID, UserAuthID, UserEmail, UserPassword, AbstractParams } from "Shared"
+import { ProfileID, UserAuthID, UserEmail, UserPassword, AbstractParams } from "Shared"

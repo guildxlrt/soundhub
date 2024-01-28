@@ -1,37 +1,25 @@
-import { AuthRepository, UserAuthsRepository } from "Domain"
+import { UserAuthsBackendRepos, UserCookie } from "Domain"
 import {
 	ErrorMsg,
 	UserAuthID,
 	htmlError,
 	UserTokenData,
-	ILoginSucc,
 	UserEmail,
 	UserPassword,
-	ArtistID,
+	ProfileID,
+	UserProfileType,
+	ILoginSucc,
 } from "Shared"
 import { PassEncryptor, Reply, Token, authExpires } from "../utils"
 import { dbClient } from "../database"
 
-export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
-	async login(input: { id: UserAuthID; profile: ArtistID }): Promise<Reply<ILoginSucc>> {
+export class UserAuthsImplement implements UserAuthsBackendRepos {
+	private userAuth = dbClient.userAuth
+
+	async login(input: { data: unknown; userCookie: UserCookie }): Promise<Reply<ILoginSucc>> {
 		try {
-			const { id, profile } = input
-			if (!id || !profile) throw ErrorMsg.htmlError(htmlError[404])
-
-			// token gen
-			const expires = authExpires.oneYear
-			const userCookie = new UserTokenData(id, profile, "artist")
-			const token = await Token.generate(userCookie, expires)
-
 			// return cookie
-			return new Reply<ILoginSucc>(
-				new ILoginSucc("jwt", token as string, {
-					maxAge: expires,
-					httpOnly: true,
-					sameSite: "lax",
-					secure: false,
-				})
-			)
+			return new Reply<ILoginSucc>(input)
 		} catch (error) {
 			return new Reply<ILoginSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 		}
@@ -50,10 +38,11 @@ export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
 		try {
 			const { id, pass } = input
 
-			// PERSIST
+			// HASH PASS
 			const hashedPass = await PassEncryptor.hash(pass)
 
-			await dbClient.userAuth.update({
+			// PERSIST
+			await this.userAuth.update({
 				where: {
 					id: id,
 				},
@@ -73,7 +62,7 @@ export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
 		try {
 			const { id, email } = input
 
-			await dbClient.userAuth.update({
+			await this.userAuth.update({
 				where: {
 					id: id,
 				},
@@ -89,9 +78,33 @@ export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
 		}
 	}
 
-	async getByEmail(email: UserEmail) {
+	async genCookie(
+		id: UserAuthID,
+		profile: ProfileID,
+		profileType: UserProfileType
+	): Promise<UserCookie> {
+		if (!id || !profile) throw ErrorMsg.htmlError(htmlError[404])
+
+		// token gen
+		const expires = authExpires.oneYear
+		const userCookie = new UserTokenData(id, profile, profileType)
+		const token = await Token.generate(userCookie, expires)
+
+		return new UserCookie("jwt", token as string, {
+			maxAge: expires,
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+		})
+	}
+
+	async getByEmail(email: UserEmail): Promise<{
+		id: number
+		email: string
+		password: string
+	}> {
 		try {
-			const authData = await dbClient.userAuth.findUnique({
+			const authData = await this.userAuth.findUniqueOrThrow({
 				where: {
 					email: email,
 				},
@@ -110,9 +123,13 @@ export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
 		}
 	}
 
-	async getByID(id: UserAuthID) {
+	async getByID(id: UserAuthID): Promise<{
+		id: number
+		email: string
+		password: string
+	}> {
 		try {
-			const authData = await dbClient.userAuth.findUnique({
+			const authData = await this.userAuth.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -136,15 +153,24 @@ export class UserAuthsImplement implements UserAuthsRepository, AuthRepository {
 		else return true
 	}
 
-	async comparePass(encryptedPass: UserPassword, inputedPass: UserPassword) {
+	async comparePass(encryptedPass: UserPassword, inputedPass: UserPassword): Promise<boolean> {
 		const auth = await PassEncryptor.compare(inputedPass, encryptedPass)
 
 		if (auth !== true) return false
 		else return true
 	}
 
-	async compareEmails(dbEmail: UserPassword, inputedEmail: UserPassword) {
+	async compareEmails(dbEmail: UserPassword, inputedEmail: UserPassword): Promise<boolean> {
 		if (dbEmail !== inputedEmail) return false
 		else return true
+	}
+
+	async hashPass(pass: string): Promise<string> {
+		try {
+			// HASH PASS
+			return await PassEncryptor.hash(pass)
+		} catch (error) {
+			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+		}
 	}
 }

@@ -9,8 +9,8 @@ import {
 	apiUrlPath,
 	apiUrlEndpt,
 	ErrorMsg,
-	FileType,
-	HideReleaseReqDTO,
+	IFile,
+	SetPrivStatusReleaseReqDTO,
 } from "Shared"
 import { ToFormData, Response } from "../../assets"
 import axios from "axios"
@@ -18,20 +18,16 @@ import { ReleasesRepository } from "Domain"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(
-		release: { data: Release; cover: FileType },
-		songs: { data: Song; audio: FileType }[]
+		release: { data: Release; cover: IFile },
+		songs: { data: Song; audio: IFile }[]
 	): Promise<Response<INewReleaseSucc>> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, release.cover as FileType, "cover")
+			ToFormData.file(formData, release.cover as IFile, "cover")
 			ToFormData.object(formData, release.data, "release")
 
 			songs.forEach((song, index) => {
-				ToFormData.file(
-					formData,
-					song.audio as FileType,
-					"song" + index + release.data.title
-				)
+				ToFormData.file(formData, song.audio as IFile, "song" + index + release.data.title)
 				ToFormData.object(formData, song.data, "song" + index)
 			})
 
@@ -50,12 +46,12 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async edit(
-		release: { data: Release; cover?: FileType | undefined },
+		release: { data: Release; cover?: IFile | undefined },
 		songs: Song[]
 	): Promise<Response<boolean>> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, release.cover as FileType, "cover")
+			ToFormData.file(formData, release.cover as IFile, "cover")
 			ToFormData.object(formData, release.data, "release")
 
 			songs.forEach((song, index) => {
@@ -73,13 +69,15 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async hide(id: number, isPublic: boolean): Promise<Response<boolean>> {
+	async setPrivStatus(id: number, isPublic: boolean): Promise<Response<boolean>> {
 		try {
 			return (await axios({
 				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.hide + id}`,
+				url: `${
+					apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.setPrivStatus + id
+				}`,
 				withCredentials: true,
-				data: { id: id, isPublic: isPublic } as HideReleaseReqDTO,
+				data: { id: id, isPublic: isPublic } as SetPrivStatusReleaseReqDTO,
 			})) as Response<boolean>
 		} catch (error) {
 			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))

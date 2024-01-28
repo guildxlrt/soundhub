@@ -1,15 +1,17 @@
-import { UsecaseLayer, RepositoriesType, DateUsecaseParams } from "../../assets"
+import { DateUsecaseParams } from "../../assets"
 import { FindEventsByDateReplyDTO, ErrorMsg } from "Shared"
+import { EventsService } from "../../services"
 
 export class FindEventsByDateUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	eventsService: EventsService
+	constructor(eventsService: EventsService) {
+		this.eventsService = eventsService
 	}
 
 	async execute(input: DateUsecaseParams): Promise<FindEventsByDateReplyDTO> {
 		try {
 			const { date } = input
-			return await this.services.events.findManyByDate(date)
+			return await this.eventsService.findManyByDate(date)
 		} catch (error) {
 			return new FindEventsByDateReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
 		}

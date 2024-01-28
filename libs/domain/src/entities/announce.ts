@@ -1,15 +1,15 @@
-import { AnnounceID, ArtistID } from "Shared"
+import { AnnounceID, ProfileID } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Announce extends EntityLayer {
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	title: string
 	text: string
-	readonly imagePath: string | null
+	imagePath: string | null
 
 	constructor(
 		id: AnnounceID | null,
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		title: string,
 		text: string,
 		imagePath: string | null

@@ -8,7 +8,7 @@ export const AUDIO_MIME_TYPES = {
 	"audio/wav": "wav",
 	"audio/webm": "webm",
 	"audio/flac": "flac",
-} as IMimetypes
+} as const as IMimetypes
 
 export const IMAGE_MIME_TYPES = {
 	"image/jpg": "jpg",
@@ -16,4 +16,4 @@ export const IMAGE_MIME_TYPES = {
 	"image/png": "png",
 	"image/gif": "gif",
 	"image/webp": "webp",
-} as IMimetypes
+} as const as IMimetypes

@@ -9,14 +9,14 @@ import {
 	apiUrlEndpt,
 	ErrorMsg,
 	IEventsListSucc,
-	FileType,
+	IFile,
 } from "Shared"
 import { EventsRepository } from "Domain"
 
 export class EventsImplement implements EventsRepository {
-	async create(data: Event, file?: FileType): Promise<Response<boolean>> {
+	async create(data: Event, file?: IFile): Promise<Response<boolean>> {
 		const formData = new FormData()
-		ToFormData.file(formData, file as FileType)
+		ToFormData.file(formData, file as IFile)
 		ToFormData.object(formData, data)
 
 		try {
@@ -31,9 +31,9 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async edit(data: Event, file?: FileType): Promise<Response<boolean>> {
+	async edit(data: Event, file?: IFile): Promise<Response<boolean>> {
 		const formData = new FormData()
-		ToFormData.file(formData, file as FileType)
+		ToFormData.file(formData, file as IFile)
 		ToFormData.object(formData, data)
 
 		try {

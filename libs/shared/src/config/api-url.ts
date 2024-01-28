@@ -29,7 +29,7 @@ export const apiUrlEndpt = {
 	releases: {
 		create: "/new",
 		edit: "/edit",
-		hide: "/hide",
+		setPrivStatus: "/setPrivStatus",
 		oneByID: "/:",
 		all: "/",
 		manyByArtist: "/by-artist/:",

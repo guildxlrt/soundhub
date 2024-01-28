@@ -1,4 +1,4 @@
-import { ApiErrHandler, ApiReply, ApiRequest, UserAuthsImplement } from "Infra-backend"
+import { ApiErrHandler, UserAuthsImplement } from "Infra-backend"
 import {
 	ChangeEmailUsecaseParams,
 	ChangeEmailUsecase,
@@ -10,10 +10,11 @@ import {
 	AuthServices,
 } from "Application"
 import {
+	ApiReply,
+	ApiRequest,
 	ChangeEmailReplyDTO,
 	ChangeEmailReqDTO,
 	ChangePassReqDTO,
-	ILoginSucc,
 	CreateArtistReplyDTO,
 	ErrorMsg,
 	LoginReqDTO,
@@ -32,17 +33,30 @@ export class UserAuthController implements IAuthCtrl {
 
 			const inputs = req.body as LoginReqDTO
 
+			// // Operators
+			// validators.changePass(
+			// 	{
+			// 		actual: actual,
+			// 		newPass: newPass,
+			// 		confirm: confirm,
+			// 	},
+			// 	envs.backend
+			// )
+
 			const userAuthService = new UserAuthService(new UserAuthsImplement())
 			const login = new LoginUsecase(userAuthService)
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
 
 			// Return infos
-			const cookie = data as ILoginSucc
-			return res
-				.cookie(cookie?.name, cookie?.val, cookie?.options)
-				.status(202)
-				.send(new CreateArtistReplyDTO(data))
+			const cookie = data?.userCookie
+			if (!cookie?.name || !cookie?.val || !cookie?.options) {
+				throw ErrorMsg.htmlError(htmlError[500])
+			} else
+				return res
+					.cookie(cookie.name, cookie?.val, cookie?.options)
+					.status(202)
+					.send(new CreateArtistReplyDTO(data))
 		} catch (error) {
 			return ApiErrHandler.reply(error, res)
 		}

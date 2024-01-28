@@ -1,4 +1,4 @@
-export interface FileType extends File {
+export interface IFile extends File {
 	fieldname: string
 	originalname: string
 	encoding: string
@@ -10,4 +10,4 @@ export interface FileType extends File {
 	path: string
 	buffer: Buffer
 }
-export type FilesArray = FileType[]
+export type FilesArray = IFile[]

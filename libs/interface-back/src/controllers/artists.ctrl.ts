@@ -10,7 +10,7 @@ import {
 	GetArtistByIDReplyDTO,
 	UpdateArtistReplyDTO,
 	UpdateArtistReqDTO,
-	FileType,
+	IFile,
 	htmlError,
 	ILoginSucc,
 	validators,
@@ -39,7 +39,7 @@ export class ArtistsController implements IArtistCtrl {
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 
 			// Data
 			const { password, email } = auth
@@ -93,7 +93,7 @@ export class ArtistsController implements IArtistCtrl {
 			const user = req.auth?.profileID as number
 			const { bio, genres, members, name, id, avatarPath, avatarDel } =
 				req.body as UpdateArtistReqDTO
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 
 			const artistProfile = new Artist(id, user, name, bio, members, genres, avatarPath)
 

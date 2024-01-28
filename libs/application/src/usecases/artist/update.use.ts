@@ -1,11 +1,13 @@
 import { UpdateArtistReplyDTO } from "Shared"
-import { UsecaseLayer, RepositoriesType, UpdateArtistUsecaseParams } from "../../assets"
+import { UpdateArtistUsecaseParams } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { Artist } from "Domain"
+import { ArtistsService } from "../../services"
 
 export class UpdateArtistUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	artistsService: ArtistsService
+	constructor(artistsService: ArtistsService) {
+		this.artistsService = artistsService
 	}
 
 	async execute(input: UpdateArtistUsecaseParams): Promise<UpdateArtistReplyDTO> {
@@ -23,7 +25,7 @@ export class UpdateArtistUsecase {
 				null
 			)
 
-			return await this.services.artists.update(
+			return await this.artistsService.update(
 				{ profile: userData, userAuth: user_auth_id as number },
 				input.file
 			)

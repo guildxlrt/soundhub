@@ -1,24 +1,24 @@
-import { ArtistID, FileType, ReleaseID } from "Shared"
-import { Release, Song } from "Domain"
+import { ProfileID, ReleaseID } from "Shared"
+import { File, Release, Song } from "Domain"
 
 export class NewReleaseUsecaseParams {
 	release: {
 		data: Release
-		cover: FileType
+		cover: File
 	}
 	songs: {
 		data: Song
-		audio: FileType
+		audio: File
 	}[]
 
 	constructor(
 		release: {
 			data: Release
-			cover: FileType
+			cover: File
 		},
 		songs: {
 			data: Song
-			audio: FileType
+			audio: File
 		}[]
 	) {
 		this.release = release
@@ -29,14 +29,14 @@ export class NewReleaseUsecaseParams {
 export class EditReleaseUsecaseParams {
 	release: {
 		data: Release
-		cover?: FileType
+		cover?: File
 	}
 	songs: Song[]
 
 	constructor(
 		release: {
 			data: Release
-			cover: FileType
+			cover: File
 		},
 		songs: Song[]
 	) {
@@ -45,12 +45,12 @@ export class EditReleaseUsecaseParams {
 	}
 }
 
-export class HideReleaseUsecaseParams {
+export class SetPrivStatusReleaseUsecaseParams {
 	id: ReleaseID
 	isPublic: boolean
-	ownerID?: ArtistID
+	ownerID?: ProfileID
 
-	constructor(id: ReleaseID, isPublic: boolean, ownerID?: ArtistID) {
+	constructor(id: ReleaseID, isPublic: boolean, ownerID?: ProfileID) {
 		this.id = id
 		this.isPublic = isPublic
 		this.ownerID = ownerID

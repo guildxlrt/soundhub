@@ -1,11 +1,11 @@
-import { ArtistID, ReleaseID, SongID } from "Shared"
+import { ProfileID, ReleaseID, SongID } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Song extends EntityLayer {
 	readonly release_id: ReleaseID | null
 	audioApth: string | null
 	readonly title: string
-	readonly featuring: ArtistID[]
+	readonly featuring: ProfileID[]
 	lyrics: string | null
 
 	constructor(
@@ -13,7 +13,7 @@ export class Song extends EntityLayer {
 		release_id: ReleaseID | null,
 		audioApth: string | null,
 		title: string,
-		featuring: ArtistID[],
+		featuring: ProfileID[],
 		lyrics: string | null
 	) {
 		super(id)

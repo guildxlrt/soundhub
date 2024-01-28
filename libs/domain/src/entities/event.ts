@@ -1,21 +1,21 @@
-import { ArtistID, EventID } from "Shared"
+import { ProfileID, EventID } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Event extends EntityLayer {
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	date: Date
 	place: string
-	artists: ArtistID[]
+	artists: ProfileID[]
 	title: string
 	text: string
-	readonly imagePath: string | null
+	imagePath: string | null
 
 	constructor(
 		id: EventID | null,
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		date: Date,
 		place: string,
-		artists: ArtistID[],
+		artists: ProfileID[],
 		title: string,
 		text: string,
 		imagePath: string | null

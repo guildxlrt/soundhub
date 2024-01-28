@@ -1,4 +1,4 @@
-import { ArtistID, CookieOptions, UserCookie } from "../../types"
+import { ProfileID, CookieOptions } from "../../types"
 
 // ARTIST
 export class INewArtistSucc extends UserCookie {
@@ -8,7 +8,7 @@ export class INewArtistSucc extends UserCookie {
 }
 
 export type IArtistInfoSucc = null | {
-	id: ArtistID | undefined
+	id: ProfileID | undefined
 	name: string | undefined
 	bio: string | null
 	members: string[] | undefined

@@ -10,8 +10,8 @@ import {
 	apiUrlPath,
 	apiUrlEndpt,
 	ErrorMsg,
-	ArtistID,
-	FileType,
+	ProfileID,
+	IFile,
 } from "Shared"
 import { ArtistsRepository } from "Domain"
 
@@ -22,13 +22,13 @@ export class ArtistsImplement implements ArtistsRepository {
 			userAuth: UserAuth
 			authConfirm: { confirmEmail: string; confirmPass: string }
 		},
-		file?: FileType
+		file?: IFile
 	): Promise<Response<INewArtistSucc>> {
 		try {
 			const { profile, userAuth, authConfirm } = data
 
 			const formData = new FormData()
-			ToFormData.file(formData, file as FileType)
+			ToFormData.file(formData, file as IFile)
 			ToFormData.object(formData, profile)
 			ToFormData.object(formData, userAuth)
 			ToFormData.object(formData, authConfirm)
@@ -48,12 +48,12 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async update(data: { profile: Artist }, file?: FileType): Promise<Response<boolean>> {
+	async update(data: { profile: Artist }, file?: IFile): Promise<Response<boolean>> {
 		try {
 			const { profile } = data
 
 			const formData = new FormData()
-			ToFormData.file(formData, file as FileType)
+			ToFormData.file(formData, file as IFile)
 			ToFormData.object(formData, profile)
 
 			return (await axios({
@@ -67,7 +67,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByID(id: ArtistID): Promise<Response<IArtistInfoSucc>> {
+	async getByID(id: ProfileID): Promise<Response<IArtistInfoSucc>> {
 		try {
 			return (await axios({
 				method: "get",

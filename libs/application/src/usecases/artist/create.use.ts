@@ -1,11 +1,13 @@
 import { CreateArtistReplyDTO } from "Shared"
-import { UsecaseLayer, RepositoriesType, NewArtistUsecaseParams } from "../../assets"
+import { NewArtistUsecaseParams } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { Artist, UserAuth } from "Domain"
+import { ArtistsService } from "../../services"
 
 export class CreateArtistUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	artistsService: ArtistsService
+	constructor(artistsService: ArtistsService) {
+		this.artistsService = artistsService
 	}
 
 	async execute(input: NewArtistUsecaseParams): Promise<CreateArtistReplyDTO> {
@@ -16,7 +18,7 @@ export class CreateArtistUsecase {
 			const userData = new Artist(null, null, name, bio, members, genres, null)
 			const userAuths = new UserAuth(null, email, password)
 
-			return await this.services.artists.create(
+			return await this.artistsService.create(
 				{
 					profile: userData,
 					userAuth: userAuths,

@@ -1,11 +1,11 @@
-import { ArtistID, EventID, FileType } from "Shared"
-import { Event } from "Domain"
+import { ProfileID, EventID } from "Shared"
+import { Event, File } from "Domain"
 
 export class EventUsecaseParams {
 	data: Event
-	file?: FileType
+	file?: File
 
-	constructor(data: Event, file?: FileType) {
+	constructor(data: Event, file?: File) {
 		this.data = data
 		this.file = file
 	}
@@ -13,9 +13,9 @@ export class EventUsecaseParams {
 
 export class DeleteEventUsecaseParams {
 	id: EventID
-	ownerID: ArtistID | null
+	ownerID?: ProfileID
 
-	constructor(id: EventID, ownerID: ArtistID | null) {
+	constructor(id: EventID, ownerID?: ProfileID) {
 		this.id = id
 		this.ownerID = ownerID
 	}

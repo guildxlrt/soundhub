@@ -17,7 +17,7 @@ import {
 	CreateEventReplyDTO,
 	CreateEventReqDTO,
 	DeleteEventReplyDTO,
-	FileType,
+	IFile,
 	FindEventsByArtistReplyDTO,
 	FindEventsByDateReplyDTO,
 	FindEventsByDateReqDTO,
@@ -40,7 +40,7 @@ export class EventsController implements IEventsCtrl {
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const owner = req.auth?.profileID
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
 			// Operators
@@ -66,7 +66,7 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const owner = req.auth?.profileID as number
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 			const { artists, date, place, text, title, id, imagePath }: EditEventReqDTO =
 				req.body as EditEventReqDTO
 

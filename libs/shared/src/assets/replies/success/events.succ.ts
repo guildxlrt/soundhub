@@ -1,12 +1,12 @@
-import { ArtistID, EventID } from "../../types"
+import { ProfileID, EventID } from "../../types"
 
 // EVENT
 export interface IEventSucc {
 	id: EventID | undefined
-	owner_id: ArtistID | undefined
+	owner_id: ProfileID | undefined
 	date: Date | undefined
 	place: string | undefined
-	artists: ArtistID[] | undefined
+	artists: ProfileID[] | undefined
 	title: string | undefined
 	text: string | undefined
 	imagePath: string | null | undefined

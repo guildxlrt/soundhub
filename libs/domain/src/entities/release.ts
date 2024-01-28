@@ -1,8 +1,8 @@
 import { EntityLayer } from "./layers"
-import { ArtistID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
+import { ProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
 
 export class Release extends EntityLayer {
-	readonly owner_id: ArtistID
+	readonly owner_id: ProfileID
 	readonly title: string
 	readonly releaseType: ReleaseType
 	descript: string | null
@@ -12,7 +12,7 @@ export class Release extends EntityLayer {
 
 	constructor(
 		id: ReleaseID | null,
-		owner_id: ArtistID,
+		owner_id: ProfileID,
 		title: string,
 		releaseType: ReleaseType,
 		descript: string | null,

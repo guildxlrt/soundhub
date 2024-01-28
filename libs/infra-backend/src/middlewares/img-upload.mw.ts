@@ -1,7 +1,6 @@
 import multer, { Multer } from "multer"
 import { ApiErrHandler } from "../utils"
-import { IMAGE_MIME_TYPES } from "Shared"
-import { ApiNext, ApiReply, ApiRequest } from "../config"
+import { IMAGE_MIME_TYPES, ApiNext, ApiReply, ApiRequest } from "Shared"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {

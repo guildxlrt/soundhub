@@ -1,47 +1,37 @@
-import { ArtistsRepository } from "Domain"
-
-import { Artist, UserAuth } from "Domain"
+import { ArtistsBackendRepos, Artist, UserAuth } from "Domain"
 import {
 	ErrorMsg,
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	IArtistsListItemSucc,
 	GenreType,
-	ArtistID,
+	ProfileID,
 	UserEmail,
-	FileType,
 	htmlError,
-	UserTokenData,
 	INewArtistSucc,
 	UserPassword,
+	UserAuthID,
+	UserProfileType,
 } from "Shared"
-import {
-	PassEncryptor,
-	DbErrHandler,
-	FileManipulator,
-	filePath,
-	Reply,
-	Token,
-	authExpires,
-} from "../utils"
-import { GetID, dbClient } from "../database"
+import { PassEncryptor, DbErrHandler, Reply } from "../utils"
+import { dbClient } from "../database"
 
-export class ArtistsImplement implements ArtistsRepository {
-	async create(
-		data: {
-			profile: Artist
-			userAuth: UserAuth
-			authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
-		},
-		file?: FileType
-	): Promise<Reply<INewArtistSucc>> {
+export class ArtistsImplement implements ArtistsBackendRepos {
+	private userAuth = dbClient.userAuth
+	private artist = dbClient.artist
+
+	async create(data: {
+		profile: Artist
+		userAuth: UserAuth
+		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
+	}): Promise<Reply<INewArtistSucc>> {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
 			const hashedPass = await PassEncryptor.hash(password)
 
 			// PERSIST
-			const newUserAuth = await dbClient.userAuth.create({
+			const newUserAuth = await this.userAuth.create({
 				data: {
 					email: email,
 					password: hashedPass,
@@ -58,39 +48,32 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			if (!newUserAuth?.id) throw ErrorMsg.htmlError(htmlError[401])
 
-			const getProfile = await GetID.profile(newUserAuth.id)
-			if (!getProfile) throw ErrorMsg.htmlError(htmlError[404])
+			// // GET PROFILE
+			// const getProfile = await GetID.profile(newUserAuth.id)
+			// if (!getProfile) throw ErrorMsg.htmlError(htmlError[404])
 
-			// Storing files
-			const store = filePath.origin.image + file?.filename
-			const destination = filePath.store.artist + file?.filename
-			const avatarPath = await FileManipulator.move(store, destination)
+			// // Storing files
+			// const store = filePath.origin.image + file?.filename
+			// const destination = filePath.store.artist + file?.filename
+			// const avatarPath = await FileManipulator.move(store, destination)
 
-			await dbClient.artist.update({
-				where: {
-					id: getProfile,
-				},
-				data: {
-					avatarPath: avatarPath,
-				},
-			})
+			// await this.artist.update({
+			// 	where: {
+			// 		id: getProfile,
+			// 	},
+			// 	data: {
+			// 		avatarPath: avatarPath,
+			// 	},
+			// })
 
-			// RESPONSE
-			// token gen
-			const expires = authExpires.oneYear
-			const userCookie = new UserTokenData(newUserAuth.id, getProfile as number, "artist")
+			// // TOKEN GEN
+			// const expires = authExpires.oneYear
+			// const userCookie = new UserTokenData(newUserAuth.id, getProfile as number, "artist")
 
-			const token = await Token.generate(userCookie, expires)
+			// const token = await Token.generate(userCookie, expires)
 
 			// return cookie
-			return new Reply<INewArtistSucc>(
-				new INewArtistSucc("jwt", token as string, {
-					maxAge: expires,
-					httpOnly: true,
-					sameSite: "lax",
-					secure: false,
-				})
-			)
+			return new Reply<any>({})
 		} catch (error) {
 			const res = new Reply<INewArtistSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
 
@@ -101,16 +84,16 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async update(data: Artist, file?: FileType): Promise<Reply<boolean>> {
+	async update(data: Artist): Promise<Reply<boolean>> {
 		try {
-			const { name, bio, members, genres, id, user_auth_id } = data
+			const { name, bio, members, genres, id } = data
 
-			// AUTH
-			const getProfile = await GetID.profile(user_auth_id as number)
-			if (user_auth_id !== getProfile) throw ErrorMsg.htmlError(htmlError[403])
+			// // AUTH
+			// const getProfile = await GetID.profile(user_auth_id as number)
+			// if (user_auth_id !== getProfile) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
-			await dbClient.artist.update({
+			await this.artist.update({
 				where: {
 					id: id as number,
 				},
@@ -122,45 +105,44 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// STORING FILE
-			if (file) {
-				// move file
-				const store = filePath.origin.image + file?.filename
-				const destination = filePath.store.artist + file?.filename
-				const avatarPath = await FileManipulator.move(store, destination)
+			// // STORING FILE
+			// if (file) {
+			// 	// move file
+			// 	const store = filePath.origin.image + file?.filename
+			// 	const destination = filePath.store.artist + file?.filename
+			// 	const avatarPath = await FileManipulator.move(store, destination)
 
-				// delete old file
-				const oldAvatarPath = await dbClient.artist.findUnique({
-					where: {
-						id: getProfile,
-					},
-					select: {
-						avatarPath: true,
-					},
-				})
-				await FileManipulator.delete(oldAvatarPath?.avatarPath as string)
+			// 	// delete old file
+			// 	const oldAvatarPath = await this.artist.findUniqueOrThrow({
+			// 		where: {
+			// 			id: getProfile,
+			// 		},
+			// 		select: {
+			// 			avatarPath: true,
+			// 		},
+			// 	})
+			// 	await FileManipulator.delete(oldAvatarPath?.avatarPath as string)
 
-				// save new path
-				await dbClient.artist.update({
-					where: {
-						id: id as number,
-					},
-					data: {
-						avatarPath: avatarPath,
-					},
-				})
-			}
+			// 	// save new path
+			// 	await this.artist.update({
+			// 		where: {
+			// 			id: id as number,
+			// 		},
+			// 		data: {
+			// 			// avatarPath: avatarPath,
+			// 		},
+			// 	})
+			// }
 
-			// RESPONSE
 			return new Reply(true)
 		} catch (error) {
 			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
-	async getByID(id: ArtistID): Promise<Reply<IArtistInfoSucc>> {
+	async getByID(id: ProfileID): Promise<Reply<IArtistInfoSucc>> {
 		try {
-			const user = await dbClient.artist.findUnique({
+			const user = await this.artist.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -173,7 +155,6 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
 				id: id,
 				name: user?.name,
@@ -189,7 +170,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async getByEmail(email: UserEmail): Promise<Reply<IArtistInfoSucc>> {
 		try {
-			const user = await dbClient.userAuth.findUnique({
+			const user = await this.userAuth.findUniqueOrThrow({
 				where: {
 					email: email,
 				},
@@ -207,7 +188,6 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 
-			// RESPONSE
 			return new Reply<IArtistInfoSucc>({
 				id: user?.artists[0].id,
 				name: user?.artists[0].name,
@@ -228,7 +208,7 @@ export class ArtistsImplement implements ArtistsRepository {
 	async getAll(): Promise<Reply<IArtistsListSucc>> {
 		try {
 			// Calling DB
-			const artists = await dbClient.artist.findMany({
+			const artists = await this.artist.findMany({
 				select: {
 					id: true,
 					name: true,
@@ -247,7 +227,6 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
@@ -256,7 +235,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async findManyByGenre(genre: GenreType): Promise<Reply<IArtistsListSucc>> {
 		try {
-			const artists = await dbClient.artist.findMany({
+			const artists = await this.artist.findMany({
 				where: {
 					genres: { has: genre },
 				},
@@ -277,10 +256,28 @@ export class ArtistsImplement implements ArtistsRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
 			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
+		}
+	}
+
+	async getByAuth(
+		userAuthID: UserAuthID
+	): Promise<{ profile: Artist; profileType: UserProfileType }> {
+		try {
+			const user = await this.artist.findUniqueOrThrow({
+				where: {
+					user_auth_id: userAuthID,
+				},
+			})
+
+			return {
+				profile: user as Artist,
+				profileType: "artist",
+			}
+		} catch (error) {
+			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
 		}
 	}
 }

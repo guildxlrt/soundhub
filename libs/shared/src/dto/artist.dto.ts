@@ -1,5 +1,5 @@
 import {
-	ArtistID,
+	ProfileID,
 	GenreType,
 	IArtistInfoSucc,
 	IArtistsListSucc,
@@ -35,7 +35,7 @@ export class CreateArtistReplyDTO extends ReplyDTO<ILoginSucc> {}
 
 // MODIFY ARTIST //
 export class UpdateArtistReqDTO {
-	readonly id: ArtistID
+	readonly id: ProfileID
 	readonly name: string
 	readonly bio: string
 	readonly members: string[]
@@ -44,7 +44,7 @@ export class UpdateArtistReqDTO {
 	readonly avatarDel: boolean
 
 	constructor(
-		id: ArtistID,
+		id: ProfileID,
 		name: string,
 		bio: string,
 		members: string[],

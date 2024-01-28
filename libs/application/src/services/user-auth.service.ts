@@ -1,7 +1,7 @@
 import { UserAuthsRepository } from "Domain"
 import { ErrorMsg, ILoginSucc, ReplyLayer, htmlError } from "Shared"
 
-export class UserAuthService {
+export class UserAuthService implements UserAuthsRepository {
 	readonly service: UserAuthsRepository
 
 	constructor(service: UserAuthsRepository) {

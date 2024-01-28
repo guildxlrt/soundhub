@@ -1,9 +1,9 @@
-import { AnnounceID, ArtistID } from "../../types"
+import { AnnounceID, ProfileID } from "../../types"
 
 // ANNOUNCE
 export interface IAnnounceSucc {
 	id: AnnounceID
-	owner_id: ArtistID
+	owner_id: ProfileID
 	title: string | undefined
 	text: string | undefined
 	imagePath: string | null | undefined

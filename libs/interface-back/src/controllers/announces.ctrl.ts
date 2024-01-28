@@ -1,4 +1,4 @@
-import { ApiErrHandler, ApiRequest, ApiReply, databaseRepos } from "Infra-backend"
+import { ApiErrHandler } from "Infra-backend"
 import { Announce } from "Domain"
 import {
 	CreateAnnounceUsecase,
@@ -15,7 +15,7 @@ import {
 	CreateAnnounceReplyDTO,
 	CreateAnnounceReqDTO,
 	DeleteAnnounceReplyDTO,
-	FileType,
+	IFile,
 	FindAnnouncesByArtistReplyDTO,
 	GetAllAnnouncesReplyDTO,
 	GetAnnounceReplyDTO,
@@ -24,6 +24,8 @@ import {
 	htmlError,
 	IMAGE_MIME_TYPES,
 	validators,
+	ApiReply,
+	ApiRequest,
 } from "Shared"
 import { IAnnoncesCtrl } from "../assets"
 
@@ -35,7 +37,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const { text, title } = req.body as CreateAnnounceReqDTO
 			const owner = req.auth?.profileID as number
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 
 			// OPERATORS
 			// file
@@ -62,7 +64,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const file: FileType = req.file as FileType
+			const file: IFile = req.file as IFile
 			const owner = req.auth?.profileID as number
 
 			const { text, title, id, imagePath } = req.body as EditAnnounceReqDTO

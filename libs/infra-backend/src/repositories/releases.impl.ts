@@ -1,4 +1,4 @@
-import { ReleasesRepository } from "Domain"
+import { ReleasesBackendRepos } from "Domain"
 import { Release, Song } from "Domain"
 import {
 	GenreType,
@@ -7,56 +7,57 @@ import {
 	IReleaseSucc,
 	IReleasesListSucc,
 	IReleasesListItemSucc,
-	UserAuthID,
 	ReleaseID,
-	FileType,
+	IFile,
 	htmlError,
 } from "Shared"
-import { FileManipulator, filePath } from "../utils"
 import { Reply } from "../utils"
-import { GetID, dbClient } from "../database"
+import { dbClient } from "../database"
 
-export class ReleasesImplement implements ReleasesRepository {
+export class ReleasesImplement implements ReleasesBackendRepos {
+	private release = dbClient.release
+
 	async create(
-		release: { data: Release; cover: FileType },
-		songs: { data: Song; audio: FileType }[]
+		release: { data: Release; cover: IFile },
+		songs: { data: Song; audio: IFile }[]
 	): Promise<Reply<INewReleaseSucc>> {
 		try {
 			const { owner_id, title, releaseType, descript, price, genres } = release.data
 			const cover = release.cover
 
-			const releaseFolder: string = await FileManipulator.newFolder(filePath.store.release)
-			if (!releaseFolder) ErrorMsg.htmlError(htmlError[500])
+			// // CREATE FOLDER RELEASE
+			// const releaseFolder: string = await FileManipulator.newFolder(filePath.store.release)
+			// if (!releaseFolder) ErrorMsg.htmlError(htmlError[500])
 
-			// STORING
-			// songs
-			const songsData = await Promise.all(
-				songs.map(async (song) => {
-					const { title, featuring, lyrics } = song.data
+			// // STORING
+			// // songs
+			// const songsData = await Promise.all(
+			// 	songs.map(async (song) => {
+			// 		const { title, featuring, lyrics } = song.data
 
-					const filename = song.audio.filename
-					const location = filePath.origin.audio + filename
-					const destination = filePath.store.release + releaseFolder + filename
+			// 		const filename = song.audio.filename
+			// 		const location = filePath.origin.audio + filename
+			// 		const destination = filePath.store.release + releaseFolder + filename
 
-					// move audiofiles
-					const audioApth = await FileManipulator.move(location, destination)
+			// 		// move audiofiles
+			// 		const audioApth = await FileManipulator.move(location, destination)
 
-					return {
-						audioApth: audioApth as string,
-						title: title,
-						featuring: featuring,
-						lyrics: lyrics,
-					}
-				})
-			)
+			// 		return {
+			// 			audioApth: audioApth as string,
+			// 			title: title,
+			// 			featuring: featuring,
+			// 			lyrics: lyrics,
+			// 		}
+			// 	})
+			// )
 
-			// cover
-			const coverOrigin = filePath.origin.image + cover?.filename
-			const coverStore = filePath.store.release + releaseFolder + cover?.filename
-			await FileManipulator.move(coverOrigin, coverStore)
+			// // cover
+			// const coverOrigin = filePath.origin.image + cover?.filename
+			// const coverStore = filePath.store.release + releaseFolder + cover?.filename
+			// await FileManipulator.move(coverOrigin, coverStore)
 
 			// PERSIST
-			const newRelease = await dbClient.release.create({
+			const newRelease = await this.release.create({
 				data: {
 					owner_id: owner_id,
 					title: title,
@@ -64,15 +65,14 @@ export class ReleasesImplement implements ReleasesRepository {
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					coverPath: coverStore,
+					// coverPath: coverStore,
 					isPublic: true,
 					songs: {
-						create: songsData,
+						// create: songsData,
 					},
 				},
 			})
 
-			// RESPONSE
 			return new Reply<INewReleaseSucc>({
 				message: `${title} was created.`,
 				id: newRelease.id,
@@ -84,43 +84,38 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async edit(
-		release: { data: Release; cover?: FileType },
-		songs: Song[]
-	): Promise<Reply<boolean>> {
+	async edit(release: { data: Release }, songs: Song[]): Promise<Reply<boolean>> {
 		try {
 			const { id, owner_id, price, descript, genres } = release.data
 
-			const cover = release.cover
+			// // owner verification
+			// const releaseOwner = await GetID.owner(id as number, "release")
+			// if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			// owner verification
-			const releaseOwner = await GetID.owner(id as number, "release")
-			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// // ... get the old coverPath
+			// const releaseData = await this.release.findUniqueOrThrow({
+			// 	where: {
+			// 		id: id as number,
+			// 		owner_id: owner_id,
+			// 	},
+			// 	select: {
+			// 		coverPath: true,
+			// 	},
+			// })
 
-			// ... get the old path
-			const releaseData = await dbClient.release.findUnique({
-				where: {
-					id: id as number,
-					owner_id: owner_id,
-				},
-				select: {
-					coverPath: true,
-				},
-			})
+			// const oldFilePath = releaseData?.coverPath as string
+			// const releaseFolder = FileManipulator.getReleaseFolder(oldFilePath)
 
-			const oldFilePath = releaseData?.coverPath as string
-			const releaseFolder = FileManipulator.getReleaseFolder(oldFilePath)
+			// // STORING FILE
+			// const location = filePath.origin.image + cover?.filename
+			// const destination = filePath.store.release + releaseFolder + cover?.filename
+			// const coverPath = await FileManipulator.move(location, destination)
 
-			// STORING FILE
-			const location = filePath.origin.image + cover?.filename
-			const destination = filePath.store.release + releaseFolder + cover?.filename
-			const coverPath = await FileManipulator.move(location, destination)
-
-			// DELETE OLD FILE
-			await FileManipulator.delete(oldFilePath)
+			// // DELETE OLD FILE
+			// await FileManipulator.delete(oldFilePath)
 
 			// persist
-			await dbClient.release.update({
+			await this.release.update({
 				where: {
 					id: id as number,
 					owner_id: owner_id,
@@ -129,7 +124,7 @@ export class ReleasesImplement implements ReleasesRepository {
 					price: price,
 					descript: descript,
 					genres: genres as string[],
-					coverPath: coverPath,
+					// coverPath: coverPath,
 				},
 			})
 
@@ -145,21 +140,32 @@ export class ReleasesImplement implements ReleasesRepository {
 				})
 			})
 
-			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
 		}
 	}
 
-	async hide(id: ReleaseID, isPublic: boolean, ownerID?: UserAuthID): Promise<Reply<boolean>> {
+	async getPrivStatus(id: ReleaseID): Promise<boolean> {
 		try {
-			// owner verification
-			const releaseOwner = await GetID.owner(id as number, "release")
-			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			const release = await this.release.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					isPublic: true,
+				},
+			})
 
-			// persist
-			await dbClient.release.update({
+			return release?.isPublic
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+		}
+	}
+
+	async setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<Reply<boolean>> {
+		try {
+			await this.release.update({
 				where: {
 					id: id,
 				},
@@ -168,7 +174,6 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// RESPONSE
 			return new Reply<boolean>(true)
 		} catch (error) {
 			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
@@ -177,7 +182,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 	async get(id: ReleaseID): Promise<Reply<IReleaseSucc>> {
 		try {
-			const release = await dbClient.release.findUnique({
+			const release = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -198,7 +203,6 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 
-			// RESPONSE
 			return new Reply<IReleaseSucc>({
 				id: id,
 				owner_id: id,
@@ -218,7 +222,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async getAll(): Promise<Reply<IReleasesListSucc>> {
 		try {
 			// Calling DB
-			const release = await dbClient.release.findMany({
+			const release = await this.release.findMany({
 				select: {
 					id: true,
 					owner_id: true,
@@ -241,7 +245,6 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
@@ -251,7 +254,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async findManyByGenre(genre: GenreType): Promise<Reply<IReleasesListSucc>> {
 		try {
 			// Calling DB
-			const release = await dbClient.release.findMany({
+			const release = await this.release.findMany({
 				where: {
 					genres: { has: genre },
 				},
@@ -277,7 +280,6 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
@@ -286,12 +288,12 @@ export class ReleasesImplement implements ReleasesRepository {
 
 	async findManyByArtist(id: ReleaseID): Promise<Reply<IReleasesListSucc>> {
 		try {
-			const artistID = id
+			const profileID = id
 
 			// Calling DB
-			const release = await dbClient.release.findMany({
+			const release = await this.release.findMany({
 				where: {
-					owner_id: artistID,
+					owner_id: profileID,
 				},
 				select: {
 					id: true,
@@ -315,10 +317,43 @@ export class ReleasesImplement implements ReleasesRepository {
 				}
 			})
 
-			// RESPONSE
 			return new Reply<IReleasesListSucc>(list)
 		} catch (error) {
 			return new Reply<IReleasesListSucc>([], ErrorMsg.htmlError(htmlError[500]))
+		}
+	}
+
+	async getOwner(id: number) {
+		try {
+			const release = await this.release.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					owner_id: true,
+				},
+			})
+			return release?.owner_id
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+		}
+	}
+
+	async getCoverPath(releaseID: ReleaseID, ownerID: number): Promise<string | null> {
+		try {
+			const releaseData = await this.release.findUniqueOrThrow({
+				where: {
+					id: releaseID as number,
+					owner_id: ownerID,
+				},
+				select: {
+					coverPath: true,
+				},
+			})
+
+			return releaseData?.coverPath
+		} catch (error) {
+			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
 		}
 	}
 }

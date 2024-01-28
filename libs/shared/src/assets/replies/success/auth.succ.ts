@@ -1,3 +1,6 @@
-import { UserCookie } from "../../types"
+import { CookieOptions } from "../../types"
 
-export class ILoginSucc extends UserCookie {}
+export interface ILoginSucc {
+	data: unknown
+	userCookie: { name: string; val: string; options: CookieOptions }
+}

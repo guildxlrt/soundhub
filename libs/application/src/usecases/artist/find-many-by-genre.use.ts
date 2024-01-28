@@ -1,16 +1,18 @@
-import { UsecaseLayer, RepositoriesType, GenreUsecaseParams } from "../../assets"
+import { GenreUsecaseParams } from "../../assets"
 import { FindArtistsByGenreReplyDTO, ErrorMsg } from "Shared"
+import { ArtistsService } from "../../services"
 
 export class FindArtistsByGenreUsecase {
-	constructor(services: RepositoriesType) {
-		super(services)
+	artistsService: ArtistsService
+	constructor(artistsService: ArtistsService) {
+		this.artistsService = artistsService
 	}
 
 	async execute(input: GenreUsecaseParams): Promise<FindArtistsByGenreReplyDTO> {
 		try {
 			const genre = input.genre
 
-			return await this.services.artists.findManyByGenre(genre)
+			return await this.artistsService.findManyByGenre(genre)
 		} catch (error) {
 			return new FindArtistsByGenreReplyDTO(
 				undefined,
