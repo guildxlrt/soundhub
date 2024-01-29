@@ -1,4 +1,4 @@
-import { GetEventReplyDTO, ErrorMsg } from "Shared"
+import { GetEventReplyDTO, ErrorHandler } from "Shared"
 import { IDUsecaseParams } from "../../assets"
 import { EventsService } from "../../services"
 
@@ -11,9 +11,10 @@ export class GetEventUsecase {
 	async execute(input: IDUsecaseParams): Promise<GetEventReplyDTO> {
 		try {
 			const id = input.id
-			return await this.eventsService.get(id)
+			const data = await this.eventsService.get(id)
+			return new GetEventReplyDTO(data)
 		} catch (error) {
-			return new GetEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

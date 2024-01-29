@@ -1,11 +1,11 @@
-import { DeleteEventReplyDTO, ErrorMsg, htmlError } from "Shared"
+import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
 import { EventsService } from "../../services"
 import { StorageRepository } from "Domain"
 import { DeleteEventUsecaseParams } from "../../assets"
 
 export class DeleteEventUsecase {
-	eventsService: EventsService
-	storageRepository?: StorageRepository
+	private eventsService: EventsService
+	private storageRepository?: StorageRepository
 
 	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
 		this.eventsService = eventsService
@@ -19,7 +19,15 @@ export class DeleteEventUsecase {
 				return await this.backend(this.storageRepository, id, ownerID as number)
 			else return await this.frontend(id)
 		} catch (error) {
-			return new DeleteEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async frontend(id: number) {
+		try {
+			return await this.eventsService.delete(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -33,17 +41,10 @@ export class DeleteEventUsecase {
 			const imagePath = await this.eventsService.getImagePath(id as number)
 			await storageRepository.delete(imagePath as string)
 
+			// persist
 			return await this.eventsService.delete(id)
 		} catch (error) {
-			return new DeleteEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-
-	async frontend(id: number) {
-		try {
-			return await this.eventsService.delete(id)
-		} catch (error) {
-			return new DeleteEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { GenreUsecaseParams } from "../../assets"
-import { FindArtistsByGenreReplyDTO, ErrorMsg } from "Shared"
+import { FindArtistsByGenreReplyDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
 
 export class FindArtistsByGenreUsecase {
@@ -12,12 +12,10 @@ export class FindArtistsByGenreUsecase {
 		try {
 			const genre = input.genre
 
-			return await this.artistsService.findManyByGenre(genre)
+			const data = await this.artistsService.findManyByGenre(genre)
+			return new FindArtistsByGenreReplyDTO(data)
 		} catch (error) {
-			return new FindArtistsByGenreReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -1,6 +1,6 @@
-import { CookieOptions } from "Shared"
+import { CookieOptions, IUserCookie } from "Shared"
 
-export class UserCookie {
+export class UserCookie implements IUserCookie {
 	name: string
 	val: string
 	options: CookieOptions

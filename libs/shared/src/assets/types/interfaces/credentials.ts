@@ -23,3 +23,9 @@ export interface CookieOptions {
 	encode?: ((val: string) => string) | undefined
 	sameSite?: boolean | "lax" | "strict" | "none" | undefined
 }
+
+export interface IUserCookie {
+	name: string
+	val: string
+	options: CookieOptions
+}

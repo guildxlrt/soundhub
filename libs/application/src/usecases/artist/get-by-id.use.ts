@@ -1,5 +1,5 @@
 import { IDUsecaseParams } from "../../assets"
-import { GetArtistByIDReplyDTO, ErrorMsg } from "Shared"
+import { GetArtistByIDReplyDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
 
 export class GetArtistByIDUsecase {
@@ -11,9 +11,11 @@ export class GetArtistByIDUsecase {
 	async execute(input: IDUsecaseParams): Promise<GetArtistByIDReplyDTO> {
 		try {
 			const id = input.id
-			return await this.artistsService.getByID(id)
+			const data = await this.artistsService.getByID(id)
+
+			return new GetArtistByIDReplyDTO(data)
 		} catch (error) {
-			return new GetArtistByIDReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

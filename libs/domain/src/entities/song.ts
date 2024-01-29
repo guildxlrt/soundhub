@@ -3,7 +3,7 @@ import { EntityLayer } from "./layers"
 
 export class Song extends EntityLayer {
 	readonly release_id: ReleaseID | null
-	audioApth: string | null
+	audioPath: string | null
 	readonly title: string
 	readonly featuring: ProfileID[]
 	lyrics: string | null
@@ -11,7 +11,7 @@ export class Song extends EntityLayer {
 	constructor(
 		id: SongID | null,
 		release_id: ReleaseID | null,
-		audioApth: string | null,
+		audioPath: string | null,
 		title: string,
 		featuring: ProfileID[],
 		lyrics: string | null
@@ -19,7 +19,7 @@ export class Song extends EntityLayer {
 		super(id)
 
 		this.release_id = release_id
-		this.audioApth = audioApth
+		this.audioPath = audioPath
 		this.title = title
 		this.lyrics = lyrics
 
@@ -28,7 +28,7 @@ export class Song extends EntityLayer {
 			: (this.featuring = [])
 	}
 
-	updateAudioApth(newAudioApth: string) {
-		this.audioApth = newAudioApth
+	updateAudioPath(newAudioPath: string) {
+		this.audioPath = newAudioPath
 	}
 }

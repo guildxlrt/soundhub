@@ -1,6 +1,5 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import { Reply } from "../utils"
 import {
 	ErrorMsg,
 	IEventSucc,
@@ -8,13 +7,14 @@ import {
 	IEventsListSucc,
 	EventID,
 	htmlError,
+	ErrorHandler,
 } from "Shared"
 import { dbClient } from "../database"
 
 export class EventsImplement implements EventsBackendRepos {
 	private event = dbClient.event
 
-	async create(data: Event): Promise<Reply<boolean>> {
+	async create(data: Event): Promise<boolean> {
 		try {
 			const { owner_id, date, place, artists, title, text } = data
 
@@ -36,15 +36,13 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// RESPONSE
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async edit(data: Event): Promise<Reply<boolean>> {
+	async edit(data: Event): Promise<boolean> {
 		try {
 			const { id, owner_id, date, place, artists, title, text } = data
 
@@ -78,15 +76,13 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// RESPONSE
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async delete(id: EventID): Promise<Reply<void>> {
+	async delete(id: EventID): Promise<void> {
 		try {
 			// // owner verification
 			// const eventOwner = await GetID.owner(id as number, "event")
@@ -100,15 +96,13 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// RESPONSE
-			return new Reply<void>()
+			return
 		} catch (error) {
-			const res = new Reply<void>(undefined, new ErrorMsg(`Error: failed to delete`, 500))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async get(id: EventID): Promise<Reply<IEventSucc>> {
+	async get(id: EventID): Promise<IEventSucc> {
 		try {
 			const event = await this.event.findUniqueOrThrow({
 				where: {
@@ -127,7 +121,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// RESPONSE
-			return new Reply<IEventSucc>({
+			return {
 				id: event?.id,
 				owner_id: event?.owner_id,
 				date: event?.date,
@@ -136,13 +130,13 @@ export class EventsImplement implements EventsBackendRepos {
 				title: event?.title,
 				text: event?.text,
 				imagePath: event?.imagePath,
-			})
+			}
 		} catch (error) {
-			return new Reply<IEventSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<Reply<IEventsListSucc>> {
+	async getAll(): Promise<IEventsListSucc> {
 		try {
 			const event = await this.event.findMany({
 				select: {
@@ -157,7 +151,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// Reorganize
-			const list = event.map((event): IEventsListItemSucc => {
+			return event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -168,15 +162,12 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: event.imagePath,
 				}
 			})
-
-			// RESPONSE
-			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByArtist(id: EventID): Promise<Reply<IEventsListSucc>> {
+	async findManyByArtist(id: EventID): Promise<IEventsListSucc> {
 		try {
 			const profileID = id
 
@@ -196,7 +187,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// Reorganize
-			const list = event.map((event): IEventsListItemSucc => {
+			return event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -207,15 +198,12 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: event.imagePath,
 				}
 			})
-
-			// RESPONSE
-			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<Reply<IEventsListSucc>> {
+	async findManyByDate(date: Date): Promise<IEventsListSucc> {
 		try {
 			const event = await this.event.findMany({
 				where: {
@@ -232,7 +220,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// Reorganize
-			const list = event.map((event): IEventsListItemSucc => {
+			return event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -243,15 +231,12 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: event.imagePath,
 				}
 			})
-
-			// RESPONSE
-			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByPlace(place: string): Promise<Reply<IEventsListSucc>> {
+	async findManyByPlace(place: string): Promise<IEventsListSucc> {
 		try {
 			const event = await this.event.findMany({
 				where: {
@@ -268,7 +253,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 
 			// Reorganize
-			const list = event.map((event): IEventsListItemSucc => {
+			return event.map((event): IEventsListItemSucc => {
 				return {
 					id: event.id,
 					owner_id: event.owner_id,
@@ -279,11 +264,8 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: event.imagePath,
 				}
 			})
-
-			// RESPONSE
-			return new Reply<IEventsListSucc>(list)
 		} catch (error) {
-			return new Reply<IEventsListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -299,7 +281,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 			return event?.owner_id
 		} catch (error) {
-			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -315,7 +297,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 			return event?.imagePath
 		} catch (error) {
-			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("error getting image path")
 		}
 	}
 }

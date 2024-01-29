@@ -1,4 +1,4 @@
-import { GetAllArtistsReplyDTO, ErrorMsg } from "Shared"
+import { GetAllArtistsReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
 
 export class GetAllArtistsUsecase {
@@ -9,9 +9,11 @@ export class GetAllArtistsUsecase {
 
 	async execute(): Promise<GetAllArtistsReplyDTO> {
 		try {
-			return await this.artistsService.getAll()
+			const data = await this.artistsService.getAll()
+
+			return new GetAllArtistsReplyDTO(data)
 		} catch (error) {
-			return new GetAllArtistsReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

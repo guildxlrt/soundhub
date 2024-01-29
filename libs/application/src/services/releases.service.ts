@@ -1,14 +1,12 @@
 import { ReleasesAddBackRepos, ReleasesAddFrontRepos, ReleasesRepository } from "Domain"
 import {
 	ProfileID,
-	ErrorMsg,
-	htmlError,
 	INewReleaseSucc,
-	ReplyLayer,
 	ReleaseID,
 	IReleaseSucc,
 	IReleasesListSucc,
 	GenreType,
+	ErrorHandler,
 } from "Shared"
 
 interface IReleasesService
@@ -24,18 +22,18 @@ export class ReleasesService implements IReleasesService {
 	}
 
 	// SERVIVES
-	async create(release: unknown, songs: unknown[]): Promise<ReplyLayer<INewReleaseSucc>> {
+	async create(release: unknown, songs: unknown[]): Promise<INewReleaseSucc> {
 		try {
 			return await this.service.create(release, songs)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async edit(release: unknown, songs: unknown[]): Promise<ReplyLayer<boolean>> {
+	async edit(release: unknown, songs?: unknown[]): Promise<boolean> {
 		try {
 			return await this.service.edit(release, songs)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -43,59 +41,61 @@ export class ReleasesService implements IReleasesService {
 		try {
 			return await this.service.getPrivStatus(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<ReplyLayer<boolean>> {
+	async setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<boolean> {
 		try {
 			return await this.service.setPrivStatus(id, isPublic)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async get(id: ReleaseID): Promise<ReplyLayer<IReleaseSucc>> {
+	async get(id: ReleaseID): Promise<IReleaseSucc> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<ReplyLayer<IReleasesListSucc>> {
+	async getAll(): Promise<IReleasesListSucc> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ProfileID): Promise<ReplyLayer<IReleasesListSucc>> {
+	async findManyByArtist(id: ProfileID): Promise<IReleasesListSucc> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<ReplyLayer<IReleasesListSucc>> {
+	async findManyByGenre(genre: GenreType): Promise<IReleasesListSucc> {
 		{
 			try {
 				return await this.service.findManyByGenre(genre)
 			} catch (error) {
-				throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+				throw ErrorHandler.handle(error)
 			}
 		}
 	}
+
+	// BACKEND
 	async getOwner(id: number): Promise<number | undefined> {
 		try {
 			return await this.service.getOwner(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getCoverPath(releaseID: ReleaseID, ownerID: number): Promise<string | null | undefined> {
+	async getCoverPath(releaseID: ReleaseID): Promise<string | null | undefined> {
 		try {
-			return await this.service.getCoverPath(releaseID, ownerID)
+			return await this.service.getCoverPath(releaseID)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

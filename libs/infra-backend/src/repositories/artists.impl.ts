@@ -9,22 +9,18 @@ import {
 	UserEmail,
 	htmlError,
 	INewArtistSucc,
-	UserPassword,
 	UserAuthID,
 	UserProfileType,
+	ErrorHandler,
 } from "Shared"
-import { PassEncryptor, DbErrHandler, Reply } from "../utils"
 import { dbClient } from "../database"
+import { PassEncryptor } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {
 	private userAuth = dbClient.userAuth
 	private artist = dbClient.artist
 
-	async create(data: {
-		profile: Artist
-		userAuth: UserAuth
-		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
-	}): Promise<Reply<INewArtistSucc>> {
+	async create(data: { profile: Artist; userAuth: UserAuth }): Promise<INewArtistSucc> {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
@@ -73,18 +69,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			// const token = await Token.generate(userCookie, expires)
 
 			// return cookie
-			return new Reply<any>({})
+			return {}
 		} catch (error) {
-			const res = new Reply<INewArtistSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
-
-			// Email must be unique
-			DbErrHandler.uniqueEmail(error, res)
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async update(data: Artist): Promise<Reply<boolean>> {
+	async update(data: Artist): Promise<boolean> {
 		try {
 			const { name, bio, members, genres, id } = data
 
@@ -134,13 +125,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			// 	})
 			// }
 
-			return new Reply(true)
+			return true
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getByID(id: ProfileID): Promise<Reply<IArtistInfoSucc>> {
+	async getByID(id: ProfileID): Promise<IArtistInfoSucc> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -155,20 +146,20 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return new Reply<IArtistInfoSucc>({
+			return {
 				id: id,
 				name: user?.name,
 				bio: null,
 				members: user?.members,
 				genres: [user?.genres[0], user?.genres[1], user?.genres[2]],
 				avatarPath: null,
-			})
+			}
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getByEmail(email: UserEmail): Promise<Reply<IArtistInfoSucc>> {
+	async getByEmail(email: UserEmail): Promise<IArtistInfoSucc> {
 		try {
 			const user = await this.userAuth.findUniqueOrThrow({
 				where: {
@@ -188,7 +179,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return new Reply<IArtistInfoSucc>({
+			return {
 				id: user?.artists[0].id,
 				name: user?.artists[0].name,
 				bio: null,
@@ -199,13 +190,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					user?.artists[0].genres[2],
 				],
 				avatarPath: null,
-			})
+			}
 		} catch (error) {
-			return new Reply<IArtistInfoSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<Reply<IArtistsListSucc>> {
+	async getAll(): Promise<IArtistsListSucc> {
 		try {
 			// Calling DB
 			const artists = await this.artist.findMany({
@@ -218,7 +209,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 
 			// Reorganize
-			const list = artists.map((artist): IArtistsListItemSucc => {
+			return artists.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -226,14 +217,12 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					avatarPath: null,
 				}
 			})
-
-			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<Reply<IArtistsListSucc>> {
+	async findManyByGenre(genre: GenreType): Promise<IArtistsListSucc> {
 		try {
 			const artists = await this.artist.findMany({
 				where: {
@@ -247,7 +236,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			const list = artists.map((artist): IArtistsListItemSucc => {
+			return artists.map((artist): IArtistsListItemSucc => {
 				return {
 					id: artist.id,
 					name: artist.name,
@@ -255,10 +244,8 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					avatarPath: null,
 				}
 			})
-
-			return new Reply<IArtistsListSucc>(list)
 		} catch (error) {
-			return new Reply<IArtistsListSucc>([], ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -277,7 +264,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				profileType: "artist",
 			}
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 }

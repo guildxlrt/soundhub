@@ -1,13 +1,5 @@
 import { Event, EventsAddBackRepos, EventsAddFrontRepos, EventsRepository, File } from "Domain"
-import {
-	ErrorMsg,
-	htmlError,
-	ReplyLayer,
-	UserAuthID,
-	EventID,
-	IEventsListSucc,
-	IEventSucc,
-} from "Shared"
+import { UserAuthID, EventID, IEventsListSucc, IEventSucc, ErrorHandler } from "Shared"
 
 interface IEventsService extends EventsRepository, EventsAddBackRepos, EventsAddFrontRepos {}
 
@@ -19,67 +11,69 @@ export class EventsService implements IEventsService {
 	}
 
 	// SERVIVES
-	async create(data: Event, file?: File): Promise<ReplyLayer<boolean>> {
+	async create(data: Event, file?: File): Promise<boolean> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async edit(data: Event, file?: File): Promise<ReplyLayer<boolean>> {
+	async edit(data: Event, file?: File): Promise<boolean> {
 		try {
 			return await this.service.edit(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async delete(id: EventID, userAuth?: UserAuthID): Promise<ReplyLayer<void>> {
+	async delete(id: EventID, userAuth?: UserAuthID): Promise<void> {
 		try {
 			return await this.service.delete(id, userAuth)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async get(data: EventID): Promise<ReplyLayer<IEventSucc>> {
+	async get(data: EventID): Promise<IEventSucc> {
 		try {
 			return await this.service.get(data)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<ReplyLayer<IEventsListSucc>> {
+	async getAll(): Promise<IEventsListSucc> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: EventID): Promise<ReplyLayer<IEventsListSucc>> {
+	async findManyByArtist(id: EventID): Promise<IEventsListSucc> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<ReplyLayer<IEventsListSucc>> {
+	async findManyByDate(date: Date): Promise<IEventsListSucc> {
 		try {
 			return await this.service.findManyByDate(date)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByPlace(place: string): Promise<ReplyLayer<IEventsListSucc>> {
+	async findManyByPlace(place: string): Promise<IEventsListSucc> {
 		try {
 			return await this.service.findManyByPlace(place)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
+
+	// BACKEND
 	async getOwner(id: number): Promise<number | undefined> {
 		try {
 			return await this.service.getOwner(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -87,7 +81,7 @@ export class EventsService implements IEventsService {
 		try {
 			return await this.service.getImagePath(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

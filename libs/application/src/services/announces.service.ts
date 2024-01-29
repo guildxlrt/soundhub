@@ -5,15 +5,7 @@ import {
 	AnnouncesRepository,
 	File,
 } from "Domain"
-import {
-	ProfileID,
-	ErrorMsg,
-	htmlError,
-	ReplyLayer,
-	AnnounceID,
-	IAnnounceSucc,
-	IAnnouncesListSucc,
-} from "Shared"
+import { ProfileID, AnnounceID, IAnnounceSucc, IAnnouncesListSucc, ErrorHandler } from "Shared"
 
 interface IAnnouncesService
 	extends AnnouncesRepository,
@@ -28,60 +20,61 @@ export class AnnouncesService implements IAnnouncesService {
 	}
 
 	// SERVIVES
-	async create(data: Announce, file?: File): Promise<ReplyLayer<boolean>> {
+	async create(data: Announce, file?: File): Promise<boolean> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async edit(data: Announce, file?: File): Promise<ReplyLayer<boolean>> {
+	async edit(data: Announce, file?: File): Promise<boolean> {
 		try {
 			return await this.service.edit(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async delete(id: AnnounceID): Promise<ReplyLayer<void>> {
+	async delete(id: AnnounceID): Promise<void> {
 		try {
 			return await this.service.delete(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async get(id: ProfileID): Promise<ReplyLayer<IAnnounceSucc>> {
+	async get(id: ProfileID): Promise<IAnnounceSucc> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<ReplyLayer<IAnnouncesListSucc>> {
+	async getAll(): Promise<IAnnouncesListSucc> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ProfileID): Promise<ReplyLayer<IAnnouncesListSucc>> {
+	async findManyByArtist(id: ProfileID): Promise<IAnnouncesListSucc> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
+	// BACKEND
 	async getOwner(id: AnnounceID): Promise<number | undefined> {
 		try {
 			return await this.service.getOwner(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async getImagePath(id: AnnounceID): Promise<string | null | undefined> {
 		try {
 			return await this.service.getImagePath(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { IDUsecaseParams } from "../../assets"
-import { FindEventsByArtistReplyDTO, ErrorMsg } from "Shared"
+import { FindEventsByArtistReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
 
 export class FindEventsByArtistUsecase {
@@ -11,12 +11,11 @@ export class FindEventsByArtistUsecase {
 	async execute(input: IDUsecaseParams): Promise<FindEventsByArtistReplyDTO> {
 		try {
 			const id = input.id
-			return await this.eventsService.findManyByArtist(id)
+
+			const data = await this.eventsService.findManyByArtist(id)
+			return new FindEventsByArtistReplyDTO(data)
 		} catch (error) {
-			return new FindEventsByArtistReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

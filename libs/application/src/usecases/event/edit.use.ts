@@ -1,11 +1,11 @@
-import { EditEventReplyDTO, ErrorMsg, ReplyLayer, filePath, htmlError } from "Shared"
+import { EditEventReplyDTO, ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
 import { EventUsecaseParams } from "../../assets"
 import { Event, File, StorageRepository } from "Domain"
 import { EventsService } from "../../services"
 
 export class EditEventUsecase {
-	eventsService: EventsService
-	storageRepository?: StorageRepository
+	private eventsService: EventsService
+	private storageRepository?: StorageRepository
 
 	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
 		this.eventsService = eventsService
@@ -32,46 +32,53 @@ export class EditEventUsecase {
 				return await this.backend(this.storageRepository, event, file)
 			else return await this.frontend(event, file)
 		} catch (error) {
-			return new EditEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(storageRepository: StorageRepository, data: Event, file?: File) {
+	async frontend(event: Event, file?: File): Promise<EditEventReplyDTO> {
 		try {
-			const { owner_id, id } = data
+			const data = await this.eventsService.edit(event, file)
+			return new EditEventReplyDTO(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async backend(
+		storageRepository: StorageRepository,
+		event: Event,
+		file?: File
+	): Promise<EditEventReplyDTO> {
+		try {
+			const { owner_id, id } = event
 
 			// owner verification
 			const eventOwner = await this.eventsService.getOwner(id as number)
 			if (owner_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			// STORING NEW FILE
 			if (file) {
 				const oldImagePath = await this.eventsService.getImagePath(id as number)
 				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
 
 				// move new
 				const newImagePath = await storageRepository.move(file, filePath.store.event)
+				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				data.imagePath = newImagePath
-				await this.eventsService.edit(data)
+				// persist
+				event.updateImagePath(newImagePath)
+				await this.eventsService.edit(event)
 
 				// delete old
 				await storageRepository.delete(oldImagePath as string)
 
-				return new ReplyLayer<boolean>(true)
+				return new EditEventReplyDTO(true)
 			} else {
-				return await this.eventsService.edit(data)
+				const data = await this.eventsService.edit(event)
+				return new EditEventReplyDTO(data)
 			}
 		} catch (error) {
-			return new EditEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-
-	async frontend(data: Event, file?: File) {
-		try {
-			return await this.eventsService.edit(data, file)
-		} catch (error) {
-			return new EditEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

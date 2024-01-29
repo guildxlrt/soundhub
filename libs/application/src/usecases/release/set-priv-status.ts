@@ -1,5 +1,5 @@
 import { SetPrivStatusReleaseUsecaseParams } from "../../assets"
-import { SetPrivStatusReleaseReplyDTO, ErrorMsg, envs, htmlError } from "Shared"
+import { SetPrivStatusReleaseReplyDTO, ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class SetPrivStatusReleaseUsecase {
@@ -16,14 +16,11 @@ export class SetPrivStatusReleaseUsecase {
 			if (backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			return new SetPrivStatusReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(input: SetPrivStatusReleaseUsecaseParams) {
+	async backend(input: SetPrivStatusReleaseUsecaseParams): Promise<SetPrivStatusReleaseReplyDTO> {
 		try {
 			const { id, isPublic, ownerID } = input
 
@@ -32,25 +29,23 @@ export class SetPrivStatusReleaseUsecase {
 			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
-			return await this.releasesService.setPrivStatus(id, isPublic)
+			const res = await this.releasesService.setPrivStatus(id, isPublic)
+			return new SetPrivStatusReleaseReplyDTO(res)
 		} catch (error) {
-			return new SetPrivStatusReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async frontend(input: SetPrivStatusReleaseUsecaseParams) {
+	async frontend(
+		input: SetPrivStatusReleaseUsecaseParams
+	): Promise<SetPrivStatusReleaseReplyDTO> {
 		try {
 			const { id, isPublic } = input
 
-			return await this.releasesService.setPrivStatus(id, isPublic)
+			const res = await this.releasesService.setPrivStatus(id, isPublic)
+			return new SetPrivStatusReleaseReplyDTO(res)
 		} catch (error) {
-			return new SetPrivStatusReleaseReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

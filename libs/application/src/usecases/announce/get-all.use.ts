@@ -1,4 +1,4 @@
-import { GetAllAnnouncesReplyDTO, ErrorMsg } from "Shared"
+import { GetAllAnnouncesReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
 
 export class GetAllAnnouncesUsecase {
@@ -8,9 +8,11 @@ export class GetAllAnnouncesUsecase {
 	}
 	async execute(): Promise<GetAllAnnouncesReplyDTO> {
 		try {
-			return await this.releasesService.getAll()
+			const data = await this.releasesService.getAll()
+
+			return new GetAllAnnouncesReplyDTO(data)
 		} catch (error) {
-			return new GetAllAnnouncesReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

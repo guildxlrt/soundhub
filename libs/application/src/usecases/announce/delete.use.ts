@@ -1,11 +1,11 @@
-import { DeleteAnnounceReplyDTO, ErrorMsg, htmlError } from "Shared"
+import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
 import { AnnouncesService } from "../../services"
 import { StorageRepository } from "Domain"
 import { DeleteAnnounceUsecaseParams } from "../../assets"
 
 export class DeleteAnnounceUsecase {
-	announcesService: AnnouncesService
-	storageRepository?: StorageRepository
+	private announcesService: AnnouncesService
+	private storageRepository?: StorageRepository
 
 	constructor(announcesService: AnnouncesService, storageRepository?: StorageRepository) {
 		this.announcesService = announcesService
@@ -19,7 +19,15 @@ export class DeleteAnnounceUsecase {
 				return await this.backend(this.storageRepository, id, ownerID as number)
 			else return await this.frontend(id)
 		} catch (error) {
-			return new DeleteAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async frontend(id: number) {
+		try {
+			return await this.announcesService.delete(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -33,17 +41,10 @@ export class DeleteAnnounceUsecase {
 			const imagePath = await this.announcesService.getImagePath(id as number)
 			await storageRepository.delete(imagePath as string)
 
+			// persist
 			return await this.announcesService.delete(id)
 		} catch (error) {
-			return new DeleteAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-
-	async frontend(id: number) {
-		try {
-			return await this.announcesService.delete(id)
-		} catch (error) {
-			return new DeleteAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

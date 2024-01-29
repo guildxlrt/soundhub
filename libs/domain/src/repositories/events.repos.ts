@@ -2,14 +2,14 @@ import { ReplyLayer, EventID, IEventSucc, IEventsListSucc, UserAuthID, ProfileID
 import { Event, File } from "Domain"
 
 export interface EventsRepository {
-	create(data: Event, file?: File): Promise<ReplyLayer<boolean>>
-	edit(data: Event, file?: File): Promise<ReplyLayer<boolean>>
-	delete(id: EventID, userAuth?: UserAuthID): Promise<ReplyLayer<void>>
-	get(data: EventID): Promise<ReplyLayer<IEventSucc>>
-	getAll(): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByArtist(id: EventID): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByDate(date: Date): Promise<ReplyLayer<IEventsListSucc>>
-	findManyByPlace(place: string): Promise<ReplyLayer<IEventsListSucc>>
+	create(data: Event, file?: File): Promise<boolean>
+	edit(data: Event, file?: File): Promise<boolean>
+	delete(id: EventID, userAuth?: UserAuthID): Promise<void>
+	get(data: EventID): Promise<IEventSucc>
+	getAll(): Promise<IEventsListSucc>
+	findManyByArtist(id: EventID): Promise<IEventsListSucc>
+	findManyByDate(date: Date): Promise<IEventsListSucc>
+	findManyByPlace(place: string): Promise<IEventsListSucc>
 }
 
 export interface EventsAddBackRepos {

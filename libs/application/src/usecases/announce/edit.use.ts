@@ -1,18 +1,25 @@
-import { EditAnnounceReplyDTO, ErrorMsg, ReplyLayer, filePath, htmlError } from "Shared"
+import {
+	EditAnnounceReplyDTO,
+	ErrorHandler,
+	ErrorMsg,
+	ReplyLayer,
+	filePath,
+	htmlError,
+} from "Shared"
 import { AnnounceUsecaseParams } from "../../assets"
 import { Announce, File, StorageRepository } from "Domain"
 import { AnnouncesService } from "../../services"
 
 export class EditAnnounceUsecase {
-	announcesService: AnnouncesService
-	storageRepository?: StorageRepository
+	private announcesService: AnnouncesService
+	private storageRepository?: StorageRepository
 
 	constructor(announcesService: AnnouncesService, storageRepository?: StorageRepository) {
 		this.announcesService = announcesService
 		this.storageRepository = storageRepository
 	}
 
-	async execute(input: AnnounceUsecaseParams) {
+	async execute(input: AnnounceUsecaseParams): Promise<EditAnnounceReplyDTO> {
 		try {
 			const { file } = input
 			const { owner_id, title, text, id } = input.data
@@ -22,13 +29,26 @@ export class EditAnnounceUsecase {
 				return await this.backend(this.storageRepository, data, file)
 			else return await this.frontend(data, file)
 		} catch (error) {
-			return new EditAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(storageRepository: StorageRepository, data: Announce, file?: File) {
+	async frontend(annouce: Announce, file?: File): Promise<EditAnnounceReplyDTO> {
 		try {
-			const { owner_id, id } = data
+			const data = await this.announcesService.edit(annouce, file)
+			return new EditAnnounceReplyDTO(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async backend(
+		storageRepository: StorageRepository,
+		announce: Announce,
+		file?: File
+	): Promise<EditAnnounceReplyDTO> {
+		try {
+			const { owner_id, id } = announce
 
 			// owner verification
 			const announceOwner = await this.announcesService.getOwner(id as number)
@@ -41,26 +61,22 @@ export class EditAnnounceUsecase {
 
 				// move new
 				const newImagePath = await storageRepository.move(file, filePath.store.announce)
+				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				data.imagePath = newImagePath
-				await this.announcesService.edit(data)
+				// persist
+				announce.updateImagePath(newImagePath)
+				await this.announcesService.edit(announce)
 
 				// delete old
 				await storageRepository.delete(oldImagePath as string)
 
-				return new ReplyLayer<boolean>(true)
+				return new EditAnnounceReplyDTO(true)
 			} else {
-				return await this.announcesService.edit(data)
+				const data = await this.announcesService.edit(announce)
+				return new EditAnnounceReplyDTO(data)
 			}
 		} catch (error) {
-			return new EditAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-	async frontend(data: Announce, file?: File) {
-		try {
-			return await this.announcesService.edit(data, file)
-		} catch (error) {
-			return new EditAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

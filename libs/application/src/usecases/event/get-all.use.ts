@@ -1,4 +1,4 @@
-import { GetAllEventsReplyDTO, ErrorMsg } from "Shared"
+import { GetAllEventsReplyDTO, ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
 
 export class GetAllEventsUsecase {
@@ -9,9 +9,10 @@ export class GetAllEventsUsecase {
 
 	async execute(): Promise<GetAllEventsReplyDTO> {
 		try {
-			return await this.eventsService.getAll()
+			const data = await this.eventsService.getAll()
+			return new GetAllEventsReplyDTO(data)
 		} catch (error) {
-			return new GetAllEventsReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

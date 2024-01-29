@@ -8,17 +8,15 @@ import {
 } from "Domain"
 import {
 	ProfileID,
-	ErrorMsg,
 	UserEmail,
 	UserPassword,
 	UserProfileType,
-	htmlError,
-	ReplyLayer,
 	INewArtistSucc,
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	GenreType,
 	UserAuthID,
+	ErrorHandler,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ArtistsAddBackRepos, ArtistsAddFrontRepos {}
@@ -38,58 +36,59 @@ export class ArtistsService implements IArtistsService {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<ReplyLayer<INewArtistSucc>> {
+	): Promise<INewArtistSucc> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async update(data: Artist, file?: File): Promise<ReplyLayer<boolean>> {
+	async update(data: Artist, file?: File): Promise<boolean> {
 		try {
 			return await this.service.update(data, file)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getByID(id: ProfileID): Promise<ReplyLayer<IArtistInfoSucc>> {
+	async getByID(id: ProfileID): Promise<IArtistInfoSucc> {
 		try {
 			return await this.service.getByID(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getByEmail(email: UserEmail): Promise<ReplyLayer<IArtistInfoSucc>> {
+	async getByEmail(email: UserEmail): Promise<IArtistInfoSucc> {
 		try {
 			return await this.service.getByEmail(email)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<ReplyLayer<IArtistsListSucc>> {
+	async getAll(): Promise<IArtistsListSucc> {
 		{
 			try {
 				return await this.service.getAll()
 			} catch (error) {
-				throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+				throw ErrorHandler.handle(error)
 			}
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<ReplyLayer<IArtistsListSucc>> {
+	async findManyByGenre(genre: GenreType): Promise<IArtistsListSucc> {
 		{
 			try {
 				return await this.service.findManyByGenre(genre)
 			} catch (error) {
-				throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+				throw ErrorHandler.handle(error)
 			}
 		}
 	}
+	// BACKEND
 	async getByAuth(id: UserAuthID): Promise<{ profile: Artist; profileType: UserProfileType }> {
 		{
 			try {
 				return await this.service.getByAuth(id)
 			} catch (error) {
-				throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+				throw ErrorHandler.handle(error)
 			}
 		}
 	}

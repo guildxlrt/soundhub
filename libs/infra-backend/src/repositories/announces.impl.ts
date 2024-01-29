@@ -1,20 +1,18 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import { Reply } from "../utils"
 import {
 	IAnnounceSucc,
 	IAnnouncesListSucc,
-	ErrorMsg,
 	IAnnouncesListItemSucc,
 	AnnounceID,
-	htmlError,
+	ErrorHandler,
 } from "Shared"
 import { dbClient } from "../database"
 
 export class AnnouncesImplement implements AnnouncesBackendRepos {
 	private announce = dbClient.announce
 
-	async create(data: Announce): Promise<Reply<boolean>> {
+	async create(data: Announce): Promise<boolean> {
 		try {
 			const { owner_id, title, text, imagePath } = data
 
@@ -38,15 +36,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			}
 
 			// RESPO NSE
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async edit(data: Announce): Promise<Reply<boolean>> {
+	async edit(data: Announce): Promise<boolean> {
 		try {
 			const { owner_id, title, text, id, imagePath } = data
 
@@ -75,15 +71,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				})
 			}
 
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			const res = new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async delete(id: AnnounceID): Promise<Reply<void>> {
+	async delete(id: AnnounceID): Promise<void> {
 		try {
 			await this.announce.delete({
 				where: {
@@ -91,15 +85,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return new Reply<void>()
+			return
 		} catch (error) {
-			const res = new Reply<void>(undefined, new ErrorMsg(`Error: failed to delete`, 500))
-
-			return res
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async get(id: AnnounceID): Promise<Reply<IAnnounceSucc>> {
+	async get(id: AnnounceID): Promise<IAnnounceSucc> {
 		try {
 			const announce = await this.announce.findUniqueOrThrow({
 				where: {
@@ -113,19 +105,19 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return new Reply<IAnnounceSucc>({
+			return {
 				id: id,
 				owner_id: id,
 				title: announce?.title,
 				text: announce?.text,
 				imagePath: announce?.imagePath,
-			})
+			}
 		} catch (error) {
-			return new Reply<IAnnounceSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<Reply<IAnnouncesListSucc>> {
+	async getAll(): Promise<IAnnouncesListSucc> {
 		try {
 			const announces = await this.announce.findMany({
 				select: {
@@ -137,7 +129,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 
 			// Reorganize
-			const list = announces.map((announce): IAnnouncesListItemSucc => {
+			return announces.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
 					owner_id: announce.owner_id,
@@ -145,14 +137,12 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 					imagePath: announce.imagePath,
 				}
 			})
-
-			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByArtist(id: AnnounceID): Promise<Reply<IAnnouncesListSucc>> {
+	async findManyByArtist(id: AnnounceID): Promise<IAnnouncesListSucc> {
 		try {
 			const profileID = id
 
@@ -169,7 +159,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 
 			// Reorganize
-			const list = announces.map((announce): IAnnouncesListItemSucc => {
+			return announces.map((announce): IAnnouncesListItemSucc => {
 				return {
 					id: announce.id,
 					owner_id: announce.owner_id,
@@ -177,10 +167,8 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 					imagePath: announce.imagePath,
 				}
 			})
-
-			return new Reply<IAnnouncesListSucc>(list)
 		} catch (error) {
-			return new Reply<IAnnouncesListSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -196,7 +184,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.owner_id
 		} catch (error) {
-			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -212,7 +200,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.imagePath
 		} catch (error) {
-			throw new ErrorMsg("Error verifying auths", 500).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("error getting image path")
 		}
 	}
 }

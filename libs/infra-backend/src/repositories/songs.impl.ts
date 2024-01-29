@@ -1,12 +1,11 @@
-import { SongsRepository } from "Domain"
-import { Reply } from "../utils"
-import { SongID, ISongSucc, ErrorMsg, htmlError } from "Shared"
+import { Song, SongsBackendRepos } from "Domain"
+import { SongID, ISongSucc, ErrorHandler } from "Shared"
 import { dbClient } from "../database"
 
-export class SongsImplement implements SongsRepository {
+export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
 
-	async get(id: SongID): Promise<Reply<ISongSucc>> {
+	async get(id: SongID): Promise<ISongSucc> {
 		try {
 			const song = await this.song.findUniqueOrThrow({
 				where: {
@@ -14,7 +13,7 @@ export class SongsImplement implements SongsRepository {
 				},
 				select: {
 					release_id: true,
-					audioApth: true,
+					audioPath: true,
 					title: true,
 					featuring: true,
 					lyrics: true,
@@ -22,16 +21,36 @@ export class SongsImplement implements SongsRepository {
 			})
 
 			// RESPONSE
-			return new Reply<ISongSucc>({
+			return {
 				id: id,
 				release_id: song?.release_id,
-				audioApth: song?.audioApth,
+				audioPath: song?.audioPath,
 				title: song?.title,
 				featuring: song?.featuring,
 				lyrics: song?.lyrics,
-			})
+			}
 		} catch (error) {
-			return new Reply<ISongSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async update(data: Song): Promise<void> {
+		try {
+			const { title, featuring, lyrics, audioPath, release_id } = data
+
+			// PERSIST
+			await this.song.create({
+				data: {
+					release_id: release_id as number,
+					audioPath: audioPath as string,
+					title: title,
+					featuring: featuring,
+					lyrics: lyrics,
+				},
+			})
+			return
+		} catch (error) {
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

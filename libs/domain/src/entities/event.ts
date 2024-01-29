@@ -30,4 +30,8 @@ export class Event extends EntityLayer {
 		this.text = text
 		this.imagePath = imagePath
 	}
+
+	updateImagePath(newImagePath: string) {
+		this.imagePath = newImagePath
+	}
 }

@@ -1,6 +1,5 @@
 export * from "./announces.service"
 export * from "./artists.service"
-export * from "./auth.service"
 export * from "./events.service"
 export * from "./releases.service"
 export * from "./songs.service"

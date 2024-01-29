@@ -71,7 +71,7 @@ CREATE TABLE "Song" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "release_id" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
-    "audioApth" TEXT NOT NULL,
+    "audioPath" TEXT NOT NULL,
     "featuring" INTEGER[],
     "lyrics" TEXT,
 

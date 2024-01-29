@@ -1,4 +1,4 @@
-import { LogoutReplyDTO, ErrorMsg } from "Shared"
+import { LogoutReplyDTO, ErrorHandler } from "Shared"
 import { UserAuthService } from "../../services"
 
 export class LogoutUsecase {
@@ -10,9 +10,10 @@ export class LogoutUsecase {
 
 	async execute(): Promise<LogoutReplyDTO> {
 		try {
-			return await this.userAuthService.logout()
+			const res = await this.userAuthService.logout()
+			return new LogoutReplyDTO(res)
 		} catch (error) {
-			return new LogoutReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

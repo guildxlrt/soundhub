@@ -91,7 +91,7 @@ model Song {
   release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
 
   title     String
-  audioApth String
+  audioPath String
   featuring Int[]
   lyrics    String?
 }

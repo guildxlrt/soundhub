@@ -1,55 +1,60 @@
-import { ChangeEmailReplyDTO, htmlError } from "Shared"
+import { ChangeEmailReplyDTO, ErrorHandler, envs, htmlError } from "Shared"
 import { ChangeEmailUsecaseParams } from "../../assets"
 import { ErrorMsg } from "Shared"
-import { AuthService, UserAuthService } from "../../services"
+import { UserAuthService } from "../../services"
 
 export class ChangeEmailUsecase {
 	private userAuthService: UserAuthService
-	private authService?: AuthService
 
-	constructor(userAuthService: UserAuthService, authService?: AuthService) {
+	constructor(userAuthService: UserAuthService) {
 		this.userAuthService = userAuthService
-		this.authService = authService
 	}
 
 	async execute(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
 		try {
-			if (this.authService) return await this.backend(this.authService, input)
+			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			return new ChangeEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async frontend(input: ChangeEmailUsecaseParams) {
+	async frontend(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
 		try {
 			const { actual, confirm, newEmail } = input
-
-			return await this.userAuthService.changeEmail({
+			const data = await this.userAuthService.changeEmail({
 				actual: actual,
 				newEmail: newEmail,
 				confirm: confirm,
 			})
+			return new ChangeEmailReplyDTO(data)
 		} catch (error) {
-			return new ChangeEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(authService: AuthService, input: ChangeEmailUsecaseParams) {
-		const { newEmail, id } = input
+	async backend(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
+		try {
+			const { newEmail, id } = input
 
-		// AUTHENTIFICATE
-		const data = await authService.getByID(id as number)
-		const compareIDs = await authService.compareIDs(data.id, id as number)
-		const compareEmails = await authService.compareEmails(data.email, newEmail)
+			// AUTHENTIFICATE
+			const auths = await this.userAuthService.getByID(id as number)
+			const compareIDs = await this.userAuthService.compareIDs(auths.id, id as number)
+			const compareEmails = await this.userAuthService.compareEmails(auths.email, newEmail)
 
-		if (!compareIDs || !compareEmails) throw ErrorMsg.htmlError(htmlError[403])
+			if (!compareIDs || !compareEmails) throw ErrorMsg.htmlError(htmlError[403])
 
-		// SAVE
-		return await this.userAuthService.changePass({
-			id: id as number,
-			pass: newEmail,
-		})
+			// SAVE
+
+			const data = await this.userAuthService.changePass({
+				id: id as number,
+				pass: newEmail,
+			})
+
+			return new ChangeEmailReplyDTO(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
 	}
 
 	// async executeOld(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
@@ -66,11 +71,11 @@ export class ChangeEmailUsecase {
 	// 			envs.backend
 	// 		)
 
-	// 		if (this.authService) {
-	// 			const data = await this.authService.getByID(id as number)
+	// 		if (this.userAuthService) {
+	// 			const data = await this.userAuthService.getByID(id as number)
 
-	// 			const compareIDs = await this.authService.compareIDs(data.id, id as number)
-	// 			const compareEmails = await this.authService.compareEmails(data.email, newEmail)
+	// 			const compareIDs = await this.userAuthService.compareIDs(data.id, id as number)
+	// 			const compareEmails = await this.userAuthService.compareEmails(data.email, newEmail)
 
 	// 			if (!compareIDs || !compareEmails) throw ErrorMsg.htmlError(htmlError[403])
 

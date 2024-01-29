@@ -1,5 +1,5 @@
 import { IDUsecaseParams } from "../../assets"
-import { GetReleaseReplyDTO, ErrorMsg } from "Shared"
+import { GetReleaseReplyDTO, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class GetReleaseUsecase {
@@ -11,9 +11,10 @@ export class GetReleaseUsecase {
 	async execute(input: IDUsecaseParams): Promise<GetReleaseReplyDTO> {
 		try {
 			const id = input.id
-			return await this.releasesService.get(id)
+			const data = await this.releasesService.get(id)
+			return new GetReleaseReplyDTO(data)
 		} catch (error) {
-			return new GetReleaseReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

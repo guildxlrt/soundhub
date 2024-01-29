@@ -1,10 +1,10 @@
-import { ProfileID, CookieOptions } from "../../types"
+import { ProfileID, CookieOptions, IUserCookie } from "../../types"
 
 // ARTIST
-export class INewArtistSucc extends UserCookie {
-	constructor(name: string, val: string, options: CookieOptions) {
-		super(name, val, options)
-	}
+export interface INewArtistSucc extends IUserCookie {
+	name: string
+	val: string
+	options: CookieOptions
 }
 
 export type IArtistInfoSucc = null | {

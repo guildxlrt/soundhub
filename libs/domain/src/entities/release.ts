@@ -34,4 +34,8 @@ export class Release extends EntityLayer {
 	setGenres(genres: GenresArray | string[]) {
 		this.genres = genres as GenresArray
 	}
+
+	updateCoverPath(newCoverPath: string) {
+		this.coverPath = newCoverPath
+	}
 }

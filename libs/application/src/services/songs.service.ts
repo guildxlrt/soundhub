@@ -1,19 +1,28 @@
-import { SongsRepository } from "Domain"
-import { ErrorMsg, ISongSucc, ReplyLayer, htmlError } from "Shared"
+import { Song, SongsAddBackRepos, SongsAddFrontRepos, SongsRepository } from "Domain"
+import { ErrorHandler, ISongSucc } from "Shared"
 
-export class SongsService implements SongsRepository {
-	private service: SongsRepository
+interface ISongsService extends SongsRepository, SongsAddBackRepos, SongsAddFrontRepos {}
 
-	constructor(service: SongsRepository) {
+export class SongsService implements ISongsService {
+	private service: ISongsService
+
+	constructor(service: ISongsService) {
 		this.service = service
 	}
 
 	// SERVIVES
-	async get(id: unknown): Promise<ReplyLayer<ISongSucc>> {
+	async get(id: unknown): Promise<ISongSucc> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async update(data: Song): Promise<void> {
+		try {
+			return await this.service.update(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

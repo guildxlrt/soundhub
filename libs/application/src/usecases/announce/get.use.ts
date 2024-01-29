@@ -1,4 +1,4 @@
-import { GetAnnounceReplyDTO, ErrorMsg } from "Shared"
+import { GetAnnounceReplyDTO, ErrorHandler } from "Shared"
 import { IDUsecaseParams } from "../../assets"
 import { AnnouncesService } from "../../services"
 
@@ -12,9 +12,10 @@ export class GetAnnounceUsecase {
 		try {
 			const id = input.id
 
-			return await this.releasesService.get(id)
+			const data = await this.releasesService.get(id)
+			return new GetAnnounceReplyDTO(data)
 		} catch (error) {
-			return new GetAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

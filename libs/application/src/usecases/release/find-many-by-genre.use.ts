@@ -1,4 +1,4 @@
-import { FindReleasesByGenreReplyDTO, ErrorMsg } from "Shared"
+import { FindReleasesByGenreReplyDTO, ErrorHandler } from "Shared"
 import { GenreType } from "Shared"
 import { ReleasesService } from "../../services"
 
@@ -11,12 +11,11 @@ export class FindReleasesByGenreUsecase {
 	async execute(input: { genre: GenreType }): Promise<FindReleasesByGenreReplyDTO> {
 		try {
 			const genre = input.genre
-			return await this.releasesService.findManyByGenre(genre)
+			const data = await this.releasesService.findManyByGenre(genre)
+
+			return new FindReleasesByGenreReplyDTO(data)
 		} catch (error) {
-			return new FindReleasesByGenreReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

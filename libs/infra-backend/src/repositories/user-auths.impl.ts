@@ -9,32 +9,32 @@ import {
 	ProfileID,
 	UserProfileType,
 	ILoginSucc,
+	ErrorHandler,
 } from "Shared"
-import { PassEncryptor, Reply, Token, authExpires } from "../utils"
+import { PassEncryptor, Token, authExpires } from "../utils"
 import { dbClient } from "../database"
 
 export class UserAuthsImplement implements UserAuthsBackendRepos {
 	private userAuth = dbClient.userAuth
 
-	async login(input: { data: unknown; userCookie: UserCookie }): Promise<Reply<ILoginSucc>> {
+	async login(input: { data: unknown; userCookie: UserCookie }): Promise<ILoginSucc> {
 		try {
 			// return cookie
-			return new Reply<ILoginSucc>(input)
+			return input
 		} catch (error) {
-			return new Reply<ILoginSucc>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async logout(): Promise<Reply<void>> {
+	async logout(): Promise<void> {
 		try {
-			// RESPONSE
-			return new Reply<void>()
+			return
 		} catch (error) {
-			return new Reply<void>(undefined, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async changePass(input: { id: UserAuthID; pass: UserPassword }): Promise<Reply<boolean>> {
+	async changePass(input: { id: UserAuthID; pass: UserPassword }): Promise<boolean> {
 		try {
 			const { id, pass } = input
 
@@ -51,14 +51,13 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				},
 			})
 
-			// RESPONSE
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async changeEmail(input: { email: UserEmail; id: UserAuthID }): Promise<Reply<boolean>> {
+	async changeEmail(input: { email: UserEmail; id: UserAuthID }): Promise<boolean> {
 		try {
 			const { id, email } = input
 
@@ -71,10 +70,9 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				},
 			})
 
-			// RESPONSE
-			return new Reply<boolean>(true)
+			return true
 		} catch (error) {
-			return new Reply<boolean>(false, ErrorMsg.htmlError(htmlError[500]))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -83,19 +81,23 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 		profile: ProfileID,
 		profileType: UserProfileType
 	): Promise<UserCookie> {
-		if (!id || !profile) throw ErrorMsg.htmlError(htmlError[404])
+		try {
+			if (!id || !profile) throw ErrorMsg.htmlError(htmlError[404])
 
-		// token gen
-		const expires = authExpires.oneYear
-		const userCookie = new UserTokenData(id, profile, profileType)
-		const token = await Token.generate(userCookie, expires)
+			// token gen
+			const expires = authExpires.oneYear
+			const userCookie = new UserTokenData(id, profile, profileType)
+			const token = await Token.generate(userCookie, expires)
 
-		return new UserCookie("jwt", token as string, {
-			maxAge: expires,
-			httpOnly: true,
-			sameSite: "lax",
-			secure: false,
-		})
+			return new UserCookie("jwt", token as string, {
+				maxAge: expires,
+				httpOnly: true,
+				sameSite: "lax",
+				secure: false,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error).setMessage("error cannot generate cookie")
+		}
 	}
 
 	async getByEmail(email: UserEmail): Promise<{
@@ -119,7 +121,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -144,7 +146,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -170,7 +172,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 			// HASH PASS
 			return await PassEncryptor.hash(pass)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error).setMessage("hash pass error")
 		}
 	}
 }

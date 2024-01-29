@@ -1,4 +1,4 @@
-import { GetArtistByEmailReplyDTO, ErrorMsg } from "Shared"
+import { GetArtistByEmailReplyDTO, ErrorHandler } from "Shared"
 import { EmailUsecaseParams } from "../../assets"
 import { ArtistsService } from "../../services"
 
@@ -11,9 +11,12 @@ export class GetArtistByEmailUsecase {
 	async execute(input: EmailUsecaseParams): Promise<GetArtistByEmailReplyDTO> {
 		try {
 			const { email } = input
-			return await this.artistsService.getByEmail(email)
+
+			const data = await this.artistsService.getByEmail(email)
+
+			return new GetArtistByEmailReplyDTO(data)
 		} catch (error) {
-			return new GetArtistByEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -21,11 +21,13 @@ export class NewArtistUsecaseParams {
 }
 
 export class UpdateArtistUsecaseParams {
-	data: { profile: Artist; avatarDel: boolean }
+	profile: Artist
+	avatarDel: boolean
 	file?: File
 
-	constructor(data: { profile: Artist; avatarDel: boolean }, file?: File) {
-		this.data = data
+	constructor(profile: Artist, avatarDel: boolean, file?: File) {
+		this.profile = profile
+		this.avatarDel = avatarDel
 		this.file = file
 	}
 }

@@ -1,5 +1,5 @@
 import * as fs from "fs"
-import { ErrorMsg, StoreFilePath, htmlError } from "Shared"
+import { ErrorHandler, ReleaseFolder } from "Shared"
 import { File, StorageRepository } from "Domain"
 
 export class StorageImplement implements StorageRepository {
@@ -11,13 +11,13 @@ export class StorageImplement implements StorageRepository {
 			return await fs.promises
 				.rename(path, newPath)
 				.then(() => {
-					return destination
+					return newPath
 				})
 				.catch((error) => {
-					throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+					throw ErrorHandler.handle(error)
 				})
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -29,28 +29,27 @@ export class StorageImplement implements StorageRepository {
 					return true
 				})
 				.catch((error) => {
-					throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+					throw ErrorHandler.handle(error)
 				})
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async mkdir(storeFolder: StoreFilePath, name?: string): Promise<string> {
+	async mkdir(): Promise<string> {
 		try {
-			const folderName = name ? name : Math.floor(Math.random() * 999999)
-			const folderPath = storeFolder + folderName
+			const folderName = ReleaseFolder.generateRandom()
 
 			return await fs.promises
-				.mkdir(folderPath, { recursive: true })
+				.mkdir(folderName, { recursive: true })
 				.then(() => {
-					return folderPath + "/"
+					return folderName
 				})
 				.catch((error) => {
-					throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+					throw ErrorHandler.handle(error)
 				})
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

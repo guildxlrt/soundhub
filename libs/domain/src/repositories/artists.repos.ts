@@ -4,7 +4,6 @@ import {
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	INewArtistSucc,
-	ReplyLayer,
 	UserEmail,
 	UserPassword,
 	UserProfileType,
@@ -20,12 +19,12 @@ export interface ArtistsRepository {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<ReplyLayer<INewArtistSucc>>
-	update(data: Artist, file?: File): Promise<ReplyLayer<boolean>>
-	getByID(id: ProfileID): Promise<ReplyLayer<IArtistInfoSucc>>
-	getByEmail(email: UserEmail): Promise<ReplyLayer<IArtistInfoSucc>>
-	getAll(): Promise<ReplyLayer<IArtistsListSucc>>
-	findManyByGenre(genre: GenreType): Promise<ReplyLayer<IArtistsListSucc>>
+	): Promise<INewArtistSucc>
+	update(data: Artist, file?: File): Promise<boolean>
+	getByID(id: ProfileID): Promise<IArtistInfoSucc>
+	getByEmail(email: UserEmail): Promise<IArtistInfoSucc>
+	getAll(): Promise<IArtistsListSucc>
+	findManyByGenre(genre: GenreType): Promise<IArtistsListSucc>
 }
 
 export interface ArtistsAddBackRepos {

@@ -1,11 +1,11 @@
-import { CreateEventReplyDTO, ErrorMsg, ReplyLayer, filePath } from "Shared"
+import { CreateEventReplyDTO, ErrorHandler, ErrorMsg, filePath } from "Shared"
 import { EventUsecaseParams } from "../../assets"
 import { Event, File, StorageRepository } from "Domain"
 import { EventsService } from "../../services"
 
 export class CreateEventUsecase {
-	eventsService: EventsService
-	storageRepository?: StorageRepository
+	private eventsService: EventsService
+	private storageRepository?: StorageRepository
 
 	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
 		this.eventsService = eventsService
@@ -22,35 +22,41 @@ export class CreateEventUsecase {
 				return await this.backend(this.storageRepository, data, file)
 			} else return await this.frontend(data, file)
 		} catch (error) {
-			return new CreateEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(storageRepository: StorageRepository, data: Event, file?: File) {
+	async frontend(event: Event, file?: File): Promise<CreateEventReplyDTO> {
 		try {
-			// STORING NEW FILE
+			const data = await this.eventsService.create(event, file)
+			return new CreateEventReplyDTO(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async backend(
+		storageRepository: StorageRepository,
+		event: Event,
+		file?: File
+	): Promise<CreateEventReplyDTO> {
+		try {
 			if (file) {
 				// move
 				const newImagePath = await storageRepository.move(file, filePath.store.announce)
+				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				// save
-				data.imagePath = newImagePath
-				await this.eventsService.create(data)
+				// persist
+				event.updateImagePath(newImagePath)
+				const data = await this.eventsService.create(event)
 
-				return new ReplyLayer<boolean>(true)
+				return new CreateEventReplyDTO(data)
 			} else {
-				return await this.eventsService.create(data)
+				const data = await this.eventsService.create(event)
+				return new CreateEventReplyDTO(data)
 			}
 		} catch (error) {
-			return new CreateEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-
-	async frontend(data: Event, file?: File) {
-		try {
-			return await this.eventsService.create(data, file)
-		} catch (error) {
-			return new CreateEventReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

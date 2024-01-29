@@ -1,4 +1,4 @@
-import { UserTokenData, UserEmail, UserPassword } from "../assets"
+import { ILoginSucc, UserEmail, UserPassword } from "../assets"
 import { ReplyDTO } from "./layers/reply"
 
 // LOGIN
@@ -11,7 +11,7 @@ export class LoginReqDTO {
 		this.password = password
 	}
 }
-export class LoginReplyDTO extends ReplyDTO<UserTokenData> {}
+export class LoginReplyDTO extends ReplyDTO<ILoginSucc> {}
 
 // LOGOUT
 export class LogoutReplyDTO extends ReplyDTO<void> {}

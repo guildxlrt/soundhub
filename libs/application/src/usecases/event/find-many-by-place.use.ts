@@ -1,5 +1,5 @@
 import { PlaceUsecaseParams } from "../../assets"
-import { FindEventsByPlaceReplyDTO, ErrorMsg } from "Shared"
+import { FindEventsByPlaceReplyDTO, ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
 
 export class FindEventsByPlaceUsecase {
@@ -12,12 +12,10 @@ export class FindEventsByPlaceUsecase {
 		try {
 			const { place } = input
 
-			return await this.eventsService.findManyByPlace(place)
+			const data = await this.eventsService.findManyByPlace(place)
+			return new FindEventsByPlaceReplyDTO(data)
 		} catch (error) {
-			return new FindEventsByPlaceReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

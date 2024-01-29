@@ -1,18 +1,18 @@
-import { CreateAnnounceReplyDTO, ErrorMsg, ReplyLayer, filePath, htmlError } from "Shared"
+import { CreateAnnounceReplyDTO, ErrorHandler, ErrorMsg, filePath } from "Shared"
 import { AnnounceUsecaseParams } from "../../assets"
 import { Announce, File, StorageRepository } from "Domain"
 import { AnnouncesService } from "../../services"
 
 export class CreateAnnounceUsecase {
-	announcesService: AnnouncesService
-	storageRepository?: StorageRepository
+	private announcesService: AnnouncesService
+	private storageRepository?: StorageRepository
 
 	constructor(announcesService: AnnouncesService, storageRepository?: StorageRepository) {
 		this.announcesService = announcesService
 		this.storageRepository = storageRepository
 	}
 
-	async execute(input: AnnounceUsecaseParams) {
+	async execute(input: AnnounceUsecaseParams): Promise<CreateAnnounceReplyDTO> {
 		try {
 			const { file } = input
 			const { owner_id, title, text } = input.data
@@ -22,35 +22,42 @@ export class CreateAnnounceUsecase {
 				return await this.backend(this.storageRepository, data, file)
 			} else return await this.frontend(data, file)
 		} catch (error) {
-			return new CreateAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(storageRepository: StorageRepository, data: Announce, file?: File) {
+	async frontend(announce: Announce, file?: File): Promise<CreateAnnounceReplyDTO> {
+		try {
+			const data = await this.announcesService.create(announce, file)
+			return new CreateAnnounceReplyDTO(data)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async backend(
+		storageRepository: StorageRepository,
+		announce: Announce,
+		file?: File
+	): Promise<CreateAnnounceReplyDTO> {
 		try {
 			// STORING NEW FILE
 			if (file) {
 				// move
 				const newImagePath = await storageRepository.move(file, filePath.store.announce)
+				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				// save
-				data.imagePath = newImagePath
-				await this.announcesService.create(data)
+				// persist
+				announce.updateImagePath(newImagePath)
+				await this.announcesService.create(announce)
 
-				return new ReplyLayer<boolean>(true)
+				return new CreateAnnounceReplyDTO(true)
 			} else {
-				return await this.announcesService.create(data)
+				const data = await this.announcesService.create(announce)
+				return new CreateAnnounceReplyDTO(data)
 			}
 		} catch (error) {
-			return new CreateAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
-		}
-	}
-
-	async frontend(data: Announce, file?: File) {
-		try {
-			return await this.announcesService.create(data, file)
-		} catch (error) {
-			return new CreateAnnounceReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

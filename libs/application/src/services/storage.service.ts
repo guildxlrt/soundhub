@@ -1,5 +1,5 @@
 import { File, StorageRepository } from "Domain"
-import { ErrorMsg, htmlError } from "Shared"
+import { ErrorHandler } from "Shared"
 
 export class StorageService implements StorageRepository {
 	readonly service: StorageRepository
@@ -12,21 +12,21 @@ export class StorageService implements StorageRepository {
 		try {
 			return await this.service.move(file, destination)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async delete(filePath: string): Promise<boolean> {
 		try {
 			return await this.service.delete(filePath)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async mkdir(storeFolder: string, name?: string): Promise<string> {
 		try {
 			return await this.service.mkdir(storeFolder, name)
 		} catch (error) {
-			throw ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

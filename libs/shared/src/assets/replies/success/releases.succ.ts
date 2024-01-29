@@ -14,7 +14,7 @@ export interface IReleaseSucc {
 	descript: string | null | undefined
 	price: number | null | undefined
 	genres: string[] | undefined
-	songs: { audioApth: string; title: string }[] | undefined
+	songs: { audioPath: string; title: string }[] | undefined
 	coverPath: string | null | undefined
 }
 export type IReleasesListSucc = Omit<IReleaseSucc, "descript" | "price" | "songs">[]

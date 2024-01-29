@@ -1,5 +1,5 @@
 import { IDUsecaseParams } from "../../assets"
-import { FindAnnouncesByArtistReplyDTO, ErrorMsg } from "Shared"
+import { FindAnnouncesByArtistReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
 
 export class FindAnnouncesByArtistUsecase {
@@ -11,12 +11,10 @@ export class FindAnnouncesByArtistUsecase {
 		try {
 			const id = input.id
 
-			return await this.releasesService.findManyByArtist(id)
+			const data = await this.releasesService.findManyByArtist(id)
+			return new FindAnnouncesByArtistReplyDTO(data)
 		} catch (error) {
-			return new FindAnnouncesByArtistReplyDTO(
-				undefined,
-				new ErrorMsg(`Error: failed to persist`)
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }
