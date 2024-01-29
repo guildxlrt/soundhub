@@ -1,7 +1,6 @@
 import { AuthBackendRepos, UserAuthsRepository, UserCookie } from "Domain"
 import {
 	ErrorHandler,
-	ILoginSucc,
 	ProfileID,
 	UserAuthID,
 	UserEmail,
@@ -18,9 +17,9 @@ export class UserAuthService implements IUserAuthService {
 		this.service = service
 	}
 
-	async login(input: unknown): Promise<ILoginSucc> {
+	async login(first: unknown, two: unknown): Promise<void> {
 		try {
-			return await this.service.login(input)
+			return await this.service.login(first, two)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -1,4 +1,5 @@
-import { ProfileID, IAnnounceSucc, IAnnouncesListSucc, UrlParams } from "../assets"
+import { IAnnounceSucc, IAnnouncesListSucc } from "../replies"
+import { ProfileID, UrlParams } from "../types"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE POST

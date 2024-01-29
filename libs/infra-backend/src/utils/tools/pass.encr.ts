@@ -1,4 +1,4 @@
-import { ErrorMsg, htmlError } from "Shared"
+import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
 import * as bcrypt from "bcrypt"
 
 export class PassEncryptor {
@@ -11,7 +11,7 @@ export class PassEncryptor {
 
 			return hash
 		} catch (error) {
-			throw new ErrorMsg("error during hashing pass", 500).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	static async compare(password: string, encrypted: string) {
@@ -21,7 +21,7 @@ export class PassEncryptor {
 
 			return await bcrypt.compare(password, encrypted)
 		} catch (error) {
-			throw new ErrorMsg("error during pass verification", 500).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -46,16 +46,13 @@ export class CreateAnnounceUsecase {
 				// move
 				const newImagePath = await storageRepository.move(file, filePath.store.announce)
 				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-
-				// persist
 				announce.updateImagePath(newImagePath)
-				await this.announcesService.create(announce)
-
-				return new CreateAnnounceReplyDTO(true)
-			} else {
-				const data = await this.announcesService.create(announce)
-				return new CreateAnnounceReplyDTO(data)
 			}
+
+			// persist
+			await this.announcesService.create(announce)
+
+			return new CreateAnnounceReplyDTO(true)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

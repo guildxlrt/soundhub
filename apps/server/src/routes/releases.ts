@@ -9,7 +9,7 @@ const endpts = apiUrlEndpt.releases
 
 router.post(endpts.create, authMiddleware, imageStorage, audioStorage, ctrl.create)
 router.put(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
-router.patch(endpts.hide, authMiddleware, ctrl.hide)
+router.patch(endpts.setPrivStatus, authMiddleware, ctrl.setPrivStatus)
 router.get(endpts.oneByID + "id", ctrl.get)
 router.get(endpts.all, ctrl.getAll)
 router.get(endpts.manyByArtist + "id", ctrl.findManyByArtist)

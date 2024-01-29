@@ -1,12 +1,5 @@
-import {
-	ProfileID,
-	GenresArray,
-	INewReleaseSucc,
-	IReleaseSucc,
-	IReleasesListSucc,
-	ReleaseID,
-	ReleaseType,
-} from "../assets"
+import { INewReleaseSucc, IReleaseSucc, IReleasesListSucc } from "../replies"
+import { GenresArray, ProfileID, ReleaseID, ReleaseType } from "../types"
 import { ReplyDTO } from "./layers/reply"
 
 // CREATE RELEASE

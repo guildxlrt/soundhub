@@ -1,7 +1,8 @@
-import { ErrorMsg, GenresArray, GenresEnum } from "../../assets"
+import { ErrorHandler, ErrorMsg } from "../../errors"
+import { GenresArray, GenresEnum } from "../../types"
 
 export class GenresFormatter {
-	format(genres: GenresArray | string[], backend: boolean): GenresArray {
+	format(genres: GenresArray | string[]): GenresArray {
 		try {
 			const list = Object.keys(GenresEnum)
 
@@ -18,9 +19,7 @@ export class GenresFormatter {
 
 			return [formattedArray[0], formattedArray[1], formattedArray[0]]
 		} catch (error) {
-			throw new ErrorMsg("error during Genres format", backend ? 400 : undefined).treatError(
-				error
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

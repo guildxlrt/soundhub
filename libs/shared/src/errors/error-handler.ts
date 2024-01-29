@@ -1,5 +1,5 @@
-import { envs } from "../../config"
-import { DbErrorHandler } from "./db-handler"
+import { envs } from "../config"
+import { DbErrorHandler } from "../frameworks"
 import { ErrorMsg } from "./error-layer"
 
 const unknown = {

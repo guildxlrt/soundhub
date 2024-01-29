@@ -1,4 +1,4 @@
-import { envs } from "../../config"
+import { envs } from "../config"
 import { StatusType } from "../types"
 import { HtmlError, htmlError } from "./html-err"
 

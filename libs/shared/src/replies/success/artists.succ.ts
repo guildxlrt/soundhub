@@ -1,10 +1,10 @@
-import { ProfileID, CookieOptions, IUserCookie } from "../../types"
+import { Artist } from "@prisma/client"
+import { ProfileID, UserTokenData } from "../../types"
 
 // ARTIST
-export interface INewArtistSucc extends IUserCookie {
-	name: string
-	val: string
-	options: CookieOptions
+export interface INewArtistSucc {
+	data: Artist
+	userTokenData?: UserTokenData
 }
 
 export type IArtistInfoSucc = null | {

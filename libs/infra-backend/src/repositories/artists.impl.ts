@@ -8,10 +8,10 @@ import {
 	ProfileID,
 	UserEmail,
 	htmlError,
-	INewArtistSucc,
 	UserAuthID,
 	UserProfileType,
 	ErrorHandler,
+	UserTokenData,
 } from "Shared"
 import { dbClient } from "../database"
 import { PassEncryptor } from "../utils"
@@ -20,14 +20,17 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 	private userAuth = dbClient.userAuth
 	private artist = dbClient.artist
 
-	async create(data: { profile: Artist; userAuth: UserAuth }): Promise<INewArtistSucc> {
+	async create(data: { profile: Artist; userAuth: UserAuth }): Promise<{
+		data: Artist
+		userTokenData?: UserTokenData
+	}> {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
 			const hashedPass = await PassEncryptor.hash(password)
 
 			// PERSIST
-			const newUserAuth = await this.userAuth.create({
+			const newUser = await this.userAuth.create({
 				data: {
 					email: email,
 					password: hashedPass,
@@ -40,36 +43,25 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 						},
 					},
 				},
+				select: {
+					id: true, // Include all posts in the returned object
+					artists: true,
+				},
 			})
 
-			if (!newUserAuth?.id) throw ErrorMsg.htmlError(htmlError[401])
+			if (!newUser?.id) throw ErrorMsg.htmlError(htmlError[401])
+			if (!newUser?.id) throw ErrorMsg.htmlError(htmlError[401])
 
-			// // GET PROFILE
-			// const getProfile = await GetID.profile(newUserAuth.id)
-			// if (!getProfile) throw ErrorMsg.htmlError(htmlError[404])
-
-			// // Storing files
-			// const store = filePath.origin.image + file?.filename
-			// const destination = filePath.store.artist + file?.filename
-			// const avatarPath = await FileManipulator.move(store, destination)
-
-			// await this.artist.update({
-			// 	where: {
-			// 		id: getProfile,
-			// 	},
-			// 	data: {
-			// 		avatarPath: avatarPath,
-			// 	},
-			// })
-
-			// // TOKEN GEN
-			// const expires = authExpires.oneYear
-			// const userCookie = new UserTokenData(newUserAuth.id, getProfile as number, "artist")
-
-			// const token = await Token.generate(userCookie, expires)
-
-			// return cookie
-			return {}
+			// return
+			return {
+				data: newUser?.artists[0],
+				userTokenData: {
+					id: newUser?.id,
+				},
+			} as {
+				data: Artist
+				userTokenData?: UserTokenData
+			}
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -77,11 +69,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async update(data: Artist): Promise<boolean> {
 		try {
-			const { name, bio, members, genres, id } = data
-
-			// // AUTH
-			// const getProfile = await GetID.profile(user_auth_id as number)
-			// if (user_auth_id !== getProfile) throw ErrorMsg.htmlError(htmlError[403])
+			const { name, bio, members, genres, id, avatarPath } = data
 
 			// PERSIST
 			await this.artist.update({
@@ -93,6 +81,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					bio: bio,
 					members: members,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
+					avatarPath: avatarPath,
 				},
 			})
 
@@ -265,6 +254,22 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			}
 		} catch (error) {
 			throw ErrorHandler.handle(error).setMessage("error to authentificate")
+		}
+	}
+
+	async getAvatarPath(id: ProfileID): Promise<string | null> {
+		try {
+			const data = await this.artist.findUniqueOrThrow({
+				where: {
+					user_auth_id: id,
+				},
+				select: {
+					avatarPath: true,
+				},
+			})
+			return data.avatarPath
+		} catch (error) {
+			throw ErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

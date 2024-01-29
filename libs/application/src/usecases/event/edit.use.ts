@@ -74,8 +74,8 @@ export class EditEventUsecase {
 
 				return new EditEventReplyDTO(true)
 			} else {
-				const data = await this.eventsService.edit(event)
-				return new EditEventReplyDTO(data)
+				await this.eventsService.edit(event)
+				return new EditEventReplyDTO(true)
 			}
 		} catch (error) {
 			throw ErrorHandler.handle(error)

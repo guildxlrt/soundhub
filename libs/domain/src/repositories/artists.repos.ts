@@ -8,6 +8,7 @@ import {
 	UserPassword,
 	UserProfileType,
 	UserAuthID,
+	UserTokenData,
 } from "Shared"
 import { File, Artist, UserAuth } from "Domain"
 
@@ -19,8 +20,11 @@ export interface ArtistsRepository {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<INewArtistSucc>
-	update(data: Artist, file?: File): Promise<boolean>
+	): Promise<{
+		data: Artist
+		userTokenData?: UserTokenData
+	}>
+	update(data: Artist, avatarDel?: boolean, file?: File): Promise<boolean>
 	getByID(id: ProfileID): Promise<IArtistInfoSucc>
 	getByEmail(email: UserEmail): Promise<IArtistInfoSucc>
 	getAll(): Promise<IArtistsListSucc>
@@ -29,6 +33,7 @@ export interface ArtistsRepository {
 
 export interface ArtistsAddBackRepos {
 	getByAuth(id: UserAuthID): Promise<{ profile: Artist; profileType: UserProfileType }>
+	getAvatarPath(id: ProfileID): Promise<string | null>
 }
 
 export interface ArtistsAddFrontRepos {}

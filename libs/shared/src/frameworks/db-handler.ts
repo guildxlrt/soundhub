@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client"
-import { htmlError } from "./html-err"
-import { ErrorMsg } from "./error-layer"
+import { ErrorMsg, htmlError } from "../errors"
 
 export class DbErrorHandler {
 	static check(error: unknown): ErrorMsg | void {

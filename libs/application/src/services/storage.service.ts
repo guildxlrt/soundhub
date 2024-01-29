@@ -22,9 +22,9 @@ export class StorageService implements StorageRepository {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async mkdir(storeFolder: string, name?: string): Promise<string> {
+	async mkdir(): Promise<string> {
 		try {
-			return await this.service.mkdir(storeFolder, name)
+			return await this.service.mkdir()
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

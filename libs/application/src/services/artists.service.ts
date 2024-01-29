@@ -11,12 +11,12 @@ import {
 	UserEmail,
 	UserPassword,
 	UserProfileType,
-	INewArtistSucc,
 	IArtistInfoSucc,
 	IArtistsListSucc,
 	GenreType,
 	UserAuthID,
 	ErrorHandler,
+	UserTokenData,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ArtistsAddBackRepos, ArtistsAddFrontRepos {}
@@ -36,16 +36,19 @@ export class ArtistsService implements IArtistsService {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<INewArtistSucc> {
+	): Promise<{
+		data: Artist
+		userTokenData?: UserTokenData
+	}> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async update(data: Artist, file?: File): Promise<boolean> {
+	async update(data: Artist, avatarDel?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(data, file)
+			return await this.service.update(data, avatarDel, file)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -87,6 +90,15 @@ export class ArtistsService implements IArtistsService {
 		{
 			try {
 				return await this.service.getByAuth(id)
+			} catch (error) {
+				throw ErrorHandler.handle(error)
+			}
+		}
+	}
+	async getAvatarPath(id: ProfileID): Promise<string | null> {
+		{
+			try {
+				return await this.service.getAvatarPath(id)
 			} catch (error) {
 				throw ErrorHandler.handle(error)
 			}

@@ -1,6 +1,7 @@
-import { ErrorHandler, ErrorMsg, LoginReplyDTO, envs, htmlError } from "Shared"
+import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { LoginUsecaseParams } from "../../assets"
 import { ArtistsService, UserAuthService } from "../../services"
+import { UserCookie } from "Domain"
 
 export class LoginUsecase {
 	private userAuthService: UserAuthService
@@ -11,7 +12,7 @@ export class LoginUsecase {
 		this.profileService = profileService
 	}
 
-	async execute(input: LoginUsecaseParams): Promise<LoginReplyDTO> {
+	async execute(input: LoginUsecaseParams): Promise<unknown> {
 		try {
 			if (!envs.backend) return await this.frontend(input)
 			else if (envs.backend && this.profileService)
@@ -22,22 +23,16 @@ export class LoginUsecase {
 		}
 	}
 
-	async frontend(input: LoginUsecaseParams): Promise<LoginReplyDTO> {
+	async frontend(input: LoginUsecaseParams): Promise<void> {
 		try {
 			const { email, password } = input
-
-			const data = await this.userAuthService.login({ email: email, password: password })
-
-			return new LoginReplyDTO(data)
+			return await this.userAuthService.login(email, password)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(
-		profileService: ArtistsService,
-		input: LoginUsecaseParams
-	): Promise<LoginReplyDTO> {
+	async backend(profileService: ArtistsService, input: LoginUsecaseParams): Promise<UserCookie> {
 		try {
 			const { email, password } = input
 
@@ -58,8 +53,10 @@ export class LoginUsecase {
 				"artist"
 			)
 
-			const data = await this.userAuthService.login(userCookie)
-			return new LoginReplyDTO(data)
+			if (!userData || !userCookie) throw new ErrorMsg("internal server errror")
+
+			await this.userAuthService.login(undefined, undefined)
+			return userCookie
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -1,7 +1,6 @@
 import * as jwt from "jsonwebtoken"
 import * as fs from "fs"
-import { ErrorMsg, UserTokenData, htmlError } from "Shared"
-import { ApiRequest } from "../assets"
+import { ApiRequest, ErrorHandler, ErrorMsg, UserTokenData, htmlError } from "Shared"
 
 export class Token {
 	static async generate(
@@ -32,7 +31,7 @@ export class Token {
 				{ expiresIn: expires, algorithm: "RS256" }
 			)
 		} catch (error) {
-			return ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -60,7 +59,7 @@ export class Token {
 
 			return
 		} catch (error) {
-			return ErrorMsg.htmlError(htmlError[500]).treatError(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -33,4 +33,7 @@ export class Artist extends EntityLayer {
 	setGenres(genres: GenresArray | string[]) {
 		this.genres = genres as GenresArray
 	}
+	updateAvatarPath(avatarPath: string | null) {
+		this.avatarPath = avatarPath
+	}
 }

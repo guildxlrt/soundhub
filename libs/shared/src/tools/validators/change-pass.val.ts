@@ -1,16 +1,9 @@
 import validators from "validator"
-import { ErrorMsg } from "../../assets"
+import { ErrorHandler, ErrorMsg } from "../../errors"
 
 // CHANGE PASS
 export class ChangePassValidator {
-	validate(
-		passwords: {
-			actual: string
-			newPass: string
-			confirm: string
-		},
-		backend?: boolean
-	): void {
+	validate(passwords: { actual: string; newPass: string; confirm: string }): void {
 		try {
 			const { newPass, actual, confirm } = passwords
 
@@ -24,9 +17,7 @@ export class ChangePassValidator {
 			if (validPass) throw new ErrorMsg("weak Password")
 			else return
 		} catch (error) {
-			throw new ErrorMsg("error during Genres format", backend ? 500 : undefined).treatError(
-				error
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

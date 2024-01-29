@@ -1,13 +1,5 @@
-import {
-	ProfileID,
-	GenreType,
-	IArtistInfoSucc,
-	IArtistsListSucc,
-	GenresArray,
-	UserEmail,
-	UserPassword,
-	INewArtistSucc,
-} from "../assets"
+import { IArtistInfoSucc, IArtistsListSucc, INewArtistSucc } from "../replies"
+import { GenreType, GenresArray, ProfileID, UserEmail, UserPassword } from "../types"
 import { ReplyDTO } from "./layers"
 
 // CREATE ARTIST
@@ -31,7 +23,7 @@ export class CreateArtistReqDTO {
 		this.authConfirm = authConfirm
 	}
 }
-export class CreateArtistReplyDTO extends ReplyDTO<INewArtistSucc> {}
+export class CreateArtistReplyDTO extends ReplyDTO<Omit<INewArtistSucc, "userTokenData">> {}
 
 // MODIFY ARTIST //
 export class UpdateArtistReqDTO {

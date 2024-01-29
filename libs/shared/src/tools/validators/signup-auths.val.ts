@@ -1,12 +1,14 @@
 import validators from "validator"
-import { ErrorMsg } from "../../assets"
+import { ErrorHandler, ErrorMsg } from "../../errors"
 
 // NEW AUTHS
 export class SignupAuthsValidator {
-	validate(
-		auths: { email: string; password: string; confirmEmail: string; confirmPass: string },
-		backend?: boolean
-	): void {
+	validate(auths: {
+		email: string
+		password: string
+		confirmEmail: string
+		confirmPass: string
+	}): void {
 		try {
 			const { email, password, confirmEmail, confirmPass } = auths
 
@@ -21,9 +23,7 @@ export class SignupAuthsValidator {
 			if (password !== confirmPass) throw new ErrorMsg("passwords don't match", 400)
 			else return
 		} catch (error) {
-			throw new ErrorMsg("error during Genres format", backend ? 500 : undefined).treatError(
-				error
-			)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

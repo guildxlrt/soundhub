@@ -1,4 +1,5 @@
-import { ErrorMsg, IFile, IMimetypes } from "../../assets"
+import { ErrorHandler, ErrorMsg } from "../../errors"
+import { IFile, IMimetypes } from "../../types"
 
 // SONG
 export class FileValidator {
@@ -10,9 +11,7 @@ export class FileValidator {
 
 			return
 		} catch (error) {
-			throw new ErrorMsg("error during Genres format", backend ? 500 : undefined).treatError(
-				error
-			)
+			throw ErrorHandler.handle(error).setMessage("error during Genres format")
 		}
 	}
 }

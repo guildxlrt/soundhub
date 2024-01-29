@@ -69,16 +69,12 @@ export class CreateReleaseUsecase {
 				// move
 				const newImagePath = await storageRepository.move(cover, filePath.store.release)
 				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-
-				// persist
 				data.updateCoverPath(newImagePath)
-				const res = await this.releasesService.create(data, songsData)
-
-				return new CreateReleaseReplyDTO(res)
-			} else {
-				const res = await this.releasesService.create(data, songsData)
-				return new CreateReleaseReplyDTO(res)
 			}
+
+			// persist
+			const res = await this.releasesService.create(data, songsData)
+			return new CreateReleaseReplyDTO(res)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

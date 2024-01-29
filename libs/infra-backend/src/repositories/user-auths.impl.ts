@@ -8,7 +8,6 @@ import {
 	UserPassword,
 	ProfileID,
 	UserProfileType,
-	ILoginSucc,
 	ErrorHandler,
 } from "Shared"
 import { PassEncryptor, Token, authExpires } from "../utils"
@@ -17,10 +16,9 @@ import { dbClient } from "../database"
 export class UserAuthsImplement implements UserAuthsBackendRepos {
 	private userAuth = dbClient.userAuth
 
-	async login(input: { data: unknown; userCookie: UserCookie }): Promise<ILoginSucc> {
+	async login(): Promise<void> {
 		try {
-			// return cookie
-			return input
+			return
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

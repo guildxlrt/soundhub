@@ -1,4 +1,5 @@
-import { ProfileID, IEventSucc, IEventsListSucc } from "../assets"
+import { IEventSucc, IEventsListSucc } from "../replies"
+import { ProfileID } from "../types"
 import { ReplyDTO } from "./layers/reply"
 
 export class CreateEventReqDTO {

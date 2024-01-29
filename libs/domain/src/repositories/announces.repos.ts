@@ -1,5 +1,4 @@
 import { AnnounceID, ProfileID, IAnnounceSucc, IAnnouncesListSucc } from "Shared"
-import { ReplyLayer } from "Shared"
 import { File, Announce } from "Domain"
 
 export interface AnnouncesRepository {

@@ -1,4 +1,4 @@
-import { EntityID, GenreType } from "Domain"
+import { EntityID, GenreType } from "Shared"
 
 export class IDUsecaseParams {
 	id: EntityID

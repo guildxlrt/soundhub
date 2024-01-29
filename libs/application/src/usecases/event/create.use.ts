@@ -45,16 +45,12 @@ export class CreateEventUsecase {
 				// move
 				const newImagePath = await storageRepository.move(file, filePath.store.announce)
 				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-
-				// persist
 				event.updateImagePath(newImagePath)
-				const data = await this.eventsService.create(event)
-
-				return new CreateEventReplyDTO(data)
-			} else {
-				const data = await this.eventsService.create(event)
-				return new CreateEventReplyDTO(data)
 			}
+
+			// persist
+			const data = await this.eventsService.create(event)
+			return new CreateEventReplyDTO(data)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
