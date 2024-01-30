@@ -1,5 +1,5 @@
-import { IDUsecaseParams } from "../../assets"
-import { GetReleaseReplyDTO, ErrorHandler } from "Shared"
+import { IDUsecaseParams, Reply } from "../../assets"
+import { ErrorHandler, ReleaseDTO } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class GetReleaseUsecase {
@@ -8,13 +8,13 @@ export class GetReleaseUsecase {
 		this.releasesService = releasesService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<GetReleaseReplyDTO> {
+	async execute(input: IDUsecaseParams): Promise<Reply<ReleaseDTO>> {
 		try {
 			const id = input.id
 			const data = await this.releasesService.get(id)
-			return new GetReleaseReplyDTO(data)
+			return new Reply<ReleaseDTO>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

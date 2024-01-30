@@ -11,12 +11,13 @@ import {
 	UserEmail,
 	UserPassword,
 	UserProfileType,
-	IArtistInfoSucc,
-	IArtistsListSucc,
+	ArtistShortDTO,
+	ArtistShortestDTO,
 	GenreType,
 	UserAuthID,
 	ErrorHandler,
-	UserTokenData,
+	ArtistDTO,
+	INewArtistSucces,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ArtistsAddBackRepos, ArtistsAddFrontRepos {}
@@ -36,72 +37,81 @@ export class ArtistsService implements IArtistsService {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<{
-		data: Artist
-		userTokenData?: UserTokenData
-	}> {
+	): Promise<INewArtistSucces> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async update(data: Artist, avatarDel?: boolean, file?: File): Promise<boolean> {
+	async update(data: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(data, avatarDel, file)
+			return await this.service.update(data, delAvatar, file)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async getByID(id: ProfileID): Promise<IArtistInfoSucc> {
+	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
 		try {
 			return await this.service.getByID(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async getByEmail(email: UserEmail): Promise<IArtistInfoSucc> {
+	async getByEmail(email: UserEmail): Promise<ArtistShortDTO> {
 		try {
 			return await this.service.getByEmail(email)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async getAll(): Promise<IArtistsListSucc> {
-		{
-			try {
-				return await this.service.getAll()
-			} catch (error) {
-				throw ErrorHandler.handle(error)
-			}
+	async getAll(): Promise<ArtistShortestDTO[]> {
+		try {
+			return await this.service.getAll()
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<IArtistsListSucc> {
-		{
-			try {
-				return await this.service.findManyByGenre(genre)
-			} catch (error) {
-				throw ErrorHandler.handle(error)
-			}
+	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
+		try {
+			return await this.service.findManyByGenre(genre)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	// BACKEND
-	async getByAuth(id: UserAuthID): Promise<{ profile: Artist; profileType: UserProfileType }> {
-		{
-			try {
-				return await this.service.getByAuth(id)
-			} catch (error) {
-				throw ErrorHandler.handle(error)
-			}
+	async findByAuthID(
+		id: UserAuthID
+	): Promise<{ profile: ArtistDTO; profileType: UserProfileType }> {
+		try {
+			return await this.service.findByAuthID(id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
+	async getAuths(id: ProfileID): Promise<{
+		id: number
+		user_auth_id: number
+	}> {
+		try {
+			return await this.service.getAuths(id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	async getAvatarPath(id: ProfileID): Promise<string | null> {
-		{
-			try {
-				return await this.service.getAvatarPath(id)
-			} catch (error) {
-				throw ErrorHandler.handle(error)
-			}
+		try {
+			return await this.service.getAvatarPath(id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+	async setAvatarPath(path: string | null, id: ProfileID): Promise<boolean> {
+		try {
+			return await this.service.setAvatarPath(path, id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

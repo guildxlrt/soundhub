@@ -1,85 +1,79 @@
-import { ErrorHandler, ErrorMsg, UpdateArtistReplyDTO, filePath, htmlError } from "Shared"
-import { UpdateArtistUsecaseParams } from "../../assets"
-import { Artist, File, StorageRepository } from "Domain"
-import { ArtistsService } from "../../services"
+import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
+import { Reply, UpdateArtistUsecaseParams } from "../../assets"
+import { Artist, File } from "Domain"
+import { ArtistsService, StorageService } from "../../services"
 
 export class UpdateArtistUsecase {
 	artistsService: ArtistsService
-	storageRepository?: StorageRepository
+	storageService?: StorageService
 
-	constructor(artistsService: ArtistsService, storageRepository?: StorageRepository) {
+	constructor(artistsService: ArtistsService, storageService?: StorageService) {
 		this.artistsService = artistsService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
 
-	async execute(input: UpdateArtistUsecaseParams): Promise<UpdateArtistReplyDTO> {
+	async execute(input: UpdateArtistUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			const { profile, avatarDel, file } = input
-			if (this.storageRepository) return await this.backend(this.storageRepository, input)
-			else return await this.frontend(profile, avatarDel, file)
+			const { profile, delAvatar, file } = input
+			if (this.storageService) return await this.backend(this.storageService, input)
+			else return await this.frontend(profile, delAvatar, file)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(
-		artist: Artist,
-		avatarDel?: boolean,
-		file?: File
-	): Promise<UpdateArtistReplyDTO> {
+	async frontend(artist: Artist, delAvatar?: boolean, file?: File): Promise<Reply<boolean>> {
 		try {
-			const data = await this.artistsService.update(artist, avatarDel, file)
-			return new UpdateArtistReplyDTO(data)
+			const data = await this.artistsService.update(artist, delAvatar, file)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
+		storageService: StorageService,
 		input: UpdateArtistUsecaseParams
-	): Promise<UpdateArtistReplyDTO> {
+	): Promise<Reply<boolean>> {
 		try {
 			const { user_auth_id, id } = input.profile
-			const { file, profile, avatarDel } = input
+			const { file, profile, delAvatar } = input
 
 			// owner verification
-			const userAuthID = await this.artistsService.getByAuth(user_auth_id as number)
-			if ((user_auth_id as number) !== (userAuthID.profile.user_auth_id as number))
+			const userAuths = await this.artistsService.getAuths(user_auth_id as number)
+			if (
+				(id as number) !== (userAuths.id as number) ||
+				(user_auth_id as number) !== (userAuths.user_auth_id as number)
+			)
 				throw ErrorMsg.htmlError(htmlError[403])
 
-			// contradiction
-			if (file && avatarDel === true)
-				throw new ErrorMsg("User Image | contradictory request", 400)
+			// persist
+			await this.artistsService.update(profile)
 
 			// STORING NEW FILE
-			if (file) {
+			// contradiction
+			if (file && delAvatar === true)
+				throw new ErrorMsg("User Image | contradictory request", 400)
+
+			if (file || delAvatar === true) {
 				const oldImagePath = await this.artistsService.getAvatarPath(id as number)
-				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
+				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				// move new
-				const newImagePath = await storageRepository.move(file, filePath.store.announce)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-				profile.updateAvatarPath(newImagePath)
+				if (file) {
+					// move new
+					const newImagePath = await storageService.move(file, filePath.store.artist)
 
-				// persist
-				await this.artistsService.update(profile)
+					// persist path
+					await this.artistsService.setAvatarPath(newImagePath, id as number)
+				}
 
 				// delete old
-				await storageRepository.delete(oldImagePath as string)
-
-				return new UpdateArtistReplyDTO(true)
-			} else {
-				// No User Image
-				if (avatarDel === true) profile.updateAvatarPath(null)
-
-				// Saving
-				const data = await this.artistsService.update(profile)
-
-				return new UpdateArtistReplyDTO(data)
+				await storageService.delete(oldImagePath as string)
 			}
+
+			return new Reply<boolean>(true)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

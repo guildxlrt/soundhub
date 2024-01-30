@@ -1,5 +1,5 @@
-import { IDUsecaseParams } from "../../assets"
-import { FindEventsByArtistReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { IDUsecaseParams, Reply } from "../../assets"
+import { ErrorHandler, EventShortDTO } from "Shared"
 import { EventsService } from "../../services"
 
 export class FindEventsByArtistUsecase {
@@ -8,14 +8,14 @@ export class FindEventsByArtistUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<FindEventsByArtistReplyDTO> {
+	async execute(input: IDUsecaseParams): Promise<Reply<EventShortDTO[]>> {
 		try {
 			const id = input.id
 
 			const data = await this.eventsService.findManyByArtist(id)
-			return new FindEventsByArtistReplyDTO(data)
+			return new Reply<EventShortDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

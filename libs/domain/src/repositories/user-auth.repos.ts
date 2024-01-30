@@ -1,9 +1,17 @@
-import { ProfileID, UserAuthID, UserEmail, UserPassword, UserProfileType } from "Shared"
+import {
+	ILoginBackSuccess,
+	ILoginSuccess,
+	ProfileID,
+	UserAuthID,
+	UserEmail,
+	UserPassword,
+	UserProfileType,
+} from "Shared"
 import { UserCookie } from "../entities"
 
 export interface UserAuthsRepository {
-	login(first: unknown, two: unknown): Promise<void>
-	logout(): Promise<void>
+	login(email: unknown, password: unknown): Promise<ILoginSuccess>
+	logout(): Promise<boolean>
 	changeEmail(input: unknown): Promise<boolean>
 	changePass(input: unknown): Promise<boolean>
 }
@@ -29,13 +37,13 @@ export interface AuthBackendRepos {
 export interface AuthFrontendRepos {}
 
 export interface UserAuthsBackendRepos extends UserAuthsRepository, AuthBackendRepos {
-	login(first: unknown, two: unknown): Promise<void>
+	login(userCookie: UserCookie, option?: unknown): Promise<ILoginBackSuccess>
 	changePass(input: { id: UserAuthID; pass: UserPassword }): Promise<boolean>
 	changeEmail(input: { email: UserEmail; id: UserAuthID }): Promise<boolean>
 }
 
 export interface UserAuthsFrontendRepos extends UserAuthsRepository {
-	login(email: UserEmail, password: UserPassword): Promise<void>
+	login(email: UserEmail, password: UserPassword): Promise<boolean>
 	changePass(input: {
 		actual: UserPassword
 		newPass: UserPassword

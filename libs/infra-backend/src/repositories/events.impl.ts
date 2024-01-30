@@ -1,15 +1,8 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import {
-	ErrorMsg,
-	IEventSucc,
-	IEventsListItemSucc,
-	IEventsListSucc,
-	EventID,
-	htmlError,
-	ErrorHandler,
-} from "Shared"
-import { dbClient } from "../database"
+import { EventDTO, EventShortDTO, EventID } from "Shared"
+import { dbClient } from "../prisma"
+import { ApiErrHandler } from "../utils"
 
 export class EventsImplement implements EventsBackendRepos {
 	private event = dbClient.event
@@ -17,11 +10,6 @@ export class EventsImplement implements EventsBackendRepos {
 	async create(data: Event): Promise<boolean> {
 		try {
 			const { owner_id, date, place, artists, title, text } = data
-
-			// // Storing files
-			// const fileOrigin = filePath.origin.image + file?.filename
-			// const fileStore = filePath.store.event + file?.filename
-			// await FileManipulator.move(fileOrigin, fileStore)
 
 			await this.event.create({
 				data: {
@@ -31,33 +19,19 @@ export class EventsImplement implements EventsBackendRepos {
 					artists: artists,
 					title: title,
 					text: text,
-					// imagePath: fileStore,
 				},
 			})
 
 			// RESPONSE
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
 	async edit(data: Event): Promise<boolean> {
 		try {
 			const { id, owner_id, date, place, artists, title, text } = data
-
-			// // owner verification
-			// const eventOwner = await GetID.owner(id as number, "event")
-			// if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// // STORING FILE
-			// const fileOrigin = filePath.origin.image + file?.filename
-			// const fileStore = filePath.store.event + file?.filename
-			// await FileManipulator.move(fileOrigin, fileStore)
-
-			// // DELETE OLD FILE
-			// // ... get the id
-			// await FileManipulator.delete("")
 
 			// persist
 			await this.event.update({
@@ -71,23 +45,18 @@ export class EventsImplement implements EventsBackendRepos {
 					artists: artists,
 					title: title,
 					text: text,
-					// imagePath: fileStore,
 				},
 			})
 
 			// RESPONSE
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async delete(id: EventID): Promise<void> {
+	async delete(id: EventID): Promise<boolean> {
 		try {
-			// // owner verification
-			// const eventOwner = await GetID.owner(id as number, "event")
-			// if (userAuth !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
-
 			// persist
 			await this.event.delete({
 				where: {
@@ -95,14 +64,13 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// RESPONSE
-			return
+			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async get(id: EventID): Promise<IEventSucc> {
+	async get(id: EventID): Promise<EventDTO> {
 		try {
 			const event = await this.event.findUniqueOrThrow({
 				where: {
@@ -120,28 +88,17 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// RESPONSE
-			return {
-				id: event?.id,
-				owner_id: event?.owner_id,
-				date: event?.date,
-				place: event?.place,
-				artists: event?.artists,
-				title: event?.title,
-				text: event?.text,
-				imagePath: event?.imagePath,
-			}
+			return EventDTO.createFromData(event)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getAll(): Promise<IEventsListSucc> {
+	async getAll(): Promise<EventShortDTO[]> {
 		try {
-			const event = await this.event.findMany({
+			const events = await this.event.findMany({
 				select: {
 					id: true,
-					owner_id: true,
 					date: true,
 					place: true,
 					artists: true,
@@ -150,34 +107,22 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return event.map((event): IEventsListItemSucc => {
-				return {
-					id: event.id,
-					owner_id: event.owner_id,
-					date: event.date,
-					place: event.place,
-					artists: event.artists,
-					title: event.title,
-					imagePath: event.imagePath,
-				}
-			})
+			return EventShortDTO.createArrayFromData(events)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByArtist(id: EventID): Promise<IEventsListSucc> {
+	async findManyByArtist(id: EventID): Promise<EventShortDTO[]> {
 		try {
 			const profileID = id
 
-			const event = await this.event.findMany({
+			const events = await this.event.findMany({
 				where: {
 					artists: { has: profileID },
 				},
 				select: {
 					id: true,
-					owner_id: true,
 					date: true,
 					place: true,
 					artists: true,
@@ -186,32 +131,20 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return event.map((event): IEventsListItemSucc => {
-				return {
-					id: event.id,
-					owner_id: event.owner_id,
-					date: event.date,
-					place: event.place,
-					artists: event.artists,
-					title: event.title,
-					imagePath: event.imagePath,
-				}
-			})
+			return EventShortDTO.createArrayFromData(events)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<IEventsListSucc> {
+	async findManyByDate(date: Date): Promise<EventShortDTO[]> {
 		try {
-			const event = await this.event.findMany({
+			const events = await this.event.findMany({
 				where: {
 					date: date,
 				},
 				select: {
 					id: true,
-					owner_id: true,
 					place: true,
 					artists: true,
 					title: true,
@@ -219,26 +152,15 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return event.map((event): IEventsListItemSucc => {
-				return {
-					id: event.id,
-					owner_id: event.owner_id,
-					date: date,
-					place: event.place,
-					artists: event.artists,
-					title: event.title,
-					imagePath: event.imagePath,
-				}
-			})
+			return EventShortDTO.createArrayFromData(events)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByPlace(place: string): Promise<IEventsListSucc> {
+	async findManyByPlace(place: string): Promise<EventShortDTO[]> {
 		try {
-			const event = await this.event.findMany({
+			const events = await this.event.findMany({
 				where: {
 					place: place,
 				},
@@ -252,20 +174,9 @@ export class EventsImplement implements EventsBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return event.map((event): IEventsListItemSucc => {
-				return {
-					id: event.id,
-					owner_id: event.owner_id,
-					date: event.date,
-					place: place,
-					artists: event.artists,
-					title: event.title,
-					imagePath: event.imagePath,
-				}
-			})
+			return EventShortDTO.createArrayFromData(events)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -281,7 +192,7 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 			return event?.owner_id
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error to authentificate")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -297,7 +208,23 @@ export class EventsImplement implements EventsBackendRepos {
 			})
 			return event?.imagePath
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error getting image path")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error getting image path")
+		}
+	}
+
+	async setImagePath(path: string | null, id: EventID): Promise<boolean> {
+		try {
+			await this.event.update({
+				where: {
+					id: id,
+				},
+				data: {
+					imagePath: path,
+				},
+			})
+			return true
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
 		}
 	}
 }

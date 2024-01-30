@@ -1,84 +1,76 @@
-import { EditEventReplyDTO, ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { EventUsecaseParams } from "../../assets"
-import { Event, File, StorageRepository } from "Domain"
-import { EventsService } from "../../services"
+import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
+import { EditEventUsecaseParams, Reply } from "../../assets"
+import { Event, File } from "Domain"
+import { EventsService, StorageService } from "../../services"
 
 export class EditEventUsecase {
 	private eventsService: EventsService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 
-	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
+	constructor(eventsService: EventsService, storageService?: StorageService) {
 		this.eventsService = eventsService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
 
-	async execute(input: EventUsecaseParams): Promise<EditEventReplyDTO> {
+	async execute(input: EditEventUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			const { file } = input
-			const { owner_id, date, place, artists, title, text, id } = input.data
-
-			const event = new Event(
-				id as number,
-				owner_id as number,
-				date,
-				place,
-				artists,
-				title,
-				text,
-				null
-			)
-
-			if (this.storageRepository)
-				return await this.backend(this.storageRepository, event, file)
-			else return await this.frontend(event, file)
+			if (this.storageService) return await this.backend(this.storageService, input)
+			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(event: Event, file?: File): Promise<EditEventReplyDTO> {
+	async frontend(input: EditEventUsecaseParams): Promise<Reply<boolean>> {
 		try {
+			const { event, file } = input
+
 			const data = await this.eventsService.edit(event, file)
-			return new EditEventReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
-		event: Event,
-		file?: File
-	): Promise<EditEventReplyDTO> {
+		storageService: StorageService,
+		input: EditEventUsecaseParams
+	): Promise<Reply<boolean>> {
 		try {
-			const { owner_id, id } = event
+			const { file, event, delImage } = input
+			const { owner_id, id } = input.event
 
 			// owner verification
 			const eventOwner = await this.eventsService.getOwner(id as number)
 			if (owner_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			if (file) {
+			// persist
+			await this.eventsService.edit(event)
+
+			// STORING NEW FILE
+			// contradiction
+			if (file && delImage === true)
+				throw new ErrorMsg("User Image | contradictory request", 400)
+
+			if (file || delImage === true) {
 				const oldImagePath = await this.eventsService.getImagePath(id as number)
 				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
 
-				// move new
-				const newImagePath = await storageRepository.move(file, filePath.store.event)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
+				if (file) {
+					// move new
+					const newImagePath = await file.move(storageService, filePath.store.event)
 
-				// persist
-				event.updateImagePath(newImagePath)
-				await this.eventsService.edit(event)
+					//move file
+					await this.eventsService.setImagePath(newImagePath, id as number)
+				}
 
 				// delete old
-				await storageRepository.delete(oldImagePath as string)
-
-				return new EditEventReplyDTO(true)
-			} else {
-				await this.eventsService.edit(event)
-				return new EditEventReplyDTO(true)
+				await storageService.delete(oldImagePath as string)
 			}
+
+			return new Reply<boolean>(true)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

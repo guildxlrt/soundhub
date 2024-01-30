@@ -1,50 +1,55 @@
 import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
-import { EventsService } from "../../services"
-import { StorageRepository } from "Domain"
-import { DeleteEventUsecaseParams } from "../../assets"
+import { EventsService, StorageService } from "../../services"
+import { DeleteEventUsecaseParams, Reply } from "../../assets"
 
 export class DeleteEventUsecase {
 	private eventsService: EventsService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 
-	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
+	constructor(eventsService: EventsService, storageService?: StorageService) {
 		this.eventsService = eventsService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
-	async execute(input: DeleteEventUsecaseParams) {
+	async execute(input: DeleteEventUsecaseParams): Promise<Reply<boolean>> {
+		try {
+			if (this.storageService) return await this.backend(this.storageService, input)
+			else return await this.frontend(input)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
+	async frontend(input: DeleteEventUsecaseParams): Promise<Reply<boolean>> {
+		try {
+			const { id } = input
+
+			const res = await this.eventsService.delete(id)
+			return new Reply<boolean>(res)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
+	async backend(
+		storageService: StorageService,
+		input: DeleteEventUsecaseParams
+	): Promise<Reply<boolean>> {
 		try {
 			const { id, ownerID } = input
 
-			if (this.storageRepository)
-				return await this.backend(this.storageRepository, id, ownerID as number)
-			else return await this.frontend(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async frontend(id: number) {
-		try {
-			return await this.eventsService.delete(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async backend(storageRepository: StorageRepository, id: number, ownerID: number) {
-		try {
 			// owner verification
 			const eventOwner = await this.eventsService.getOwner(id as number)
 			if (ownerID !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// DELETE OLD FILE
 			const imagePath = await this.eventsService.getImagePath(id as number)
-			await storageRepository.delete(imagePath as string)
+			await storageService.delete(imagePath as string)
 
 			// persist
-			return await this.eventsService.delete(id)
+			const res = await this.eventsService.delete(id)
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

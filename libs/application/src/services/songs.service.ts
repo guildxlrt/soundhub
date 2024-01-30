@@ -1,5 +1,5 @@
 import { Song, SongsAddBackRepos, SongsAddFrontRepos, SongsRepository } from "Domain"
-import { ErrorHandler, ISongSucc } from "Shared"
+import { ErrorHandler, ReleaseID, SongDTO, SongID } from "Shared"
 
 interface ISongsService extends SongsRepository, SongsAddBackRepos, SongsAddFrontRepos {}
 
@@ -11,18 +11,25 @@ export class SongsService implements ISongsService {
 	}
 
 	// SERVIVES
-	async get(id: unknown): Promise<ISongSucc> {
+	async get(id: SongID): Promise<SongDTO> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async update(data: Song): Promise<void> {
+	async findByRelease(id: ReleaseID): Promise<SongDTO[]> {
+		try {
+			return await this.service.findByRelease(id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+	async update(data: Song): Promise<boolean> {
 		try {
 			return await this.service.update(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

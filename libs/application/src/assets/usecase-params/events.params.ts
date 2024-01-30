@@ -1,13 +1,25 @@
 import { ProfileID, EventID } from "Shared"
 import { Event, File } from "Domain"
 
-export class EventUsecaseParams {
-	data: Event
+export class NewEventUsecaseParams {
+	event: Event
 	file?: File
 
-	constructor(data: Event, file?: File) {
-		this.data = data
+	constructor(event: Event, file?: File) {
+		this.event = event
 		this.file = file
+	}
+}
+
+export class EditEventUsecaseParams {
+	event: Event
+	delImage: boolean
+	file?: File
+
+	constructor(event: Event, delImage: boolean, file?: File) {
+		this.event = event
+		this.file = file
+		this.delImage = delImage
 	}
 }
 

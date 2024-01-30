@@ -1,4 +1,4 @@
-import { ApiErrHandler, ApiRequest, ApiReply, databaseRepos } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiRes, databaseRepos } from "Infra-backend"
 import {
 	CreateArtistReplyDTO,
 	CreateArtistReqDTO,
@@ -33,13 +33,13 @@ import {
 import { IArtistCtrl } from "../assets"
 
 export class ArtistsController implements IArtistCtrl {
-	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
-			const file: IFile = req.file as IFile
+			const file: IFile = req.image as IFile
 
 			// Data
 			const { password, email } = auth
@@ -86,14 +86,14 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async update(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async update(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
-			const { bio, genres, members, name, id, avatarPath, avatarDel } =
+			const { bio, genres, members, name, id, avatarPath, delAvatar } =
 				req.body as UpdateArtistReqDTO
-			const file: IFile = req.file as IFile
+			const file: IFile = req.image as IFile
 
 			const artistProfile = new Artist(id, user, name, bio, members, genres, avatarPath)
 
@@ -110,7 +110,7 @@ export class ArtistsController implements IArtistCtrl {
 			const editArtist = new UpdateArtistUsecase(databaseRepos)
 			const { data, error } = await editArtist.execute(
 				new UpdateArtistUsecaseParams(
-					{ profile: artistProfile, avatarDel: avatarDel },
+					{ profile: artistProfile, delAvatar: delAvatar },
 					file
 				)
 			)
@@ -123,7 +123,7 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async getByID(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async getByID(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -140,7 +140,7 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async getByEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async getByEmail(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -157,7 +157,7 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -172,7 +172,7 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByGenre(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 

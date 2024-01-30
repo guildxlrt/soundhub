@@ -1,24 +1,24 @@
 import multer, { Multer } from "multer"
 import { ApiErrHandler } from "../utils"
-import { AUDIO_MIME_TYPES, ApiNext, ApiReply, ApiRequest } from "Shared"
+import { AUDIO_MIME_TYPES, ApiNext, ApiRes, ApiRequest, filePath } from "Shared"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
-		callback(null, "tmp/audio")
+		callback(null, filePath.origin.audio)
 	},
 	filename: (req, file, callback) => {
-		callback(null, "IMG_" + Date.now() + "." + AUDIO_MIME_TYPES[file.mimetype])
+		callback(null, "AUDIO_" + Date.now() + "." + AUDIO_MIME_TYPES[file.mimetype])
 	},
 })
 
 const upload: Multer = multer({ storage: storage })
 
-export const audioStorage = (req: ApiRequest, res: ApiReply, next: ApiNext) => {
+export const audioStorage = async (req: ApiRequest, res: ApiRes, next: ApiNext) => {
 	try {
-		upload.array("files", 50)
+		upload.array("songs", 50)
 
 		next()
 	} catch (error) {
-		ApiErrHandler.reply(error, res)
+		await new ApiErrHandler().reply(error, res)
 	}
 }

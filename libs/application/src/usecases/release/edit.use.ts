@@ -1,52 +1,51 @@
-import { EditReleaseUsecaseParams } from "../../assets"
-import { EditReleaseReplyDTO, ErrorHandler, ErrorMsg, ReleaseFolder, htmlError } from "Shared"
-import { ReleasesService, SongsService } from "../../services"
-import { StorageRepository } from "Domain"
+import { EditReleaseUsecaseParams, Reply } from "../../assets"
+import { ErrorHandler, ErrorMsg, ReleaseFolder, filePath, htmlError } from "Shared"
+import { ReleasesService, SongsService, StorageService } from "../../services"
 
 export class EditReleaseUsecase {
 	private releasesService: ReleasesService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 	private songsService?: SongsService
 
 	constructor(
 		releasesService: ReleasesService,
-		storageRepository?: StorageRepository,
+		storageService?: StorageService,
 		songsService?: SongsService
 	) {
 		this.releasesService = releasesService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 		this.songsService = songsService
 	}
 
-	async execute(input: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
+	async execute(input: EditReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			if (this.storageRepository && this.songsService) {
-				return await this.backend(this.storageRepository, this.songsService, input)
+			if (this.storageService && this.songsService) {
+				return await this.backend(this.storageService, this.songsService, input)
 			} else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: EditReleaseUsecaseParams): Promise<EditReleaseReplyDTO> {
+	async frontend(input: EditReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
 
 			const res = await this.releasesService.edit({ data: data, cover }, songs)
-			return new EditReleaseReplyDTO(res)
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
+		storageService: StorageService,
 		songsService: SongsService,
 		input: EditReleaseUsecaseParams
-	): Promise<EditReleaseReplyDTO> {
+	): Promise<Reply<boolean>> {
 		try {
-			const { songs, release } = input
+			const { songs, release, delCover } = input
 			const { cover, data } = release
 			const { owner_id, id } = data
 
@@ -54,41 +53,38 @@ export class EditReleaseUsecase {
 			const releaseOwner = await this.releasesService.getOwner(id as number)
 			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			if (cover) {
+			// PERSIST
+			// release
+			await this.releasesService.edit(data)
+			// songs
+			songs.forEach(async (song) => {
+				await songsService?.update(song)
+			})
+
+			// STORING NEW FILE
+			// contradiction
+			if (cover && delCover === true)
+				throw new ErrorMsg("User Image | contradictory request", 400)
+
+			if (cover || delCover === true) {
 				const oldImagePath = await this.releasesService.getCoverPath(id as number)
 				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
 
-				// get realease folder
-				const releaseFolderPath = ReleaseFolder.fromFullPath(oldImagePath)
+				if (cover) {
+					// move new
+					const newImagePath = await storageService.move(cover, filePath.store.release)
 
-				// move new
-				const newImagePath = await storageRepository.move(cover, releaseFolderPath)
-
-				// PERSIST
-				// release
-				data.updateCoverPath(newImagePath)
-				await this.releasesService.edit(data)
-				// songs
-				songs.forEach(async (song) => {
-					await songsService?.update(song)
-				})
+					// persist path
+					await this.releasesService.setCoverPath(newImagePath, id as number)
+				}
 
 				// delete old
-				await storageRepository.delete(oldImagePath)
-
-				return new EditReleaseReplyDTO(true)
-			} else {
-				await this.releasesService.edit(data)
-
-				// songs
-				songs.forEach(async (song) => {
-					await songsService?.update(song)
-				})
-
-				return new EditReleaseReplyDTO(true)
+				await storageService.delete(oldImagePath as string)
 			}
+
+			return new Reply<boolean>(true)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

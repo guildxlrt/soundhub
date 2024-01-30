@@ -1,5 +1,5 @@
-import { ChangeEmailReplyDTO, ErrorHandler, envs, htmlError } from "Shared"
-import { ChangeEmailUsecaseParams } from "../../assets"
+import { ErrorHandler, envs, htmlError } from "Shared"
+import { ChangeEmailUsecaseParams, Reply } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 
@@ -10,16 +10,16 @@ export class ChangeEmailUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
+	async execute(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
+	async frontend(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { actual, confirm, newEmail } = input
 			const data = await this.userAuthService.changeEmail({
@@ -27,13 +27,13 @@ export class ChangeEmailUsecase {
 				newEmail: newEmail,
 				confirm: confirm,
 			})
-			return new ChangeEmailReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async backend(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
+	async backend(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { newEmail, id } = input
 
@@ -51,13 +51,13 @@ export class ChangeEmailUsecase {
 				pass: newEmail,
 			})
 
-			return new ChangeEmailReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	// async executeOld(input: ChangeEmailUsecaseParams): Promise<ChangeEmailReplyDTO> {
+	// async executeOld(input: ChangeEmailUsecaseParams):Promise<Reply<boolean>>{
 	// 	try {
 	// 		const { actual, confirm, newEmail, id } = input
 
@@ -90,7 +90,7 @@ export class ChangeEmailUsecase {
 	// 				confirm: confirm,
 	// 			})
 	// 	} catch (error) {
-	// 		return new ChangeEmailReplyDTO(undefined, new ErrorMsg(`Error: failed to persist`))
+	// 		return new Reply<boolean>(undefined, new ErrorMsg(`Error: failed to persist`))
 	// 	}
 	// }
 }

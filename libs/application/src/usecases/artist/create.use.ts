@@ -1,80 +1,73 @@
-import { ErrorHandler, ErrorMsg, filePath } from "Shared"
-import { NewArtistUsecaseParams } from "../../assets"
-import { Artist, StorageRepository, UserAuth, UserCookie } from "Domain"
-import { ArtistsService, UserAuthService } from "../../services"
+import { ErrorHandler, ErrorMsg, INewArtistBackSucces, filePath } from "Shared"
+import { NewArtistUsecaseParams, Reply } from "../../assets"
+import { Artist, UserAuth, UserCookie } from "Domain"
+import { ArtistsService, StorageService, UserAuthService } from "../../services"
 
 export class CreateArtistUsecase {
 	private artistsService: ArtistsService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 	private userAuthService?: UserAuthService
 
 	constructor(
 		artistsService: ArtistsService,
-		storageRepository?: StorageRepository,
+		storageService?: StorageService,
 		userAuthService?: UserAuthService
 	) {
 		this.artistsService = artistsService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: NewArtistUsecaseParams): Promise<{
-		data: Artist
-		userCookie?: UserCookie
-	}> {
+	async execute(input: NewArtistUsecaseParams): Promise<Reply<boolean | UserCookie>> {
 		try {
-			if (this.storageRepository && this.userAuthService)
-				return await this.backend(this.storageRepository, this.userAuthService, input)
+			if (this.storageService && this.userAuthService)
+				return await this.backend(this.storageService, this.userAuthService, input)
 			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
+		storageService: StorageService,
 		userAuthService: UserAuthService,
 		input: NewArtistUsecaseParams
-	): Promise<{
-		data: Artist
-		userCookie?: UserCookie
-	}> {
+	): Promise<Reply<UserCookie>> {
 		try {
 			const { file } = input
 			const { profile, auth } = input
 
-			// STORING NEW FILE
-			if (file) {
-				// move
-				const newImagePath = await storageRepository.move(file, filePath.store.announce)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-				profile.updateAvatarPath(newImagePath)
-			}
-
 			// Persist
-			const artist = await this.artistsService.create({
+			const artist: INewArtistBackSucces = (await this.artistsService.create({
 				profile: profile,
 				userAuth: auth,
-			})
+			})) as INewArtistBackSucces
 			if (!artist) throw new ErrorMsg("Error during persisting")
+
+			// storing file
+			if (file) {
+				// move new
+				const newImagePath = await file.move(storageService, filePath.store.artist)
+
+				// persist
+				await this.artistsService.setAvatarPath(newImagePath, artist.id as number)
+			}
 
 			// Cookie
 			const userCookie = await userAuthService.genCookie(
-				artist.data.id as number,
-				artist.userTokenData?.id as number,
+				artist.id as number,
+				artist.authID,
 				"artist"
 			)
+			if (!userCookie) throw new ErrorMsg("Error to get cookie")
 
-			return { data: artist.data, userCookie: userCookie }
+			return new Reply<UserCookie>(userCookie)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewArtistUsecaseParams): Promise<{
-		data: Artist
-		userCookie?: UserCookie
-	}> {
+	async frontend(input: NewArtistUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { email, password } = input.auth
 			const { name, bio, members, genres } = input.profile
@@ -84,20 +77,18 @@ export class CreateArtistUsecase {
 			const userAuths = new UserAuth(null, email, password)
 
 			// PERSIST
-			const newUserAuth = await this.artistsService.create(
+			const newUserAuth = (await this.artistsService.create(
 				{
 					profile: userData,
 					userAuth: userAuths,
 					authConfirm: input.authConfirm,
 				},
 				file
-			)
+			)) as boolean
 
-			return {
-				data: newUserAuth.data,
-			}
+			return new Reply<boolean>(newUserAuth)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

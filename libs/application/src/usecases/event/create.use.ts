@@ -1,58 +1,54 @@
-import { CreateEventReplyDTO, ErrorHandler, ErrorMsg, filePath } from "Shared"
-import { EventUsecaseParams } from "../../assets"
-import { Event, File, StorageRepository } from "Domain"
-import { EventsService } from "../../services"
+import { ErrorHandler, filePath } from "Shared"
+import { NewEventUsecaseParams, Reply } from "../../assets"
+import { EventsService, StorageService } from "../../services"
 
 export class CreateEventUsecase {
 	private eventsService: EventsService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 
-	constructor(eventsService: EventsService, storageRepository?: StorageRepository) {
+	constructor(eventsService: EventsService, storageService?: StorageService) {
 		this.eventsService = eventsService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
 
-	async execute(input: EventUsecaseParams): Promise<CreateEventReplyDTO> {
+	async execute(input: NewEventUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			const { file } = input
-			const { owner_id, title, text, date, place, artists } = input.data
-			const data = new Event(null, owner_id, date, place, artists, title, text, null)
-
-			if (this.storageRepository) {
-				return await this.backend(this.storageRepository, data, file)
-			} else return await this.frontend(data, file)
+			if (this.storageService) {
+				return await this.backend(this.storageService, input)
+			} else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(event: Event, file?: File): Promise<CreateEventReplyDTO> {
+	async frontend(input: NewEventUsecaseParams): Promise<Reply<boolean>> {
 		try {
+			const { event, file } = input
 			const data = await this.eventsService.create(event, file)
-			return new CreateEventReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
-		event: Event,
-		file?: File
-	): Promise<CreateEventReplyDTO> {
+		storageService: StorageService,
+		input: NewEventUsecaseParams
+	): Promise<Reply<boolean>> {
 		try {
+			const { event, file } = input
+
 			if (file) {
 				// move
-				const newImagePath = await storageRepository.move(file, filePath.store.announce)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
+				const newImagePath = await storageService.move(file, filePath.store.announce)
 				event.updateImagePath(newImagePath)
 			}
 
 			// persist
 			const data = await this.eventsService.create(event)
-			return new CreateEventReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

@@ -14,10 +14,10 @@ export class StorageImplement implements StorageRepository {
 					return newPath
 				})
 				.catch((error) => {
-					throw ErrorHandler.handle(error)
+					throw new ErrorHandler().handle(error)
 				})
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -29,10 +29,10 @@ export class StorageImplement implements StorageRepository {
 					return true
 				})
 				.catch((error) => {
-					throw ErrorHandler.handle(error)
+					throw new ErrorHandler().handle(error)
 				})
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -46,10 +46,10 @@ export class StorageImplement implements StorageRepository {
 					return folderName
 				})
 				.catch((error) => {
-					throw ErrorHandler.handle(error)
+					throw new ErrorHandler().handle(error)
 				})
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

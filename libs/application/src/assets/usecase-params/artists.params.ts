@@ -22,12 +22,12 @@ export class NewArtistUsecaseParams {
 
 export class UpdateArtistUsecaseParams {
 	profile: Artist
-	avatarDel: boolean
+	delAvatar: boolean
 	file?: File
 
-	constructor(profile: Artist, avatarDel: boolean, file?: File) {
+	constructor(profile: Artist, delAvatar: boolean, file?: File) {
 		this.profile = profile
-		this.avatarDel = avatarDel
+		this.delAvatar = delAvatar
 		this.file = file
 	}
 }

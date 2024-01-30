@@ -25,13 +25,11 @@ export class ErrorMsg extends Error {
 
 	setMessage(message: string): this {
 		this.message = message
-
 		return this
 	}
 
 	setStatus(status: number): this {
 		this.status = status
-
 		return this
 	}
 }

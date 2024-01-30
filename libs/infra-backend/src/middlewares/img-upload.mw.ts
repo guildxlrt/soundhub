@@ -1,10 +1,10 @@
 import multer, { Multer } from "multer"
 import { ApiErrHandler } from "../utils"
-import { IMAGE_MIME_TYPES, ApiNext, ApiReply, ApiRequest } from "Shared"
+import { IMAGE_MIME_TYPES, ApiNext, ApiRes, ApiRequest, filePath } from "Shared"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
-		callback(null, "tmp/images")
+		callback(null, filePath.origin.image)
 	},
 	filename: (req, file, callback) => {
 		callback(null, "IMG_" + Date.now() + "." + IMAGE_MIME_TYPES[file.mimetype])
@@ -13,12 +13,12 @@ const storage = multer.diskStorage({
 
 const upload: Multer = multer({ storage: storage })
 
-export const imageStorage = (req: ApiRequest, res: ApiReply, next: ApiNext) => {
+export const imageStorage = async (req: ApiRequest, res: ApiRes, next: ApiNext) => {
 	try {
-		upload.single("file")
+		upload.single("image")
 
 		next()
 	} catch (error) {
-		ApiErrHandler.reply(error, res)
+		await new ApiErrHandler().reply(error, res)
 	}
 }

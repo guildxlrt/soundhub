@@ -1,5 +1,6 @@
-import { GetAllReleasesReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { ErrorHandler, ReleaseShortDTO } from "Shared"
 import { ReleasesService } from "../../services"
+import { Reply } from "../../assets"
 
 export class GetAllReleasesUsecase {
 	releasesService: ReleasesService
@@ -7,12 +8,12 @@ export class GetAllReleasesUsecase {
 		this.releasesService = releasesService
 	}
 
-	async execute(): Promise<GetAllReleasesReplyDTO> {
+	async execute(): Promise<Reply<ReleaseShortDTO[]>> {
 		try {
 			const data = await this.releasesService.getAll()
-			return new GetAllReleasesReplyDTO(data)
+			return new Reply<ReleaseShortDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

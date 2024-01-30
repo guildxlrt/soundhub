@@ -1,43 +1,43 @@
-import { CreateReleaseReplyDTO, ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { NewReleaseUsecaseParams } from "../../assets"
-import { ReleasesService } from "../../services"
-import { Song, StorageRepository } from "Domain"
+import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
+import { NewReleaseUsecaseParams, Reply } from "../../assets"
+import { ReleasesService, StorageService } from "../../services"
+import { Song } from "Domain"
 
 export class CreateReleaseUsecase {
 	private releasesService: ReleasesService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 
-	constructor(releasesService: ReleasesService, storageRepository?: StorageRepository) {
+	constructor(releasesService: ReleasesService, storageService?: StorageService) {
 		this.releasesService = releasesService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
 
-	async execute(input: NewReleaseUsecaseParams): Promise<CreateReleaseReplyDTO> {
+	async execute(input: NewReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			if (this.storageRepository) {
-				return await this.backend(this.storageRepository, input)
+			if (this.storageService) {
+				return await this.backend(this.storageService, input)
 			} else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewReleaseUsecaseParams): Promise<CreateReleaseReplyDTO> {
+	async frontend(input: NewReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
 
 			const res = await this.releasesService.create({ data: data, cover }, songs)
-			return new CreateReleaseReplyDTO(res)
+			return new Reply(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
+		storageService: StorageService,
 		input: NewReleaseUsecaseParams
-	): Promise<CreateReleaseReplyDTO> {
+	): Promise<Reply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
@@ -48,7 +48,7 @@ export class CreateReleaseUsecase {
 			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// CREATE FOLDER RELEASE
-			const newFolder = await storageRepository.mkdir()
+			const newFolder = await storageService.mkdir()
 			if (!newFolder) throw new ErrorMsg(`Error: failed to store`)
 
 			// AUDIOFILE
@@ -57,26 +57,29 @@ export class CreateReleaseUsecase {
 					const { audio } = song
 
 					// STORING SONGS
-					const audioPath = await storageRepository.move(audio, newFolder)
+					const audioPath = await storageService.move(audio, newFolder)
 
 					// return data
-					song.data.updateAudioPath(audioPath)
+					song.data.setAudioPath(audioPath)
 					return song.data
 				})
 			)
 
-			if (cover) {
-				// move
-				const newImagePath = await storageRepository.move(cover, filePath.store.release)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
-				data.updateCoverPath(newImagePath)
-			}
-
 			// persist
 			const res = await this.releasesService.create(data, songsData)
-			return new CreateReleaseReplyDTO(res)
+
+			// STORING NEW FILE
+			if (cover) {
+				// move
+				const newImagePath = await cover.move(storageService, filePath.store.release)
+
+				// persist path
+				await this.releasesService.setCoverPath(newImagePath, id as number)
+			}
+
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

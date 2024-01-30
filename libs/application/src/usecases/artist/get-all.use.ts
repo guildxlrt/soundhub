@@ -1,5 +1,6 @@
-import { GetAllArtistsReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { ArtistShortestDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
+import { Reply } from "../../assets"
 
 export class GetAllArtistsUsecase {
 	artistsService: ArtistsService
@@ -7,13 +8,13 @@ export class GetAllArtistsUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(): Promise<GetAllArtistsReplyDTO> {
+	async execute(): Promise<Reply<ArtistShortestDTO[]>> {
 		try {
 			const data = await this.artistsService.getAll()
 
-			return new GetAllArtistsReplyDTO(data)
+			return new Reply<ArtistShortestDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

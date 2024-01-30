@@ -8,27 +8,27 @@ import {
 	UserPassword,
 	ProfileID,
 	UserProfileType,
-	ErrorHandler,
 } from "Shared"
-import { PassEncryptor, Token, authExpires } from "../utils"
-import { dbClient } from "../database"
+import { ApiErrHandler, PassEncryptor, Token, authExpires } from "../utils"
+import { dbClient } from "../prisma"
 
 export class UserAuthsImplement implements UserAuthsBackendRepos {
 	private userAuth = dbClient.userAuth
 
-	async login(): Promise<void> {
+	async login(userCookie: UserCookie): Promise<{ response: boolean; userCookie: UserCookie }> {
 		try {
-			return
+			if (!userCookie) throw new ErrorMsg("Internal server error | Cannot provide cookie")
+			return { response: true, userCookie: userCookie }
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async logout(): Promise<void> {
+	async logout(): Promise<boolean> {
 		try {
-			return
+			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -51,7 +51,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -70,7 +70,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -94,7 +94,9 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				secure: false,
 			})
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error cannot generate cookie")
+			throw new ApiErrHandler()
+				.handleDBError(error)
+				.setMessage("error cannot generate cookie")
 		}
 	}
 
@@ -119,7 +121,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -144,7 +146,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -170,7 +172,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 			// HASH PASS
 			return await PassEncryptor.hash(pass)
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("hash pass error")
+			throw new ApiErrHandler().handleDBError(error).setMessage("hash pass error")
 		}
 	}
 }

@@ -1,43 +1,30 @@
 import { UserAuthsFrontendRepos } from "Domain"
-import {
-	ChangeEmailReqDTO,
-	ChangePassReqDTO,
-	ErrorMsg,
-	ILoginSucc,
-	LoginReqDTO,
-	UserEmail,
-	UserPassword,
-	apiUrlEndpt,
-	apiUrlPath,
-	apiUrlRoot,
-} from "Shared"
-import { Response } from "../../assets"
+import { ErrorHandler, UserEmail, UserPassword, apiUrlEndpt, apiUrlPath, apiUrlRoot } from "Shared"
 import axios from "axios"
 
 export class UserAuthsImplement implements UserAuthsFrontendRepos {
-	async login(input: { email: string; password: string }): Promise<Response<ILoginSucc>> {
+	async login(email: string, password: string): Promise<boolean> {
 		try {
-			const { email, password } = input
-			return (await axios({
+			return await axios({
 				method: "post",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.login}`,
 				withCredentials: true,
-				data: { email: email, password: password } as LoginReqDTO,
-			})) as Response<ILoginSucc>
+				data: { email: email, password: password },
+			})
 		} catch (error) {
-			return new Response<ILoginSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async logout(): Promise<Response<void>> {
+	async logout(): Promise<boolean> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "delete",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.logout}`,
 				withCredentials: true,
-			})) as Response<void>
+			})
 		} catch (error) {
-			return new Response<void>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -45,16 +32,16 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		actual: UserEmail
 		newEmail: UserEmail
 		confirm: UserEmail
-	}): Promise<Response<boolean>> {
+	}): Promise<boolean> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "put",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changeEmail}`,
 				withCredentials: true,
-				data: input as ChangeEmailReqDTO,
-			})) as Response<boolean>
+				data: input,
+			})
 		} catch (error) {
-			return new Response<boolean>(false, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -62,16 +49,16 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		actual: UserPassword
 		newPass: UserPassword
 		confirm: UserPassword
-	}): Promise<Response<boolean>> {
+	}): Promise<boolean> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "put",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changePass}`,
 				withCredentials: true,
-				data: input as ChangePassReqDTO,
-			})) as Response<boolean>
+				data: input,
+			})
 		} catch (error) {
-			return new Response<boolean>(false, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

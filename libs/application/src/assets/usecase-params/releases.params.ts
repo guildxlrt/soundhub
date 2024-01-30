@@ -32,16 +32,19 @@ export class EditReleaseUsecaseParams {
 		cover?: File
 	}
 	songs: Song[]
+	delCover: boolean
 
 	constructor(
 		release: {
 			data: Release
 			cover: File
 		},
-		songs: Song[]
+		songs: Song[],
+		delCover: boolean
 	) {
 		this.release = release
 		this.songs = songs
+		this.delCover = delCover
 	}
 }
 

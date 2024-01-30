@@ -1,20 +1,20 @@
-import { IDUsecaseParams } from "../../assets"
-import { FindAnnouncesByArtistReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { IDUsecaseParams, Reply } from "../../assets"
+import { AnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
 
 export class FindAnnouncesByArtistUsecase {
-	releasesService: AnnouncesService
-	constructor(releasesService: AnnouncesService) {
-		this.releasesService = releasesService
+	announcesService: AnnouncesService
+	constructor(announcesService: AnnouncesService) {
+		this.announcesService = announcesService
 	}
-	async execute(input: IDUsecaseParams): Promise<FindAnnouncesByArtistReplyDTO> {
+	async execute(input: IDUsecaseParams): Promise<Reply<AnnounceShortDTO[]>> {
 		try {
 			const id = input.id
 
-			const data = await this.releasesService.findManyByArtist(id)
-			return new FindAnnouncesByArtistReplyDTO(data)
+			const data = await this.announcesService.findManyByArtist(id)
+			return new Reply<AnnounceShortDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

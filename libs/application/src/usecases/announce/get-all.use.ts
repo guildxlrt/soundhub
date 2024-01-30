@@ -1,18 +1,19 @@
-import { GetAllAnnouncesReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { AnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
+import { Reply } from "../../assets"
 
 export class GetAllAnnouncesUsecase {
-	releasesService: AnnouncesService
-	constructor(releasesService: AnnouncesService) {
-		this.releasesService = releasesService
+	announcesService: AnnouncesService
+	constructor(announcesService: AnnouncesService) {
+		this.announcesService = announcesService
 	}
-	async execute(): Promise<GetAllAnnouncesReplyDTO> {
+	async execute(): Promise<Reply<AnnounceShortDTO[]>> {
 		try {
-			const data = await this.releasesService.getAll()
+			const data = await this.announcesService.getAll()
 
-			return new GetAllAnnouncesReplyDTO(data)
+			return new Reply<AnnounceShortDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

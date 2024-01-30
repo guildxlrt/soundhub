@@ -1,5 +1,5 @@
-import { GetEventReplyDTO, ErrorHandler } from "Shared"
-import { IDUsecaseParams } from "../../assets"
+import { ErrorHandler, EventDTO } from "Shared"
+import { IDUsecaseParams, Reply } from "../../assets"
 import { EventsService } from "../../services"
 
 export class GetEventUsecase {
@@ -8,13 +8,13 @@ export class GetEventUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<GetEventReplyDTO> {
+	async execute(input: IDUsecaseParams): Promise<Reply<EventDTO>> {
 		try {
 			const id = input.id
 			const data = await this.eventsService.get(id)
-			return new GetEventReplyDTO(data)
+			return new Reply<EventDTO>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

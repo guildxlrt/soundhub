@@ -1,29 +1,25 @@
 import { ArtistsBackendRepos, Artist, UserAuth } from "Domain"
 import {
 	ErrorMsg,
-	IArtistInfoSucc,
-	IArtistsListSucc,
-	IArtistsListItemSucc,
+	ArtistShortDTO,
+	ArtistShortestDTO,
 	GenreType,
 	ProfileID,
 	UserEmail,
 	htmlError,
 	UserAuthID,
 	UserProfileType,
-	ErrorHandler,
-	UserTokenData,
+	ArtistDTO,
+	INewArtistBackSucces,
 } from "Shared"
-import { dbClient } from "../database"
-import { PassEncryptor } from "../utils"
+import { dbClient } from "../prisma"
+import { ApiErrHandler, PassEncryptor } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {
 	private userAuth = dbClient.userAuth
 	private artist = dbClient.artist
 
-	async create(data: { profile: Artist; userAuth: UserAuth }): Promise<{
-		data: Artist
-		userTokenData?: UserTokenData
-	}> {
+	async create(data: { profile: Artist; userAuth: UserAuth }): Promise<INewArtistBackSucces> {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
@@ -44,8 +40,12 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					},
 				},
 				select: {
-					id: true, // Include all posts in the returned object
-					artists: true,
+					id: true,
+					artists: {
+						select: {
+							id: true,
+						},
+					},
 				},
 			})
 
@@ -53,23 +53,21 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			if (!newUser?.id) throw ErrorMsg.htmlError(htmlError[401])
 
 			// return
+			const id = newUser?.artists[0].id
+			const authID = newUser?.id
+
 			return {
-				data: newUser?.artists[0],
-				userTokenData: {
-					id: newUser?.id,
-				},
-			} as {
-				data: Artist
-				userTokenData?: UserTokenData
+				id: id,
+				authID: authID,
 			}
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
 	async update(data: Artist): Promise<boolean> {
 		try {
-			const { name, bio, members, genres, id, avatarPath } = data
+			const { name, bio, members, genres, id } = data
 
 			// PERSIST
 			await this.artist.update({
@@ -81,46 +79,16 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					bio: bio,
 					members: members,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					avatarPath: avatarPath,
 				},
 			})
 
-			// // STORING FILE
-			// if (file) {
-			// 	// move file
-			// 	const store = filePath.origin.image + file?.filename
-			// 	const destination = filePath.store.artist + file?.filename
-			// 	const avatarPath = await FileManipulator.move(store, destination)
-
-			// 	// delete old file
-			// 	const oldAvatarPath = await this.artist.findUniqueOrThrow({
-			// 		where: {
-			// 			id: getProfile,
-			// 		},
-			// 		select: {
-			// 			avatarPath: true,
-			// 		},
-			// 	})
-			// 	await FileManipulator.delete(oldAvatarPath?.avatarPath as string)
-
-			// 	// save new path
-			// 	await this.artist.update({
-			// 		where: {
-			// 			id: id as number,
-			// 		},
-			// 		data: {
-			// 			// avatarPath: avatarPath,
-			// 		},
-			// 	})
-			// }
-
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getByID(id: ProfileID): Promise<IArtistInfoSucc> {
+	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -135,20 +103,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return {
-				id: id,
-				name: user?.name,
-				bio: null,
-				members: user?.members,
-				genres: [user?.genres[0], user?.genres[1], user?.genres[2]],
-				avatarPath: null,
-			}
+			return ArtistShortDTO.createFromData(user)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getByEmail(email: UserEmail): Promise<IArtistInfoSucc> {
+	async getByEmail(email: UserEmail): Promise<ArtistShortDTO> {
 		try {
 			const user = await this.userAuth.findUniqueOrThrow({
 				where: {
@@ -167,25 +128,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					},
 				},
 			})
-
-			return {
-				id: user?.artists[0].id,
-				name: user?.artists[0].name,
-				bio: null,
-				members: user?.artists[0].members,
-				genres: [
-					user?.artists[0].genres[0],
-					user?.artists[0].genres[1],
-					user?.artists[0].genres[2],
-				],
-				avatarPath: null,
-			}
+			return ArtistShortDTO.createFromData(user)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getAll(): Promise<IArtistsListSucc> {
+	async getAll(): Promise<ArtistShortestDTO[]> {
 		try {
 			// Calling DB
 			const artists = await this.artist.findMany({
@@ -198,20 +147,13 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 
 			// Reorganize
-			return artists.map((artist): IArtistsListItemSucc => {
-				return {
-					id: artist.id,
-					name: artist.name,
-					genres: [artist.genres[0], artist.genres[1], artist.genres[2]],
-					avatarPath: null,
-				}
-			})
+			return ArtistShortestDTO.createArrayFromData(artists)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<IArtistsListSucc> {
+	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
 		try {
 			const artists = await this.artist.findMany({
 				where: {
@@ -225,22 +167,36 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return artists.map((artist): IArtistsListItemSucc => {
-				return {
-					id: artist.id,
-					name: artist.name,
-					genres: [artist.genres[0], artist.genres[1], artist.genres[2]],
-					avatarPath: null,
-				}
-			})
+			return ArtistShortestDTO.createArrayFromData(artists)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getByAuth(
+	async getAuths(id: ProfileID): Promise<{
+		id: number
+		user_auth_id: number
+	}> {
+		try {
+			const user = await this.artist.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					id: true,
+					user_auth_id: true,
+				},
+			})
+
+			return user
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+		}
+	}
+
+	async findByAuthID(
 		userAuthID: UserAuthID
-	): Promise<{ profile: Artist; profileType: UserProfileType }> {
+	): Promise<{ profile: ArtistDTO; profileType: UserProfileType }> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -248,12 +204,14 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
+			const artistDTO = ArtistDTO.createFromData(user)
+
 			return {
-				profile: user as Artist,
+				profile: artistDTO as ArtistDTO,
 				profileType: "artist",
 			}
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error to authentificate")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -269,7 +227,23 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 			return data.avatarPath
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error to get image path")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
+		}
+	}
+
+	async setAvatarPath(path: string | null, id: ProfileID): Promise<boolean> {
+		try {
+			await this.artist.update({
+				where: {
+					id: id,
+				},
+				data: {
+					avatarPath: path,
+				},
+			})
+			return true
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
 		}
 	}
 }

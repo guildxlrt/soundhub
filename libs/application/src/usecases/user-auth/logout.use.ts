@@ -1,5 +1,6 @@
-import { LogoutReplyDTO, ErrorHandler } from "Shared"
+import { ErrorHandler } from "Shared"
 import { UserAuthService } from "../../services"
+import { Reply } from "../../assets"
 
 export class LogoutUsecase {
 	private userAuthService: UserAuthService
@@ -8,12 +9,12 @@ export class LogoutUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(): Promise<LogoutReplyDTO> {
+	async execute(): Promise<Reply<boolean>> {
 		try {
 			const res = await this.userAuthService.logout()
-			return new LogoutReplyDTO(res)
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

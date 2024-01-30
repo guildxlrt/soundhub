@@ -17,7 +17,7 @@ export class ChangePassValidator {
 			if (validPass) throw new ErrorMsg("weak Password")
 			else return
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

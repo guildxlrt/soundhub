@@ -2,16 +2,16 @@ import axios from "axios"
 import { ToFormData, Response } from "../../assets"
 import { Artist, UserAuth } from "Domain"
 import {
-	IArtistInfoSucc,
-	IArtistsListSucc,
-	INewArtistSucc,
+	ArtistShortDTO,
+	ArtistShortestDTO,
 	GenreType,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
-	ErrorMsg,
 	ProfileID,
 	IFile,
+	ErrorHandler,
+	ArtistDTO,
 } from "Shared"
 import { ArtistsRepository } from "Domain"
 
@@ -23,7 +23,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			authConfirm: { confirmEmail: string; confirmPass: string }
 		},
 		file?: IFile
-	): Promise<Response<INewArtistSucc>> {
+	): Promise<ArtistDTO> {
 		try {
 			const { profile, userAuth, authConfirm } = data
 
@@ -33,7 +33,7 @@ export class ArtistsImplement implements ArtistsRepository {
 			ToFormData.object(formData, userAuth)
 			ToFormData.object(formData, authConfirm)
 
-			return (await axios({
+			return await axios({
 				method: "post",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
 				withCredentials: true,
@@ -42,13 +42,13 @@ export class ArtistsImplement implements ArtistsRepository {
 					auth: userAuth,
 					authConfirm: authConfirm,
 				},
-			})) as Response<INewArtistSucc>
+			})
 		} catch (error) {
-			return new Response<INewArtistSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async update(data: { profile: Artist }, file?: IFile): Promise<Response<boolean>> {
+	async update(data: { profile: Artist }, file?: IFile): Promise<boolean> {
 		try {
 			const { profile } = data
 
@@ -56,63 +56,63 @@ export class ArtistsImplement implements ArtistsRepository {
 			ToFormData.file(formData, file as IFile)
 			ToFormData.object(formData, profile)
 
-			return (await axios({
+			return await axios({
 				method: "post",
 				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
 				withCredentials: true,
 				data: formData,
-			})) as Response<boolean>
+			})
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async getByID(id: ProfileID): Promise<Response<IArtistInfoSucc>> {
+	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID + id}`,
 				withCredentials: true,
-			})) as Response<IArtistInfoSucc>
+			})
 		} catch (error) {
-			return new Response<IArtistInfoSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async getByEmail(email: string): Promise<Response<IArtistInfoSucc>> {
+	async getByEmail(email: string): Promise<ArtistShortDTO> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID}`,
 				data: { email: email },
 				withCredentials: true,
-			})) as Response<IArtistInfoSucc>
+			})
 		} catch (error) {
-			return new Response<IArtistInfoSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async getAll(): Promise<Response<IArtistsListSucc>> {
+	async getAll(): Promise<ArtistShortestDTO[]> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.all}`,
 				withCredentials: true,
-			})) as Response<IArtistsListSucc>
+			})
 		} catch (error) {
-			return new Response<IArtistsListSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<Response<IArtistsListSucc>> {
+	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.manyByGenre + genre}`,
 				withCredentials: true,
-			})) as Response<IArtistsListSucc>
+			})
 		} catch (error) {
-			return new Response<IArtistsListSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

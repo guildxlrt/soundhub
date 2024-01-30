@@ -1,48 +1,110 @@
-import { IArtistInfoSucc, IArtistsListSucc, INewArtistSucc } from "../replies"
-import { GenreType, GenresArray, ProfileID, UserEmail, UserPassword } from "../types"
-import { ReplyDTO } from "./layers"
+import { GenresArray, IAnyObject, ProfileID } from "../types"
 
-// CREATE ARTIST
-export class CreateArtistReqDTO {
-	readonly profile: {
-		readonly name: string
-		readonly bio: string
-		readonly members: string[]
-		readonly genres: GenresArray
-	}
-	readonly auth: { readonly email: UserEmail; readonly password: UserPassword }
-	readonly authConfirm: { readonly confirmEmail: UserEmail; readonly confirmPass: UserPassword }
-
-	constructor(
-		profile: { name: string; bio: string; members: string[]; genres: GenresArray },
-		auth: { email: UserEmail; password: UserPassword },
-		authConfirm: { confirmEmail: UserEmail; confirmPass: UserPassword }
-	) {
-		this.profile = profile
-		this.auth = auth
-		this.authConfirm = authConfirm
-	}
-}
-export class CreateArtistReplyDTO extends ReplyDTO<Omit<INewArtistSucc, "userTokenData">> {}
-
-// MODIFY ARTIST //
-export class UpdateArtistReqDTO {
-	readonly id: ProfileID
+export class NewArtistDTO {
 	readonly name: string
 	readonly bio: string
 	readonly members: string[]
 	readonly genres: GenresArray
-	readonly avatarPath: string
-	readonly avatarDel: boolean
+
+	constructor(name: string, bio: string, members: string[], genres: GenresArray) {
+		this.name = name
+		this.bio = bio
+		this.members = members
+		this.genres = genres
+	}
+
+	static createFromInput(data: IAnyObject) {
+		return new NewArtistDTO(data?.["name"], data?.["bio"], data?.["members"], data?.["genres"])
+	}
+}
+
+export class UpdateArtistDTO {
+	readonly name: string
+	readonly bio: string
+	readonly members: string[]
+	readonly genres: GenresArray
+	readonly delAvatar: boolean
 
 	constructor(
-		id: ProfileID,
 		name: string,
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarPath: string,
-		avatarDel: boolean
+		delAvatar: boolean
+	) {
+		this.name = name
+		this.bio = bio
+		this.members = members
+		this.genres = genres
+		this.delAvatar = delAvatar
+	}
+
+	static createFromInput(data: IAnyObject) {
+		return new UpdateArtistDTO(
+			data?.["name"],
+			data?.["bio"],
+			data?.["members"],
+			data?.["genres"],
+			data?.["delAvatar"]
+		)
+	}
+}
+
+export class ArtistDTO {
+	readonly id: ProfileID | null
+	readonly createdAt: Date
+	readonly name: string
+	readonly bio: string
+	readonly members: string[]
+	readonly genres: GenresArray
+	readonly avatarPath: string | null
+
+	constructor(
+		id: ProfileID | null,
+		createdAt: Date,
+		name: string,
+		bio: string,
+		members: string[],
+		genres: GenresArray,
+		avatarPath: string | null
+	) {
+		this.id = id
+		this.createdAt = createdAt
+		this.name = name
+		this.bio = bio
+		this.members = members
+		this.genres = genres
+		this.avatarPath = avatarPath
+	}
+
+	static createFromData(data: IAnyObject) {
+		return new ArtistDTO(
+			data?.["id"],
+			data?.["createdAt"],
+			data?.["name"],
+			data?.["bio"],
+			data?.["members"],
+			data?.["genres"],
+			data?.["avatarPath"]
+		)
+	}
+}
+
+export class ArtistShortDTO {
+	readonly id: ProfileID | null
+	readonly name: string
+	readonly bio: string
+	readonly members: string[]
+	readonly genres: GenresArray
+	readonly avatarPath: string | null
+
+	constructor(
+		id: ProfileID | null,
+		name: string,
+		bio: string,
+		members: string[],
+		genres: GenresArray,
+		avatarPath: string | null
 	) {
 		this.id = id
 		this.name = name
@@ -50,29 +112,38 @@ export class UpdateArtistReqDTO {
 		this.members = members
 		this.genres = genres
 		this.avatarPath = avatarPath
-		this.avatarDel = avatarDel
+	}
+
+	static createFromData(data: IAnyObject) {
+		return new ArtistShortDTO(
+			data?.["id"],
+			data?.["name"],
+			data?.["bio"],
+			data?.["members"],
+			data?.["genres"],
+			data?.["avatarPath"]
+		)
 	}
 }
-export class UpdateArtistReplyDTO extends ReplyDTO<boolean> {}
 
-// ARTIST BY ID
+export class ArtistShortestDTO {
+	readonly id: ProfileID | null
+	readonly name: string
+	readonly genres: GenresArray
 
-export class GetArtistByIDReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
+	constructor(id: ProfileID | null, name: string, genres: GenresArray) {
+		this.id = id
+		this.name = name
+		this.genres = genres
+	}
 
-// ARTIST BY EMAIL
-export class GetArtistByEmailReqDTO {
-	readonly email: UserEmail
+	static createFromData(data: IAnyObject): ArtistShortestDTO {
+		return new ArtistShortestDTO(data?.["id"], data?.["name"], data?.["genres"])
+	}
 
-	constructor(email: UserEmail) {
-		this.email = email
+	static createArrayFromData(data: IAnyObject[]): ArtistShortestDTO[] {
+		return data.map((artist): ArtistShortestDTO => {
+			return new ArtistShortestDTO(artist?.["id"], artist?.["name"], artist?.["genres"])
+		})
 	}
 }
-export class GetArtistByEmailReplyDTO extends ReplyDTO<IArtistInfoSucc> {}
-
-// GET ALL
-export class GetAllArtistsReplyDTO extends ReplyDTO<IArtistsListSucc> {}
-
-// ARTISTS BY GENRE
-export type FindArtistsByGenreReqDTO = GenreType
-
-export class FindArtistsByGenreReplyDTO extends ReplyDTO<IArtistsListSucc> {}

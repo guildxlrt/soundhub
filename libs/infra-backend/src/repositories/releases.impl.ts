@@ -1,27 +1,15 @@
 import { ReleasesBackendRepos } from "Domain"
 import { Release, Song } from "Domain"
-import {
-	GenreType,
-	INewReleaseSucc,
-	IReleaseSucc,
-	IReleasesListSucc,
-	IReleasesListItemSucc,
-	ReleaseID,
-	IFile,
-	ErrorHandler,
-} from "Shared"
-import { dbClient } from "../database"
+import { GenreType, ReleaseID, IFile, ReleaseDTO, ReleaseShortDTO } from "Shared"
+import { dbClient } from "../prisma"
+import { ApiErrHandler } from "../utils"
 
 export class ReleasesImplement implements ReleasesBackendRepos {
 	private release = dbClient.release
 
-	async create(
-		release: { data: Release; cover: IFile },
-		songs: { data: Song }[]
-	): Promise<INewReleaseSucc> {
+	async create(release: { data: Release; cover: IFile }, songs: { data: Song }[]): Promise<true> {
 		try {
-			const { owner_id, title, releaseType, descript, price, genres, coverPath } =
-				release.data
+			const { owner_id, title, releaseType, descript, price, genres } = release.data
 
 			// songs
 			const songsData = await Promise.all(
@@ -38,7 +26,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			)
 
 			// PERSIST
-			const newRelease = await this.release.create({
+			await this.release.create({
 				data: {
 					owner_id: owner_id,
 					title: title,
@@ -46,7 +34,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					coverPath: coverPath,
 					isPublic: true,
 					songs: {
 						create: songsData,
@@ -54,12 +41,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			return {
-				message: `${title} was created.`,
-				id: newRelease.id,
-			}
+			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -83,7 +67,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -100,7 +84,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return release?.isPublic
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -117,13 +101,13 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async get(id: ReleaseID): Promise<IReleaseSucc> {
+	async get(id: ReleaseID): Promise<ReleaseDTO> {
 		try {
-			const release = await this.release.findUniqueOrThrow({
+			const data = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -137,63 +121,44 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					coverPath: true,
 					songs: {
 						select: {
-							audioPath: true,
+							id: true,
 							title: true,
+							featuring: true,
+							lyrics: true,
+							audioPath: true,
 						},
 					},
 				},
 			})
 
-			return {
-				id: id,
-				owner_id: id,
-				title: release?.title,
-				releaseType: release?.releaseType,
-				descript: release?.descript,
-				price: release?.price,
-				genres: release?.genres,
-				coverPath: release?.coverPath,
-				songs: release?.songs,
-			}
+			return ReleaseDTO.createFromData(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getAll(): Promise<IReleasesListSucc> {
+	async getAll(): Promise<ReleaseShortDTO[]> {
 		try {
 			// Calling DB
-			const release = await this.release.findMany({
+			const data = await this.release.findMany({
 				select: {
 					id: true,
-					owner_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverPath: true,
 				},
 			})
 
-			// Reorganize
-			return release.map((release): IReleasesListItemSucc => {
-				return {
-					id: release.id,
-					owner_id: release.owner_id,
-					title: release.title,
-					releaseType: release.releaseType,
-					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverPath: null,
-				}
-			})
+			return ReleaseShortDTO.createArrayFromData(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<IReleasesListSucc> {
+	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
 		try {
 			// Calling DB
-			const release = await this.release.findMany({
+			const data = await this.release.findMany({
 				where: {
 					genres: { has: genre },
 				},
@@ -206,29 +171,18 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					coverPath: true,
 				},
 			})
-
-			// Reorganize
-			return release.map((release): IReleasesListItemSucc => {
-				return {
-					id: release.id,
-					owner_id: release.owner_id,
-					title: release.title,
-					releaseType: release.releaseType,
-					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverPath: null,
-				}
-			})
+			return ReleaseShortDTO.createArrayFromData(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByArtist(id: ReleaseID): Promise<IReleasesListSucc> {
+	async findManyByArtist(id: ReleaseID): Promise<ReleaseShortDTO[]> {
 		try {
 			const profileID = id
 
 			// Calling DB
-			const release = await this.release.findMany({
+			const data = await this.release.findMany({
 				where: {
 					owner_id: profileID,
 				},
@@ -242,19 +196,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return release.map((release): IReleasesListItemSucc => {
-				return {
-					id: release.id,
-					owner_id: release.owner_id,
-					title: release.title,
-					releaseType: release.releaseType,
-					genres: [release.genres[0], release.genres[1], release.genres[2]],
-					coverPath: null,
-				}
-			})
+			return ReleaseShortDTO.createArrayFromData(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -270,7 +214,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			})
 			return release?.owner_id
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -287,7 +231,23 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return releaseData?.coverPath
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
+		}
+	}
+
+	async setCoverPath(path: string | null, id: ReleaseID): Promise<boolean> {
+		try {
+			await this.release.update({
+				where: {
+					id: id,
+				},
+				data: {
+					coverPath: path,
+				},
+			})
+			return true
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
 		}
 	}
 }

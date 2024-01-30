@@ -28,7 +28,7 @@ export class Song extends EntityLayer {
 			: (this.featuring = [])
 	}
 
-	updateAudioPath(newAudioPath: string) {
+	setAudioPath(newAudioPath: string) {
 		this.audioPath = newAudioPath
 	}
 }

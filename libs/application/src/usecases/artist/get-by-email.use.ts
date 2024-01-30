@@ -1,5 +1,5 @@
-import { GetArtistByEmailReplyDTO, ErrorHandler } from "Shared"
-import { EmailUsecaseParams } from "../../assets"
+import { ErrorHandler, ArtistShortDTO } from "Shared"
+import { EmailUsecaseParams, Reply } from "../../assets"
 import { ArtistsService } from "../../services"
 
 export class GetArtistByEmailUsecase {
@@ -8,15 +8,15 @@ export class GetArtistByEmailUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: EmailUsecaseParams): Promise<GetArtistByEmailReplyDTO> {
+	async execute(input: EmailUsecaseParams): Promise<Reply<ArtistShortDTO>> {
 		try {
 			const { email } = input
 
 			const data = await this.artistsService.getByEmail(email)
 
-			return new GetArtistByEmailReplyDTO(data)
+			return new Reply<ArtistShortDTO>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

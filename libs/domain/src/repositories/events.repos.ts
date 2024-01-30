@@ -1,20 +1,21 @@
-import { ReplyLayer, EventID, IEventSucc, IEventsListSucc, UserAuthID, ProfileID } from "Shared"
+import { EventID, EventDTO, EventShortDTO, UserAuthID } from "Shared"
 import { Event, File } from "Domain"
 
 export interface EventsRepository {
 	create(data: Event, file?: File): Promise<boolean>
 	edit(data: Event, file?: File): Promise<boolean>
-	delete(id: EventID, userAuth?: UserAuthID): Promise<void>
-	get(data: EventID): Promise<IEventSucc>
-	getAll(): Promise<IEventsListSucc>
-	findManyByArtist(id: EventID): Promise<IEventsListSucc>
-	findManyByDate(date: Date): Promise<IEventsListSucc>
-	findManyByPlace(place: string): Promise<IEventsListSucc>
+	delete(id: EventID, userAuth?: UserAuthID): Promise<boolean>
+	get(data: EventID): Promise<EventDTO>
+	getAll(): Promise<EventShortDTO[]>
+	findManyByArtist(id: EventID): Promise<EventShortDTO[]>
+	findManyByDate(date: Date): Promise<EventShortDTO[]>
+	findManyByPlace(place: string): Promise<EventShortDTO[]>
 }
 
 export interface EventsAddBackRepos {
 	getOwner(id: EventID): Promise<number | undefined>
 	getImagePath(id: EventID): Promise<string | null | undefined>
+	setImagePath(path: string | null, id: EventID): Promise<boolean>
 }
 
 export interface EventsAddFrontRepos {}

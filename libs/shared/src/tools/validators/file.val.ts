@@ -11,7 +11,7 @@ export class FileValidator {
 
 			return
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during Genres format")
+			throw new ErrorHandler().handle(error).setMessage("error during Genres format")
 		}
 	}
 }

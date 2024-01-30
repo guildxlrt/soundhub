@@ -1,75 +1,75 @@
-import { EditAnnounceReplyDTO, ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { AnnounceUsecaseParams } from "../../assets"
-import { Announce, File, StorageRepository } from "Domain"
-import { AnnouncesService } from "../../services"
+import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
+import { EditAnnounceUsecaseParams, Reply } from "../../assets"
+import { AnnouncesService, StorageService } from "../../services"
 
 export class EditAnnounceUsecase {
 	private announcesService: AnnouncesService
-	private storageRepository?: StorageRepository
+	private storageService?: StorageService
 
-	constructor(announcesService: AnnouncesService, storageRepository?: StorageRepository) {
+	constructor(announcesService: AnnouncesService, storageService?: StorageService) {
 		this.announcesService = announcesService
-		this.storageRepository = storageRepository
+		this.storageService = storageService
 	}
 
-	async execute(input: AnnounceUsecaseParams): Promise<EditAnnounceReplyDTO> {
+	async execute(input: EditAnnounceUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			const { file } = input
-			const { owner_id, title, text, id } = input.data
-			const data = new Announce(id as number, owner_id as number, title, text, null)
-
-			if (this.storageRepository)
-				return await this.backend(this.storageRepository, data, file)
-			else return await this.frontend(data, file)
+			if (this.storageService) return await this.backend(this.storageService, input)
+			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(annouce: Announce, file?: File): Promise<EditAnnounceReplyDTO> {
+	async frontend(input: EditAnnounceUsecaseParams): Promise<Reply<boolean>> {
 		try {
-			const data = await this.announcesService.edit(annouce, file)
-			return new EditAnnounceReplyDTO(data)
+			const { file, announce } = input
+
+			const data = await this.announcesService.edit(announce, file)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageRepository: StorageRepository,
-		announce: Announce,
-		file?: File
-	): Promise<EditAnnounceReplyDTO> {
+		storageService: StorageService,
+		input: EditAnnounceUsecaseParams
+	): Promise<Reply<boolean>> {
 		try {
+			const { file, delImage, announce } = input
 			const { owner_id, id } = announce
 
 			// owner verification
 			const announceOwner = await this.announcesService.getOwner(id as number)
 			if (owner_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 
+			// persist
+			await this.announcesService.edit(announce)
+
 			// STORING NEW FILE
-			if (file) {
+			// contradiction
+			if (file && delImage === true)
+				throw new ErrorMsg("User Image | contradictory request", 400)
+
+			if (file || delImage === true) {
 				const oldImagePath = await this.announcesService.getImagePath(id as number)
 				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
 
-				// move new
-				const newImagePath = await storageRepository.move(file, filePath.store.announce)
-				if (!newImagePath) throw new ErrorMsg(`Error: failed to store`)
+				if (file) {
+					// move new
+					const newImagePath = await file.move(storageService, filePath.store.announce)
 
-				// persist
-				announce.updateImagePath(newImagePath)
-				await this.announcesService.edit(announce)
+					//move file
+					await this.announcesService.setImagePath(newImagePath, id as number)
+				}
 
 				// delete old
-				await storageRepository.delete(oldImagePath as string)
-
-				return new EditAnnounceReplyDTO(true)
-			} else {
-				const data = await this.announcesService.edit(announce)
-				return new EditAnnounceReplyDTO(data)
+				await storageService.delete(oldImagePath as string)
 			}
+
+			return new Reply<boolean>(true)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

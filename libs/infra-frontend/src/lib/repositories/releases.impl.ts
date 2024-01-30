@@ -2,15 +2,14 @@ import { Release, Song } from "Domain"
 import {
 	GenreType,
 	EntityID,
-	INewReleaseSucc,
-	IReleaseSucc,
-	IReleasesListSucc,
+	ReleaseDTO,
+	ReleaseShortDTO,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
 	ErrorMsg,
 	IFile,
-	SetPrivStatusReleaseReqDTO,
+	ErrorHandler,
 } from "Shared"
 import { ToFormData, Response } from "../../assets"
 import axios from "axios"
@@ -20,7 +19,7 @@ export class ReleasesImplement implements ReleasesRepository {
 	async create(
 		release: { data: Release; cover: IFile },
 		songs: { data: Song; audio: IFile }[]
-	): Promise<Response<INewReleaseSucc>> {
+	): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			ToFormData.file(formData, release.cover as IFile, "cover")
@@ -31,7 +30,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				ToFormData.object(formData, song.data, "song" + index)
 			})
 
-			return (await axios({
+			return await axios({
 				method: "put",
 				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.create}`,
 				withCredentials: true,
@@ -39,16 +38,16 @@ export class ReleasesImplement implements ReleasesRepository {
 					release: release,
 					songs: songs,
 				},
-			})) as Response<INewReleaseSucc>
+			})
 		} catch (error) {
-			return new Response<INewReleaseSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async edit(
 		release: { data: Release; cover?: IFile | undefined },
 		songs: Song[]
-	): Promise<Response<boolean>> {
+	): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			ToFormData.file(formData, release.cover as IFile, "cover")
@@ -58,79 +57,79 @@ export class ReleasesImplement implements ReleasesRepository {
 				ToFormData.object(formData, song, "song" + index)
 			})
 
-			return (await axios({
+			return await axios({
 				method: "put",
 				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.edit}`,
 				withCredentials: true,
 				data: formData,
-			})) as Response<boolean>
+			})
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async setPrivStatus(id: number, isPublic: boolean): Promise<Response<boolean>> {
+	async setPrivStatus(id: number, isPublic: boolean): Promise<boolean> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "patch",
 				url: `${
 					apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.setPrivStatus + id
 				}`,
 				withCredentials: true,
-				data: { id: id, isPublic: isPublic } as SetPrivStatusReleaseReqDTO,
-			})) as Response<boolean>
+				data: { id: id, isPublic: isPublic },
+			})
 		} catch (error) {
-			return new Response<boolean>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async get(id: EntityID): Promise<Response<IReleaseSucc>> {
+	async get(id: EntityID): Promise<ReleaseDTO> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.oneByID + id}`,
 				withCredentials: true,
-			})) as Response<IReleaseSucc>
+			})
 		} catch (error) {
-			return new Response<IReleaseSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async getAll(): Promise<Response<IReleasesListSucc>> {
+	async getAll(): Promise<ReleaseShortDTO[]> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.all}`,
 				withCredentials: true,
-			})) as Response<IReleasesListSucc>
+			})
 		} catch (error) {
-			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<Response<IReleasesListSucc>> {
+	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${
 					apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.releases.manyByGenre + genre
 				}`,
 				withCredentials: true,
-			})) as Response<IReleasesListSucc>
+			})
 		} catch (error) {
-			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async findManyByArtist(id: EntityID): Promise<Response<IReleasesListSucc>> {
+	async findManyByArtist(id: EntityID): Promise<ReleaseShortDTO[]> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.manyByArtist + id}`,
 				withCredentials: true,
-			})) as Response<IReleasesListSucc>
+			})
 		} catch (error) {
-			return new Response<IReleasesListSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

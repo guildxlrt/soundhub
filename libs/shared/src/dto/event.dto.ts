@@ -1,16 +1,42 @@
-import { IEventSucc, IEventsListSucc } from "../replies"
-import { ProfileID } from "../types"
-import { ReplyDTO } from "./layers/reply"
+import { IAnyObject, ProfileID } from "../types"
 
-export class CreateEventReqDTO {
-	readonly owner_id: ProfileID
+export class CreateEventDTO {
 	readonly date: Date
 	readonly place: string
 	readonly artists: ProfileID[]
 	readonly title: string
 	readonly text: string
 
+	constructor(date: Date, place: string, artists: number[], title: string, text: string) {
+		this.date = date
+		this.place = place
+		this.artists = artists
+		this.title = title
+		this.text = text
+	}
+
+	static createFromInput(data: IAnyObject) {
+		return new CreateEventDTO(
+			data?.["date"],
+			data?.["place"],
+			data?.["artists"],
+			data?.["title"],
+			data?.["text"]
+		)
+	}
+}
+
+export class EditEventReqDTO {
+	readonly id: number
+	readonly owner_id: ProfileID
+	readonly date: Date
+	readonly place: string
+	readonly artists: number[]
+	readonly title: string
+	readonly text: string
+
 	constructor(
+		id: number,
 		owner_id: ProfileID,
 		date: Date,
 		place: string,
@@ -18,6 +44,7 @@ export class CreateEventReqDTO {
 		title: string,
 		text: string
 	) {
+		this.id = id
 		this.owner_id = owner_id
 		this.date = date
 		this.place = place
@@ -25,10 +52,21 @@ export class CreateEventReqDTO {
 		this.title = title
 		this.text = text
 	}
-}
-export class CreateEventReplyDTO extends ReplyDTO<boolean> {}
 
-export class EditEventReqDTO {
+	static createFromInput(data: IAnyObject) {
+		return new EditEventReqDTO(
+			data?.["id"],
+			data?.["owner_id"],
+			data?.["date"],
+			data?.["place"],
+			data?.["artists"],
+			data?.["title"],
+			data?.["text"]
+		)
+	}
+}
+
+export class EventDTO {
 	readonly id: number
 	readonly owner_id: ProfileID
 	readonly date: Date
@@ -57,37 +95,57 @@ export class EditEventReqDTO {
 		this.text = text
 		this.imagePath = imagePath
 	}
+
+	static createFromData(data: IAnyObject) {
+		return new EventDTO(
+			data?.["id"],
+			data?.["owner_id"],
+			data?.["date"],
+			data?.["place"],
+			data?.["artists"],
+			data?.["title"],
+			data?.["text"],
+			data?.["imagePath"]
+		)
+	}
 }
-export class EditEventReplyDTO extends ReplyDTO<boolean> {}
 
-// DELETE POST
-export class DeleteEventReplyDTO extends ReplyDTO<void> {}
+export class EventShortDTO {
+	readonly id: number
+	readonly date: Date
+	readonly place: string
+	readonly artists: number[]
+	readonly title: string
 
-// GET POST
-export class GetEventReplyDTO extends ReplyDTO<IEventSucc> {}
-
-// GET ALL
-export class GetAllEventsReplyDTO extends ReplyDTO<IEventsListSucc> {}
-
-// FIND MANY BY ARTIST
-export class FindEventsByArtistReplyDTO extends ReplyDTO<IEventsListSucc> {}
-
-// FIND MANY BY DATE
-export class FindEventsByDateReqDTO {
-	date: Date
-
-	constructor(date: Date) {
+	constructor(id: number, date: Date, place: string, artists: number[], title: string) {
+		this.id = id
 		this.date = date
-	}
-}
-export class FindEventsByDateReplyDTO extends ReplyDTO<IEventsListSucc> {}
-
-// FIND MANY BY LOCATION
-export class FindEventsByPlaceReqDTO {
-	place: string
-
-	constructor(place: string) {
 		this.place = place
+		this.artists = artists
+		this.title = title
+	}
+
+	static createFromData(data: IAnyObject): EventShortDTO {
+		return new EventShortDTO(
+			data?.["id"],
+			data?.["date"],
+			data?.["place"],
+			data?.["artists"],
+			data?.["title"]
+		)
+	}
+	static createArrayFromData(data: IAnyObject[]): EventShortDTO[] {
+		return data.map((annouce): EventShortDTO => {
+			return new EventDTO(
+				annouce?.["id"],
+				annouce?.["owner_id"],
+				annouce?.["date"],
+				annouce?.["place"],
+				annouce?.["artists"],
+				annouce?.["title"],
+				annouce?.["text"],
+				annouce?.["imagePath"]
+			)
+		})
 	}
 }
-export class FindEventsByPlaceReplyDTO extends ReplyDTO<IEventsListSucc> {}

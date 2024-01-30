@@ -1,13 +1,25 @@
 import { AnnounceID, ProfileID } from "Shared"
 import { Announce, File } from "Domain"
 
-export class AnnounceUsecaseParams {
-	data: Announce
+export class NewAnnounceUsecaseParams {
+	announce: Announce
 	file?: File
 
-	constructor(data: Announce, file?: File) {
-		this.data = data
+	constructor(announce: Announce, file?: File) {
+		this.announce = announce
 		this.file = file
+	}
+}
+
+export class EditAnnounceUsecaseParams {
+	announce: Announce
+	delImage: boolean
+	file?: File
+
+	constructor(announce: Announce, delImage: boolean, file?: File) {
+		this.announce = announce
+		this.file = file
+		this.delImage = delImage
 	}
 }
 

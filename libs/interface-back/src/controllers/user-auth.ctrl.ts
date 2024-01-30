@@ -10,7 +10,7 @@ import {
 	AuthServices,
 } from "Application"
 import {
-	ApiReply,
+	ApiRes,
 	ApiRequest,
 	ChangeEmailReplyDTO,
 	ChangeEmailReqDTO,
@@ -26,7 +26,7 @@ import { IAuthCtrl } from "../assets"
 export class UserAuthController implements IAuthCtrl {
 	constructor() {}
 
-	async login(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async login(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
@@ -62,7 +62,7 @@ export class UserAuthController implements IAuthCtrl {
 		}
 	}
 
-	async logout(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async logout(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "DELETE")
 				return res.status(405).send({ error: htmlError[405].message })
@@ -81,7 +81,7 @@ export class UserAuthController implements IAuthCtrl {
 		}
 	}
 
-	async changeEmail(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async changeEmail(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
@@ -103,7 +103,7 @@ export class UserAuthController implements IAuthCtrl {
 		}
 	}
 
-	async changePass(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async changePass(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 

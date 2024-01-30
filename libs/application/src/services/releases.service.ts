@@ -1,13 +1,5 @@
 import { ReleasesAddBackRepos, ReleasesAddFrontRepos, ReleasesRepository } from "Domain"
-import {
-	ProfileID,
-	INewReleaseSucc,
-	ReleaseID,
-	IReleaseSucc,
-	IReleasesListSucc,
-	GenreType,
-	ErrorHandler,
-} from "Shared"
+import { ProfileID, ReleaseID, ReleaseDTO, ReleaseShortDTO, GenreType, ErrorHandler } from "Shared"
 
 interface IReleasesService
 	extends ReleasesRepository,
@@ -22,18 +14,18 @@ export class ReleasesService implements IReleasesService {
 	}
 
 	// SERVIVES
-	async create(release: unknown, songs: unknown[]): Promise<INewReleaseSucc> {
+	async create(release: unknown, songs: unknown[]): Promise<boolean> {
 		try {
 			return await this.service.create(release, songs)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	async edit(release: unknown, songs?: unknown[]): Promise<boolean> {
 		try {
 			return await this.service.edit(release, songs)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -41,7 +33,7 @@ export class ReleasesService implements IReleasesService {
 		try {
 			return await this.service.getPrivStatus(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -49,37 +41,35 @@ export class ReleasesService implements IReleasesService {
 		try {
 			return await this.service.setPrivStatus(id, isPublic)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async get(id: ReleaseID): Promise<IReleaseSucc> {
+	async get(id: ReleaseID): Promise<ReleaseDTO> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async getAll(): Promise<IReleasesListSucc> {
+	async getAll(): Promise<ReleaseShortDTO[]> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async findManyByArtist(id: ProfileID): Promise<IReleasesListSucc> {
+	async findManyByArtist(id: ProfileID): Promise<ReleaseShortDTO[]> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<IReleasesListSucc> {
-		{
-			try {
-				return await this.service.findManyByGenre(genre)
-			} catch (error) {
-				throw ErrorHandler.handle(error)
-			}
+	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
+		try {
+			return await this.service.findManyByGenre(genre)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -88,14 +78,22 @@ export class ReleasesService implements IReleasesService {
 		try {
 			return await this.service.getOwner(id)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	async getCoverPath(releaseID: ReleaseID): Promise<string | null | undefined> {
 		try {
 			return await this.service.getCoverPath(releaseID)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
+	async setCoverPath(path: string | null, id: ReleaseID): Promise<boolean> {
+		try {
+			return await this.service.setCoverPath(path, id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

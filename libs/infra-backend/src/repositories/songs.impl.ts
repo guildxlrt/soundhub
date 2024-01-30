@@ -1,56 +1,71 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { SongID, ISongSucc, ErrorHandler } from "Shared"
-import { dbClient } from "../database"
+import { ErrorHandler, ReleaseID, SongDTO, SongID } from "Shared"
+import { dbClient } from "../prisma"
+import { ApiErrHandler } from "../utils"
 
 export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
 
-	async get(id: SongID): Promise<ISongSucc> {
+	async get(id: SongID): Promise<SongDTO> {
 		try {
-			const song = await this.song.findUniqueOrThrow({
+			const songs = await this.song.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
+					id: true,
 					release_id: true,
 					audioPath: true,
 					title: true,
-					featuring: true,
-					lyrics: true,
 				},
 			})
 
 			// RESPONSE
-			return {
-				id: id,
-				release_id: song?.release_id,
-				audioPath: song?.audioPath,
-				title: song?.title,
-				featuring: song?.featuring,
-				lyrics: song?.lyrics,
-			}
+			return SongDTO.createFromData(songs)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async update(data: Song): Promise<void> {
+	async findByRelease(id: ReleaseID): Promise<SongDTO[]> {
 		try {
-			const { title, featuring, lyrics, audioPath, release_id } = data
+			const songs = await this.song.findMany({
+				where: {
+					release_id: id,
+				},
+				select: {
+					id: true,
+					release_id: true,
+					audioPath: true,
+					title: true,
+				},
+			})
+
+			// RESPONSE
+			return SongDTO.createArrayFromData(songs)
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error)
+		}
+	}
+
+	async update(data: Song): Promise<boolean> {
+		try {
+			const { title, featuring, lyrics, id } = data
 
 			// PERSIST
-			await this.song.create({
+			await this.song.update({
+				where: {
+					id: id as number,
+				},
 				data: {
-					release_id: release_id as number,
-					audioPath: audioPath as string,
 					title: title,
 					featuring: featuring,
 					lyrics: lyrics,
 				},
 			})
-			return
+			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 }

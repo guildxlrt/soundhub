@@ -1,13 +1,8 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import {
-	IAnnounceSucc,
-	IAnnouncesListSucc,
-	IAnnouncesListItemSucc,
-	AnnounceID,
-	ErrorHandler,
-} from "Shared"
-import { dbClient } from "../database"
+import { AnnounceID, AnnounceDTO, AnnounceShortDTO } from "Shared"
+import { dbClient } from "../prisma"
+import { ApiErrHandler } from "../utils"
 
 export class AnnouncesImplement implements AnnouncesBackendRepos {
 	private announce = dbClient.announce
@@ -16,29 +11,19 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		try {
 			const { owner_id, title, text, imagePath } = data
 
-			if (imagePath) {
-				await this.announce.create({
-					data: {
-						owner_id: owner_id as number,
-						title: title,
-						text: text,
-						imagePath: imagePath,
-					},
-				})
-			} else {
-				await this.announce.create({
-					data: {
-						owner_id: owner_id as number,
-						title: title,
-						text: text,
-					},
-				})
-			}
+			await this.announce.create({
+				data: {
+					owner_id: owner_id as number,
+					title: title,
+					text: text,
+					imagePath: imagePath,
+				},
+			})
 
 			// RESPO NSE
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -46,38 +31,25 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		try {
 			const { owner_id, title, text, id, imagePath } = data
 
-			if (imagePath || imagePath === null) {
-				await this.announce.update({
-					where: {
-						id: id as number,
-						owner_id: owner_id,
-					},
-					data: {
-						title: title,
-						text: text,
-						imagePath: imagePath,
-					},
-				})
-			} else {
-				await this.announce.update({
-					where: {
-						id: id as number,
-						owner_id: owner_id,
-					},
-					data: {
-						title: title,
-						text: text,
-					},
-				})
-			}
+			await this.announce.update({
+				where: {
+					id: id as number,
+					owner_id: owner_id,
+				},
+				data: {
+					title: title,
+					text: text,
+					imagePath: imagePath,
+				},
+			})
 
 			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async delete(id: AnnounceID): Promise<void> {
+	async delete(id: AnnounceID): Promise<boolean> {
 		try {
 			await this.announce.delete({
 				where: {
@@ -85,19 +57,20 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return
+			return true
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async get(id: AnnounceID): Promise<IAnnounceSucc> {
+	async get(id: AnnounceID): Promise<AnnounceDTO> {
 		try {
 			const announce = await this.announce.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
+					id: true,
 					owner_id: true,
 					title: true,
 					text: true,
@@ -105,19 +78,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return {
-				id: id,
-				owner_id: id,
-				title: announce?.title,
-				text: announce?.text,
-				imagePath: announce?.imagePath,
-			}
+			return AnnounceDTO.createFromData(announce)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async getAll(): Promise<IAnnouncesListSucc> {
+	async getAll(): Promise<AnnounceShortDTO[]> {
 		try {
 			const announces = await this.announce.findMany({
 				select: {
@@ -128,21 +95,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return announces.map((announce): IAnnouncesListItemSucc => {
-				return {
-					id: announce.id,
-					owner_id: announce.owner_id,
-					title: announce.title,
-					imagePath: announce.imagePath,
-				}
-			})
+			return AnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
-	async findManyByArtist(id: AnnounceID): Promise<IAnnouncesListSucc> {
+	async findManyByArtist(id: AnnounceID): Promise<AnnounceShortDTO[]> {
 		try {
 			const profileID = id
 
@@ -158,17 +117,9 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			// Reorganize
-			return announces.map((announce): IAnnouncesListItemSucc => {
-				return {
-					id: announce.id,
-					owner_id: announce.owner_id,
-					title: announce.title,
-					imagePath: announce.imagePath,
-				}
-			})
+			return AnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ApiErrHandler().handleDBError(error)
 		}
 	}
 
@@ -184,7 +135,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.owner_id
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error to authentificate")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -200,7 +151,23 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.imagePath
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error getting image path")
+			throw new ApiErrHandler().handleDBError(error).setMessage("error getting image path")
+		}
+	}
+
+	async setImagePath(path: string | null, id: AnnounceID): Promise<boolean> {
+		try {
+			await this.announce.update({
+				where: {
+					id: id,
+				},
+				data: {
+					imagePath: path,
+				},
+			})
+			return true
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
 		}
 	}
 }

@@ -11,7 +11,7 @@ export class PassEncryptor {
 
 			return hash
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	static async compare(password: string, encrypted: string) {
@@ -21,7 +21,7 @@ export class PassEncryptor {
 
 			return await bcrypt.compare(password, encrypted)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

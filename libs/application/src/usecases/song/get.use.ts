@@ -1,5 +1,5 @@
-import { GetSongReplyDTO, ErrorHandler } from "Shared"
-import { IDUsecaseParams } from "../../assets"
+import { ErrorHandler, SongDTO } from "Shared"
+import { IDUsecaseParams, Reply } from "../../assets"
 import { SongsService } from "../../services"
 
 export class GetSongUsecase {
@@ -8,13 +8,13 @@ export class GetSongUsecase {
 		this.songsService = songsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<GetSongReplyDTO> {
+	async execute(input: IDUsecaseParams): Promise<Reply<SongDTO>> {
 		try {
 			const id = input.id
 			const data = await this.songsService.get(id)
-			return new GetSongReplyDTO(data)
+			return new Reply<SongDTO>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

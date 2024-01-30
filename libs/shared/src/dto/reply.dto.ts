@@ -1,3 +1,3 @@
-import { ReplyLayer } from "../../replies"
+import { ReplyLayer } from "../replies"
 
 export class ReplyDTO<D> extends ReplyLayer<D> {}

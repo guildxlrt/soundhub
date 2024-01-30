@@ -1,9 +1,6 @@
-import { IAnnounceSucc, IAnnouncesListSucc } from "../replies"
-import { ProfileID, UrlParams } from "../types"
-import { ReplyDTO } from "./layers/reply"
+import { IAnyObject, ProfileID } from "../types"
 
-// CREATE POST
-export class CreateAnnounceReqDTO {
+export class CreateAnnounceDTO {
 	readonly title: string
 	readonly text: string
 
@@ -11,11 +8,36 @@ export class CreateAnnounceReqDTO {
 		this.title = title
 		this.text = text
 	}
-}
-export class CreateAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
-// MODIFY POST
-export class EditAnnounceReqDTO {
+	static createFromInput(data: IAnyObject) {
+		return new CreateAnnounceDTO(data?.["title"], data?.["text"])
+	}
+}
+
+export class EditAnnounceDTO {
+	readonly id: number
+	readonly owner_id: ProfileID
+	readonly title: string
+	readonly text: string
+
+	constructor(id: number, owner_id: ProfileID, title: string, text: string) {
+		this.id = id
+		this.owner_id = owner_id
+		this.title = title
+		this.text = text
+	}
+
+	static createFromInput(data: IAnyObject) {
+		return new EditAnnounceDTO(
+			data?.["id"],
+			data?.["owner_id"],
+			data?.["title"],
+			data?.["text"]
+		)
+	}
+}
+
+export class AnnounceDTO {
 	readonly id: number
 	readonly owner_id: ProfileID
 	readonly title: string
@@ -35,20 +57,36 @@ export class EditAnnounceReqDTO {
 		this.text = text
 		this.imagePath = imagePath
 	}
+
+	static createFromData(data: IAnyObject) {
+		return new AnnounceDTO(
+			data?.["id"],
+			data?.["owner_id"],
+			data?.["title"],
+			data?.["text"],
+			data?.["imagePath"]
+		)
+	}
 }
-export class EditAnnounceReplyDTO extends ReplyDTO<boolean> {}
 
-// DELETE POST
-export type DeleteAnnounceReqDTO = UrlParams
-export class DeleteAnnounceReplyDTO extends ReplyDTO<void> {}
+export class AnnounceShortDTO {
+	readonly id: number
+	readonly owner_id: ProfileID
+	readonly title: string
 
-// GET POST
-export type GetAnnounceReqDTO = UrlParams
-export class GetAnnounceReplyDTO extends ReplyDTO<IAnnounceSucc> {}
+	constructor(id: number, owner_id: ProfileID, title: string) {
+		this.id = id
+		this.owner_id = owner_id
+		this.title = title
+	}
 
-// GET ALL
-export class GetAllAnnouncesReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}
+	static createFromData(data: IAnyObject): AnnounceShortDTO {
+		return new AnnounceShortDTO(data?.["id"], data?.["owner_id"], data?.["title"])
+	}
 
-// FIND MANY BY ARTIST
-export type FindAnnouncesByArtistReqDTO = UrlParams
-export class FindAnnouncesByArtistReplyDTO extends ReplyDTO<IAnnouncesListSucc> {}
+	static createArrayFromData(data: IAnyObject[]): AnnounceShortDTO[] {
+		return data.map((annouce): AnnounceShortDTO => {
+			return new AnnounceShortDTO(annouce?.["id"], annouce?.["owner_id"], annouce?.["title"])
+		})
+	}
+}

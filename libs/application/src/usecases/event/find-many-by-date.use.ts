@@ -1,6 +1,7 @@
-import { DateUsecaseParams } from "../../assets"
-import { FindEventsByDateReplyDTO, ErrorMsg, ErrorHandler } from "Shared"
+import { DateUsecaseParams, Reply } from "../../assets"
+import { ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
+import { EventShortDTO } from "Shared"
 
 export class FindEventsByDateUsecase {
 	eventsService: EventsService
@@ -8,14 +9,14 @@ export class FindEventsByDateUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: DateUsecaseParams): Promise<FindEventsByDateReplyDTO> {
+	async execute(input: DateUsecaseParams): Promise<Reply<EventShortDTO[]>> {
 		try {
 			const { date } = input
 			const data = await this.eventsService.findManyByDate(date)
 
-			return new FindEventsByDateReplyDTO(data)
+			return new Reply<EventShortDTO[]>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

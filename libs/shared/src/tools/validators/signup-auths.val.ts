@@ -23,7 +23,7 @@ export class SignupAuthsValidator {
 			if (password !== confirmPass) throw new ErrorMsg("passwords don't match", 400)
 			else return
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

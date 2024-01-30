@@ -1,4 +1,4 @@
-import { ApiErrHandler, ApiRequest, ApiReply, databaseRepos } from "Infra-backend"
+import { ApiErrHandler } from "Infra-backend"
 import { Release, Song } from "Domain"
 import {
 	CreateReleaseUsecase,
@@ -33,19 +33,21 @@ import {
 	IMAGE_MIME_TYPES,
 	validators,
 	AUDIO_MIME_TYPES,
+	ApiRes,
+	ApiRequest,
 } from "Shared"
 import { IReleasesCtrl } from "../assets"
 
 export class ReleasesController implements IReleasesCtrl {
-	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
-			const cover: IFile = req.file as IFile
-			const audioFiles: FilesArray = req.files as FilesArray
 			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
+			const cover: IFile = req.image as IFile
+			const audioFiles: FilesArray = req.songs as FilesArray
 
 			const { title, releaseType, price, descript, genres } = inputs.release
 
@@ -98,14 +100,14 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "DELETE")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
 			const user = req.auth?.profileID as number
-			const cover: IFile = req.file as IFile
+			const cover: IFile = req.image as IFile
 
 			const { title, releaseType, price, descript, genres, id, coverPath } = inputs.release
 			const releaseData = new Release(
@@ -149,13 +151,14 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async setPrivStatus(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async setPrivStatus(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "PATCH")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID
-			const { id, isPublic }: SetPrivStatusReleaseReqDTO = req.body as SetPrivStatusReleaseReqDTO
+			const { id, isPublic }: SetPrivStatusReleaseReqDTO =
+				req.body as SetPrivStatusReleaseReqDTO
 
 			// Saving Profile
 			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(databaseRepos)
@@ -171,7 +174,7 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -187,7 +190,7 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -202,7 +205,7 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -218,7 +221,7 @@ export class ReleasesController implements IReleasesCtrl {
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByGenre(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 

@@ -1,12 +1,13 @@
-import { ISongSucc } from "Shared"
+import { ReleaseID, SongDTO, SongID } from "Shared"
 import { Song } from "../entities"
 
 export interface SongsRepository {
-	get(data: unknown): Promise<ISongSucc>
+	get(data: SongID): Promise<SongDTO>
+	findByRelease(id: ReleaseID): Promise<SongDTO[]>
 }
 
 export interface SongsAddBackRepos {
-	update(data: Song): Promise<void>
+	update(data: Song): Promise<boolean>
 }
 export interface SongsAddFrontRepos {}
 

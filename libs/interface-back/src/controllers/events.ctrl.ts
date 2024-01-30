@@ -1,4 +1,4 @@
-import { ApiErrHandler, ApiRequest, ApiReply, databaseRepos } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiRes, databaseRepos } from "Infra-backend"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecaseParams,
@@ -34,13 +34,13 @@ import {
 import { IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
-	async create(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const owner = req.auth?.profileID
-			const file: IFile = req.file as IFile
+			const file: IFile = req.image as IFile
 			const { artists, date, place, text, title }: CreateEventReqDTO =
 				req.body as CreateEventReqDTO
 			// Operators
@@ -61,12 +61,12 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async edit(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const owner = req.auth?.profileID as number
-			const file: IFile = req.file as IFile
+			const file: IFile = req.image as IFile
 			const { artists, date, place, text, title, id, imagePath }: EditEventReqDTO =
 				req.body as EditEventReqDTO
 
@@ -97,7 +97,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async delete(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async delete(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "DELETE")
 				return res.status(405).send({ error: htmlError[405].message })
@@ -122,7 +122,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -139,7 +139,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -154,7 +154,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async findManyByArtist(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -170,7 +170,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async findManyByDate(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByDate(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
@@ -186,7 +186,7 @@ export class EventsController implements IEventsCtrl {
 		}
 	}
 
-	async findManyByPlace(req: ApiRequest, res: ApiReply): Promise<ApiReply> {
+	async findManyByPlace(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 

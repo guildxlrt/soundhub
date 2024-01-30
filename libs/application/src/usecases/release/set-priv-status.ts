@@ -1,5 +1,5 @@
-import { SetPrivStatusReleaseUsecaseParams } from "../../assets"
-import { SetPrivStatusReleaseReplyDTO, ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
+import { Reply, SetPrivStatusReleaseUsecaseParams } from "../../assets"
+import { ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class SetPrivStatusReleaseUsecase {
@@ -9,18 +9,18 @@ export class SetPrivStatusReleaseUsecase {
 		this.releasesService = releasesService
 	}
 
-	async execute(input: SetPrivStatusReleaseUsecaseParams): Promise<SetPrivStatusReleaseReplyDTO> {
+	async execute(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const backend = envs.backend
 
 			if (backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async backend(input: SetPrivStatusReleaseUsecaseParams): Promise<SetPrivStatusReleaseReplyDTO> {
+	async backend(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { id, isPublic, ownerID } = input
 
@@ -30,22 +30,20 @@ export class SetPrivStatusReleaseUsecase {
 
 			// persist
 			const res = await this.releasesService.setPrivStatus(id, isPublic)
-			return new SetPrivStatusReleaseReplyDTO(res)
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(
-		input: SetPrivStatusReleaseUsecaseParams
-	): Promise<SetPrivStatusReleaseReplyDTO> {
+	async frontend(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { id, isPublic } = input
 
 			const res = await this.releasesService.setPrivStatus(id, isPublic)
-			return new SetPrivStatusReleaseReplyDTO(res)
+			return new Reply<boolean>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

@@ -1,18 +1,37 @@
 import axios from "axios"
-import { Response } from "../../assets"
 import { SongsRepository } from "Domain"
-import { EntityID, ISongSucc, apiUrlRoot, apiUrlPath, apiUrlEndpt, ErrorMsg } from "Shared"
+import {
+	SongDTO,
+	apiUrlRoot,
+	apiUrlPath,
+	apiUrlEndpt,
+	ErrorHandler,
+	SongID,
+	ReleaseID,
+} from "Shared"
 
 export class SongsImplement implements SongsRepository {
-	async get(id: EntityID): Promise<Response<ISongSucc>> {
+	async get(id: SongID): Promise<SongDTO> {
 		try {
-			return (await axios({
+			return await axios({
 				method: "get",
 				url: `${apiUrlRoot + apiUrlPath.songs + apiUrlEndpt.songs.oneByID + id}`,
 				withCredentials: true,
-			})) as Response<ISongSucc>
+			})
 		} catch (error) {
-			return new Response<ISongSucc>(undefined, new ErrorMsg("Error Calling API"))
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
+	async findByRelease(id: ReleaseID): Promise<SongDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.songs + apiUrlEndpt.songs.oneByID + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

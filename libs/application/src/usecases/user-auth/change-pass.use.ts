@@ -1,5 +1,5 @@
-import { ChangePassReplyDTO, ErrorHandler, envs, htmlError } from "Shared"
-import { ChangePassUsecaseParams } from "../../assets"
+import { ErrorHandler, envs, htmlError } from "Shared"
+import { ChangePassUsecaseParams, Reply } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 
@@ -10,16 +10,16 @@ export class ChangePassUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: ChangePassUsecaseParams): Promise<ChangePassReplyDTO> {
+	async execute(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: ChangePassUsecaseParams): Promise<ChangePassReplyDTO> {
+	async frontend(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { actual, confirm, newPass } = input
 
@@ -28,12 +28,12 @@ export class ChangePassUsecase {
 				newPass: newPass,
 				confirm: confirm,
 			})
-			return new ChangePassReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
-	async backend(input: ChangePassUsecaseParams): Promise<ChangePassReplyDTO> {
+	async backend(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
 		try {
 			const { newPass, id } = input
 
@@ -52,9 +52,9 @@ export class ChangePassUsecase {
 				pass: hashed,
 			})
 
-			return new ChangePassReplyDTO(data)
+			return new Reply<boolean>(data)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

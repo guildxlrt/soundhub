@@ -12,21 +12,21 @@ export class StorageService implements StorageRepository {
 		try {
 			return await this.service.move(file, destination)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	async delete(filePath: string): Promise<boolean> {
 		try {
 			return await this.service.delete(filePath)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 	async mkdir(): Promise<string> {
 		try {
 			return await this.service.mkdir()
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

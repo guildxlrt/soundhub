@@ -17,7 +17,7 @@ export class ChangeEmailValidator {
 			if (!validEmail) throw new ErrorMsg("invalid email format", 400)
 			else return
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

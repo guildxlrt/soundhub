@@ -1,7 +1,6 @@
-import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
-import { LoginUsecaseParams } from "../../assets"
+import { ErrorHandler, ErrorMsg, ILoginBackSuccess, ILoginSuccess, envs, htmlError } from "Shared"
+import { LoginUsecaseParams, Reply } from "../../assets"
 import { ArtistsService, UserAuthService } from "../../services"
-import { UserCookie } from "Domain"
 
 export class LoginUsecase {
 	private userAuthService: UserAuthService
@@ -12,27 +11,31 @@ export class LoginUsecase {
 		this.profileService = profileService
 	}
 
-	async execute(input: LoginUsecaseParams): Promise<unknown> {
+	async execute(input: LoginUsecaseParams): Promise<Reply<ILoginSuccess>> {
 		try {
 			if (!envs.backend) return await this.frontend(input)
 			else if (envs.backend && this.profileService)
 				return await this.backend(this.profileService, input)
 			else throw new Error("service error")
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: LoginUsecaseParams): Promise<void> {
+	async frontend(input: LoginUsecaseParams): Promise<Reply<ILoginSuccess>> {
 		try {
 			const { email, password } = input
-			return await this.userAuthService.login(email, password)
+			const login = (await this.userAuthService.login(email, password)) as boolean
+			return new Reply<boolean>(login)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async backend(profileService: ArtistsService, input: LoginUsecaseParams): Promise<UserCookie> {
+	async backend(
+		profileService: ArtistsService,
+		input: LoginUsecaseParams
+	): Promise<Reply<ILoginBackSuccess>> {
 		try {
 			const { email, password } = input
 
@@ -44,7 +47,7 @@ export class LoginUsecase {
 			if (!compareEmails || !comparePass) throw ErrorMsg.htmlError(htmlError[403])
 
 			// GET THE PROFILE
-			const userData = await profileService.getByAuth(auths.id)
+			const userData = await profileService.findByAuthID(auths.id)
 
 			// Cookie
 			const userCookie = await this.userAuthService.genCookie(
@@ -55,10 +58,13 @@ export class LoginUsecase {
 
 			if (!userData || !userCookie) throw new ErrorMsg("internal server errror")
 
-			await this.userAuthService.login(undefined, undefined)
-			return userCookie
+			const res = (await this.userAuthService.login(
+				userCookie,
+				undefined
+			)) as ILoginBackSuccess
+			return new Reply<ILoginBackSuccess>(res)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }

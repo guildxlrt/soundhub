@@ -31,7 +31,7 @@ export class Token {
 				{ expiresIn: expires, algorithm: "RS256" }
 			)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 
@@ -59,7 +59,7 @@ export class Token {
 
 			return
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			throw new ErrorHandler().handle(error)
 		}
 	}
 }
