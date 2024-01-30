@@ -1,4 +1,4 @@
-import { IDUsecaseParams, Reply } from "../../assets"
+import { IDParamsAdapter, Reply } from "../../assets"
 import { ErrorHandler, EventShortDTO } from "Shared"
 import { EventsService } from "../../services"
 
@@ -8,7 +8,7 @@ export class FindEventsByArtistUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<Reply<EventShortDTO[]>> {
+	async execute(input: IDParamsAdapter): Promise<Reply<EventShortDTO[]>> {
 		try {
 			const id = input.id
 

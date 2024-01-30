@@ -8,6 +8,7 @@ import {
 	UserPassword,
 	ProfileID,
 	UserProfileType,
+	ILoginBackSuccess,
 } from "Shared"
 import { ApiErrHandler, PassEncryptor, Token, authExpires } from "../utils"
 import { dbClient } from "../prisma"
@@ -15,7 +16,7 @@ import { dbClient } from "../prisma"
 export class UserAuthsImplement implements UserAuthsBackendRepos {
 	private userAuth = dbClient.userAuth
 
-	async login(userCookie: UserCookie): Promise<{ response: boolean; userCookie: UserCookie }> {
+	async login(userCookie: UserCookie): Promise<ILoginBackSuccess> {
 		try {
 			if (!userCookie) throw new ErrorMsg("Internal server error | Cannot provide cookie")
 			return { response: true, userCookie: userCookie }

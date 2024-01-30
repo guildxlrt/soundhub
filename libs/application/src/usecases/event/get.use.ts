@@ -1,5 +1,5 @@
 import { ErrorHandler, EventDTO } from "Shared"
-import { IDUsecaseParams, Reply } from "../../assets"
+import { IDParamsAdapter, Reply } from "../../assets"
 import { EventsService } from "../../services"
 
 export class GetEventUsecase {
@@ -8,7 +8,7 @@ export class GetEventUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<Reply<EventDTO>> {
+	async execute(input: IDParamsAdapter): Promise<Reply<EventDTO>> {
 		try {
 			const id = input.id
 			const data = await this.eventsService.get(id)

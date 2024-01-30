@@ -4,7 +4,7 @@ import { ProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Sh
 export class Release extends EntityLayer {
 	readonly owner_id: ProfileID
 	readonly title: string
-	readonly releaseType: ReleaseType
+	readonly releaseType: ReleaseType | null
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
@@ -14,7 +14,7 @@ export class Release extends EntityLayer {
 		id: ReleaseID | null,
 		owner_id: ProfileID,
 		title: string,
-		releaseType: ReleaseType,
+		releaseType: ReleaseType | null,
 		descript: string | null,
 		price: null | ReleasePrice,
 		genres: GenresArray,

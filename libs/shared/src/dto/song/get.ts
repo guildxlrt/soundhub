@@ -1,4 +1,4 @@
-import { IAnyObject } from "../types"
+import { AnyObject } from "../../types"
 
 export class SongDTO {
 	readonly id: number
@@ -13,7 +13,7 @@ export class SongDTO {
 		this.audioPath = audioPath
 	}
 
-	static createFromData(data: IAnyObject): SongDTO {
+	static createFromData(data: AnyObject): SongDTO {
 		return new SongDTO(
 			data?.["id"],
 			data?.["title"],
@@ -22,7 +22,7 @@ export class SongDTO {
 		)
 	}
 
-	static createArrayFromData(data: IAnyObject[]): SongDTO[] {
+	static createArrayFromData(data: AnyObject[]): SongDTO[] {
 		return data.map((release): SongDTO => {
 			return new SongDTO(
 				release?.["id"],

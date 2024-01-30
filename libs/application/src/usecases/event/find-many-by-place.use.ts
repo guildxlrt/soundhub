@@ -1,4 +1,4 @@
-import { PlaceUsecaseParams, Reply } from "../../assets"
+import { PlaceParamsAdapter, Reply } from "../../assets"
 import { ErrorHandler, EventShortDTO } from "Shared"
 import { EventsService } from "../../services"
 
@@ -8,7 +8,7 @@ export class FindEventsByPlaceUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: PlaceUsecaseParams): Promise<Reply<EventShortDTO[]>> {
+	async execute(input: PlaceParamsAdapter): Promise<Reply<EventShortDTO[]>> {
 		try {
 			const { place } = input
 

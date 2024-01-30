@@ -1,4 +1,4 @@
-import { IDUsecaseParams, Reply } from "../../assets"
+import { IDParamsAdapter, Reply } from "../../assets"
 import { AnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
 
@@ -7,7 +7,7 @@ export class FindAnnouncesByArtistUsecase {
 	constructor(announcesService: AnnouncesService) {
 		this.announcesService = announcesService
 	}
-	async execute(input: IDUsecaseParams): Promise<Reply<AnnounceShortDTO[]>> {
+	async execute(input: IDParamsAdapter): Promise<Reply<AnnounceShortDTO[]>> {
 		try {
 			const id = input.id
 

@@ -1,8 +1,8 @@
 import { ApiErrHandler, UserAuthsImplement } from "Infra-backend"
 import {
-	ChangeEmailUsecaseParams,
+	ChangeEmailParamsAdapter,
 	ChangeEmailUsecase,
-	ChangePassUsecaseParams,
+	ChangePassParamsAdapter,
 	ChangePassUsecase,
 	LoginUsecase,
 	LogoutUsecase,
@@ -13,11 +13,11 @@ import {
 	ApiRes,
 	ApiRequest,
 	ChangeEmailReplyDTO,
-	ChangeEmailReqDTO,
-	ChangePassReqDTO,
+	ChangeEmailDTO,
+	ChangePassDTO,
 	CreateArtistReplyDTO,
 	ErrorMsg,
-	LoginReqDTO,
+	LoginDTO,
 	LogoutReplyDTO,
 	htmlError,
 } from "Shared"
@@ -31,7 +31,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const inputs = req.body as LoginReqDTO
+			const inputs = req.body as LoginDTO
 
 			// // Operators
 			// validators.changePass(
@@ -47,6 +47,7 @@ export class UserAuthController implements IAuthCtrl {
 			const login = new LoginUsecase(userAuthService)
 			const { data, error } = await login.execute(inputs)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
 			const cookie = data?.userCookie
@@ -58,7 +59,7 @@ export class UserAuthController implements IAuthCtrl {
 					.status(202)
 					.send(new CreateArtistReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -71,13 +72,14 @@ export class UserAuthController implements IAuthCtrl {
 			const logout = new LogoutUsecase(userAuthService)
 			const { error } = await logout.execute()
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
 			if (req.cookies.jwt)
 				return res.clearCookie("jwt").status(202).json(new LogoutReplyDTO())
 			else return res.status(401).json(ErrorMsg.htmlError(htmlError[401]))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -85,21 +87,22 @@ export class UserAuthController implements IAuthCtrl {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
-			const { actual, confirm, newEmail } = req.body as ChangeEmailReqDTO
+			const { actual, confirm, newEmail } = req.body as ChangeEmailDTO
 			const user = req.auth?.id
 
 			// Saving changes
 			const userAuthService = new UserAuthService(new UserAuthsImplement())
 			const changeEmail = new ChangeEmailUsecase(userAuthService)
 			const { data, error } = await changeEmail.execute(
-				new ChangeEmailUsecaseParams(actual, confirm, newEmail, user)
+				new ChangeEmailParamsAdapter(actual, confirm, newEmail, user)
 			)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
 			return res.status(202).send(new ChangeEmailReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -107,7 +110,7 @@ export class UserAuthController implements IAuthCtrl {
 		try {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
-			const { actual, confirm, newPass } = req.body as ChangePassReqDTO
+			const { actual, confirm, newPass } = req.body as ChangePassDTO
 			const user = req.auth?.id
 
 			// Saving Changes
@@ -116,15 +119,16 @@ export class UserAuthController implements IAuthCtrl {
 			const changePass = new ChangePassUsecase(userAuthService, authService)
 
 			const { data, error } = await changePass.execute(
-				new ChangePassUsecaseParams(actual, confirm, newPass, user)
+				new ChangePassParamsAdapter(actual, confirm, newPass, user)
 			)
 
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
 			return res.status(202).send(new ChangeEmailReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 }

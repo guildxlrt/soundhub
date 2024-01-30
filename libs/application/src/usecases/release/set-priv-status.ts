@@ -1,4 +1,4 @@
-import { Reply, SetPrivStatusReleaseUsecaseParams } from "../../assets"
+import { Reply, SetPrivStatusReleaseParamsAdapter } from "../../assets"
 import { ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 
@@ -9,7 +9,7 @@ export class SetPrivStatusReleaseUsecase {
 		this.releasesService = releasesService
 	}
 
-	async execute(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const backend = envs.backend
 
@@ -20,7 +20,7 @@ export class SetPrivStatusReleaseUsecase {
 		}
 	}
 
-	async backend(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
+	async backend(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { id, isPublic, ownerID } = input
 
@@ -36,7 +36,7 @@ export class SetPrivStatusReleaseUsecase {
 		}
 	}
 
-	async frontend(input: SetPrivStatusReleaseUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { id, isPublic } = input
 

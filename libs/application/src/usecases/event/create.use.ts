@@ -1,5 +1,5 @@
 import { ErrorHandler, filePath } from "Shared"
-import { NewEventUsecaseParams, Reply } from "../../assets"
+import { NewEventParamsAdapter, Reply } from "../../assets"
 import { EventsService, StorageService } from "../../services"
 
 export class CreateEventUsecase {
@@ -11,7 +11,7 @@ export class CreateEventUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: NewEventUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: NewEventParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (this.storageService) {
 				return await this.backend(this.storageService, input)
@@ -21,7 +21,7 @@ export class CreateEventUsecase {
 		}
 	}
 
-	async frontend(input: NewEventUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: NewEventParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { event, file } = input
 			const data = await this.eventsService.create(event, file)
@@ -33,7 +33,7 @@ export class CreateEventUsecase {
 
 	async backend(
 		storageService: StorageService,
-		input: NewEventUsecaseParams
+		input: NewEventParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { event, file } = input

@@ -1,5 +1,5 @@
 import { ErrorHandler, filePath } from "Shared"
-import { NewAnnounceUsecaseParams, Reply } from "../../assets"
+import { NewAnnounceParamsAdapter, Reply } from "../../assets"
 import { AnnouncesService, StorageService } from "../../services"
 
 export class CreateAnnounceUsecase {
@@ -11,7 +11,7 @@ export class CreateAnnounceUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: NewAnnounceUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: NewAnnounceParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (this.storageService) {
 				return await this.backend(this.storageService, input)
@@ -21,7 +21,7 @@ export class CreateAnnounceUsecase {
 		}
 	}
 
-	async frontend(input: NewAnnounceUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: NewAnnounceParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { file, announce } = input
 			const data = await this.announcesService.create(announce, file)
@@ -33,7 +33,7 @@ export class CreateAnnounceUsecase {
 
 	async backend(
 		storageService: StorageService,
-		input: NewAnnounceUsecaseParams
+		input: NewAnnounceParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { file, announce } = input

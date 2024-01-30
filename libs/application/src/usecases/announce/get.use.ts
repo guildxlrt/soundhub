@@ -1,5 +1,5 @@
 import { ErrorHandler, AnnounceShortDTO } from "Shared"
-import { IDUsecaseParams, Reply } from "../../assets"
+import { IDParamsAdapter, Reply } from "../../assets"
 import { AnnouncesService } from "../../services"
 
 export class GetAnnounceUsecase {
@@ -8,7 +8,7 @@ export class GetAnnounceUsecase {
 		this.announcesService = announcesService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<Reply<AnnounceShortDTO>> {
+	async execute(input: IDParamsAdapter): Promise<Reply<AnnounceShortDTO>> {
 		try {
 			const id = input.id
 

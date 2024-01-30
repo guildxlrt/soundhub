@@ -1,5 +1,5 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { ErrorHandler, ReleaseID, SongDTO, SongID } from "Shared"
+import { ReleaseID, SongDTO, SongID } from "Shared"
 import { dbClient } from "../prisma"
 import { ApiErrHandler } from "../utils"
 
@@ -15,8 +15,8 @@ export class SongsImplement implements SongsBackendRepos {
 				select: {
 					id: true,
 					release_id: true,
-					audioPath: true,
 					title: true,
+					audioPath: true,
 				},
 			})
 

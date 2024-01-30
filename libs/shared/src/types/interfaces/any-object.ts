@@ -1,3 +1,3 @@
-export type IAnyObject = {
+export interface AnyObject {
 	[key: string]: any
 }

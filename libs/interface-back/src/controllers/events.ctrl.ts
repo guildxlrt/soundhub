@@ -1,7 +1,7 @@
-import { ApiErrHandler, ApiRequest, ApiRes, databaseRepos } from "Infra-backend"
+import { ApiErrHandler, ApiRequest, ApiRes, EventsImplement, StorageImplement } from "Infra-backend"
 import {
 	CreateEventUsecase,
-	DeleteEventUsecaseParams,
+	DeleteEventParamsAdapter,
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
@@ -9,55 +9,57 @@ import {
 	GetAllEventsUsecase,
 	GetEventUsecase,
 	EditEventUsecase,
-	EventUsecaseParams,
-	IDUsecaseParams,
+	IDParamsAdapter,
+	NewEventParamsAdapter,
+	EditEventParamsAdapter,
+	StorageService,
+	EventsService,
+	DateParamsAdapter,
+	PlaceParamsAdapter,
 } from "Application"
-import { Event } from "Domain"
+import { File } from "Domain"
 import {
-	CreateEventReplyDTO,
-	CreateEventReqDTO,
-	DeleteEventReplyDTO,
-	IFile,
-	FindEventsByArtistReplyDTO,
-	FindEventsByDateReplyDTO,
-	FindEventsByDateReqDTO,
-	FindEventsByPlaceReplyDTO,
-	FindEventsByPlaceReqDTO,
-	GetAllEventsReplyDTO,
-	GetEventReplyDTO,
-	EditEventReplyDTO,
-	EditEventReqDTO,
+	CreateEventDTO,
+	EditEventDTO,
 	htmlError,
-	validators,
-	IMAGE_MIME_TYPES,
+	ErrorMsg,
+	ReplyDTO,
+	EventsByDateDTO,
+	EventsByPlaceDTO,
 } from "Shared"
 import { IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
+	private storageImplement = new StorageImplement()
+	private storageService = new StorageService(this.storageImplement)
+	private eventsImplement = new EventsImplement()
+	private eventsService = new EventsService(this.eventsImplement)
+
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const owner = req.auth?.profileID
-			const file: IFile = req.image as IFile
-			const { artists, date, place, text, title }: CreateEventReqDTO =
-				req.body as CreateEventReqDTO
-			// Operators
-			// file
-			if (file) validators.file(file, IMAGE_MIME_TYPES)
+			const owner = req.auth?.profileID as number
+			const file = req.image as File
+			const event = req.body as CreateEventDTO
+			const params = NewEventParamsAdapter.fromDto(event, owner, file)
 
-			const event = new Event(null, owner as number, date, place, artists, title, text, null)
+			// // Operators
+			// // file
+			// if (file) validators.file(file, IMAGE_MIME_TYPES)
 
 			// Saving Profile
-			const createEvent = new CreateEventUsecase(databaseRepos)
-			const { data, error } = await createEvent.execute(new EventUsecaseParams(event, file))
+			const createEvent = new CreateEventUsecase(this.eventsService, this.storageService)
+			const { data, error } = await createEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new CreateEventReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -66,34 +68,25 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const owner = req.auth?.profileID as number
-			const file: IFile = req.image as IFile
-			const { artists, date, place, text, title, id, imagePath }: EditEventReqDTO =
-				req.body as EditEventReqDTO
+			const file = req.image as File
+			const event = req.body as EditEventDTO
+			const params = EditEventParamsAdapter.fromDto(event, owner, file)
 
-			// Operators
-			// file
-			if (file) validators.file(file, IMAGE_MIME_TYPES)
-
-			const event = new Event(
-				id,
-				owner as number,
-				date,
-				place,
-				artists,
-				title,
-				text,
-				imagePath
-			)
+			// // Operators
+			// // file
+			// if (file) validators.file(file, IMAGE_MIME_TYPES)
 
 			// Saving Changes
-			const EditEvent = new EditEventUsecase(databaseRepos)
-			const { data, error } = await EditEvent.execute(new EventUsecaseParams(event, file))
+			const EditEvent = new EditEventUsecase(this.eventsService)
+			const { data, error } = await EditEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new EditEventReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -104,21 +97,22 @@ export class EventsController implements IEventsCtrl {
 
 			const id = Number(req.params["id"])
 			const owner = req.auth?.profileID as number
+			const params = DeleteEventParamsAdapter.fromDtoBackend(id, owner)
 
 			// Operators
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const deleteEvent = new DeleteEventUsecase(databaseRepos)
-			const { data, error } = await deleteEvent.execute(
-				new DeleteEventUsecaseParams(id, owner)
-			)
+			const deleteEvent = new DeleteEventUsecase(this.eventsService)
+			const { data, error } = await deleteEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new DeleteEventReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -127,15 +121,18 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
+			const params = new IDParamsAdapter(id)
 
-			const getEvent = new GetEventUsecase(databaseRepos)
-			const { data, error } = await getEvent.execute(new IDUsecaseParams(id))
+			const getEvent = new GetEventUsecase(this.eventsService)
+			const { data, error } = await getEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetEventReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -143,14 +140,16 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const getAllEvents = new GetAllEventsUsecase(databaseRepos)
+			const getAllEvents = new GetAllEventsUsecase(this.eventsService)
 			const { data, error } = await getAllEvents.execute()
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetAllEventsReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -159,14 +158,18 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
-			const findEventsByArtist = new FindEventsByArtistUsecase(databaseRepos)
-			const { data, error } = await findEventsByArtist.execute(new IDUsecaseParams(id))
+			const params = new IDParamsAdapter(id)
+
+			const findEventsByArtist = new FindEventsByArtistUsecase(this.eventsService)
+			const { data, error } = await findEventsByArtist.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindEventsByArtistReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -174,15 +177,19 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const inputs: FindEventsByDateReqDTO = req.body as FindEventsByDateReqDTO
-			const findEventsByDate = new FindEventsByDateUsecase(databaseRepos)
-			const { data, error } = await findEventsByDate.execute(inputs)
+			const inputs: EventsByDateDTO = req.body as EventsByDateDTO
+			const params = new DateParamsAdapter(inputs.date)
+
+			const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
+			const { data, error } = await findEventsByDate.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindEventsByDateReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -190,15 +197,19 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const inputs: FindEventsByPlaceReqDTO = req.body as FindEventsByPlaceReqDTO
-			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseRepos)
-			const { data, error } = await findEventsByPlace.execute(inputs)
+			const inputs: EventsByPlaceDTO = req.body as EventsByPlaceDTO
+			const params = new PlaceParamsAdapter(inputs.place)
+
+			const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
+			const { data, error } = await findEventsByPlace.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindEventsByPlaceReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 }

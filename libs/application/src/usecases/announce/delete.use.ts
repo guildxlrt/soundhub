@@ -1,6 +1,6 @@
 import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
 import { AnnouncesService, StorageService } from "../../services"
-import { DeleteAnnounceUsecaseParams, Reply } from "../../assets"
+import { DeleteAnnounceParamsAdapter, Reply } from "../../assets"
 
 export class DeleteAnnounceUsecase {
 	private announcesService: AnnouncesService
@@ -10,7 +10,7 @@ export class DeleteAnnounceUsecase {
 		this.announcesService = announcesService
 		this.storageService = storageService
 	}
-	async execute(input: DeleteAnnounceUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: DeleteAnnounceParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (this.storageService) return await this.backend(this.storageService, input)
 			else return await this.frontend(input)
@@ -19,7 +19,7 @@ export class DeleteAnnounceUsecase {
 		}
 	}
 
-	async frontend(input: DeleteAnnounceUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: DeleteAnnounceParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { id } = input
 
@@ -32,7 +32,7 @@ export class DeleteAnnounceUsecase {
 
 	async backend(
 		storageService: StorageService,
-		input: DeleteAnnounceUsecaseParams
+		input: DeleteAnnounceParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { id, ownerID } = input

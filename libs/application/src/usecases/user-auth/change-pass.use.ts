@@ -1,5 +1,5 @@
 import { ErrorHandler, envs, htmlError } from "Shared"
-import { ChangePassUsecaseParams, Reply } from "../../assets"
+import { ChangePassParamsAdapter, Reply } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 
@@ -10,7 +10,7 @@ export class ChangePassUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: ChangePassParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
@@ -19,7 +19,7 @@ export class ChangePassUsecase {
 		}
 	}
 
-	async frontend(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: ChangePassParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { actual, confirm, newPass } = input
 
@@ -33,7 +33,7 @@ export class ChangePassUsecase {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async backend(input: ChangePassUsecaseParams): Promise<Reply<boolean>> {
+	async backend(input: ChangePassParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { newPass, id } = input
 

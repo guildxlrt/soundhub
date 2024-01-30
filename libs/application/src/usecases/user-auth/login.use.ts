@@ -1,5 +1,5 @@
 import { ErrorHandler, ErrorMsg, ILoginBackSuccess, ILoginSuccess, envs, htmlError } from "Shared"
-import { LoginUsecaseParams, Reply } from "../../assets"
+import { LoginParamsAdapter, Reply } from "../../assets"
 import { ArtistsService, UserAuthService } from "../../services"
 
 export class LoginUsecase {
@@ -11,7 +11,7 @@ export class LoginUsecase {
 		this.profileService = profileService
 	}
 
-	async execute(input: LoginUsecaseParams): Promise<Reply<ILoginSuccess>> {
+	async execute(input: LoginParamsAdapter): Promise<Reply<ILoginSuccess>> {
 		try {
 			if (!envs.backend) return await this.frontend(input)
 			else if (envs.backend && this.profileService)
@@ -22,7 +22,7 @@ export class LoginUsecase {
 		}
 	}
 
-	async frontend(input: LoginUsecaseParams): Promise<Reply<ILoginSuccess>> {
+	async frontend(input: LoginParamsAdapter): Promise<Reply<ILoginSuccess>> {
 		try {
 			const { email, password } = input
 			const login = (await this.userAuthService.login(email, password)) as boolean
@@ -34,7 +34,7 @@ export class LoginUsecase {
 
 	async backend(
 		profileService: ArtistsService,
-		input: LoginUsecaseParams
+		input: LoginParamsAdapter
 	): Promise<Reply<ILoginBackSuccess>> {
 		try {
 			const { email, password } = input

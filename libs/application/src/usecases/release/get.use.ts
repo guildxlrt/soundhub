@@ -1,4 +1,4 @@
-import { IDUsecaseParams, Reply } from "../../assets"
+import { IDParamsAdapter, Reply } from "../../assets"
 import { ErrorHandler, ReleaseDTO } from "Shared"
 import { ReleasesService } from "../../services"
 
@@ -8,7 +8,7 @@ export class GetReleaseUsecase {
 		this.releasesService = releasesService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<Reply<ReleaseDTO>> {
+	async execute(input: IDParamsAdapter): Promise<Reply<ReleaseDTO>> {
 		try {
 			const id = input.id
 			const data = await this.releasesService.get(id)

@@ -1,10 +1,11 @@
+import { File } from "Domain"
 import { NextFunction, Request, Response } from "express"
-import { FilesArray, IFile, UserTokenData } from "Shared"
+import { FilesArray, UserTokenData } from "Shared"
 
 export interface ApiRequest extends Request {
 	auth?: UserTokenData
-	image?: IFile
-	songs?: FilesArray
+	image?: File
+	songs?: File[]
 }
 
 export type ApiRes = Response

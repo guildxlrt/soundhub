@@ -1,6 +1,6 @@
 import { ReleasesBackendRepos } from "Domain"
 import { Release, Song } from "Domain"
-import { GenreType, ReleaseID, IFile, ReleaseDTO, ReleaseShortDTO } from "Shared"
+import { GenreType, ReleaseID, IFile, ReleaseShortDTO, ReleaseType, GetReleaseDTO } from "Shared"
 import { dbClient } from "../prisma"
 import { ApiErrHandler } from "../utils"
 
@@ -30,7 +30,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				data: {
 					owner_id: owner_id,
 					title: title,
-					releaseType: releaseType,
+					releaseType: releaseType as ReleaseType,
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
@@ -49,7 +49,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async edit(release: { data: Release }): Promise<boolean> {
 		try {
-			const { id, owner_id, price, descript, genres, coverPath } = release.data
+			const { id, owner_id, price, descript, genres, title } = release.data
 
 			// persist
 			await this.release.update({
@@ -58,10 +58,10 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					owner_id: owner_id,
 				},
 				data: {
+					title: title,
 					price: price,
 					descript: descript,
 					genres: genres as string[],
-					coverPath: coverPath,
 				},
 			})
 
@@ -105,13 +105,15 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async get(id: ReleaseID): Promise<ReleaseDTO> {
+	async get(id: ReleaseID): Promise<GetReleaseDTO> {
 		try {
 			const data = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
+					id: true,
+					createdAt: true,
 					owner_id: true,
 					title: true,
 					releaseType: true,
@@ -119,6 +121,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					price: true,
 					genres: true,
 					coverPath: true,
+					isPublic: true,
 					songs: {
 						select: {
 							id: true,
@@ -131,7 +134,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			return ReleaseDTO.createFromData(data)
+			return GetReleaseDTO.createFromData(data)
 		} catch (error) {
 			throw new ApiErrHandler().handleDBError(error)
 		}
@@ -143,6 +146,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			const data = await this.release.findMany({
 				select: {
 					id: true,
+					owner_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -168,7 +172,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverPath: true,
 				},
 			})
 			return ReleaseShortDTO.createArrayFromData(data)
@@ -192,7 +195,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					title: true,
 					releaseType: true,
 					genres: true,
-					coverPath: true,
 				},
 			})
 

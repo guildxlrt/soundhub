@@ -1,5 +1,5 @@
 import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { EditEventUsecaseParams, Reply } from "../../assets"
+import { EditEventParamsAdapter, Reply } from "../../assets"
 import { Event, File } from "Domain"
 import { EventsService, StorageService } from "../../services"
 
@@ -12,7 +12,7 @@ export class EditEventUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: EditEventUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: EditEventParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (this.storageService) return await this.backend(this.storageService, input)
 			else return await this.frontend(input)
@@ -21,7 +21,7 @@ export class EditEventUsecase {
 		}
 	}
 
-	async frontend(input: EditEventUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: EditEventParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { event, file } = input
 
@@ -34,7 +34,7 @@ export class EditEventUsecase {
 
 	async backend(
 		storageService: StorageService,
-		input: EditEventUsecaseParams
+		input: EditEventParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { file, event, delImage } = input

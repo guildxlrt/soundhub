@@ -1,88 +1,92 @@
-import { ApiErrHandler, ApiRequest, ApiRes, databaseRepos } from "Infra-backend"
 import {
-	CreateArtistReplyDTO,
-	CreateArtistReqDTO,
-	FindArtistsByGenreReplyDTO,
+	ApiErrHandler,
+	ApiRequest,
+	ApiRes,
+	ArtistsImplement,
+	StorageImplement,
+} from "Infra-backend"
+import {
 	GenreType,
-	GetAllArtistsReplyDTO,
-	GetArtistByEmailReplyDTO,
-	GetArtistByEmailReqDTO,
-	GetArtistByIDReplyDTO,
-	UpdateArtistReplyDTO,
-	UpdateArtistReqDTO,
-	IFile,
+	UpdateArtistDTO,
 	htmlError,
-	ILoginSucc,
 	validators,
 	IMAGE_MIME_TYPES,
 	formatters,
+	ReplyDTO,
+	NewArtistDTO,
+	ErrorMsg,
+	UserEmail,
 } from "Shared"
-import { Artist, UserAuth } from "Domain"
+import { Artist, File, UserAuth, UserCookie } from "Domain"
 import {
-	UpdateArtistUsecaseParams,
-	NewArtistUsecaseParams,
+	UpdateArtistParamsAdapter,
+	NewArtistParamsAdapter,
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
 	GetAllArtistsUsecase,
 	GetArtistByEmailUsecase,
 	GetArtistByIDUsecase,
 	UpdateArtistUsecase,
-	IDUsecaseParams,
-	GenreUsecaseParams,
+	IDParamsAdapter,
+	GenreParamsAdapter,
+	StorageService,
+	ArtistsService,
+	EmailParamsAdapter,
 } from "Application"
 import { IArtistCtrl } from "../assets"
 
 export class ArtistsController implements IArtistCtrl {
+	private storageImplement = new StorageImplement()
+	private storageService = new StorageService(this.storageImplement)
+	private artistsImplement = new ArtistsImplement()
+	private artistsService = new ArtistsService(this.artistsImplement)
+
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const { profile, auth, authConfirm } = req.body as CreateArtistReqDTO
-			const file: IFile = req.image as IFile
+			const dto = req.body as NewArtistDTO
+			const file = req.image as File
+			const params = NewArtistParamsAdapter.fromDto(dto, file)
 
-			// Data
-			const { password, email } = auth
-			const { confirmEmail, confirmPass } = authConfirm
-			const { bio, genres, members, name } = profile
-			const artistProfile = new Artist(null, null, name, bio, members, genres, null)
+			// // Data
+			// const { password, email, confirmEmail, confirmPass } = auth
+			// const { bio, genres, members, name } = profile
+			// // const artistProfile = new Artist(null, null, name, bio, members, genres, null)
 
-			const userAuth = new UserAuth(null, email, password)
+			// const userAuth = new UserAuth(null, email, password)
 
-			// OPERATORS
-			// auths
-			validators.signupAuths(
-				{
-					email: email,
-					password: password,
-					confirmEmail: confirmEmail,
-					confirmPass: confirmPass,
-				},
-				true
-			)
-			// genres
-			const cleanGenres = formatters.genres(genres)
-			artistProfile.setGenres(cleanGenres)
-			// file
-			if (file) validators.file(file, IMAGE_MIME_TYPES)
-			// others data checking
-			// ... ( name)
+			// // OPERATORS
+			// // auths
+			// validators.signupAuths({
+			// 	email: email,
+			// 	password: password,
+			// 	confirmEmail: confirmEmail,
+			// 	confirmPass: confirmPass,
+			// })
+			// // genres
+			// const cleanGenres = formatters.genres(genres)
+			// artistProfile.setGenres(cleanGenres)
+			// // file
+			// if (file) validators.file(file, IMAGE_MIME_TYPES)
+			// // others data checking
+			// // ... ( name)
 
 			// Saving Profile
-			const createArtist = new CreateArtistUsecase(databaseRepos)
-			const { data, error } = await createArtist.execute(
-				new NewArtistUsecaseParams(artistProfile, userAuth, authConfirm, file)
-			)
-			if (error) throw error
+			const createArtist = new CreateArtistUsecase(this.artistsService, this.storageService)
+			const { data, error } = await createArtist.execute(params)
 
-			// Return infos
-			const cookie = data as ILoginSucc
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const cookie = data as UserCookie
 			return res
 				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
-				.send(new CreateArtistReplyDTO(data))
+				.send(new ReplyDTO(true))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -91,35 +95,30 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
-			const { bio, genres, members, name, id, avatarPath, delAvatar } =
-				req.body as UpdateArtistReqDTO
-			const file: IFile = req.image as IFile
+			const dto = req.body as UpdateArtistDTO
+			const file = req.image as File
+			const params = UpdateArtistParamsAdapter.fromDto(dto, user, file)
 
-			const artistProfile = new Artist(id, user, name, bio, members, genres, avatarPath)
-
-			// OPERATORS
-			// genres
-			const cleanGenres = formatters.genres(genres)
-			artistProfile.setGenres(cleanGenres)
-			// file
-			if (file) validators.file(file, IMAGE_MIME_TYPES)
-			// others data checking
-			// ... ( name)
+			// // OPERATORS
+			// // genres
+			// const cleanGenres = formatters.genres(genres)
+			// artistProfile.setGenres(cleanGenres)
+			// // file
+			// if (file) validators.file(file, IMAGE_MIME_TYPES)
+			// // others data checking
+			// // ... (name)
 
 			// Saving Changes
-			const editArtist = new UpdateArtistUsecase(databaseRepos)
-			const { data, error } = await editArtist.execute(
-				new UpdateArtistUsecaseParams(
-					{ profile: artistProfile, delAvatar: delAvatar },
-					file
-				)
-			)
+			const editArtist = new UpdateArtistUsecase(this.artistsService, this.storageService)
+			const { data, error } = await editArtist.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new UpdateArtistReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -128,15 +127,18 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
+			const params = new IDParamsAdapter(id)
 
-			const getArtistByID = new GetArtistByIDUsecase(databaseRepos)
-			const { data, error } = await getArtistByID.execute(new IDUsecaseParams(id))
+			const getArtistByID = new GetArtistByIDUsecase(this.artistsService)
+			const { data, error } = await getArtistByID.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetArtistByIDReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -144,16 +146,19 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const inputs = req.body.email as GetArtistByEmailReqDTO
+			const inputs = req.body.email as UserEmail
+			const params = new EmailParamsAdapter(inputs)
 
-			const getArtistByEmail = new GetArtistByEmailUsecase(databaseRepos)
-			const { data, error } = await getArtistByEmail.execute(inputs)
+			const getArtistByEmail = new GetArtistByEmailUsecase(this.artistsService)
+			const { data, error } = await getArtistByEmail.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetArtistByEmailReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -161,14 +166,16 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const getAllArtists = new GetAllArtistsUsecase(databaseRepos)
+			const getAllArtists = new GetAllArtistsUsecase(this.artistsService)
 			const { data, error } = await getAllArtists.execute()
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetAllArtistsReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -177,15 +184,18 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const genre = req.params["genre"] as GenreType
+			const params = new GenreParamsAdapter(genre)
 
-			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseRepos)
-			const { data, error } = await findArtistsByGenre.execute(new GenreUsecaseParams(genre))
+			const findArtistsByGenre = new FindArtistsByGenreUsecase(this.artistsService)
+			const { data, error } = await findArtistsByGenre.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindArtistsByGenreReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { GenreUsecaseParams, Reply } from "../../assets"
+import { GenreParamsAdapter, Reply } from "../../assets"
 import { ArtistShortestDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
 
@@ -8,7 +8,7 @@ export class FindArtistsByGenreUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: GenreUsecaseParams): Promise<Reply<ArtistShortestDTO[]>> {
+	async execute(input: GenreParamsAdapter): Promise<Reply<ArtistShortestDTO[]>> {
 		try {
 			const genre = input.genre
 

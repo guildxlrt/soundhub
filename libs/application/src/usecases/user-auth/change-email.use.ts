@@ -1,5 +1,5 @@
 import { ErrorHandler, envs, htmlError } from "Shared"
-import { ChangeEmailUsecaseParams, Reply } from "../../assets"
+import { ChangeEmailParamsAdapter, Reply } from "../../assets"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 
@@ -10,7 +10,7 @@ export class ChangeEmailUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
@@ -19,7 +19,7 @@ export class ChangeEmailUsecase {
 		}
 	}
 
-	async frontend(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { actual, confirm, newEmail } = input
 			const data = await this.userAuthService.changeEmail({
@@ -33,7 +33,7 @@ export class ChangeEmailUsecase {
 		}
 	}
 
-	async backend(input: ChangeEmailUsecaseParams): Promise<Reply<boolean>> {
+	async backend(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { newEmail, id } = input
 
@@ -57,7 +57,7 @@ export class ChangeEmailUsecase {
 		}
 	}
 
-	// async executeOld(input: ChangeEmailUsecaseParams):Promise<Reply<boolean>>{
+	// async executeOld(input: ChangeEmailParamsAdapter):Promise<Reply<boolean>>{
 	// 	try {
 	// 		const { actual, confirm, newEmail, id } = input
 

@@ -1,7 +1,7 @@
 import { ProfileID, ReleaseID } from "Shared"
 import { File, Release, Song } from "Domain"
 
-export class NewReleaseUsecaseParams {
+export class NewReleaseParamsAdapter {
 	release: {
 		data: Release
 		cover: File
@@ -26,13 +26,13 @@ export class NewReleaseUsecaseParams {
 	}
 }
 
-export class EditReleaseUsecaseParams {
+export class EditReleaseParamsAdapter {
 	release: {
 		data: Release
 		cover?: File
 	}
 	songs: Song[]
-	delCover: boolean
+	delCover?: boolean
 
 	constructor(
 		release: {
@@ -40,7 +40,7 @@ export class EditReleaseUsecaseParams {
 			cover: File
 		},
 		songs: Song[],
-		delCover: boolean
+		delCover?: boolean
 	) {
 		this.release = release
 		this.songs = songs
@@ -48,7 +48,7 @@ export class EditReleaseUsecaseParams {
 	}
 }
 
-export class SetPrivStatusReleaseUsecaseParams {
+export class SetPrivStatusReleaseParamsAdapter {
 	id: ReleaseID
 	isPublic: boolean
 	ownerID?: ProfileID

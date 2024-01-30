@@ -1,5 +1,5 @@
 import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { Reply, UpdateArtistUsecaseParams } from "../../assets"
+import { Reply, UpdateArtistParamsAdapter } from "../../assets"
 import { Artist, File } from "Domain"
 import { ArtistsService, StorageService } from "../../services"
 
@@ -12,7 +12,7 @@ export class UpdateArtistUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: UpdateArtistUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: UpdateArtistParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { profile, delAvatar, file } = input
 			if (this.storageService) return await this.backend(this.storageService, input)
@@ -33,7 +33,7 @@ export class UpdateArtistUsecase {
 
 	async backend(
 		storageService: StorageService,
-		input: UpdateArtistUsecaseParams
+		input: UpdateArtistParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { user_auth_id, id } = input.profile

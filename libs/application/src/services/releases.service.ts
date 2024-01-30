@@ -1,5 +1,12 @@
 import { ReleasesAddBackRepos, ReleasesAddFrontRepos, ReleasesRepository } from "Domain"
-import { ProfileID, ReleaseID, ReleaseDTO, ReleaseShortDTO, GenreType, ErrorHandler } from "Shared"
+import {
+	ProfileID,
+	ReleaseID,
+	GetReleaseDTO,
+	ReleaseShortDTO,
+	GenreType,
+	ErrorHandler,
+} from "Shared"
 
 interface IReleasesService
 	extends ReleasesRepository,
@@ -44,7 +51,7 @@ export class ReleasesService implements IReleasesService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async get(id: ReleaseID): Promise<ReleaseDTO> {
+	async get(id: ReleaseID): Promise<GetReleaseDTO> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {

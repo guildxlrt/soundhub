@@ -1,5 +1,5 @@
-import { EditReleaseUsecaseParams, Reply } from "../../assets"
-import { ErrorHandler, ErrorMsg, ReleaseFolder, filePath, htmlError } from "Shared"
+import { EditReleaseParamsAdapter, Reply } from "../../assets"
+import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
 import { ReleasesService, SongsService, StorageService } from "../../services"
 
 export class EditReleaseUsecase {
@@ -17,7 +17,7 @@ export class EditReleaseUsecase {
 		this.songsService = songsService
 	}
 
-	async execute(input: EditReleaseUsecaseParams): Promise<Reply<boolean>> {
+	async execute(input: EditReleaseParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			if (this.storageService && this.songsService) {
 				return await this.backend(this.storageService, this.songsService, input)
@@ -27,7 +27,7 @@ export class EditReleaseUsecase {
 		}
 	}
 
-	async frontend(input: EditReleaseUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: EditReleaseParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
@@ -42,7 +42,7 @@ export class EditReleaseUsecase {
 	async backend(
 		storageService: StorageService,
 		songsService: SongsService,
-		input: EditReleaseUsecaseParams
+		input: EditReleaseParamsAdapter
 	): Promise<Reply<boolean>> {
 		try {
 			const { songs, release, delCover } = input

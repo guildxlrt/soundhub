@@ -1,5 +1,11 @@
-import { ApiErrHandler } from "Infra-backend"
-import { Release, Song } from "Domain"
+import {
+	ApiErrHandler,
+	ApiRequest,
+	ApiRes,
+	ReleasesImplement,
+	StorageImplement,
+} from "Infra-backend"
+import { File, Release, Song } from "Domain"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -8,46 +14,43 @@ import {
 	GetReleaseUsecase,
 	SetPrivStatusReleaseUsecase,
 	EditReleaseUsecase,
-	NewReleaseUsecaseParams,
-	EditReleaseUsecaseParams,
-	SetPrivStatusReleaseUsecaseParams,
-	IDUsecaseParams,
-	GenreUsecaseParams,
+	NewReleaseParamsAdapter,
+	EditReleaseParamsAdapter,
+	SetPrivStatusReleaseParamsAdapter,
+	IDParamsAdapter,
+	GenreParamsAdapter,
+	StorageService,
+	ReleasesService,
 } from "Application"
 import {
-	CreateReleaseReplyDTO,
-	CreateReleaseReqDTO,
-	IFile,
-	FilesArray,
-	FindReleasesByArtistReplyDTO,
-	FindReleasesByGenreReplyDTO,
 	GenreType,
-	GetAllReleasesReplyDTO,
-	GetReleaseReplyDTO,
-	SetPrivStatusReleaseReplyDTO,
-	SetPrivStatusReleaseReqDTO,
-	EditReleaseReplyDTO,
-	EditReleaseReqDTO,
+	EditReleaseDTO,
 	htmlError,
 	formatters,
 	IMAGE_MIME_TYPES,
 	validators,
 	AUDIO_MIME_TYPES,
-	ApiRes,
-	ApiRequest,
+	ErrorMsg,
+	ReplyDTO,
+	ReleaseStatusDTO,
 } from "Shared"
 import { IReleasesCtrl } from "../assets"
 
 export class ReleasesController implements IReleasesCtrl {
+	private storageImplement = new StorageImplement()
+	private storageService = new StorageService(this.storageImplement)
+	private releasesImplement = new ReleasesImplement()
+	private releasesService = new ReleasesService(this.releasesImplement)
+
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID as number
-			const inputs: CreateReleaseReqDTO = req.body as CreateReleaseReqDTO
-			const cover: IFile = req.image as IFile
-			const audioFiles: FilesArray = req.songs as FilesArray
+			const inputs: PostReleaseDTO = req.body as PostReleaseDTO
+			const cover = req.image as File
+			const audioFiles: File[] = req.songs as File[]
 
 			const { title, releaseType, price, descript, genres } = inputs.release
 
@@ -81,9 +84,9 @@ export class ReleasesController implements IReleasesCtrl {
 			})
 
 			// Saving Profile
-			const createRelease = new CreateReleaseUsecase(databaseRepos)
+			const createRelease = new CreateReleaseUsecase(this.releasesService)
 			const { data, error } = await createRelease.execute(
-				new NewReleaseUsecaseParams(
+				new NewReleaseParamsAdapter(
 					{
 						data: releaseData,
 						cover: cover,
@@ -92,11 +95,12 @@ export class ReleasesController implements IReleasesCtrl {
 				)
 			)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new CreateReleaseReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -105,21 +109,12 @@ export class ReleasesController implements IReleasesCtrl {
 			if (req.method !== "DELETE")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const inputs: EditReleaseReqDTO = req.body as EditReleaseReqDTO
+			const inputs: EditReleaseDTO = req.body as EditReleaseDTO
 			const user = req.auth?.profileID as number
-			const cover: IFile = req.image as IFile
+			const cover = req.image as File
 
-			const { title, releaseType, price, descript, genres, id, coverPath } = inputs.release
-			const releaseData = new Release(
-				id,
-				user,
-				title,
-				releaseType,
-				descript,
-				price,
-				genres,
-				coverPath
-			)
+			const { title, price, descript, genres, id } = inputs.release
+			const releaseData = new Release(id, user, title, null, descript, price, genres, null)
 
 			const songsData = inputs.songs
 			const songs = songsData.map((song) => {
@@ -132,9 +127,9 @@ export class ReleasesController implements IReleasesCtrl {
 			releaseData.setGenres(cleanGenres)
 
 			// Saving Profile
-			const editRelease = new EditReleaseUsecase(databaseRepos)
+			const editRelease = new EditReleaseUsecase(this.releasesService)
 			const { data, error } = await editRelease.execute(
-				new EditReleaseUsecaseParams(
+				new EditReleaseParamsAdapter(
 					{
 						data: releaseData,
 						cover: cover,
@@ -143,11 +138,12 @@ export class ReleasesController implements IReleasesCtrl {
 				)
 			)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new EditReleaseReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -157,20 +153,20 @@ export class ReleasesController implements IReleasesCtrl {
 				return res.status(405).send({ error: htmlError[405].message })
 
 			const user = req.auth?.profileID
-			const { id, isPublic }: SetPrivStatusReleaseReqDTO =
-				req.body as SetPrivStatusReleaseReqDTO
+			const { id, isPublic }: ReleaseStatusDTO = req.body as ReleaseStatusDTO
 
 			// Saving Profile
-			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(databaseRepos)
+			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(this.releasesService)
 			const { data, error } = await setPrivStatusRelease.execute(
-				new SetPrivStatusReleaseUsecaseParams(id, isPublic, user)
+				new SetPrivStatusReleaseParamsAdapter(id, isPublic, user)
 			)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new SetPrivStatusReleaseReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -179,14 +175,15 @@ export class ReleasesController implements IReleasesCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
-			const getRelease = new GetReleaseUsecase(databaseRepos)
-			const { data, error } = await getRelease.execute(new IDUsecaseParams(id))
+			const getRelease = new GetReleaseUsecase(this.releasesService)
+			const { data, error } = await getRelease.execute(new IDParamsAdapter(id))
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetReleaseReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -194,14 +191,15 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
-			const getAllReleases = new GetAllReleasesUsecase(databaseRepos)
+			const getAllReleases = new GetAllReleasesUsecase(this.releasesService)
 			const { data, error } = await getAllReleases.execute()
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetAllReleasesReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -210,14 +208,15 @@ export class ReleasesController implements IReleasesCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const id = Number(req.params["id"])
-			const findReleasesByArtist = new FindReleasesByArtistUsecase(databaseRepos)
-			const { data, error } = await findReleasesByArtist.execute(new IDUsecaseParams(id))
+			const findReleasesByArtist = new FindReleasesByArtistUsecase(this.releasesService)
+			const { data, error } = await findReleasesByArtist.execute(new IDParamsAdapter(id))
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindReleasesByGenreReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -226,14 +225,15 @@ export class ReleasesController implements IReleasesCtrl {
 			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
 
 			const genre = req.params["genre"] as GenreType
-			const findReleasesByGenre = new FindReleasesByGenreUsecase(databaseRepos)
-			const { data, error } = await findReleasesByGenre.execute(new GenreUsecaseParams(genre))
+			const findReleasesByGenre = new FindReleasesByGenreUsecase(this.releasesService)
+			const { data, error } = await findReleasesByGenre.execute(new GenreParamsAdapter(genre))
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindReleasesByArtistReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 }

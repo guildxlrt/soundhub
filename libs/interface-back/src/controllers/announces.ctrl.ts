@@ -1,5 +1,11 @@
-import { AnnouncesImplement, ApiErrHandler, StorageImplement } from "Infra-backend"
-import { Announce } from "Domain"
+import {
+	AnnouncesImplement,
+	ApiErrHandler,
+	ApiRequest,
+	ApiRes,
+	StorageImplement,
+} from "Infra-backend"
+import { File } from "Domain"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
@@ -7,27 +13,21 @@ import {
 	GetAllAnnouncesUsecase,
 	GetAnnounceUsecase,
 	EditAnnounceUsecase,
-	DeleteAnnounceUsecaseParams,
-	AnnounceUsecaseParams,
-	IDUsecaseParams,
+	DeleteAnnounceParamsAdapter,
+	IDParamsAdapter,
 	AnnouncesService,
 	StorageService,
+	EditAnnounceParamsAdapter,
+	NewAnnounceParamsAdapter,
 } from "Application"
 import {
-	CreateAnnounceReplyDTO,
-	CreateAnnounceReqDTO,
-	DeleteAnnounceReplyDTO,
-	IFile,
-	FindAnnouncesByArtistReplyDTO,
-	GetAllAnnouncesReplyDTO,
-	GetAnnounceReplyDTO,
-	EditAnnounceReplyDTO,
-	EditAnnounceReqDTO,
 	htmlError,
 	IMAGE_MIME_TYPES,
 	validators,
-	ApiRes,
-	ApiRequest,
+	ReplyDTO,
+	CreateAnnounceDTO,
+	EditAnnounceDTO,
+	ErrorMsg,
 } from "Shared"
 import { IAnnoncesCtrl } from "../assets"
 
@@ -42,30 +42,29 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const { text, title } = req.body as CreateAnnounceReqDTO
+			const dto = req.body as CreateAnnounceDTO
 			const owner = req.auth?.profileID as number
-			const file: IFile = req.image as IFile
+			const file = req.image as File
 
 			// OPERATORS
 			// file
 			if (file) validators.file(file, IMAGE_MIME_TYPES)
-
-			const announce = new Announce(null, owner, title, text, null)
 
 			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(
 				this.announcesService,
 				this.storageService
 			)
-			const { data, error } = await createAnnounce.execute(
-				new AnnounceUsecaseParams(announce, file)
-			)
+			const params = NewAnnounceParamsAdapter.fromDto(dto, owner, file)
+
+			const { data, error } = await createAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new CreateAnnounceReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -74,27 +73,26 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST")
 				return res.status(405).send({ error: htmlError[405].message })
 
-			const file: IFile = req.image as IFile
+			const file = req.image as File
 			const owner = req.auth?.profileID as number
 
-			const { text, title, id, imagePath } = req.body as EditAnnounceReqDTO
+			const dto = req.body as EditAnnounceDTO
 
 			// Operators
 			// ... doing some heathcheck
 
-			const announce = new Announce(id, owner, title, text, imagePath)
-
 			// Saving Profile
 			const EditAnnounce = new EditAnnounceUsecase(this.announcesService, this.storageService)
-			const { data, error } = await EditAnnounce.execute(
-				new AnnounceUsecaseParams(announce, file)
-			)
+			const params = EditAnnounceParamsAdapter.fromDto(dto, owner, file)
+
+			const { data, error } = await EditAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new EditAnnounceReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -113,15 +111,16 @@ export class AnnoncesController implements IAnnoncesCtrl {
 				this.announcesService,
 				this.storageService
 			)
-			const { data, error } = await deleteAnnounce.execute(
-				new DeleteAnnounceUsecaseParams(id, user)
-			)
+			const params = DeleteAnnounceParamsAdapter.fromDtoBackend(id, user)
+
+			const { data, error } = await deleteAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(202).send(new DeleteAnnounceReplyDTO(data))
+			return res.status(202).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -131,14 +130,17 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const id = Number(req.params["id"])
 			const getAnnounce = new GetAnnounceUsecase(this.announcesService)
-			const { data, error } = await getAnnounce.execute(new IDUsecaseParams(id))
+			const params = new IDParamsAdapter(id)
+
+			const { data, error } = await getAnnounce.execute(params)
 
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetAnnounceReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -150,11 +152,12 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const { data, error } = await getAllAnnounces.execute()
 
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new GetAllAnnouncesReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
@@ -164,14 +167,17 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const id = Number(req.params["id"])
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(this.announcesService)
-			const { data, error } = await findAnnouncesByArtist.execute(new IDUsecaseParams(id))
+			const params = new IDParamsAdapter(id)
+
+			const { data, error } = await findAnnouncesByArtist.execute(params)
 
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			return res.status(200).send(new FindAnnouncesByArtistReplyDTO(data))
+			return res.status(200).send(new ReplyDTO(data))
 		} catch (error) {
-			return ApiErrHandler.reply(error, res)
+			return new ApiErrHandler().reply(error, res)
 		}
 	}
 }

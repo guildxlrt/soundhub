@@ -1,7 +1,7 @@
-import { ProfileID, EventID } from "Shared"
+import { ProfileID, EventID, CreateEventDTO, EditEventDTO } from "Shared"
 import { Event, File } from "Domain"
 
-export class NewEventUsecaseParams {
+export class NewEventParamsAdapter {
 	event: Event
 	file?: File
 
@@ -9,21 +9,35 @@ export class NewEventUsecaseParams {
 		this.event = event
 		this.file = file
 	}
+
+	static fromDto(dto: CreateEventDTO, owner: number, file?: File) {
+		const { date, place, artists, title, text } = dto
+		const event = new Event(null, owner as number, date, place, artists, title, text, null)
+
+		return new NewEventParamsAdapter(event, file)
+	}
 }
 
-export class EditEventUsecaseParams {
+export class EditEventParamsAdapter {
 	event: Event
-	delImage: boolean
+	delImage?: boolean
 	file?: File
 
-	constructor(event: Event, delImage: boolean, file?: File) {
+	constructor(event: Event, delImage?: boolean, file?: File) {
 		this.event = event
 		this.file = file
 		this.delImage = delImage
 	}
+
+	static fromDto(dto: EditEventDTO, owner: number, file?: File) {
+		const { id, date, place, artists, title, text, delImage } = dto
+		const event = new Event(id, owner as number, date, place, artists, title, text, null)
+
+		return new EditEventParamsAdapter(event, delImage, file)
+	}
 }
 
-export class DeleteEventUsecaseParams {
+export class DeleteEventParamsAdapter {
 	id: EventID
 	ownerID?: ProfileID
 
@@ -31,9 +45,13 @@ export class DeleteEventUsecaseParams {
 		this.id = id
 		this.ownerID = ownerID
 	}
+
+	static fromDtoBackend(id: EventID, ownerID: ProfileID) {
+		return new DeleteEventParamsAdapter(id, ownerID)
+	}
 }
 
-export class DateUsecaseParams {
+export class DateParamsAdapter {
 	date: Date
 
 	constructor(date: Date) {
@@ -41,7 +59,7 @@ export class DateUsecaseParams {
 	}
 }
 
-export class PlaceUsecaseParams {
+export class PlaceParamsAdapter {
 	place: string
 
 	constructor(place: string) {

@@ -1,6 +1,6 @@
 import { EntityID, GenreType } from "Shared"
 
-export class IDUsecaseParams {
+export class IDParamsAdapter {
 	id: EntityID
 
 	constructor(id: EntityID) {
@@ -8,7 +8,7 @@ export class IDUsecaseParams {
 	}
 }
 
-export class GenreUsecaseParams {
+export class GenreParamsAdapter {
 	genre: GenreType
 
 	constructor(genre: GenreType) {

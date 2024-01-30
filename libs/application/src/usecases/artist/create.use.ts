@@ -1,5 +1,5 @@
 import { ErrorHandler, ErrorMsg, INewArtistBackSucces, filePath } from "Shared"
-import { NewArtistUsecaseParams, Reply } from "../../assets"
+import { NewArtistParamsAdapter, Reply } from "../../assets"
 import { Artist, UserAuth, UserCookie } from "Domain"
 import { ArtistsService, StorageService, UserAuthService } from "../../services"
 
@@ -18,7 +18,7 @@ export class CreateArtistUsecase {
 		this.userAuthService = userAuthService
 	}
 
-	async execute(input: NewArtistUsecaseParams): Promise<Reply<boolean | UserCookie>> {
+	async execute(input: NewArtistParamsAdapter): Promise<Reply<boolean | UserCookie>> {
 		try {
 			if (this.storageService && this.userAuthService)
 				return await this.backend(this.storageService, this.userAuthService, input)
@@ -31,7 +31,7 @@ export class CreateArtistUsecase {
 	async backend(
 		storageService: StorageService,
 		userAuthService: UserAuthService,
-		input: NewArtistUsecaseParams
+		input: NewArtistParamsAdapter
 	): Promise<Reply<UserCookie>> {
 		try {
 			const { file } = input
@@ -67,7 +67,7 @@ export class CreateArtistUsecase {
 		}
 	}
 
-	async frontend(input: NewArtistUsecaseParams): Promise<Reply<boolean>> {
+	async frontend(input: NewArtistParamsAdapter): Promise<Reply<boolean>> {
 		try {
 			const { email, password } = input.auth
 			const { name, bio, members, genres } = input.profile

@@ -1,11 +1,11 @@
-import { ProfileID, GenreType, ReleaseDTO, ReleaseShortDTO, ReleaseID } from "Shared"
+import { ProfileID, GenreType, GetReleaseDTO, ReleaseShortDTO, ReleaseID } from "Shared"
 import { File, Release, Song } from "Domain"
 
 export interface ReleasesRepository {
 	create(release: unknown, songs: unknown[]): Promise<boolean>
 	edit(release: unknown, songs?: unknown[]): Promise<boolean>
 	setPrivStatus(id: ReleaseID, isPublic?: boolean): Promise<boolean>
-	get(data: ReleaseID): Promise<ReleaseDTO>
+	get(data: ReleaseID): Promise<GetReleaseDTO>
 	getAll(): Promise<ReleaseShortDTO[]>
 	findManyByArtist(data: ProfileID): Promise<ReleaseShortDTO[]>
 	findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]>

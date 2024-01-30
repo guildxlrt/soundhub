@@ -1,4 +1,4 @@
-import { DateUsecaseParams, Reply } from "../../assets"
+import { DateParamsAdapter, Reply } from "../../assets"
 import { ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
 import { EventShortDTO } from "Shared"
@@ -9,7 +9,7 @@ export class FindEventsByDateUsecase {
 		this.eventsService = eventsService
 	}
 
-	async execute(input: DateUsecaseParams): Promise<Reply<EventShortDTO[]>> {
+	async execute(input: DateParamsAdapter): Promise<Reply<EventShortDTO[]>> {
 		try {
 			const { date } = input
 			const data = await this.eventsService.findManyByDate(date)
