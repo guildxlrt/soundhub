@@ -57,6 +57,10 @@ export class DateParamsAdapter {
 	constructor(date: Date) {
 		this.date = date
 	}
+
+	static fromDto(data: string) {
+		return new DateParamsAdapter(new Date(data))
+	}
 }
 
 export class PlaceParamsAdapter {

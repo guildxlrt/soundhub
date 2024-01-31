@@ -2,7 +2,7 @@ import { ReleaseID, SongDTO, SongID } from "Shared"
 import { Song } from "../entities"
 
 export interface SongsRepository {
-	get(data: SongID): Promise<SongDTO>
+	get(id: SongID): Promise<SongDTO>
 	findByRelease(id: ReleaseID): Promise<SongDTO[]>
 }
 

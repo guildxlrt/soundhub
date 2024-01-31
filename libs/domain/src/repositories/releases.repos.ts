@@ -4,11 +4,12 @@ import { File, Release, Song } from "Domain"
 export interface ReleasesRepository {
 	create(release: unknown, songs: unknown[]): Promise<boolean>
 	edit(release: unknown, songs?: unknown[]): Promise<boolean>
-	setPrivStatus(id: ReleaseID, isPublic?: boolean): Promise<boolean>
-	get(data: ReleaseID): Promise<GetReleaseDTO>
+	setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<boolean>
+	get(id: ReleaseID): Promise<GetReleaseDTO>
 	getAll(): Promise<ReleaseShortDTO[]>
-	findManyByArtist(data: ProfileID): Promise<ReleaseShortDTO[]>
+	findManyByArtist(id: ProfileID): Promise<ReleaseShortDTO[]>
 	findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]>
+	findManyByDate(date: Date): Promise<ReleaseShortDTO[]>
 }
 
 export interface ReleasesAddBackRepos {
@@ -22,7 +23,6 @@ export interface ReleasesAddFrontRepos {}
 export interface ReleasesBackendRepos extends ReleasesRepository, ReleasesAddBackRepos {
 	create(release: { data: Release }, songs: { data: Song }[]): Promise<boolean>
 	edit(release: { data: Release }): Promise<boolean>
-	setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<boolean>
 }
 
 export interface ReleasesFrontendRepos extends ReleasesRepository {

@@ -1,6 +1,11 @@
 import { ApiErrHandler, ApiRes, ApiRequest, SongsImplement } from "Infra-backend"
-import { ErrorMsg, SongDTO, htmlError } from "Shared"
-import { GetSongUsecase, IDParamsAdapter, SongsService } from "Application"
+import { ErrorMsg, ReplyDTO, htmlError } from "Shared"
+import {
+	FindSongsByReleaseUsecase,
+	GetSongUsecase,
+	IDParamsAdapter,
+	SongsService,
+} from "Application"
 import { ISongsCtrl } from "../assets"
 
 export class SongsController implements ISongsCtrl {
@@ -9,16 +14,39 @@ export class SongsController implements ISongsCtrl {
 
 	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
+			const params = new IDParamsAdapter(id)
+
 			const getSong = new GetSongUsecase(this.songsService)
-			const { data, error } = await getSong.execute(new IDParamsAdapter(id))
+			const { data, error } = await getSong.execute(params)
+
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new SongDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
+		} catch (error) {
+			return new ApiErrHandler().reply(error, res)
+		}
+	}
+
+	async findByRelease(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+		try {
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			const id = Number(req.params["id"])
+			const params = new IDParamsAdapter(id)
+
+			const getSong = new FindSongsByReleaseUsecase(this.songsService)
+			const { data, error } = await getSong.execute(params)
+
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}

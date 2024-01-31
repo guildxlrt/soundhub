@@ -24,8 +24,10 @@ export interface CookieOptions {
 	sameSite?: boolean | "lax" | "strict" | "none" | undefined
 }
 
+export type UserCookieName = "jwt"
+
 export interface IUserCookie {
-	name: string
+	name: UserCookieName
 	val: string
 	options: CookieOptions
 }

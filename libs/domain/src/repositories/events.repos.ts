@@ -5,7 +5,7 @@ export interface EventsRepository {
 	create(data: Event, file?: File): Promise<boolean>
 	edit(data: Event, file?: File): Promise<boolean>
 	delete(id: EventID, userAuth?: UserAuthID): Promise<boolean>
-	get(data: EventID): Promise<EventDTO>
+	get(id: EventID): Promise<EventDTO>
 	getAll(): Promise<EventShortDTO[]>
 	findManyByArtist(id: EventID): Promise<EventShortDTO[]>
 	findManyByDate(date: Date): Promise<EventShortDTO[]>

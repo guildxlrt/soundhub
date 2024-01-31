@@ -136,7 +136,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getAll(): Promise<ArtistShortestDTO[]> {
 		try {
-			// Calling DB
+			
 			const artists = await this.artist.findMany({
 				select: {
 					id: true,

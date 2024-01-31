@@ -1,4 +1,4 @@
-import { ProfileID, GenresArray, UserAuthID, AnyObject } from "Shared"
+import { ProfileID, GenresArray, UserAuthID } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Artist extends EntityLayer {

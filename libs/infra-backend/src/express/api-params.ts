@@ -1,6 +1,6 @@
 import { File } from "Domain"
 import { NextFunction, Request, Response } from "express"
-import { FilesArray, UserTokenData } from "Shared"
+import { UserTokenData } from "Shared"
 
 export interface ApiRequest extends Request {
 	auth?: UserTokenData

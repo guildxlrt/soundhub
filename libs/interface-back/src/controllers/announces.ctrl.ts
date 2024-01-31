@@ -39,8 +39,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "POST")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as CreateAnnounceDTO
 			const owner = req.auth?.profileID as number
@@ -61,8 +60,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -70,8 +69,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "POST")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const file = req.image as File
 			const owner = req.auth?.profileID as number
@@ -89,8 +87,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -98,8 +96,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async delete(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "DELETE")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 			const user = req.auth?.profileID as number
 			const id = Number(req.params["id"])
 
@@ -117,8 +114,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -126,7 +123,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const getAnnounce = new GetAnnounceUsecase(this.announcesService)
@@ -137,8 +134,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -146,7 +143,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const getAllAnnounces = new GetAllAnnouncesUsecase(this.announcesService)
 			const { data, error } = await getAllAnnounces.execute()
@@ -154,8 +151,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -163,7 +160,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(this.announcesService)
@@ -174,8 +171,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}

@@ -18,10 +18,12 @@ interface UpdateSongDTO {
 export class EditReleaseDTO {
 	readonly release: UpdateReleaseDTO
 	readonly songs: UpdateSongDTO[]
+	readonly delCover?: boolean
 
-	constructor(release: UpdateReleaseDTO, songs: UpdateSongDTO[]) {
+	constructor(release: UpdateReleaseDTO, songs: UpdateSongDTO[], delCover?: boolean) {
 		this.release = release
 		this.songs = songs
+		this.delCover = delCover
 	}
 
 	static createFromInput(release: AnyObject, songs: AnyObject[]) {

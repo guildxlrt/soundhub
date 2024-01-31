@@ -6,7 +6,7 @@ export class LoginUsecase {
 	private userAuthService: UserAuthService
 	private profileService?: ArtistsService
 
-	constructor(userAuthService: UserAuthService, profileService?: any) {
+	constructor(userAuthService: UserAuthService, profileService?: ArtistsService) {
 		this.userAuthService = userAuthService
 		this.profileService = profileService
 	}

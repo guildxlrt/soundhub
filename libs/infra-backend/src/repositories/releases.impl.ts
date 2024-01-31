@@ -142,7 +142,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async getAll(): Promise<ReleaseShortDTO[]> {
 		try {
-			// Calling DB
 			const data = await this.release.findMany({
 				select: {
 					id: true,
@@ -161,10 +160,29 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
 		try {
-			// Calling DB
 			const data = await this.release.findMany({
 				where: {
 					genres: { has: genre },
+				},
+				select: {
+					id: true,
+					owner_id: true,
+					title: true,
+					releaseType: true,
+					genres: true,
+				},
+			})
+			return ReleaseShortDTO.createArrayFromData(data)
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error)
+		}
+	}
+
+	async findManyByDate(date: Date): Promise<ReleaseShortDTO[]> {
+		try {
+			const data = await this.release.findMany({
+				where: {
+					createdAt: date,
 				},
 				select: {
 					id: true,
@@ -184,7 +202,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		try {
 			const profileID = id
 
-			// Calling DB
 			const data = await this.release.findMany({
 				where: {
 					owner_id: profileID,

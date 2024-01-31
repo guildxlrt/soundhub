@@ -22,10 +22,12 @@ export interface IReleasesCtrl {
 	getAll(req: unknown, res: unknown): Promise<unknown>
 	findManyByArtist(req: unknown, res: unknown): Promise<unknown>
 	findManyByGenre(req: unknown, res: unknown): Promise<unknown>
+	findManyByDate(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface ISongsCtrl {
 	get(req: unknown, res: unknown): Promise<unknown>
+	findByRelease(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface IAnnoncesCtrl {

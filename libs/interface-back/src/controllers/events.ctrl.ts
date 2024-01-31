@@ -18,15 +18,7 @@ import {
 	PlaceParamsAdapter,
 } from "Application"
 import { File } from "Domain"
-import {
-	CreateEventDTO,
-	EditEventDTO,
-	htmlError,
-	ErrorMsg,
-	ReplyDTO,
-	EventsByDateDTO,
-	EventsByPlaceDTO,
-} from "Shared"
+import { CreateEventDTO, EditEventDTO, htmlError, ErrorMsg, ReplyDTO } from "Shared"
 import { IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
@@ -37,8 +29,7 @@ export class EventsController implements IEventsCtrl {
 
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "POST")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const owner = req.auth?.profileID as number
 			const file = req.image as File
@@ -56,8 +47,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -65,7 +56,7 @@ export class EventsController implements IEventsCtrl {
 
 	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const owner = req.auth?.profileID as number
 			const file = req.image as File
@@ -83,8 +74,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -92,8 +83,7 @@ export class EventsController implements IEventsCtrl {
 
 	async delete(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "DELETE")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const owner = req.auth?.profileID as number
@@ -109,8 +99,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -118,7 +108,7 @@ export class EventsController implements IEventsCtrl {
 
 	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const params = new IDParamsAdapter(id)
@@ -129,8 +119,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -138,7 +128,7 @@ export class EventsController implements IEventsCtrl {
 
 	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const getAllEvents = new GetAllEventsUsecase(this.eventsService)
 			const { data, error } = await getAllEvents.execute()
@@ -146,8 +136,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -155,7 +145,7 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const params = new IDParamsAdapter(id)
@@ -166,8 +156,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -175,10 +165,10 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByDate(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const inputs: EventsByDateDTO = req.body as EventsByDateDTO
-			const params = new DateParamsAdapter(inputs.date)
+			const inputs = req.params?.["encoded"]
+			const params = DateParamsAdapter.fromDto(inputs)
 
 			const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
 			const { data, error } = await findEventsByDate.execute(params)
@@ -186,8 +176,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -195,10 +185,10 @@ export class EventsController implements IEventsCtrl {
 
 	async findManyByPlace(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const inputs: EventsByPlaceDTO = req.body as EventsByPlaceDTO
-			const params = new PlaceParamsAdapter(inputs.place)
+			const inputs = req.params?.["encoded"]
+			const params = new PlaceParamsAdapter(inputs)
 
 			const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
 			const { data, error } = await findEventsByPlace.execute(params)
@@ -206,8 +196,8 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}

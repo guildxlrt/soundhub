@@ -170,7 +170,6 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 
 	async hashPass(pass: string): Promise<string> {
 		try {
-			// HASH PASS
 			return await PassEncryptor.hash(pass)
 		} catch (error) {
 			throw new ApiErrHandler().handleDBError(error).setMessage("hash pass error")

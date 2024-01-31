@@ -43,8 +43,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "POST")
-				return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as NewArtistDTO
 			const file = req.image as File
@@ -78,9 +77,9 @@ export class ArtistsController implements IArtistCtrl {
 			const { data, error } = await createArtist.execute(params)
 
 			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+			if (!data || typeof data === "boolean") throw ErrorMsg.htmlError(htmlError[500])
 
-			const cookie = data as UserCookie
+			const cookie = data
 			return res
 				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
@@ -92,7 +91,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async update(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "PUT") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const user = req.auth?.profileID as number
 			const dto = req.body as UpdateArtistDTO
@@ -115,8 +114,8 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -124,7 +123,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByID(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const params = new IDParamsAdapter(id)
@@ -135,8 +134,8 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -144,7 +143,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getByEmail(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs = req.body.email as UserEmail
 			const params = new EmailParamsAdapter(inputs)
@@ -155,8 +154,8 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -164,7 +163,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const getAllArtists = new GetAllArtistsUsecase(this.artistsService)
 			const { data, error } = await getAllArtists.execute()
@@ -172,8 +171,8 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
@@ -181,7 +180,7 @@ export class ArtistsController implements IArtistCtrl {
 
 	async findManyByGenre(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
 		try {
-			if (req.method !== "GET") return res.status(405).send({ error: htmlError[405].message })
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const genre = req.params["genre"] as GenreType
 			const params = new GenreParamsAdapter(genre)
@@ -192,8 +191,8 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(new ReplyDTO(data))
+			const reponse = new ReplyDTO(data)
+			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}

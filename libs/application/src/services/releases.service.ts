@@ -79,6 +79,13 @@ export class ReleasesService implements IReleasesService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
+	async findManyByDate(date: Date): Promise<ReleaseShortDTO[]> {
+		try {
+			return await this.service.findManyByDate(date)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
 
 	// BACKEND
 	async getOwner(id: number): Promise<number | undefined> {

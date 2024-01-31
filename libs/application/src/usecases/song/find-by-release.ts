@@ -2,7 +2,7 @@ import { ErrorHandler, SongDTO } from "Shared"
 import { IDParamsAdapter, Reply } from "../../assets"
 import { SongsService } from "../../services"
 
-export class FindSongsByReleaseUsecaseUsecase {
+export class FindSongsByReleaseUsecase {
 	songsService: SongsService
 	constructor(songsService: SongsService) {
 		this.songsService = songsService
