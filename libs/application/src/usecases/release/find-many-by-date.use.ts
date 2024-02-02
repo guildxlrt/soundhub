@@ -1,19 +1,19 @@
 import { ErrorHandler, ReleaseShortDTO } from "Shared"
 import { ReleasesService } from "../../services"
-import { Reply } from "../../assets"
+import { UsecaseReply } from "../../utils"
 
 export class FindReleasesByDateUsecase {
-	releasesService: ReleasesService
-	constructor(releasesService: ReleasesService) {
-		this.releasesService = releasesService
+	mainService: ReleasesService
+	constructor(mainService: ReleasesService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: { date: Date }): Promise<Reply<ReleaseShortDTO[]>> {
+	async execute(input: { date: Date }): Promise<UsecaseReply<ReleaseShortDTO[]>> {
 		try {
 			const date = input.date
-			const data = await this.releasesService.findManyByDate(date)
+			const data = await this.mainService.findManyByDate(date)
 
-			return new Reply<ReleaseShortDTO[]>(data)
+			return new UsecaseReply<ReleaseShortDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -21,5 +21,9 @@ export const htmlError: IHtmlError = {
 		message: "A new user cannot be created with this email",
 	},
 	418: { value: 418, message: "I'm a teapot" },
+	422: {
+		value: 422,
+		message: "Unprocessable Entity",
+	},
 	500: { value: 500, message: "Internal server error" },
 }

@@ -1,5 +1,5 @@
-import { ErrorHandler, filePath } from "Shared"
-import { NewAnnounceParamsAdapter, Reply } from "../../assets"
+import { ErrorHandler, ErrorMsg, envs, filePath } from "Shared"
+import { NewAnnounceUsecaseParams, UsecaseReply } from "../../utils"
 import { AnnouncesService, StorageService } from "../../services"
 
 export class CreateAnnounceUsecase {
@@ -11,30 +11,36 @@ export class CreateAnnounceUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: NewAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: NewAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) {
-				return await this.backend(this.storageService, input)
-			} else return await this.frontend(input)
+			const { file, announce } = input
+			// validate
+			file?.validateImage()
+			announce.sanitize()
+
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
+			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: NewAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, announce } = input
 			const data = await this.announcesService.create(announce, file)
-			return new Reply<boolean>(data)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageService: StorageService,
-		input: NewAnnounceParamsAdapter
-	): Promise<Reply<boolean>> {
+		input: NewAnnounceUsecaseParams,
+		storageService: StorageService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, announce } = input
 
@@ -48,7 +54,7 @@ export class CreateAnnounceUsecase {
 			// persist
 			await this.announcesService.create(announce)
 
-			return new Reply<boolean>(true)
+			return new UsecaseReply<boolean>(true)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

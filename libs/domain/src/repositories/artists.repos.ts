@@ -10,8 +10,9 @@ import {
 	ArtistDTO,
 	INewArtistSucces,
 	INewArtistBackSucces,
+	IFindByAuthID,
 } from "Shared"
-import { File, Artist, UserAuth } from "Domain"
+import { StreamFile, Artist, UserAuth, RawFile, File } from "Domain"
 
 export interface ArtistsRepository {
 	create(
@@ -29,35 +30,38 @@ export interface ArtistsRepository {
 	findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]>
 }
 
-export interface ArtistsAddBackRepos {
-	findByAuthID(id: UserAuthID): Promise<{ profile: ArtistDTO; profileType: UserProfileType }>
+export interface ExtBackArtistsRepos {
+	verifyExistence(id: ProfileID): Promise<ProfileID>
 	getAuths(id: ProfileID): Promise<{
 		id: number
 		user_auth_id: number
 	}>
+	findByAuthID(id: UserAuthID): Promise<IFindByAuthID>
 	getAvatarPath(id: ProfileID): Promise<string | null>
 	setAvatarPath(path: string | null, id: ProfileID): Promise<boolean>
 }
 
-export interface ArtistsAddFrontRepos {}
+export interface ExtFrontArtistsRepos {}
 
-export interface ArtistsBackendRepos extends ArtistsRepository, ArtistsAddBackRepos {
+export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRepos {
 	create(
 		data: {
 			profile: Artist
 			userAuth: UserAuth
 		},
-		file?: File
+		file?: StreamFile
 	): Promise<INewArtistBackSucces>
+	update(data: Artist, delAvatar?: boolean, file?: StreamFile): Promise<boolean>
 }
 
-export interface ArtistsFrontendRepos extends ArtistsRepository, ArtistsAddFrontRepos {
+export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtistsRepos {
 	create(
 		data: {
 			profile: Artist
 			userAuth: UserAuth
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
-		file?: File
+		file?: RawFile
 	): Promise<boolean>
+	update(data: Artist, delAvatar?: boolean, file?: RawFile): Promise<boolean>
 }

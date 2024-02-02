@@ -1,13 +1,16 @@
-import { ReleasesBackendRepos } from "Domain"
+import { ReleasesBackendRepos, StreamFile } from "Domain"
 import { Release, Song } from "Domain"
-import { GenreType, ReleaseID, IFile, ReleaseShortDTO, ReleaseType, GetReleaseDTO } from "Shared"
+import { GenreType, ReleaseID, ReleaseShortDTO, ReleaseType, GetReleaseDTO } from "Shared"
 import { dbClient } from "../prisma"
 import { ApiErrHandler } from "../utils"
 
 export class ReleasesImplement implements ReleasesBackendRepos {
 	private release = dbClient.release
 
-	async create(release: { data: Release; cover: IFile }, songs: { data: Song }[]): Promise<true> {
+	async create(
+		release: { data: Release; cover: StreamFile },
+		songs: { data: Song }[]
+	): Promise<true> {
 		try {
 			const { owner_id, title, releaseType, descript, price, genres } = release.data
 
@@ -66,23 +69,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			})
 
 			return true
-		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
-		}
-	}
-
-	async getPrivStatus(id: ReleaseID): Promise<boolean> {
-		try {
-			const release = await this.release.findUniqueOrThrow({
-				where: {
-					id: id,
-				},
-				select: {
-					isPublic: true,
-				},
-			})
-
-			return release?.isPublic
 		} catch (error) {
 			throw new ApiErrHandler().handleDBError(error)
 		}
@@ -232,6 +218,23 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 			return release?.owner_id
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error)
+		}
+	}
+
+	async getPrivStatus(id: ReleaseID): Promise<boolean> {
+		try {
+			const release = await this.release.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					isPublic: true,
+				},
+			})
+
+			return release?.isPublic
 		} catch (error) {
 			throw new ApiErrHandler().handleDBError(error)
 		}

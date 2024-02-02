@@ -1,15 +1,10 @@
-import { AuthBackendRepos, UserAuthsRepository, UserCookie } from "Domain"
-import {
-	ErrorHandler,
-	ILoginSuccess,
-	ProfileID,
-	UserAuthID,
-	UserEmail,
-	UserPassword,
-	UserProfileType,
-} from "Shared"
+import { ExtBackUserAuthsRepos, ExtFrontUserAuthsRepos, UserAuthsRepository } from "Domain"
+import { ErrorHandler, UserAuthID, UserEmail, UserPassword } from "Shared"
 
-interface IUserAuthService extends UserAuthsRepository, AuthBackendRepos {}
+interface IUserAuthService
+	extends UserAuthsRepository,
+		ExtBackUserAuthsRepos,
+		ExtFrontUserAuthsRepos {}
 
 export class UserAuthService implements IUserAuthService {
 	readonly service: IUserAuthService
@@ -18,13 +13,14 @@ export class UserAuthService implements IUserAuthService {
 		this.service = service
 	}
 
-	async login(first: unknown, two: unknown): Promise<ILoginSuccess> {
+	async login(email: UserEmail, password: UserPassword): Promise<boolean> {
 		try {
-			return await this.service.login(first, two)
+			return await this.service.login(email, password)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
+
 	async logout(): Promise<boolean> {
 		try {
 			return await this.service.logout()
@@ -32,6 +28,7 @@ export class UserAuthService implements IUserAuthService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
+
 	async changePass(input: unknown): Promise<boolean> {
 		try {
 			return await this.service.changePass(input)
@@ -47,17 +44,6 @@ export class UserAuthService implements IUserAuthService {
 		}
 	}
 	// BACKEND
-	async genCookie(
-		id: UserAuthID,
-		profile: ProfileID,
-		profileType: UserProfileType
-	): Promise<UserCookie> {
-		try {
-			return await this.service.genCookie(id, profile, profileType)
-		} catch (error) {
-			throw new ErrorHandler().handle(error)
-		}
-	}
 
 	async getByID(id: UserAuthID): Promise<{
 		id: number
@@ -77,35 +63,6 @@ export class UserAuthService implements IUserAuthService {
 	}> {
 		try {
 			return await this.service.getByEmail(email)
-		} catch (error) {
-			throw new ErrorHandler().handle(error)
-		}
-	}
-	async compareIDs(databaseID: UserAuthID, inputedID: UserAuthID): Promise<boolean> {
-		try {
-			return await this.service.compareIDs(databaseID, inputedID)
-		} catch (error) {
-			throw new ErrorHandler().handle(error)
-		}
-	}
-	async comparePass(encryptedPass: UserPassword, inputedPass: UserPassword): Promise<boolean> {
-		try {
-			return await this.service.comparePass(encryptedPass, inputedPass)
-		} catch (error) {
-			throw new ErrorHandler().handle(error)
-		}
-	}
-	async compareEmails(dbEmail: UserPassword, inputedEmail: UserPassword): Promise<boolean> {
-		try {
-			return await this.service.compareEmails(dbEmail, inputedEmail)
-		} catch (error) {
-			throw new ErrorHandler().handle(error)
-		}
-	}
-
-	async hashPass(pass: string): Promise<string> {
-		try {
-			return await this.service.hashPass(pass)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -1,7 +1,7 @@
 import {
 	Announce,
-	AnnouncesAddBackRepos,
-	AnnouncesAddFrontRepos,
+	ExtBackAnnouncesRepo,
+	ExtFrontAnnouncesRepos,
 	AnnouncesRepository,
 	File,
 } from "Domain"
@@ -9,8 +9,8 @@ import { ProfileID, AnnounceID, ErrorHandler, AnnounceDTO, AnnounceShortDTO } fr
 
 interface IAnnouncesService
 	extends AnnouncesRepository,
-		AnnouncesAddBackRepos,
-		AnnouncesAddFrontRepos {}
+		ExtBackAnnouncesRepo,
+		ExtFrontAnnouncesRepos {}
 
 export class AnnouncesService implements IAnnouncesService {
 	private service: IAnnouncesService
@@ -20,16 +20,16 @@ export class AnnouncesService implements IAnnouncesService {
 	}
 
 	// SERVIVES
-	async create(data: Announce, file?: File): Promise<boolean> {
+	async create(announce: Announce, file?: File): Promise<boolean> {
 		try {
-			return await this.service.create(data, file)
+			return await this.service.create(announce, file)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async edit(data: Announce, file?: File): Promise<boolean> {
+	async edit(announce: Announce, file?: File): Promise<boolean> {
 		try {
-			return await this.service.edit(data, file)
+			return await this.service.edit(announce, file)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

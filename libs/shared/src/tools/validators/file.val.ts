@@ -1,17 +1,24 @@
-import { ErrorHandler, ErrorMsg } from "../../errors"
-import { AnyObject, IMimetypes } from "../../types"
+import { ErrorHandler, ErrorMsg, htmlError } from "../../errors"
+import { AUDIO_MIME_TYPES, IMAGE_MIME_TYPES, Stream } from "../../types"
 
-// SONG
 export class FileValidator {
-	validate(file: AnyObject, mimetypes: IMimetypes, backend?: boolean): void {
+	validate(file: Stream, type: "audio" | "image"): void {
 		try {
-			const check = Object.keys(mimetypes).find((mimetype) => mimetype === file?.["mimetype"])
-			if (!check)
-				throw new ErrorMsg("Audiofile format  is not valid", backend ? 400 : undefined)
-
-			return
+			if (!file) return
+			if (type === "audio") {
+				const check = Object.keys(AUDIO_MIME_TYPES).find(
+					(mimetype) => mimetype === file?.["mimetype"]
+				)
+				if (!check) throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
+			}
+			if (type === "image") {
+				const check = Object.keys(IMAGE_MIME_TYPES).find(
+					(mimetype) => mimetype === file?.["mimetype"]
+				)
+				if (!check) throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
+			} else throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during Genres format")
+			throw new ErrorHandler().handle(error).setMessage("error during Genres validation")
 		}
 	}
 }

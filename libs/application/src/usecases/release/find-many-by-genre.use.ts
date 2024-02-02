@@ -1,20 +1,20 @@
 import { ErrorHandler, ReleaseShortDTO } from "Shared"
 import { GenreType } from "Shared"
 import { ReleasesService } from "../../services"
-import { Reply } from "../../assets"
+import { UsecaseReply } from "../../utils"
 
 export class FindReleasesByGenreUsecase {
-	releasesService: ReleasesService
-	constructor(releasesService: ReleasesService) {
-		this.releasesService = releasesService
+	mainService: ReleasesService
+	constructor(mainService: ReleasesService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: { genre: GenreType }): Promise<Reply<ReleaseShortDTO[]>> {
+	async execute(input: { genre: GenreType }): Promise<UsecaseReply<ReleaseShortDTO[]>> {
 		try {
 			const genre = input.genre
-			const data = await this.releasesService.findManyByGenre(genre)
+			const data = await this.mainService.findManyByGenre(genre)
 
-			return new Reply<ReleaseShortDTO[]>(data)
+			return new UsecaseReply<ReleaseShortDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

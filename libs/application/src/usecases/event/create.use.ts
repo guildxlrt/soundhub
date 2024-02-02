@@ -1,42 +1,52 @@
-import { ErrorHandler, filePath } from "Shared"
-import { NewEventParamsAdapter, Reply } from "../../assets"
-import { EventsService, StorageService } from "../../services"
+import { ErrorHandler, ErrorMsg, envs, filePath } from "Shared"
+import { NewEventUsecaseParams, UsecaseReply } from "../../utils"
+import { ArtistsService, EventsService, StorageService } from "../../services"
 
 export class CreateEventUsecase {
-	private eventsService: EventsService
+	private mainService: EventsService
 	private storageService?: StorageService
+	private artistService?: ArtistsService
 
-	constructor(eventsService: EventsService, storageService?: StorageService) {
-		this.eventsService = eventsService
+	constructor(mainService: EventsService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
-	async execute(input: NewEventParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: NewEventUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) {
-				return await this.backend(this.storageService, input)
-			} else return await this.frontend(input)
+			const { file, event } = input
+			// validate
+			file?.validateImage()
+			event.sanitize()
+
+			if (envs.backend && this.storageService && this.artistService)
+				return await this.backend(input, this.storageService, this.artistService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
+			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewEventParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: NewEventUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { event, file } = input
-			const data = await this.eventsService.create(event, file)
-			return new Reply<boolean>(data)
+			const data = await this.mainService.create(event, file)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
+		input: NewEventUsecaseParams,
 		storageService: StorageService,
-		input: NewEventParamsAdapter
-	): Promise<Reply<boolean>> {
+		artistService: ArtistsService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { event, file } = input
+			// validate
+			await event.validateArtistArray(artistService)
 
 			if (file) {
 				// move
@@ -45,8 +55,8 @@ export class CreateEventUsecase {
 			}
 
 			// persist
-			const data = await this.eventsService.create(event)
-			return new Reply<boolean>(data)
+			const data = await this.mainService.create(event)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

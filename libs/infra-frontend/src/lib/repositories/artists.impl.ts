@@ -1,6 +1,6 @@
 import axios from "axios"
-import { ToFormData, Response } from "../../assets"
-import { Artist, UserAuth } from "Domain"
+import { NewFormData } from "../../assets"
+import { Artist, RawFile, UserAuth } from "Domain"
 import {
 	ArtistShortDTO,
 	ArtistShortestDTO,
@@ -9,9 +9,7 @@ import {
 	apiUrlPath,
 	apiUrlEndpt,
 	ProfileID,
-	IFile,
 	ErrorHandler,
-	ArtistDTO,
 } from "Shared"
 import { ArtistsRepository } from "Domain"
 
@@ -22,16 +20,16 @@ export class ArtistsImplement implements ArtistsRepository {
 			userAuth: UserAuth
 			authConfirm: { confirmEmail: string; confirmPass: string }
 		},
-		file?: IFile
-	): Promise<ArtistDTO> {
+		file?: RawFile
+	): Promise<boolean> {
 		try {
 			const { profile, userAuth, authConfirm } = data
 
 			const formData = new FormData()
-			ToFormData.file(formData, file as IFile)
-			ToFormData.object(formData, profile)
-			ToFormData.object(formData, userAuth)
-			ToFormData.object(formData, authConfirm)
+			NewFormData.fromFile(formData, file as RawFile)
+			NewFormData.fromObject(formData, profile)
+			NewFormData.fromObject(formData, userAuth)
+			NewFormData.fromObject(formData, authConfirm)
 
 			return await axios({
 				method: "post",
@@ -48,13 +46,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async update(data: { profile: Artist }, file?: IFile): Promise<boolean> {
+	async update(data: Artist, delAvatar?: boolean, file?: RawFile): Promise<boolean> {
 		try {
-			const { profile } = data
-
 			const formData = new FormData()
-			ToFormData.file(formData, file as IFile)
-			ToFormData.object(formData, profile)
+			NewFormData.fromFile(formData, file as RawFile)
+			NewFormData.fromObject(formData, data)
 
 			return await axios({
 				method: "post",

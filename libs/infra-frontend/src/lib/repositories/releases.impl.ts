@@ -1,33 +1,31 @@
-import { Release, Song } from "Domain"
+import { RawFile, Release, Song } from "Domain"
 import {
 	GenreType,
 	EntityID,
-	ReleaseDTO,
+	GetReleaseDTO,
 	ReleaseShortDTO,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
-	ErrorMsg,
-	IFile,
 	ErrorHandler,
 } from "Shared"
-import { ToFormData, Response } from "../../assets"
+import { NewFormData } from "../../assets"
 import axios from "axios"
 import { ReleasesRepository } from "Domain"
 
 export class ReleasesImplement implements ReleasesRepository {
 	async create(
-		release: { data: Release; cover: IFile },
-		songs: { data: Song; audio: IFile }[]
+		release: { data: Release; cover: RawFile },
+		songs: { data: Song; audio: RawFile }[]
 	): Promise<boolean> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, release.cover as IFile, "cover")
-			ToFormData.object(formData, release.data, "release")
+			NewFormData.fromFile(formData, release.cover, "cover")
+			NewFormData.fromObject(formData, release.data, "release")
 
 			songs.forEach((song, index) => {
-				ToFormData.file(formData, song.audio as IFile, "song" + index + release.data.title)
-				ToFormData.object(formData, song.data, "song" + index)
+				NewFormData.fromFile(formData, song.audio, "song" + index + release.data.title)
+				NewFormData.fromObject(formData, song.data, "song" + index)
 			})
 
 			return await axios({
@@ -45,16 +43,16 @@ export class ReleasesImplement implements ReleasesRepository {
 	}
 
 	async edit(
-		release: { data: Release; cover?: IFile | undefined },
+		release: { data: Release; cover?: RawFile | undefined },
 		songs: Song[]
 	): Promise<boolean> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, release.cover as IFile, "cover")
-			ToFormData.object(formData, release.data, "release")
+			NewFormData.fromFile(formData, release.cover, "cover")
+			NewFormData.fromObject(formData, release.data, "release")
 
 			songs.forEach((song, index) => {
-				ToFormData.object(formData, song, "song" + index)
+				NewFormData.fromObject(formData, song, "song" + index)
 			})
 
 			return await axios({
@@ -83,7 +81,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async get(id: EntityID): Promise<ReleaseDTO> {
+	async get(id: EntityID): Promise<GetReleaseDTO> {
 		try {
 			return await axios({
 				method: "get",
@@ -114,6 +112,17 @@ export class ReleasesImplement implements ReleasesRepository {
 				url: `${
 					apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.releases.manyByGenre + genre
 				}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+	async findManyByDate(date: Date): Promise<ReleaseShortDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.releases.manyByGenre + date}`,
 				withCredentials: true,
 			})
 		} catch (error) {

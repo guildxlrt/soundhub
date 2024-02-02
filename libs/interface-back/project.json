@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared", "scope:interface", "scope:api"],
-	"implicitDependencies": ["infra-backend", "domain"]
+	"implicitDependencies": ["infra-backend", "application"]
 }

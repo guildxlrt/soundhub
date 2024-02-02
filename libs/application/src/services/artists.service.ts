@@ -1,7 +1,7 @@
 import {
 	Artist,
-	ArtistsAddBackRepos,
-	ArtistsAddFrontRepos,
+	ExtBackArtistsRepos,
+	ExtFrontArtistsRepos,
 	ArtistsRepository,
 	File,
 	UserAuth,
@@ -10,17 +10,16 @@ import {
 	ProfileID,
 	UserEmail,
 	UserPassword,
-	UserProfileType,
 	ArtistShortDTO,
 	ArtistShortestDTO,
 	GenreType,
 	UserAuthID,
 	ErrorHandler,
-	ArtistDTO,
 	INewArtistSucces,
+	IFindByAuthID,
 } from "Shared"
 
-interface IArtistsService extends ArtistsRepository, ArtistsAddBackRepos, ArtistsAddFrontRepos {}
+interface IArtistsService extends ArtistsRepository, ExtBackArtistsRepos, ExtFrontArtistsRepos {}
 
 export class ArtistsService implements IArtistsService {
 	private service: IArtistsService
@@ -44,9 +43,9 @@ export class ArtistsService implements IArtistsService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async update(data: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
+	async update(profile: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(data, delAvatar, file)
+			return await this.service.update(profile, delAvatar, file)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
@@ -80,11 +79,9 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 	// BACKEND
-	async findByAuthID(
-		id: UserAuthID
-	): Promise<{ profile: ArtistDTO; profileType: UserProfileType }> {
+	async verifyExistence(id: ProfileID): Promise<ProfileID> {
 		try {
-			return await this.service.findByAuthID(id)
+			return await this.service.verifyExistence(id)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
@@ -100,6 +97,14 @@ export class ArtistsService implements IArtistsService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
+	async findByAuthID(id: UserAuthID): Promise<IFindByAuthID> {
+		try {
+			return await this.service.findByAuthID(id)
+		} catch (error) {
+			throw new ErrorHandler().handle(error)
+		}
+	}
+
 	async getAvatarPath(id: ProfileID): Promise<string | null> {
 		try {
 			return await this.service.getAvatarPath(id)

@@ -1,7 +1,7 @@
-import { Song, SongsAddBackRepos, SongsAddFrontRepos, SongsRepository } from "Domain"
+import { Song, ExtBackSongsRepos, ExtFrontSongsRepos, SongsRepository } from "Domain"
 import { ErrorHandler, ReleaseID, SongDTO, SongID } from "Shared"
 
-interface ISongsService extends SongsRepository, SongsAddBackRepos, SongsAddFrontRepos {}
+interface ISongsService extends SongsRepository, ExtBackSongsRepos, ExtFrontSongsRepos {}
 
 export class SongsService implements ISongsService {
 	private service: ISongsService
@@ -25,9 +25,9 @@ export class SongsService implements ISongsService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async update(data: Song): Promise<boolean> {
+	async update(song: Song): Promise<boolean> {
 		try {
-			return await this.service.update(data)
+			return await this.service.update(song)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

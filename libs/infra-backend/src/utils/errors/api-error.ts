@@ -1,5 +1,6 @@
-import { ApiRes, ErrorHandler, ErrorMsg, ReplyDTO } from "Shared"
+import { ErrorHandler, ErrorMsg, ResponseDTO } from "Shared"
 import { DbErrorHandler } from "../../prisma"
+import { ExpressResponse } from "../../express"
 
 export class ApiError extends ErrorMsg {
 	override status: number
@@ -10,9 +11,9 @@ export class ApiError extends ErrorMsg {
 }
 
 export class ApiErrHandler extends ErrorHandler {
-	async reply(error: unknown, res: ApiRes): Promise<ApiRes> {
+	async reply(error: unknown, res: ExpressResponse): Promise<ExpressResponse> {
 		const errorMsg = this.handle(error)
-		const response = new ReplyDTO<ErrorMsg>(errorMsg)
+		const response = new ResponseDTO<ErrorMsg>(errorMsg)
 		const status = errorMsg.status
 
 		return res.status(status ? status : 500).send(response)

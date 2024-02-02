@@ -1,4 +1,4 @@
-import { ReleasesAddBackRepos, ReleasesAddFrontRepos, ReleasesRepository } from "Domain"
+import { ExtBackReleasesRepos, ExtFrontReleasesRepos, ReleasesRepository } from "Domain"
 import {
 	ProfileID,
 	ReleaseID,
@@ -10,8 +10,8 @@ import {
 
 interface IReleasesService
 	extends ReleasesRepository,
-		ReleasesAddBackRepos,
-		ReleasesAddFrontRepos {}
+		ExtBackReleasesRepos,
+		ExtFrontReleasesRepos {}
 
 export class ReleasesService implements IReleasesService {
 	private service: IReleasesService
@@ -44,7 +44,7 @@ export class ReleasesService implements IReleasesService {
 		}
 	}
 
-	async setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<boolean> {
+	async setPrivStatus(id: ReleaseID, isPublic?: boolean): Promise<boolean> {
 		try {
 			return await this.service.setPrivStatus(id, isPublic)
 		} catch (error) {

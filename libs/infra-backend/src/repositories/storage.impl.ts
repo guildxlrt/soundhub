@@ -1,9 +1,9 @@
 import * as fs from "fs"
 import { ErrorHandler, ReleaseFolder } from "Shared"
-import { File, StorageRepository } from "Domain"
+import { StreamFile, StorageRepository } from "Domain"
 
 export class StorageImplement implements StorageRepository {
-	async move(file: File, destination: string): Promise<string> {
+	async move(file: StreamFile, destination: string): Promise<string> {
 		try {
 			const path = file.path
 			const newPath = destination + file?.filename

@@ -1,7 +1,7 @@
-import { ApiErrHandler, ApiRequest, ApiRes, EventsImplement, StorageImplement } from "Infra-backend"
+import { ApiErrHandler, EventsImplement, StorageImplement } from "Infra-backend"
 import {
 	CreateEventUsecase,
-	DeleteEventParamsAdapter,
+	DeleteEventUsecaseParams,
 	DeleteEventUsecase,
 	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
@@ -9,16 +9,24 @@ import {
 	GetAllEventsUsecase,
 	GetEventUsecase,
 	EditEventUsecase,
-	IDParamsAdapter,
-	NewEventParamsAdapter,
-	EditEventParamsAdapter,
+	IDUsecaseParams,
+	NewEventUsecaseParams,
+	EditEventUsecaseParams,
 	StorageService,
 	EventsService,
-	DateParamsAdapter,
-	PlaceParamsAdapter,
+	DateUsecaseParams,
+	PlaceUsecaseParams,
 } from "Application"
-import { File } from "Domain"
-import { CreateEventDTO, EditEventDTO, htmlError, ErrorMsg, ReplyDTO } from "Shared"
+import { StreamFile } from "Domain"
+import {
+	ExpressRequest,
+	ExpressResponse,
+	CreateEventDTO,
+	EditEventDTO,
+	htmlError,
+	ErrorMsg,
+	ResponseDTO,
+} from "Shared"
 import { IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
@@ -27,14 +35,14 @@ export class EventsController implements IEventsCtrl {
 	private eventsImplement = new EventsImplement()
 	private eventsService = new EventsService(this.eventsImplement)
 
-	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const owner = req.auth?.profileID as number
-			const file = req.image as File
+			const file = req.image as StreamFile
 			const event = req.body as CreateEventDTO
-			const params = NewEventParamsAdapter.fromDto(event, owner, file)
+			const params = NewEventUsecaseParams.fromDto(event, owner, file)
 
 			// // Operators
 			// // file
@@ -47,21 +55,21 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async edit(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const owner = req.auth?.profileID as number
-			const file = req.image as File
+			const file = req.image as StreamFile
 			const event = req.body as EditEventDTO
-			const params = EditEventParamsAdapter.fromDto(event, owner, file)
+			const params = EditEventUsecaseParams.fromDto(event, owner, file)
 
 			// // Operators
 			// // file
@@ -74,20 +82,20 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async delete(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
 			const owner = req.auth?.profileID as number
-			const params = DeleteEventParamsAdapter.fromDtoBackend(id, owner)
+			const params = DeleteEventUsecaseParams.fromDtoBackend(id, owner)
 
 			// Operators
 			// ... doing some heathcheck
@@ -99,19 +107,19 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = Number(req.params["id"])
-			const params = new IDParamsAdapter(id)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
 
 			const getEvent = new GetEventUsecase(this.eventsService)
 			const { data, error } = await getEvent.execute(params)
@@ -119,14 +127,14 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
@@ -136,19 +144,19 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByArtist(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = Number(req.params["id"])
-			const params = new IDParamsAdapter(id)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
 
 			const findEventsByArtist = new FindEventsByArtistUsecase(this.eventsService)
 			const { data, error } = await findEventsByArtist.execute(params)
@@ -156,19 +164,19 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByDate(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByDate(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs = req.params?.["encoded"]
-			const params = DateParamsAdapter.fromDto(inputs)
+			const params = DateUsecaseParams.fromDto(inputs)
 
 			const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
 			const { data, error } = await findEventsByDate.execute(params)
@@ -176,19 +184,19 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByPlace(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByPlace(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs = req.params?.["encoded"]
-			const params = new PlaceParamsAdapter(inputs)
+			const params = new PlaceUsecaseParams(inputs)
 
 			const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
 			const { data, error } = await findEventsByPlace.execute(params)
@@ -196,7 +204,7 @@ export class EventsController implements IEventsCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)

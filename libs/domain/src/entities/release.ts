@@ -1,14 +1,27 @@
 import { EntityLayer } from "./layers"
-import { ProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
+import {
+	ProfileID,
+	GenresArray,
+	ReleaseID,
+	ReleasePrice,
+	ReleaseType,
+	GenresFormatter,
+	StringFormatter,
+	FieldsValidator,
+} from "Shared"
 
 export class Release extends EntityLayer {
 	readonly owner_id: ProfileID
-	readonly title: string
+	title: string
 	readonly releaseType: ReleaseType | null
 	descript: string | null
 	price: ReleasePrice | null
 	genres: GenresArray
 	coverPath: string | null
+
+	private fieldsValidator = new FieldsValidator()
+	private stringFormatter = new StringFormatter()
+	private genresFormatter = new GenresFormatter()
 
 	constructor(
 		id: ReleaseID | null,
@@ -37,5 +50,17 @@ export class Release extends EntityLayer {
 
 	updateCoverPath(newCoverPath: string) {
 		this.coverPath = newCoverPath
+	}
+
+	sanitize(isNew?: boolean) {
+		if (isNew) this.title = this.stringFormatter.short(this.title)
+
+		this.descript = this.stringFormatter.long(this.descript)
+		this.fieldsValidator.price(this.price)
+		this.genres = this.genresFormatter.format(this.genres)
+	}
+
+	validateReleaseType() {
+		this.fieldsValidator.releaseType(this.releaseType)
 	}
 }

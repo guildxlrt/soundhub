@@ -1,4 +1,4 @@
-import { AnnounceID, ProfileID } from "Shared"
+import { AnnounceID, ProfileID, StringFormatter } from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Announce extends EntityLayer {
@@ -6,6 +6,7 @@ export class Announce extends EntityLayer {
 	title: string
 	text: string
 	imagePath: string | null
+	private formatter = new StringFormatter()
 
 	constructor(
 		id: AnnounceID | null,
@@ -24,5 +25,10 @@ export class Announce extends EntityLayer {
 
 	updateImagePath(newImagePath: string) {
 		this.imagePath = newImagePath
+	}
+
+	sanitize() {
+		this.title = this.formatter.short(this.title)
+		this.text = this.formatter.long(this.text)
 	}
 }

@@ -1,50 +1,61 @@
-import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { NewReleaseParamsAdapter, Reply } from "../../assets"
+import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
+import { NewReleaseUsecaseParams, UsecaseReply } from "../../utils"
 import { ReleasesService, StorageService } from "../../services"
 import { Song } from "Domain"
 
 export class CreateReleaseUsecase {
-	private releasesService: ReleasesService
+	private mainService: ReleasesService
 	private storageService?: StorageService
 
-	constructor(releasesService: ReleasesService, storageService?: StorageService) {
-		this.releasesService = releasesService
+	constructor(mainService: ReleasesService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
-	async execute(input: NewReleaseParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: NewReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) {
-				return await this.backend(this.storageService, input)
-			} else return await this.frontend(input)
+			const { cover, data } = input.release
+			cover?.validateImage()
+			data.sanitize(true)
+			data.validateReleaseType()
+
+			input.songs.forEach((song) => {
+				song.data.sanitize(true)
+				song.audio.validateAudio()
+			})
+
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
+			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewReleaseParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: NewReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
 
-			const res = await this.releasesService.create({ data: data, cover }, songs)
-			return new Reply(res)
+			const res = await this.mainService.create({ data: data, cover }, songs)
+			return new UsecaseReply(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageService: StorageService,
-		input: NewReleaseParamsAdapter
-	): Promise<Reply<boolean>> {
+		input: NewReleaseUsecaseParams,
+		storageService: StorageService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { songs, release } = input
 			const { cover, data } = release
 			const { owner_id, id } = data
 
 			// owner verification
-			const releaseOwner = await this.releasesService.getOwner(id as number)
+			const releaseOwner = await this.mainService.getOwner(id as number)
 			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// CREATE FOLDER RELEASE
@@ -66,7 +77,7 @@ export class CreateReleaseUsecase {
 			)
 
 			// persist
-			const res = await this.releasesService.create(data, songsData)
+			const res = await this.mainService.create(data, songsData)
 
 			// STORING NEW FILE
 			if (cover) {
@@ -74,10 +85,10 @@ export class CreateReleaseUsecase {
 				const newImagePath = await cover.move(storageService, filePath.store.release)
 
 				// persist path
-				await this.releasesService.setCoverPath(newImagePath, id as number)
+				await this.mainService.setCoverPath(newImagePath, id as number)
 			}
 
-			return new Reply<boolean>(res)
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

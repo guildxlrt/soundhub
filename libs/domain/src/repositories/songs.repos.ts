@@ -6,11 +6,11 @@ export interface SongsRepository {
 	findByRelease(id: ReleaseID): Promise<SongDTO[]>
 }
 
-export interface SongsAddBackRepos {
+export interface ExtBackSongsRepos {
 	update(data: Song): Promise<boolean>
 }
-export interface SongsAddFrontRepos {}
+export interface ExtFrontSongsRepos {}
 
-export interface SongsBackendRepos extends SongsRepository, SongsAddBackRepos {}
+export interface SongsBackendRepos extends SongsRepository, ExtBackSongsRepos {}
 
-export interface SongsFrontendRepos extends SongsRepository {}
+export interface SongsFrontendRepos extends SongsRepository, ExtFrontSongsRepos {}

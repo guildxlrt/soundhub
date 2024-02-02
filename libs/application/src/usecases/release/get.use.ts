@@ -1,18 +1,18 @@
-import { IDParamsAdapter, Reply } from "../../assets"
-import { ErrorHandler, ReleaseDTO } from "Shared"
+import { IDUsecaseParams, UsecaseReply } from "../../utils"
+import { ErrorHandler, GetReleaseDTO } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class GetReleaseUsecase {
-	releasesService: ReleasesService
-	constructor(releasesService: ReleasesService) {
-		this.releasesService = releasesService
+	mainService: ReleasesService
+	constructor(mainService: ReleasesService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: IDParamsAdapter): Promise<Reply<ReleaseDTO>> {
+	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetReleaseDTO>> {
 		try {
 			const id = input.id
-			const data = await this.releasesService.get(id)
-			return new Reply<ReleaseDTO>(data)
+			const data = await this.mainService.get(id)
+			return new UsecaseReply<GetReleaseDTO>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

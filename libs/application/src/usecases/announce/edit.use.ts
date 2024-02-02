@@ -1,5 +1,5 @@
-import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { EditAnnounceParamsAdapter, Reply } from "../../assets"
+import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
+import { EditAnnounceUsecaseParams, UsecaseReply } from "../../utils"
 import { AnnouncesService, StorageService } from "../../services"
 
 export class EditAnnounceUsecase {
@@ -11,30 +11,37 @@ export class EditAnnounceUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: EditAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: EditAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) return await this.backend(this.storageService, input)
+			const { file, announce } = input
+			// validate
+			file?.validateImage()
+			announce.sanitize()
+
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: EditAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: EditAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, announce } = input
 
 			const data = await this.announcesService.edit(announce, file)
-			return new Reply<boolean>(data)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageService: StorageService,
-		input: EditAnnounceParamsAdapter
-	): Promise<Reply<boolean>> {
+		input: EditAnnounceUsecaseParams,
+		storageService: StorageService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, delImage, announce } = input
 			const { owner_id, id } = announce
@@ -67,7 +74,7 @@ export class EditAnnounceUsecase {
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new Reply<boolean>(true)
+			return new UsecaseReply<boolean>(true)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

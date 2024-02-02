@@ -1,18 +1,18 @@
 import { ErrorHandler } from "Shared"
 import { UserAuthService } from "../../services"
-import { Reply } from "../../assets"
+import { UsecaseReply } from "../../utils"
 
 export class LogoutUsecase {
-	private userAuthService: UserAuthService
+	private mainService: UserAuthService
 
-	constructor(userAuthService: UserAuthService) {
-		this.userAuthService = userAuthService
+	constructor(mainService: UserAuthService) {
+		this.mainService = mainService
 	}
 
-	async execute(): Promise<Reply<boolean>> {
+	async execute(): Promise<UsecaseReply<boolean>> {
 		try {
-			const res = await this.userAuthService.logout()
-			return new Reply<boolean>(res)
+			const res = await this.mainService.logout()
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

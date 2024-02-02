@@ -1,7 +1,7 @@
-import { Event, EventsAddBackRepos, EventsAddFrontRepos, EventsRepository, File } from "Domain"
+import { Event, ExtBackEventsRepos, ExtFrontEventsRepos, EventsRepository, File } from "Domain"
 import { UserAuthID, EventID, EventShortDTO, EventDTO, ErrorHandler } from "Shared"
 
-interface IEventsService extends EventsRepository, EventsAddBackRepos, EventsAddFrontRepos {}
+interface IEventsService extends EventsRepository, ExtBackEventsRepos, ExtFrontEventsRepos {}
 
 export class EventsService implements IEventsService {
 	private service: IEventsService
@@ -11,16 +11,16 @@ export class EventsService implements IEventsService {
 	}
 
 	// SERVIVES
-	async create(data: Event, file?: File): Promise<boolean> {
+	async create(event: Event, file?: File): Promise<boolean> {
 		try {
-			return await this.service.create(data, file)
+			return await this.service.create(event, file)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async edit(data: Event, file?: File): Promise<boolean> {
+	async edit(event: Event, file?: File): Promise<boolean> {
 		try {
-			return await this.service.edit(data, file)
+			return await this.service.edit(event, file)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
@@ -32,9 +32,9 @@ export class EventsService implements IEventsService {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-	async get(data: EventID): Promise<EventDTO> {
+	async get(id: EventID): Promise<EventDTO> {
 		try {
-			return await this.service.get(data)
+			return await this.service.get(id)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -1,19 +1,19 @@
-import { PlaceParamsAdapter, Reply } from "../../assets"
+import { PlaceUsecaseParams, UsecaseReply } from "../../utils"
 import { ErrorHandler, EventShortDTO } from "Shared"
 import { EventsService } from "../../services"
 
 export class FindEventsByPlaceUsecase {
-	eventsService: EventsService
-	constructor(eventsService: EventsService) {
-		this.eventsService = eventsService
+	mainService: EventsService
+	constructor(mainService: EventsService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: PlaceParamsAdapter): Promise<Reply<EventShortDTO[]>> {
+	async execute(input: PlaceUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
 		try {
 			const { place } = input
 
-			const data = await this.eventsService.findManyByPlace(place)
-			return new Reply<EventShortDTO[]>(data)
+			const data = await this.mainService.findManyByPlace(place)
+			return new UsecaseReply<EventShortDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

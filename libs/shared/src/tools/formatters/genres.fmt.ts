@@ -1,5 +1,4 @@
-import { ErrorHandler, ErrorMsg } from "../../errors"
-import { GenresArray, GenresEnum } from "../../types"
+import { GenresArray, GenresEnum, ErrorHandler, ErrorMsg } from "Shared"
 
 export class GenresFormatter {
 	format(genres: GenresArray | string[]): GenresArray {

@@ -1,18 +1,18 @@
 import { ArtistShortestDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
-import { Reply } from "../../assets"
+import { UsecaseReply } from "../../utils"
 
 export class GetAllArtistsUsecase {
-	artistsService: ArtistsService
-	constructor(artistsService: ArtistsService) {
-		this.artistsService = artistsService
+	mainService: ArtistsService
+	constructor(mainService: ArtistsService) {
+		this.mainService = mainService
 	}
 
-	async execute(): Promise<Reply<ArtistShortestDTO[]>> {
+	async execute(): Promise<UsecaseReply<ArtistShortestDTO[]>> {
 		try {
-			const data = await this.artistsService.getAll()
+			const data = await this.mainService.getAll()
 
-			return new Reply<ArtistShortestDTO[]>(data)
+			return new UsecaseReply<ArtistShortestDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -1,27 +1,45 @@
-import { ErrorHandler, ErrorMsg, INewArtistBackSucces, filePath } from "Shared"
-import { NewArtistParamsAdapter, Reply } from "../../assets"
-import { Artist, UserAuth, UserCookie } from "Domain"
-import { ArtistsService, StorageService, UserAuthService } from "../../services"
+import { ErrorHandler, ErrorMsg, INewArtistBackSucces, UserToken, envs, filePath } from "Shared"
+import { NewArtistUsecaseParams, UsecaseReply } from "../../utils"
+import { Artist, PasswordServicePort, UserAuth, ValidationServicePort } from "Domain"
+import { ArtistsService, StorageService } from "../../services"
 
 export class CreateArtistUsecase {
-	private artistsService: ArtistsService
+	private mainService: ArtistsService
 	private storageService?: StorageService
-	private userAuthService?: UserAuthService
+	private passwordService?: PasswordServicePort
+	private validationService?: ValidationServicePort
 
 	constructor(
-		artistsService: ArtistsService,
+		mainService: ArtistsService,
 		storageService?: StorageService,
-		userAuthService?: UserAuthService
+		passwordService?: PasswordServicePort,
+		validationService?: ValidationServicePort
 	) {
-		this.artistsService = artistsService
+		this.mainService = mainService
 		this.storageService = storageService
-		this.userAuthService = userAuthService
+		this.passwordService = passwordService
+		this.validationService = validationService
 	}
 
-	async execute(input: NewArtistParamsAdapter): Promise<Reply<boolean | UserCookie>> {
+	async execute(input: NewArtistUsecaseParams): Promise<UsecaseReply<boolean | UserToken>> {
 		try {
-			if (this.storageService && this.userAuthService)
-				return await this.backend(this.storageService, this.userAuthService, input)
+			if (
+				envs.backend &&
+				this.storageService &&
+				this.passwordService &&
+				this.validationService
+			)
+				return await this.backend(
+					input,
+					this.storageService,
+					this.passwordService,
+					this.validationService
+				)
+			else if (
+				envs.backend &&
+				(!this.storageService || !this.passwordService || !this.validationService)
+			)
+				throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
@@ -29,16 +47,19 @@ export class CreateArtistUsecase {
 	}
 
 	async backend(
+		input: NewArtistUsecaseParams,
 		storageService: StorageService,
-		userAuthService: UserAuthService,
-		input: NewArtistParamsAdapter
-	): Promise<Reply<UserCookie>> {
+		passwordService: PasswordServicePort,
+		validationService: ValidationServicePort
+	): Promise<UsecaseReply<UserToken>> {
 		try {
-			const { file } = input
-			const { profile, auth } = input
+			const { file, profile, auth } = input
+			// validate
+			await auth.validateNewAuths(validationService)
+			auth.hashPass(passwordService)
 
 			// Persist
-			const artist: INewArtistBackSucces = (await this.artistsService.create({
+			const artist: INewArtistBackSucces = (await this.mainService.create({
 				profile: profile,
 				userAuth: auth,
 			})) as INewArtistBackSucces
@@ -50,43 +71,39 @@ export class CreateArtistUsecase {
 				const newImagePath = await file.move(storageService, filePath.store.artist)
 
 				// persist
-				await this.artistsService.setAvatarPath(newImagePath, artist.id as number)
+				await this.mainService.setAvatarPath(newImagePath, artist.id as number)
 			}
 
 			// Cookie
-			const userCookie = await userAuthService.genCookie(
-				artist.id as number,
-				artist.authID,
-				"artist"
-			)
-			if (!userCookie) throw new ErrorMsg("Error to get cookie")
+			const userToken = new UserToken(artist.id as number, artist.authID, "artist")
+			if (!userToken) throw new ErrorMsg("Error to get cookie")
 
-			return new Reply<UserCookie>(userCookie)
+			return new UsecaseReply<UserToken>(userToken)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: NewArtistParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: NewArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { email, password } = input.auth
-			const { name, bio, members, genres } = input.profile
-			const { file } = input
+			const { file, profile, auth, authConfirm } = input
+			const { name, bio, members, genres } = profile
+			const { email, password } = auth
 
-			const userData = new Artist(null, null, name, bio, members, genres, null)
-			const userAuths = new UserAuth(null, email, password)
+			const profileData = new Artist(null, null, name, bio, members, genres, null)
+			const authData = new UserAuth(null, email, password)
 
 			// PERSIST
-			const newUserAuth = (await this.artistsService.create(
+			const newUserAuth = (await this.mainService.create(
 				{
-					profile: userData,
-					userAuth: userAuths,
-					authConfirm: input.authConfirm,
+					profile: profileData,
+					userAuth: authData,
+					authConfirm: authConfirm,
 				},
 				file
 			)) as boolean
 
-			return new Reply<boolean>(newUserAuth)
+			return new UsecaseReply<boolean>(newUserAuth)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

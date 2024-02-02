@@ -1,47 +1,48 @@
-import { Reply, SetPrivStatusReleaseParamsAdapter } from "../../assets"
+import { UsecaseReply, SetPrivStatusReleaseUsecaseParams } from "../../utils"
 import { ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 
 export class SetPrivStatusReleaseUsecase {
-	releasesService: ReleasesService
+	mainService: ReleasesService
 
-	constructor(releasesService: ReleasesService) {
-		this.releasesService = releasesService
+	constructor(mainService: ReleasesService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: SetPrivStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const backend = envs.backend
-
-			if (backend) return await this.backend(input)
+			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async backend(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
+	async backend(input: SetPrivStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, isPublic, ownerID } = input
+			const { id, ownerID } = input
 
 			// owner verification
-			const releaseOwner = await this.releasesService.getOwner(id as number)
+			const releaseOwner = await this.mainService.getOwner(id as number)
 			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
+			// get status
+			const isPublic = await this.mainService.getPrivStatus(id)
+
 			// persist
-			const res = await this.releasesService.setPrivStatus(id, isPublic)
-			return new Reply<boolean>(res)
+			const res = await this.mainService.setPrivStatus(id, isPublic)
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: SetPrivStatusReleaseParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: SetPrivStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, isPublic } = input
+			const { id } = input
 
-			const res = await this.releasesService.setPrivStatus(id, isPublic)
-			return new Reply<boolean>(res)
+			const res = await this.mainService.setPrivStatus(id)
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -4,19 +4,16 @@ import { HtmlError, htmlError } from "./html-err"
 
 export class ErrorMsg extends Error {
 	readonly timestamp: Date
-	status?: StatusType
+	status?: StatusType = null
 	override readonly name: string
 
 	constructor(message: string, status?: number) {
 		super(message)
 		this.timestamp = new Date()
-		this.status = status ? status : null
 		this.name = envs.backend ? "ApiError" : "ClientError"
 
-		if (!status) {
-			if (envs.backend) this.status = htmlError[500].value
-			if (envs.backend !== true) this.status = null
-		} else this.status = status
+		if (status) this.status = status
+		if (!status && envs.backend) this.status = htmlError[500].value
 	}
 
 	static htmlError(htmlError: HtmlError) {

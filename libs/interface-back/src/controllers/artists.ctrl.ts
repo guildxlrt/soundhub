@@ -1,39 +1,32 @@
-import {
-	ApiErrHandler,
-	ApiRequest,
-	ApiRes,
-	ArtistsImplement,
-	StorageImplement,
-} from "Infra-backend"
+import { ApiErrHandler, ArtistsImplement, StorageImplement } from "Infra-backend"
 import {
 	GenreType,
 	UpdateArtistDTO,
 	htmlError,
-	validators,
-	IMAGE_MIME_TYPES,
-	formatters,
-	ReplyDTO,
+	ResponseDTO,
 	NewArtistDTO,
 	ErrorMsg,
 	UserEmail,
+	ExpressRequest,
+	ExpressResponse,
 } from "Shared"
-import { Artist, File, UserAuth, UserCookie } from "Domain"
+import { StreamFile } from "Domain"
 import {
-	UpdateArtistParamsAdapter,
-	NewArtistParamsAdapter,
+	UpdateArtistUsecaseParams,
+	NewArtistUsecaseParams,
 	CreateArtistUsecase,
 	FindArtistsByGenreUsecase,
 	GetAllArtistsUsecase,
 	GetArtistByEmailUsecase,
 	GetArtistByIDUsecase,
 	UpdateArtistUsecase,
-	IDParamsAdapter,
-	GenreParamsAdapter,
+	IDUsecaseParams,
+	GenreUsecaseParams,
 	StorageService,
 	ArtistsService,
-	EmailParamsAdapter,
+	EmailUsecaseParams,
 } from "Application"
-import { IArtistCtrl } from "../assets"
+import { Cookie, IArtistCtrl } from "../assets"
 
 export class ArtistsController implements IArtistCtrl {
 	private storageImplement = new StorageImplement()
@@ -41,13 +34,13 @@ export class ArtistsController implements IArtistCtrl {
 	private artistsImplement = new ArtistsImplement()
 	private artistsService = new ArtistsService(this.artistsImplement)
 
-	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as NewArtistDTO
-			const file = req.image as File
-			const params = NewArtistParamsAdapter.fromDto(dto, file)
+			const file = req.image as StreamFile
+			const params = NewArtistUsecaseParams.fromDto(dto, file)
 
 			// // Data
 			// const { password, email, confirmEmail, confirmPass } = auth
@@ -79,24 +72,24 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data || typeof data === "boolean") throw ErrorMsg.htmlError(htmlError[500])
 
-			const cookie = data
+			const cookie = new Cookie(data)
 			return res
 				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
-				.send(new ReplyDTO(true))
+				.send(new ResponseDTO(true))
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async update(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async update(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const user = req.auth?.profileID as number
 			const dto = req.body as UpdateArtistDTO
-			const file = req.image as File
-			const params = UpdateArtistParamsAdapter.fromDto(dto, user, file)
+			const file = req.image as StreamFile
+			const params = UpdateArtistUsecaseParams.fromDto(dto, user, file)
 
 			// // OPERATORS
 			// // genres
@@ -114,19 +107,19 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async getByID(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async getByID(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = Number(req.params["id"])
-			const params = new IDParamsAdapter(id)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
 
 			const getArtistByID = new GetArtistByIDUsecase(this.artistsService)
 			const { data, error } = await getArtistByID.execute(params)
@@ -134,19 +127,19 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async getByEmail(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async getByEmail(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs = req.body.email as UserEmail
-			const params = new EmailParamsAdapter(inputs)
+			const params = new EmailUsecaseParams(inputs)
 
 			const getArtistByEmail = new GetArtistByEmailUsecase(this.artistsService)
 			const { data, error } = await getArtistByEmail.execute(params)
@@ -154,14 +147,14 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
@@ -171,19 +164,19 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByGenre(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const genre = req.params["genre"] as GenreType
-			const params = new GenreParamsAdapter(genre)
+			const params = new GenreUsecaseParams(genre)
 
 			const findArtistsByGenre = new FindArtistsByGenreUsecase(this.artistsService)
 			const { data, error } = await findArtistsByGenre.execute(params)
@@ -191,7 +184,7 @@ export class ArtistsController implements IArtistCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)

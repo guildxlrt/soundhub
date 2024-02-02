@@ -1,5 +1,5 @@
 import { EventID, EventDTO, EventShortDTO, UserAuthID } from "Shared"
-import { Event, File } from "Domain"
+import { Event, File, RawFile, StreamFile } from "Domain"
 
 export interface EventsRepository {
 	create(data: Event, file?: File): Promise<boolean>
@@ -12,12 +12,19 @@ export interface EventsRepository {
 	findManyByPlace(place: string): Promise<EventShortDTO[]>
 }
 
-export interface EventsAddBackRepos {
+export interface ExtBackEventsRepos {
 	getOwner(id: EventID): Promise<number | undefined>
 	getImagePath(id: EventID): Promise<string | null | undefined>
 	setImagePath(path: string | null, id: EventID): Promise<boolean>
 }
 
-export interface EventsAddFrontRepos {}
+export interface ExtFrontEventsRepos {}
 
-export interface EventsBackendRepos extends EventsRepository, EventsAddBackRepos {}
+export interface EventsBackendRepos extends EventsRepository, ExtBackEventsRepos {
+	create(data: Event, file?: StreamFile): Promise<boolean>
+	edit(data: Event, file?: StreamFile): Promise<boolean>
+}
+export interface EventsFrontendRepos extends EventsRepository, ExtFrontEventsRepos {
+	create(data: Event, file?: RawFile): Promise<boolean>
+	edit(data: Event, file?: RawFile): Promise<boolean>
+}

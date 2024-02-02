@@ -1,18 +1,18 @@
 import { EventShortDTO } from "Shared"
 import { ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
-import { Reply } from "../../assets"
+import { UsecaseReply } from "../../utils"
 
 export class GetAllEventsUsecase {
-	eventsService: EventsService
-	constructor(eventsService: EventsService) {
-		this.eventsService = eventsService
+	mainService: EventsService
+	constructor(mainService: EventsService) {
+		this.mainService = mainService
 	}
 
-	async execute(): Promise<Reply<EventShortDTO[]>> {
+	async execute(): Promise<UsecaseReply<EventShortDTO[]>> {
 		try {
-			const data = await this.eventsService.getAll()
-			return new Reply<EventShortDTO[]>(data)
+			const data = await this.mainService.getAll()
+			return new UsecaseReply<EventShortDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

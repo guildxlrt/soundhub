@@ -30,7 +30,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 
 	async changeEmail(input: {
 		actual: UserEmail
-		newEmail: UserEmail
+		newOne: UserEmail
 		confirm: UserEmail
 	}): Promise<boolean> {
 		try {
@@ -47,7 +47,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 
 	async changePass(input: {
 		actual: UserPassword
-		newPass: UserPassword
+		newOne: UserPassword
 		confirm: UserPassword
 	}): Promise<boolean> {
 		try {

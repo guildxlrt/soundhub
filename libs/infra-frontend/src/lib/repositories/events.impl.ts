@@ -1,24 +1,21 @@
 import axios from "axios"
-import { ToFormData, Response } from "../../assets"
-import { Event } from "Domain"
+import { NewFormData } from "../../assets"
 import {
 	EventDTO,
 	EntityID,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
-	ErrorMsg,
 	EventShortDTO,
-	IFile,
 	ErrorHandler,
 } from "Shared"
-import { EventsRepository } from "Domain"
+import { EventsRepository, Event, RawFile } from "Domain"
 
 export class EventsImplement implements EventsRepository {
-	async create(data: Event, file?: IFile): Promise<boolean> {
+	async create(data: Event, file?: RawFile): Promise<boolean> {
 		const formData = new FormData()
-		ToFormData.file(formData, file as IFile)
-		ToFormData.object(formData, data)
+		NewFormData.fromFile(formData, file as RawFile)
+		NewFormData.fromObject(formData, data)
 
 		try {
 			return await axios({
@@ -32,10 +29,10 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async edit(data: Event, file?: IFile): Promise<boolean> {
+	async edit(data: Event, file?: RawFile): Promise<boolean> {
 		const formData = new FormData()
-		ToFormData.file(formData, file as IFile)
-		ToFormData.object(formData, data)
+		NewFormData.fromFile(formData, file as RawFile)
+		NewFormData.fromObject(formData, data)
 
 		try {
 			return await axios({

@@ -1,4 +1,4 @@
-import { File, StorageRepository } from "Domain"
+import { StreamFile, StorageRepository } from "Domain"
 import { ErrorHandler } from "Shared"
 
 export class StorageService implements StorageRepository {
@@ -8,7 +8,7 @@ export class StorageService implements StorageRepository {
 		this.service = service
 	}
 
-	async move(file: File, destination: string): Promise<string> {
+	async move(file: StreamFile, destination: string): Promise<string> {
 		try {
 			return await this.service.move(file, destination)
 		} catch (error) {

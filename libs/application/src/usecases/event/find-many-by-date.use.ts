@@ -1,20 +1,20 @@
-import { DateParamsAdapter, Reply } from "../../assets"
+import { DateUsecaseParams, UsecaseReply } from "../../utils"
 import { ErrorHandler } from "Shared"
 import { EventsService } from "../../services"
 import { EventShortDTO } from "Shared"
 
 export class FindEventsByDateUsecase {
-	eventsService: EventsService
-	constructor(eventsService: EventsService) {
-		this.eventsService = eventsService
+	mainService: EventsService
+	constructor(mainService: EventsService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: DateParamsAdapter): Promise<Reply<EventShortDTO[]>> {
+	async execute(input: DateUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
 		try {
 			const { date } = input
-			const data = await this.eventsService.findManyByDate(date)
+			const data = await this.mainService.findManyByDate(date)
 
-			return new Reply<EventShortDTO[]>(data)
+			return new UsecaseReply<EventShortDTO[]>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

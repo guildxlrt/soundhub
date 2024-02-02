@@ -1,77 +1,67 @@
-import {
-	ApiErrHandler,
-	ApiRequest,
-	ApiRes,
-	ArtistsImplement,
-	UserAuthsImplement,
-} from "Infra-backend"
+import { ApiErrHandler, ArtistsImplement, BcryptService, UserAuthsImplement } from "Infra-backend"
 import {
 	ArtistsService,
-	ChangeEmailParamsAdapter,
+	ChangeEmailUsecaseParams,
 	ChangeEmailUsecase,
-	ChangePassParamsAdapter,
+	ChangePassUsecaseParams,
 	ChangePassUsecase,
-	LoginParamsAdapter,
+	LoginUsecaseParams,
 	LoginUsecase,
 	LogoutUsecase,
 	UserAuthService,
 } from "Application"
 import {
+	ExpressRequest,
+	ExpressResponse,
 	ChangeEmailDTO,
 	ChangePassDTO,
 	ErrorMsg,
 	LoginDTO,
-	ReplyDTO,
-	UserCookieName,
+	ResponseDTO,
 	htmlError,
 } from "Shared"
-import { IAuthCtrl } from "../assets"
+import { Cookie, IAuthCtrl, cookieName } from "../assets"
 
 export class UserAuthController implements IAuthCtrl {
 	private userAuthsImplement = new UserAuthsImplement()
 	private userAuthService = new UserAuthService(this.userAuthsImplement)
 	private artistsImplement = new ArtistsImplement()
 	private artistsService = new ArtistsService(this.artistsImplement)
+	private passwordService = new BcryptService()
 
-	async login(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async login(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as LoginDTO
-			const params = LoginParamsAdapter.fromDto(dto)
+			const params = LoginUsecaseParams.fromDto(dto)
 
-			// // Operators
-			// validators.changePass(
-			// 	{
-			// 		actual: actual,
-			// 		newPass: newPass,
-			// 		confirm: confirm,
-			// 	},
-			// 	envs.backend
-			// )
-
-			const login = new LoginUsecase(this.userAuthService, this.artistsService)
+			const login = new LoginUsecase(
+				this.userAuthService,
+				this.passwordService,
+				this.artistsService
+			)
 			const { data, error } = await login.execute(params)
 
 			if (error) throw error
 			if (!data || typeof data === "boolean") throw ErrorMsg.htmlError(htmlError[500])
 
-			const { name, val, options } = data.userCookie
+			const cookie = new Cookie(data)
+			const { name, val, options } = cookie
 			if (!name || !val || !options) throw ErrorMsg.htmlError(htmlError[500])
 
 			// Return infos
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.cookie(name, val, options).status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async logout(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async logout(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
-			const cookie: UserCookieName = "jwt"
 			const token = req.cookies.jwt
 			if (!token) return res.status(401).json(ErrorMsg.htmlError(htmlError[401]))
 
@@ -81,26 +71,26 @@ export class UserAuthController implements IAuthCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
-			return res.clearCookie(cookie).status(202).json(reponse)
+			const reponse = new ResponseDTO(data)
+			return res.clearCookie(cookieName).status(202).json(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async changeEmail(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async changeEmail(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangeEmailDTO
 			const user = req.auth?.id as number
-			const params = ChangeEmailParamsAdapter.fromDto(dto, user)
+			const params = ChangeEmailUsecaseParams.fromDto(dto, user)
 
 			// // Operators
 			// validators.changePass(
 			// 	{
 			// 		actual: actual,
-			// 		newPass: newPass,
+			// 		newOne: newOne,
 			// 		confirm: confirm,
 			// 	},
 			// 	envs.backend
@@ -113,26 +103,26 @@ export class UserAuthController implements IAuthCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async changePass(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async changePass(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangePassDTO
 			const user = req.auth?.id as number
-			const params = ChangePassParamsAdapter.fromDto(dto, user)
+			const params = ChangePassUsecaseParams.fromDto(dto, user)
 
 			// // Operators
 			// validators.changePass(
 			// 	{
 			// 		actual: actual,
-			// 		newPass: newPass,
+			// 		newOne: newOne,
 			// 		confirm: confirm,
 			// 	},
 			// 	envs.backend
@@ -145,7 +135,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)

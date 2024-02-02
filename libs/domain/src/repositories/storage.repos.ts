@@ -1,7 +1,7 @@
-import { File } from "../entities"
+import { StreamFile } from "../entities"
 
 export interface StorageRepository {
-	move(file: File, destination: string): Promise<string>
+	move(file: StreamFile, destination: string): Promise<string>
 	delete(filePath: string): Promise<boolean>
 	mkdir(): Promise<string>
 }

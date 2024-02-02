@@ -1,46 +1,53 @@
-import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { Reply, UpdateArtistParamsAdapter } from "../../assets"
-import { Artist, File } from "Domain"
+import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
+import { UsecaseReply, UpdateArtistUsecaseParams } from "../../utils"
 import { ArtistsService, StorageService } from "../../services"
 
 export class UpdateArtistUsecase {
-	artistsService: ArtistsService
+	mainService: ArtistsService
 	storageService?: StorageService
 
-	constructor(artistsService: ArtistsService, storageService?: StorageService) {
-		this.artistsService = artistsService
+	constructor(mainService: ArtistsService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
-	async execute(input: UpdateArtistParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: UpdateArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { profile, delAvatar, file } = input
-			if (this.storageService) return await this.backend(this.storageService, input)
-			else return await this.frontend(profile, delAvatar, file)
+			const { file, profile } = input
+			// validate
+			file?.validateImage
+			profile.sanitize
+
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
+			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(artist: Artist, delAvatar?: boolean, file?: File): Promise<Reply<boolean>> {
+	async frontend(input: UpdateArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const data = await this.artistsService.update(artist, delAvatar, file)
-			return new Reply<boolean>(data)
+			const { profile, delAvatar, file } = input
+
+			const data = await this.mainService.update(profile, delAvatar, file)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageService: StorageService,
-		input: UpdateArtistParamsAdapter
-	): Promise<Reply<boolean>> {
+		input: UpdateArtistUsecaseParams,
+		storageService: StorageService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { user_auth_id, id } = input.profile
 			const { file, profile, delAvatar } = input
 
 			// owner verification
-			const userAuths = await this.artistsService.getAuths(user_auth_id as number)
+			const userAuths = await this.mainService.getAuths(user_auth_id as number)
 			if (
 				(id as number) !== (userAuths.id as number) ||
 				(user_auth_id as number) !== (userAuths.user_auth_id as number)
@@ -48,7 +55,7 @@ export class UpdateArtistUsecase {
 				throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
-			await this.artistsService.update(profile)
+			await this.mainService.update(profile)
 
 			// STORING NEW FILE
 			// contradiction
@@ -56,7 +63,7 @@ export class UpdateArtistUsecase {
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
 			if (file || delAvatar === true) {
-				const oldImagePath = await this.artistsService.getAvatarPath(id as number)
+				const oldImagePath = await this.mainService.getAvatarPath(id as number)
 				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
 
 				if (file) {
@@ -64,14 +71,14 @@ export class UpdateArtistUsecase {
 					const newImagePath = await storageService.move(file, filePath.store.artist)
 
 					// persist path
-					await this.artistsService.setAvatarPath(newImagePath, id as number)
+					await this.mainService.setAvatarPath(newImagePath, id as number)
 				}
 
 				// delete old
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new Reply<boolean>(true)
+			return new UsecaseReply<boolean>(true)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

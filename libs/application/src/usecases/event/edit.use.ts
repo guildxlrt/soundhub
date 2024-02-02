@@ -1,51 +1,62 @@
-import { ErrorHandler, ErrorMsg, filePath, htmlError } from "Shared"
-import { EditEventParamsAdapter, Reply } from "../../assets"
-import { Event, File } from "Domain"
-import { EventsService, StorageService } from "../../services"
+import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
+import { EditEventUsecaseParams, UsecaseReply } from "../../utils"
+import { ArtistsService, EventsService, StorageService } from "../../services"
 
 export class EditEventUsecase {
-	private eventsService: EventsService
+	private mainService: EventsService
 	private storageService?: StorageService
+	private artistService?: ArtistsService
 
-	constructor(eventsService: EventsService, storageService?: StorageService) {
-		this.eventsService = eventsService
+	constructor(mainService: EventsService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
-	async execute(input: EditEventParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: EditEventUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) return await this.backend(this.storageService, input)
+			const { file, event } = input
+			// validate
+			file?.validateImage()
+			event.sanitize()
+
+			if (envs.backend && this.storageService && this.artistService)
+				return await this.backend(input, this.storageService, this.artistService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: EditEventParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: EditEventUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { event, file } = input
 
-			const data = await this.eventsService.edit(event, file)
-			return new Reply<boolean>(data)
+			const data = await this.mainService.edit(event, file)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
+		input: EditEventUsecaseParams,
 		storageService: StorageService,
-		input: EditEventParamsAdapter
-	): Promise<Reply<boolean>> {
+		artistService: ArtistsService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, event, delImage } = input
 			const { owner_id, id } = input.event
 
 			// owner verification
-			const eventOwner = await this.eventsService.getOwner(id as number)
+			const eventOwner = await this.mainService.getOwner(id as number)
 			if (owner_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
+			// validate
+			await event.validateArtistArray(artistService)
+
 			// persist
-			await this.eventsService.edit(event)
+			await this.mainService.edit(event)
 
 			// STORING NEW FILE
 			// contradiction
@@ -53,7 +64,7 @@ export class EditEventUsecase {
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
 			if (file || delImage === true) {
-				const oldImagePath = await this.eventsService.getImagePath(id as number)
+				const oldImagePath = await this.mainService.getImagePath(id as number)
 				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
 
 				if (file) {
@@ -61,14 +72,14 @@ export class EditEventUsecase {
 					const newImagePath = await file.move(storageService, filePath.store.event)
 
 					//move file
-					await this.eventsService.setImagePath(newImagePath, id as number)
+					await this.mainService.setImagePath(newImagePath, id as number)
 				}
 
 				// delete old
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new Reply<boolean>(true)
+			return new UsecaseReply<boolean>(true)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}

@@ -1,7 +1,2 @@
-import { GenresFormatter } from "./genres.fmt"
-
-// VALIDATORS
-
-export const formatters = {
-	genres: new GenresFormatter().format,
-}
+export * from "./genres.fmt"
+export * from "./strings.fmt"

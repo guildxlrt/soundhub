@@ -1,10 +1,9 @@
 import axios from "axios"
-import { ToFormData } from "../../assets"
-import { Announce } from "Domain"
+import { NewFormData } from "../../assets"
+import { Announce, RawFile } from "Domain"
 import {
 	AnnounceID,
 	ProfileID,
-	IFile,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
@@ -15,11 +14,11 @@ import {
 import { AnnouncesRepository } from "Domain"
 
 export class AnnouncesImplement implements AnnouncesRepository {
-	async create(data: Announce, file?: IFile): Promise<boolean> {
+	async create(data: Announce, file?: RawFile): Promise<boolean> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, file as IFile)
-			ToFormData.object(formData, data)
+			NewFormData.fromFile(formData, file as RawFile)
+			NewFormData.fromObject(formData, data)
 
 			return await axios({
 				method: "post",
@@ -32,11 +31,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async edit(data: Announce, file?: IFile): Promise<boolean> {
+	async edit(data: Announce, file?: RawFile): Promise<boolean> {
 		try {
 			const formData = new FormData()
-			ToFormData.file(formData, file as IFile)
-			ToFormData.object(formData, data)
+			NewFormData.fromFile(formData, file as RawFile)
+			NewFormData.fromObject(formData, data)
 
 			return await axios({
 				method: "put",

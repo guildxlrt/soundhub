@@ -11,9 +11,10 @@ import {
 	UserProfileType,
 	ArtistDTO,
 	INewArtistBackSucces,
+	IFindByAuthID,
 } from "Shared"
 import { dbClient } from "../prisma"
-import { ApiErrHandler, PassEncryptor } from "../utils"
+import { ApiErrHandler } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {
 	private userAuth = dbClient.userAuth
@@ -23,13 +24,12 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		try {
 			const { name, bio, members, genres } = data.profile
 			const { email, password } = data.userAuth
-			const hashedPass = await PassEncryptor.hash(password)
 
 			// PERSIST
 			const newUser = await this.userAuth.create({
 				data: {
-					email: email,
-					password: hashedPass,
+					email: email as string,
+					password: password as string,
 					artists: {
 						create: {
 							name: name,
@@ -136,7 +136,6 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getAll(): Promise<ArtistShortestDTO[]> {
 		try {
-			
 			const artists = await this.artist.findMany({
 				select: {
 					id: true,
@@ -173,6 +172,23 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
+	async verifyExistence(id: ProfileID): Promise<ProfileID> {
+		try {
+			const user = await this.artist.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					id: true,
+				},
+			})
+
+			return user.id
+		} catch (error) {
+			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+		}
+	}
+
 	async getAuths(id: ProfileID): Promise<{
 		id: number
 		user_auth_id: number
@@ -194,9 +210,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async findByAuthID(
-		userAuthID: UserAuthID
-	): Promise<{ profile: ArtistDTO; profileType: UserProfileType }> {
+	async findByAuthID(userAuthID: UserAuthID): Promise<IFindByAuthID> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {

@@ -1,11 +1,5 @@
-import {
-	ApiErrHandler,
-	ApiRequest,
-	ApiRes,
-	ReleasesImplement,
-	StorageImplement,
-} from "Infra-backend"
-import { File } from "Domain"
+import { ApiErrHandler, ReleasesImplement, StorageImplement } from "Infra-backend"
+import { StreamFile } from "Domain"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
@@ -13,23 +7,25 @@ import {
 	GetReleaseUsecase,
 	SetPrivStatusReleaseUsecase,
 	EditReleaseUsecase,
-	NewReleaseParamsAdapter,
-	EditReleaseParamsAdapter,
-	SetPrivStatusReleaseParamsAdapter,
-	IDParamsAdapter,
-	GenreParamsAdapter,
+	NewReleaseUsecaseParams,
+	EditReleaseUsecaseParams,
+	SetPrivStatusReleaseUsecaseParams,
+	IDUsecaseParams,
+	GenreUsecaseParams,
 	StorageService,
 	ReleasesService,
-	DateParamsAdapter,
+	DateUsecaseParams,
 	FindReleasesByDateUsecase,
 	FindReleasesByGenreUsecase,
 } from "Application"
 import {
+	ExpressRequest,
+	ExpressResponse,
 	GenreType,
 	EditReleaseDTO,
 	htmlError,
 	ErrorMsg,
-	ReplyDTO,
+	ResponseDTO,
 	ReleaseStatusDTO,
 	PostReleaseDTO,
 } from "Shared"
@@ -41,15 +37,15 @@ export class ReleasesController implements IReleasesCtrl {
 	private releasesImplement = new ReleasesImplement()
 	private releasesService = new ReleasesService(this.releasesImplement)
 
-	async create(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const user = req.auth?.profileID as number
 			const inputs: PostReleaseDTO = req.body as PostReleaseDTO
-			const cover = req.image as File
-			const audioFiles: File[] = req.songs as File[]
-			const params = NewReleaseParamsAdapter.fromDto(inputs, user, audioFiles, cover)
+			const cover = req.image as StreamFile
+			const audioFiles: StreamFile[] = req.songs as StreamFile[]
+			const params = NewReleaseUsecaseParams.fromDto(inputs, user, audioFiles, cover)
 
 			// // OPERATORS
 			// // genres
@@ -71,21 +67,21 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async edit(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async edit(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs: EditReleaseDTO = req.body as EditReleaseDTO
 			const user = req.auth?.profileID as number
-			const cover = req.image as File
-			const params = EditReleaseParamsAdapter.fromDto(inputs, user, cover)
+			const cover = req.image as StreamFile
+			const params = EditReleaseUsecaseParams.fromDto(inputs, user, cover)
 
 			// // OPERATORS
 			// // genres
@@ -99,20 +95,20 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async setPrivStatus(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async setPrivStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
 			const user = req.auth?.profileID as number
 			const { id }: ReleaseStatusDTO = req.body as ReleaseStatusDTO
-			const params = SetPrivStatusReleaseParamsAdapter.fromDtoBackend(id, user)
+			const params = SetPrivStatusReleaseUsecaseParams.fromDtoBackend(id, user)
 
 			// Saving Profile
 			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(this.releasesService)
@@ -121,19 +117,19 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(202).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = Number(req.params["id"])
-			const params = new IDParamsAdapter(id)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
 
 			const getRelease = new GetReleaseUsecase(this.releasesService)
 			const { data, error } = await getRelease.execute(params)
@@ -141,14 +137,14 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
@@ -158,19 +154,19 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByArtist(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByArtist(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = Number(req.params["id"])
-			const params = new IDParamsAdapter(id)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
 
 			const findReleasesByArtist = new FindReleasesByArtistUsecase(this.releasesService)
 			const { data, error } = await findReleasesByArtist.execute(params)
@@ -178,19 +174,19 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByGenre(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByGenre(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const genre = req.params["genre"] as GenreType
-			const params = new GenreParamsAdapter(genre)
+			const params = new GenreUsecaseParams(genre)
 
 			const findReleasesByGenre = new FindReleasesByGenreUsecase(this.releasesService)
 			const { data, error } = await findReleasesByGenre.execute(params)
@@ -198,19 +194,19 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)
 		}
 	}
 
-	async findManyByDate(req: ApiRequest, res: ApiRes): Promise<ApiRes> {
+	async findManyByDate(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const inputs = req.params?.["encoded"]
-			const params = DateParamsAdapter.fromDto(inputs)
+			const params = DateUsecaseParams.fromDto(inputs)
 
 			const findEventsByDate = new FindReleasesByDateUsecase(this.releasesService)
 			const { data, error } = await findEventsByDate.execute(params)
@@ -218,7 +214,7 @@ export class ReleasesController implements IReleasesCtrl {
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ReplyDTO(data)
+			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return new ApiErrHandler().reply(error, res)

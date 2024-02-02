@@ -1,20 +1,33 @@
-import { ProfileID, GenresArray, UserAuthID } from "Shared"
+import {
+	ProfileID,
+	GenresArray,
+	UserAuthID,
+	StringFormatter,
+	FieldsValidator,
+	GenresFormatter,
+	ArtistsArrayValidator,
+	IMember,
+} from "Shared"
 import { EntityLayer } from "./layers"
 
 export class Artist extends EntityLayer {
 	readonly user_auth_id: UserAuthID | null
 	name: string
 	bio: string
-	members: string[]
+	members: IMember[]
 	genres: GenresArray
 	avatarPath: string | null
+
+	private stringFormatter = new StringFormatter()
+	private genresFormatter = new GenresFormatter()
+	private artistsArrayValidator = new ArtistsArrayValidator()
 
 	constructor(
 		id: ProfileID | null,
 		user_auth_id: UserAuthID | null,
 		name: string,
 		bio: string,
-		members: string[],
+		members: IMember[],
 		genres: GenresArray,
 		avatarPath: string | null
 	) {
@@ -23,9 +36,7 @@ export class Artist extends EntityLayer {
 		this.user_auth_id = user_auth_id
 		this.name = name
 		this.bio = bio
-
-		members !== null && members.length >= 1 ? (this.members = members) : (this.members = [])
-
+		this.members = members
 		this.genres = genres
 		this.avatarPath = avatarPath
 	}
@@ -35,5 +46,12 @@ export class Artist extends EntityLayer {
 	}
 	updateAvatarPath(avatarPath: string | null) {
 		this.avatarPath = avatarPath
+	}
+
+	async sanitize() {
+		this.name = this.stringFormatter.short(this.name)
+		this.bio = this.stringFormatter.long(this.bio)
+		await this.artistsArrayValidator.validateMembers(this.members)
+		this.genres = this.genresFormatter.format(this.genres)
 	}
 }

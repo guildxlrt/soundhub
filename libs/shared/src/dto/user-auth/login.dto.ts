@@ -10,24 +10,24 @@ export class LoginDTO {
 
 export class ChangePassDTO {
 	readonly actual: string
-	readonly newPass: string
+	readonly newOne: string
 	readonly confirm: string
 
-	constructor(actual: string, newPass: string, confirm: string) {
+	constructor(actual: string, newOne: string, confirm: string) {
 		this.actual = actual
 		this.confirm = confirm
-		this.newPass = newPass
+		this.newOne = newOne
 	}
 }
 
 export class ChangeEmailDTO {
 	readonly actual: string
-	readonly newEmail: string
+	readonly newOne: string
 	readonly confirm: string
 
-	constructor(actual: string, newEmail: string, confirm: string) {
+	constructor(actual: string, newOne: string, confirm: string) {
 		this.actual = actual
 		this.confirm = confirm
-		this.newEmail = newEmail
+		this.newOne = newOne
 	}
 }

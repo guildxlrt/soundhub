@@ -1,16 +1,17 @@
 import { ErrorHandler, envs, htmlError } from "Shared"
-import { ChangeEmailParamsAdapter, Reply } from "../../assets"
+import { ChangeEmailUsecaseParams, UsecaseReply } from "../../utils"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
+import { UserAuth } from "Domain"
 
 export class ChangeEmailUsecase {
-	private userAuthService: UserAuthService
+	private mainService: UserAuthService
 
-	constructor(userAuthService: UserAuthService) {
-		this.userAuthService = userAuthService
+	constructor(mainService: UserAuthService) {
+		this.mainService = mainService
 	}
 
-	async execute(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: ChangeEmailUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
@@ -19,78 +20,44 @@ export class ChangeEmailUsecase {
 		}
 	}
 
-	async frontend(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: ChangeEmailUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { actual, confirm, newEmail } = input
-			const data = await this.userAuthService.changeEmail({
+			const { actual, confirm, newOne } = input
+			const data = await this.mainService.changeEmail({
 				actual: actual,
-				newEmail: newEmail,
+				newOne: newOne,
 				confirm: confirm,
 			})
-			return new Reply<boolean>(data)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async backend(input: ChangeEmailParamsAdapter): Promise<Reply<boolean>> {
+	async backend(input: ChangeEmailUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { newEmail, id } = input
+			const { id, newOne, actual, confirm } = input
+
+			UserAuth.validateNewEmail(actual, newOne, confirm)
 
 			// AUTHENTIFICATE
-			const auths = await this.userAuthService.getByID(id as number)
-			const compareIDs = await this.userAuthService.compareIDs(auths.id, id as number)
-			const compareEmails = await this.userAuthService.compareEmails(auths.email, newEmail)
+			const authDb = await this.mainService.getByID(id as number)
+			const compareIDs = authDb.id === (id as number)
+			const mustBeSimilar = actual === authDb.email
+			const mustBeDifferent = newOne === authDb.email
 
-			if (!compareIDs || !compareEmails) throw ErrorMsg.htmlError(htmlError[403])
+			if (!compareIDs || !mustBeSimilar || !mustBeDifferent)
+				throw ErrorMsg.htmlError(htmlError[403])
 
 			// SAVE
-
-			const data = await this.userAuthService.changePass({
+			const data = await this.mainService.changePass({
 				id: id as number,
-				pass: newEmail,
+				pass: newOne,
 			})
 
-			return new Reply<boolean>(data)
+			return new UsecaseReply<boolean>(data)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
-
-	// async executeOld(input: ChangeEmailParamsAdapter):Promise<Reply<boolean>>{
-	// 	try {
-	// 		const { actual, confirm, newEmail, id } = input
-
-	// 		// Operators
-	// 		validators.changeEmail(
-	// 			{
-	// 				actual: actual,
-	// 				newEmail: newEmail,
-	// 				confirm: confirm,
-	// 			},
-	// 			envs.backend
-	// 		)
-
-	// 		if (this.userAuthService) {
-	// 			const data = await this.userAuthService.getByID(id as number)
-
-	// 			const compareIDs = await this.userAuthService.compareIDs(data.id, id as number)
-	// 			const compareEmails = await this.userAuthService.compareEmails(data.email, newEmail)
-
-	// 			if (!compareIDs || !compareEmails) throw ErrorMsg.htmlError(htmlError[403])
-
-	// 			return await this.userAuthService.changePass({
-	// 				id: id as number,
-	// 				pass: newEmail,
-	// 			})
-	// 		} else
-	// 			return await this.userAuthService.changeEmail({
-	// 				actual: actual,
-	// 				newEmail: newEmail,
-	// 				confirm: confirm,
-	// 			})
-	// 	} catch (error) {
-	// 		return new Reply<boolean>(undefined, new ErrorMsg(`Error: failed to persist`))
-	// 	}
-	// }
 }

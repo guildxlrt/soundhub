@@ -1,6 +1,6 @@
-import { ErrorHandler, ErrorMsg, htmlError } from "Shared"
+import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { AnnouncesService, StorageService } from "../../services"
-import { DeleteAnnounceParamsAdapter, Reply } from "../../assets"
+import { DeleteAnnounceUsecaseParams, UsecaseReply } from "../../utils"
 
 export class DeleteAnnounceUsecase {
 	private announcesService: AnnouncesService
@@ -10,30 +10,32 @@ export class DeleteAnnounceUsecase {
 		this.announcesService = announcesService
 		this.storageService = storageService
 	}
-	async execute(input: DeleteAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async execute(input: DeleteAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (this.storageService) return await this.backend(this.storageService, input)
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
-	async frontend(input: DeleteAnnounceParamsAdapter): Promise<Reply<boolean>> {
+	async frontend(input: DeleteAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id } = input
 
 			const res = await this.announcesService.delete(id)
-			return new Reply<boolean>(res)
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
 	}
 
 	async backend(
-		storageService: StorageService,
-		input: DeleteAnnounceParamsAdapter
-	): Promise<Reply<boolean>> {
+		input: DeleteAnnounceUsecaseParams,
+		storageService: StorageService
+	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id, ownerID } = input
 
@@ -47,7 +49,7 @@ export class DeleteAnnounceUsecase {
 
 			// persist
 			const res = await this.announcesService.delete(id)
-			return new Reply<boolean>(res)
+			return new UsecaseReply<boolean>(res)
 		} catch (error) {
 			throw new ErrorHandler().handle(error)
 		}
