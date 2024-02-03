@@ -16,7 +16,7 @@ export class ChangeEmailUsecase {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -30,7 +30,7 @@ export class ChangeEmailUsecase {
 			})
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -57,7 +57,7 @@ export class ChangeEmailUsecase {
 
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

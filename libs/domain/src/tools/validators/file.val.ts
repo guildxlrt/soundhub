@@ -1,5 +1,11 @@
-import { ErrorHandler, ErrorMsg, htmlError } from "../../errors"
-import { AUDIO_MIME_TYPES, IMAGE_MIME_TYPES, Stream } from "../../types"
+import {
+	ErrorHandler,
+	ErrorMsg,
+	htmlError,
+	AUDIO_MIME_TYPES,
+	IMAGE_MIME_TYPES,
+	Stream,
+} from "Shared"
 
 export class FileValidator {
 	validate(file: Stream, type: "audio" | "image"): void {
@@ -18,7 +24,7 @@ export class FileValidator {
 				if (!check) throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
 			} else throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
 		}
 	}
 }

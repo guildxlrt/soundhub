@@ -12,7 +12,7 @@ export class BcryptService implements PasswordServicePort {
 
 			return hash
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async areSimilar(password: string, encrypted: string): Promise<boolean> {
@@ -22,7 +22,7 @@ export class BcryptService implements PasswordServicePort {
 
 			return await bcrypt.compare(password, encrypted)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -35,7 +35,7 @@ export class BcryptService implements PasswordServicePort {
 			if (!areDifferent) return false
 			return true
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -18,7 +18,7 @@ export class GenresFormatter {
 
 			return [formattedArray[0], formattedArray[1], formattedArray[0]]
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

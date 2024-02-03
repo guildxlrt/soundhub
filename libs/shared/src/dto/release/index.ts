@@ -1,5 +1,5 @@
 export * from "./edit.dto"
 export * from "./post.dto"
-export * from "./get"
-export * from "./release-short"
+export * from "./get-full"
+export * from "./get-short"
 export * from "./status.dto"

@@ -20,7 +20,7 @@ export class ChangePassUsecase {
 			else if (envs.backend && !this.passwordService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -35,7 +35,7 @@ export class ChangePassUsecase {
 			})
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async backend(
@@ -66,7 +66,7 @@ export class ChangePassUsecase {
 
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

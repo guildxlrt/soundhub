@@ -1,6 +1,6 @@
-import { ApiErrHandler } from "Infra-backend"
 import multer, { Multer } from "multer"
 import { NextResponse, ExpressRequest, ExpressResponse, IMAGE_MIME_TYPES, filePath } from "Shared"
+import { ApiErrorHandler } from "../assets"
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
@@ -13,12 +13,16 @@ const storage = multer.diskStorage({
 
 const upload: Multer = multer({ storage: storage })
 
-export const imageStorage = async (req: ExpressRequest, res: ExpressResponse, next: NextResponse) => {
+export const imageStorage = async (
+	req: ExpressRequest,
+	res: ExpressResponse,
+	next: NextResponse
+) => {
 	try {
 		upload.single("image")
 
 		next()
 	} catch (error) {
-		await new ApiErrHandler().reply(error, res)
+		await new ApiErrorHandler().reply(error, res)
 	}
 }

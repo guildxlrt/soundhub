@@ -29,7 +29,7 @@ export class CreateReleaseUsecase {
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -41,7 +41,7 @@ export class CreateReleaseUsecase {
 			const res = await this.mainService.create({ data: data, cover }, songs)
 			return new UsecaseReply(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -90,7 +90,7 @@ export class CreateReleaseUsecase {
 
 			return new UsecaseReply<boolean>(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

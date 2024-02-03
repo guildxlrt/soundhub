@@ -8,6 +8,7 @@ export interface AnnouncesRepository {
 	get(id: ProfileID): Promise<AnnounceDTO>
 	getAll(): Promise<AnnounceShortDTO[]>
 	findManyByArtist(id: ProfileID): Promise<AnnounceShortDTO[]>
+	findManyByDate(date: Date): Promise<AnnounceShortDTO[]>
 }
 
 export interface ExtBackAnnouncesRepo {

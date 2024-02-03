@@ -1,5 +1,6 @@
-import { AnnounceID, ProfileID, StringFormatter } from "Shared"
+import { AnnounceID, ProfileID } from "Shared"
 import { EntityLayer } from "./layers"
+import { StringFormatter } from "../tools"
 
 export class Announce extends EntityLayer {
 	readonly owner_id: ProfileID

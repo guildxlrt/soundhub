@@ -24,7 +24,7 @@ export class CreateEventUsecase {
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -34,7 +34,7 @@ export class CreateEventUsecase {
 			const data = await this.mainService.create(event, file)
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -58,7 +58,7 @@ export class CreateEventUsecase {
 			const data = await this.mainService.create(event)
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

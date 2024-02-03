@@ -17,7 +17,7 @@ export class DeleteAnnounceUsecase {
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -28,7 +28,7 @@ export class DeleteAnnounceUsecase {
 			const res = await this.announcesService.delete(id)
 			return new UsecaseReply<boolean>(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -51,7 +51,7 @@ export class DeleteAnnounceUsecase {
 			const res = await this.announcesService.delete(id)
 			return new UsecaseReply<boolean>(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

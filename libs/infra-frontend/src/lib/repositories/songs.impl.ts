@@ -19,7 +19,7 @@ export class SongsImplement implements SongsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -31,7 +31,7 @@ export class SongsImplement implements SongsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

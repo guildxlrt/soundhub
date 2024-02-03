@@ -1,6 +1,6 @@
 import { UserAuthsBackendRepos } from "Domain"
-import { ErrorMsg, UserAuthID, htmlError, UserEmail, UserPassword } from "Shared"
-import { ApiErrHandler } from "../utils"
+import { ErrorMsg, UserAuthID, htmlError, UserEmail, AnyObject } from "Shared"
+import { DatabaseErrorHandler } from "../utils"
 import { dbClient } from "../prisma"
 
 export class UserAuthsImplement implements UserAuthsBackendRepos {
@@ -13,12 +13,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 		return true
 	}
 
-	async changePass(input: {
-		actual: string
-		newOne: string
-		confirm: string | null
-		userAuthID: number
-	}): Promise<boolean> {
+	async changePass(input: AnyObject): Promise<boolean> {
 		try {
 			const { newOne, userAuthID } = input
 
@@ -33,16 +28,11 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async changeEmail(input: {
-		actual: string
-		newOne: string
-		confirm: string | null
-		userAuthID: number
-	}): Promise<boolean> {
+	async changeEmail(input: AnyObject): Promise<boolean> {
 		try {
 			const { newOne, userAuthID } = input
 
@@ -57,7 +47,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -82,7 +72,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -107,7 +97,7 @@ export class UserAuthsImplement implements UserAuthsBackendRepos {
 				throw ErrorMsg.htmlError(htmlError[404])
 			else return authData
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 }

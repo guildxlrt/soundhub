@@ -42,7 +42,7 @@ export class CreateArtistUsecase {
 				throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -80,7 +80,7 @@ export class CreateArtistUsecase {
 
 			return new UsecaseReply<UserToken>(userToken)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -105,7 +105,7 @@ export class CreateArtistUsecase {
 
 			return new UsecaseReply<boolean>(newUserAuth)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

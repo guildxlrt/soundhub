@@ -5,12 +5,13 @@ import {
 	ArtistShortestDTO,
 	UserEmail,
 	UserPassword,
-	UserProfileType,
 	UserAuthID,
-	ArtistDTO,
-	INewArtistSucces,
+	INewArtistSuccess,
 	INewArtistBackSucces,
-	IFindByAuthID,
+	IFindByAuthIDSuccess,
+	IGetArtistAuthsSuccess,
+	IGetArtistNameSuccess,
+	IArtistName,
 } from "Shared"
 import { StreamFile, Artist, UserAuth, RawFile, File } from "Domain"
 
@@ -22,7 +23,7 @@ export interface ArtistsRepository {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<INewArtistSucces>
+	): Promise<INewArtistSuccess>
 	update(data: Artist, delAvatar?: boolean, file?: File): Promise<boolean>
 	getByID(id: ProfileID): Promise<ArtistShortDTO>
 	getByEmail(email: UserEmail): Promise<ArtistShortDTO>
@@ -32,11 +33,9 @@ export interface ArtistsRepository {
 
 export interface ExtBackArtistsRepos {
 	verifyExistence(id: ProfileID): Promise<ProfileID>
-	getAuths(id: ProfileID): Promise<{
-		id: number
-		user_auth_id: number
-	}>
-	findByAuthID(id: UserAuthID): Promise<IFindByAuthID>
+	getAuths(id: ProfileID): Promise<IGetArtistAuthsSuccess>
+	getNames(ids: ProfileID[]): Promise<IArtistName[]>
+	findByAuthID(id: UserAuthID): Promise<IFindByAuthIDSuccess>
 	getAvatarPath(id: ProfileID): Promise<string | null>
 	setAvatarPath(path: string | null, id: ProfileID): Promise<boolean>
 }

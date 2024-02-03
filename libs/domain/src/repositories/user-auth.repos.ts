@@ -1,20 +1,10 @@
-import { UserAuthID, UserEmail, UserPassword } from "Shared"
+import { AnyObject, ProfileID, UserAuthID, UserEmail, UserPassword } from "Shared"
 
 export interface UserAuthsRepository {
 	login(email: unknown, password: unknown): Promise<boolean>
 	logout(): Promise<boolean>
-	changePass(input: {
-		actual: UserPassword
-		newOne: UserPassword
-		confirm: UserPassword | null
-		userAuthID?: UserAuthID
-	}): Promise<boolean>
-	changeEmail(input: {
-		actual: UserEmail
-		newOne: UserEmail
-		confirm: UserEmail | null
-		userAuthID?: UserAuthID
-	}): Promise<boolean>
+	changePass(input: AnyObject): Promise<boolean>
+	changeEmail(input: AnyObject): Promise<boolean>
 }
 
 export interface ExtBackUserAuthsRepos {
@@ -33,21 +23,17 @@ export interface ExtBackUserAuthsRepos {
 export interface ExtFrontUserAuthsRepos {}
 
 export interface UserAuthsBackendRepos extends UserAuthsRepository, ExtBackUserAuthsRepos {
+	changePass(input: { id: ProfileID; pass: UserPassword }): Promise<boolean>
+	changeEmail(input: { id: ProfileID; email: UserEmail }): Promise<boolean>
+}
+
+export interface UserAuthsFrontendRepos extends UserAuthsRepository {
 	changePass(input: {
 		actual: UserPassword
 		newOne: UserPassword
 		confirm: UserPassword | null
 		userAuthID: UserAuthID
 	}): Promise<boolean>
-	changeEmail(input: {
-		actual: UserEmail
-		newOne: UserEmail
-		confirm: UserEmail | null
-		userAuthID: UserAuthID
-	}): Promise<boolean>
-}
-
-export interface UserAuthsFrontendRepos extends UserAuthsRepository {
 	login(email: UserEmail, password: UserPassword): Promise<boolean>
 	logout(): Promise<boolean>
 }

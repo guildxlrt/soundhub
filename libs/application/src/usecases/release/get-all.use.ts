@@ -1,4 +1,4 @@
-import { ErrorHandler, ReleaseShortDTO } from "Shared"
+import { ErrorHandler, GetShortReleaseDTO } from "Shared"
 import { ReleasesService } from "../../services"
 import { UsecaseReply } from "../../utils"
 
@@ -8,12 +8,12 @@ export class GetAllReleasesUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(): Promise<UsecaseReply<ReleaseShortDTO[]>> {
+	async execute(): Promise<UsecaseReply<GetShortReleaseDTO[]>> {
 		try {
 			const data = await this.mainService.getAll()
-			return new UsecaseReply<ReleaseShortDTO[]>(data)
+			return new UsecaseReply<GetShortReleaseDTO[]>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

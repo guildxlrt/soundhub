@@ -24,7 +24,7 @@ export class EditEventUsecase {
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -35,7 +35,7 @@ export class EditEventUsecase {
 			const data = await this.mainService.edit(event, file)
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -46,11 +46,11 @@ export class EditEventUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, event, delImage } = input
-			const { owner_id, id } = input.event
+			const { organisator_id, id } = input.event
 
 			// owner verification
 			const eventOwner = await this.mainService.getOwner(id as number)
-			if (owner_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (organisator_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// validate
 			await event.validateArtistArray(artistService)
@@ -81,7 +81,7 @@ export class EditEventUsecase {
 
 			return new UsecaseReply<boolean>(true)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

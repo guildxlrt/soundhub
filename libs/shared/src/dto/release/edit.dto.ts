@@ -11,7 +11,7 @@ interface UpdateReleaseDTO {
 interface UpdateSongDTO {
 	readonly id: number
 	readonly title: string
-	readonly featuring: number[]
+	readonly feats: number[]
 	readonly lyrics: string | null
 }
 
@@ -38,7 +38,7 @@ export class EditReleaseDTO {
 			return {
 				id: data?.["id"],
 				title: data?.["title"],
-				featuring: data?.["featuring"],
+				feats: data?.["feats"],
 				lyrics: data?.["lyrics"],
 			}
 		})

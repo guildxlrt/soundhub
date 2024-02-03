@@ -14,7 +14,7 @@ export class GetSongUsecase {
 			const data = await this.mainService.get(id)
 			return new UsecaseReply<SongDTO>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -10,7 +10,7 @@ interface NewReleaseDTO {
 
 interface NewSongDTO {
 	readonly title: string
-	readonly featuring: number[]
+	readonly feats: number[]
 	readonly lyrics: string | null
 }
 
@@ -34,7 +34,7 @@ export class PostReleaseDTO {
 		const cleanSongs: NewSongDTO[] = songs.map((data) => {
 			return {
 				title: data?.["title"],
-				featuring: data?.["featuring"],
+				feats: data?.["feats"],
 				lyrics: data?.["lyrics"],
 			}
 		})

@@ -14,7 +14,7 @@ export class GetAllArtistsUsecase {
 
 			return new UsecaseReply<ArtistShortestDTO[]>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

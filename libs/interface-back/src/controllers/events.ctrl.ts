@@ -1,4 +1,4 @@
-import { ApiErrHandler, EventsImplement, StorageImplement } from "Infra-backend"
+import { EventsImplement, StorageImplement } from "Infra-backend"
 import {
 	CreateEventUsecase,
 	DeleteEventUsecaseParams,
@@ -16,6 +16,8 @@ import {
 	EventsService,
 	DateUsecaseParams,
 	PlaceUsecaseParams,
+	FindEventsByArtistGenreUsecase,
+	GenreUsecaseParams,
 } from "Application"
 import { StreamFile } from "Domain"
 import {
@@ -27,7 +29,7 @@ import {
 	ErrorMsg,
 	ResponseDTO,
 } from "Shared"
-import { IEventsCtrl } from "../assets"
+import { ApiErrorHandler, IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
 	private storageImplement = new StorageImplement()
@@ -44,10 +46,6 @@ export class EventsController implements IEventsCtrl {
 			const event = req.body as CreateEventDTO
 			const params = NewEventUsecaseParams.fromDto(event, owner, file)
 
-			// // Operators
-			// // file
-			// if (file) validators.file(file, IMAGE_MIME_TYPES)
-
 			// Saving Profile
 			const createEvent = new CreateEventUsecase(this.eventsService, this.storageService)
 			const { data, error } = await createEvent.execute(params)
@@ -56,9 +54,9 @@ export class EventsController implements IEventsCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -71,21 +69,17 @@ export class EventsController implements IEventsCtrl {
 			const event = req.body as EditEventDTO
 			const params = EditEventUsecaseParams.fromDto(event, owner, file)
 
-			// // Operators
-			// // file
-			// if (file) validators.file(file, IMAGE_MIME_TYPES)
-
 			// Saving Changes
-			const EditEvent = new EditEventUsecase(this.eventsService)
+			const EditEvent = new EditEventUsecase(this.eventsService, this.storageService)
 			const { data, error } = await EditEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -101,16 +95,16 @@ export class EventsController implements IEventsCtrl {
 			// ... doing some heathcheck
 
 			// Saving Profile
-			const deleteEvent = new DeleteEventUsecase(this.eventsService)
+			const deleteEvent = new DeleteEventUsecase(this.eventsService, this.storageService)
 			const { data, error } = await deleteEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -130,7 +124,7 @@ export class EventsController implements IEventsCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -147,67 +141,83 @@ export class EventsController implements IEventsCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
-	async findManyByArtist(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+	async findMany(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+		const date = req.query?.["date"] as string
+		const artistID = req.query?.["artist"] as string
+		const genre = req.query?.["genre"] as string
+		const place = req.query?.["place"] as string
 
-			const findEventsByArtist = new FindEventsByArtistUsecase(this.eventsService)
-			const { data, error } = await findEventsByArtist.execute(params)
+		if (artistID) {
+			try {
+				const params = new IDUsecaseParams(artistID)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+				const findEventsByArtist = new FindEventsByArtistUsecase(this.eventsService)
+				const { data, error } = await findEventsByArtist.execute(params)
 
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
-	}
+		if (date) {
+			try {
+				const params = DateUsecaseParams.fromReqParams(date)
 
-	async findManyByDate(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+				const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
+				const { data, error } = await findEventsByDate.execute(params)
 
-			const inputs = req.params?.["encoded"]
-			const params = DateUsecaseParams.fromDto(inputs)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
-			const { data, error } = await findEventsByDate.execute(params)
-
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
-	}
+		if (genre) {
+			try {
+				const params = new PlaceUsecaseParams(genre)
 
-	async findManyByPlace(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+				const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
+				const { data, error } = await findEventsByPlace.execute(params)
 
-			const inputs = req.params?.["encoded"]
-			const params = new PlaceUsecaseParams(inputs)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
-			const { data, error } = await findEventsByPlace.execute(params)
-
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
+		if (place) {
+			try {
+				const params = new GenreUsecaseParams(place)
+
+				const findEventsByGenre = new FindEventsByArtistGenreUsecase(this.eventsService)
+				const { data, error } = await findEventsByGenre.execute(params)
+
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
+		}
+
+		return res.status(202).end()
 	}
 }

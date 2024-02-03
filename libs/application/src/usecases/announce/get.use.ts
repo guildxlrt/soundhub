@@ -15,7 +15,7 @@ export class GetAnnounceUsecase {
 			const data = await this.announcesService.get(id)
 			return new UsecaseReply<AnnounceShortDTO>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

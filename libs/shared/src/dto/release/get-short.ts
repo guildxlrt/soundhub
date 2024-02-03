@@ -1,6 +1,6 @@
 import { AnyObject } from "../../types"
 
-export class ReleaseShortDTO {
+export class GetShortReleaseDTO {
 	readonly id: number
 	readonly owner_id: number
 	readonly title: string
@@ -21,8 +21,8 @@ export class ReleaseShortDTO {
 		this.genres = genres
 	}
 
-	static createFromData(data: AnyObject): ReleaseShortDTO {
-		return new ReleaseShortDTO(
+	static createFromData(data: AnyObject): GetShortReleaseDTO {
+		return new GetShortReleaseDTO(
 			data?.["id"],
 			data?.["title"],
 			data?.["owner_id"],
@@ -31,9 +31,9 @@ export class ReleaseShortDTO {
 		)
 	}
 
-	static createArrayFromData(data: AnyObject[]): ReleaseShortDTO[] {
-		return data.map((release): ReleaseShortDTO => {
-			return new ReleaseShortDTO(
+	static createArrayFromData(data: AnyObject[]): GetShortReleaseDTO[] {
+		return data.map((release): GetShortReleaseDTO => {
+			return new GetShortReleaseDTO(
 				release?.["id"],
 				release?.["title"],
 				release?.["owner_id"],

@@ -1,4 +1,4 @@
-import { ErrorHandler, ReleaseShortDTO } from "Shared"
+import { ErrorHandler, GetShortReleaseDTO } from "Shared"
 import { GenreType } from "Shared"
 import { ReleasesService } from "../../services"
 import { UsecaseReply } from "../../utils"
@@ -9,14 +9,14 @@ export class FindReleasesByGenreUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(input: { genre: GenreType }): Promise<UsecaseReply<ReleaseShortDTO[]>> {
+	async execute(input: { genre: GenreType }): Promise<UsecaseReply<GetShortReleaseDTO[]>> {
 		try {
 			const genre = input.genre
 			const data = await this.mainService.findManyByGenre(genre)
 
-			return new UsecaseReply<ReleaseShortDTO[]>(data)
+			return new UsecaseReply<GetShortReleaseDTO[]>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

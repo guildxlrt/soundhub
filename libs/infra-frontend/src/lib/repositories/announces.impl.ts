@@ -27,7 +27,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -44,7 +44,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -56,7 +56,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -68,7 +68,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -80,7 +80,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -94,7 +94,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

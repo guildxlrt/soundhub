@@ -26,7 +26,7 @@ export class LoginUsecase {
 				throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -36,7 +36,7 @@ export class LoginUsecase {
 			const login = (await this.mainService.login(email, password)) as boolean
 			return new UsecaseReply<boolean>(login)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -65,7 +65,7 @@ export class LoginUsecase {
 
 			return new UsecaseReply<UserToken>(userToken)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -1,15 +1,15 @@
-import { ApiErrHandler, ReleasesImplement, StorageImplement } from "Infra-backend"
+import { ReleasesImplement, SongsImplement, StorageImplement } from "Infra-backend"
 import { StreamFile } from "Domain"
 import {
 	CreateReleaseUsecase,
 	FindReleasesByArtistUsecase,
 	GetAllReleasesUsecase,
 	GetReleaseUsecase,
-	SetPrivStatusReleaseUsecase,
+	SetPublicStatusReleaseUsecase,
 	EditReleaseUsecase,
 	NewReleaseUsecaseParams,
 	EditReleaseUsecaseParams,
-	SetPrivStatusReleaseUsecaseParams,
+	SetPublicStatusReleaseUsecaseParams,
 	IDUsecaseParams,
 	GenreUsecaseParams,
 	StorageService,
@@ -17,25 +17,31 @@ import {
 	DateUsecaseParams,
 	FindReleasesByDateUsecase,
 	FindReleasesByGenreUsecase,
+	SongsService,
+	FindReleasesByTypeUsecase,
+	FindReleasesByReleaseTypeUsecase,
+	FindReleasesByArtistFeatsUsecase,
 } from "Application"
 import {
 	ExpressRequest,
 	ExpressResponse,
-	GenreType,
 	EditReleaseDTO,
 	htmlError,
 	ErrorMsg,
 	ResponseDTO,
 	ReleaseStatusDTO,
 	PostReleaseDTO,
+	ReleaseType,
 } from "Shared"
-import { IReleasesCtrl } from "../assets"
+import { ApiErrorHandler, IReleasesCtrl } from "../assets"
 
 export class ReleasesController implements IReleasesCtrl {
 	private storageImplement = new StorageImplement()
 	private storageService = new StorageService(this.storageImplement)
 	private releasesImplement = new ReleasesImplement()
 	private releasesService = new ReleasesService(this.releasesImplement)
+	private songsImplement = new SongsImplement()
+	private songsService = new SongsService(this.songsImplement)
 
 	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
@@ -46,16 +52,6 @@ export class ReleasesController implements IReleasesCtrl {
 			const cover = req.image as StreamFile
 			const audioFiles: StreamFile[] = req.songs as StreamFile[]
 			const params = NewReleaseUsecaseParams.fromDto(inputs, user, audioFiles, cover)
-
-			// // OPERATORS
-			// // genres
-			// const cleanGenres = formatters.genres(genres)
-			// releaseData.setGenres(cleanGenres)
-			// // cover
-			// if (cover) validators.file(cover, IMAGE_MIME_TYPES)
-			// songs.forEach((song) => {
-			// 	if (song.audio) validators.file(song.audio, AUDIO_MIME_TYPES)
-			// })
 
 			// Saving Profile
 			const createRelease = new CreateReleaseUsecase(
@@ -68,9 +64,9 @@ export class ReleasesController implements IReleasesCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -83,44 +79,43 @@ export class ReleasesController implements IReleasesCtrl {
 			const cover = req.image as StreamFile
 			const params = EditReleaseUsecaseParams.fromDto(inputs, user, cover)
 
-			// // OPERATORS
-			// // genres
-			// const cleanGenres = formatters.genres(genres)
-			// releaseData.setGenres(cleanGenres)
-
 			// Saving Profile
-			const editRelease = new EditReleaseUsecase(this.releasesService)
+			const editRelease = new EditReleaseUsecase(
+				this.releasesService,
+				this.storageService,
+				this.songsService
+			)
 			const { data, error } = await editRelease.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
-	async setPrivStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async setPublicStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
 			const user = req.auth?.profileID as number
 			const { id }: ReleaseStatusDTO = req.body as ReleaseStatusDTO
-			const params = SetPrivStatusReleaseUsecaseParams.fromDtoBackend(id, user)
+			const params = SetPublicStatusReleaseUsecaseParams.fromDtoBackend(id, user)
 
 			// Saving Profile
-			const setPrivStatusRelease = new SetPrivStatusReleaseUsecase(this.releasesService)
-			const { data, error } = await setPrivStatusRelease.execute(params)
+			const setPublicStatusRelease = new SetPublicStatusReleaseUsecase(this.releasesService)
+			const { data, error } = await setPublicStatusRelease.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -140,7 +135,7 @@ export class ReleasesController implements IReleasesCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -157,67 +152,114 @@ export class ReleasesController implements IReleasesCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
+	async findMany(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-	async findManyByArtist(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+		const artistID = req.query?.["artist"] as string
+		const owner = req.query?.["owner"] as string
+		const feats = req.query?.["feats"] as string
+		const genre = req.query?.["genre"] as string
+		const date = req.query?.["date"] as string
+		const releaseType = req.query?.["release-type"] as string
 
-			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+		if (artistID) {
+			if (owner) {
+				try {
+					const params = new IDUsecaseParams(artistID)
 
-			const findReleasesByArtist = new FindReleasesByArtistUsecase(this.releasesService)
-			const { data, error } = await findReleasesByArtist.execute(params)
+					const findReleasesByArtist = new FindReleasesByArtistUsecase(
+						this.releasesService
+					)
+					const { data, error } = await findReleasesByArtist.execute(params)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+					if (error) throw error
+					if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+					const reponse = new ResponseDTO(data)
+					return res.status(200).send(reponse)
+				} catch (error) {
+					return new ApiErrorHandler().reply(error, res)
+				}
+			}
+			if (feats) {
+				try {
+					if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+					const id = req.params["id"]
+					const params = new IDUsecaseParams(id)
+
+					const findManyByArtistFeats = new FindReleasesByArtistFeatsUsecase(
+						this.releasesService
+					)
+					const { data, error } = await findManyByArtistFeats.execute(params)
+
+					if (error) throw error
+					if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+					const reponse = new ResponseDTO(data)
+					return res.status(200).send(reponse)
+				} catch (error) {
+					return new ApiErrorHandler().reply(error, res)
+				}
+			}
 		}
-	}
+		if (genre) {
+			try {
+				const params = new GenreUsecaseParams(genre)
 
-	async findManyByGenre(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+				const findReleasesByGenre = new FindReleasesByGenreUsecase(this.releasesService)
+				const { data, error } = await findReleasesByGenre.execute(params)
 
-			const genre = req.params["genre"] as GenreType
-			const params = new GenreUsecaseParams(genre)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const findReleasesByGenre = new FindReleasesByGenreUsecase(this.releasesService)
-			const { data, error } = await findReleasesByGenre.execute(params)
-
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
-	}
 
-	async findManyByDate(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+		if (date) {
+			try {
+				const params = DateUsecaseParams.fromReqParams(date)
 
-			const inputs = req.params?.["encoded"]
-			const params = DateUsecaseParams.fromDto(inputs)
+				const findEventsByDate = new FindReleasesByDateUsecase(this.releasesService)
+				const { data, error } = await findEventsByDate.execute(params)
 
-			const findEventsByDate = new FindReleasesByDateUsecase(this.releasesService)
-			const { data, error } = await findEventsByDate.execute(params)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
+
+		if (releaseType) {
+			try {
+				if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+				const inputs = req.params?.["type"] as ReleaseType
+				const params = new FindReleasesByReleaseTypeUsecase(inputs)
+
+				const findEventsByDate = new FindReleasesByTypeUsecase(this.releasesService)
+				const { data, error } = await findEventsByDate.execute(params)
+
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
+		}
+
+		return res.status(202).end()
 	}
 }

@@ -29,7 +29,7 @@ model Artist {
 
   name       String
   bio        String?
-  members    String[]
+  members    Json
   genres     String[]
   avatarPath String?
 
@@ -54,8 +54,8 @@ model Event {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  owner_id Int
-  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  organisator_id Int
+  organisator    Artist @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
 
   date      DateTime
   place     String
@@ -92,6 +92,6 @@ model Song {
 
   title     String
   audioPath String
-  featuring Int[]
+  feats Int[]
   lyrics    String?
 }

@@ -1,5 +1,5 @@
 import { Event, ExtBackEventsRepos, ExtFrontEventsRepos, EventsRepository, File } from "Domain"
-import { UserAuthID, EventID, EventShortDTO, EventDTO, ErrorHandler } from "Shared"
+import { UserAuthID, EventID, ErrorHandler, GenreType } from "Shared"
 
 interface IEventsService extends EventsRepository, ExtBackEventsRepos, ExtFrontEventsRepos {}
 
@@ -15,56 +15,64 @@ export class EventsService implements IEventsService {
 		try {
 			return await this.service.create(event, file)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async edit(event: Event, file?: File): Promise<boolean> {
 		try {
 			return await this.service.edit(event, file)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async delete(id: EventID, userAuth?: UserAuthID): Promise<boolean> {
 		try {
 			return await this.service.delete(id, userAuth)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async get(id: EventID): Promise<EventDTO> {
+	async get(id: EventID): Promise<unknown> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<EventShortDTO[]> {
+	async getAll(): Promise<unknown[]> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: EventID): Promise<EventShortDTO[]> {
+	async findManyByArtist(id: EventID): Promise<unknown[]> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<EventShortDTO[]> {
+
+	async findManyByArtistGenre(genre: GenreType): Promise<unknown[]> {
+		try {
+			return await this.service.findManyByArtistGenre(genre)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async findManyByDate(date: Date): Promise<unknown[]> {
 		try {
 			return await this.service.findManyByDate(date)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByPlace(place: string): Promise<EventShortDTO[]> {
+	async findManyByPlace(place: string): Promise<unknown[]> {
 		try {
 			return await this.service.findManyByPlace(place)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -73,7 +81,7 @@ export class EventsService implements IEventsService {
 		try {
 			return await this.service.getOwner(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -81,14 +89,14 @@ export class EventsService implements IEventsService {
 		try {
 			return await this.service.getImagePath(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async setImagePath(path: string | null, id: EventID): Promise<boolean> {
 		try {
 			return await this.service.setImagePath(path, id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -14,7 +14,7 @@ export class LogoutUsecase {
 			const res = await this.mainService.logout()
 			return new UsecaseReply<boolean>(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

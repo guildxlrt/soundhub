@@ -2,8 +2,8 @@ import { RawFile, Release, Song } from "Domain"
 import {
 	GenreType,
 	EntityID,
-	GetReleaseDTO,
-	ReleaseShortDTO,
+	GetFullReleaseDTO,
+	GetShortReleaseDTO,
 	apiUrlRoot,
 	apiUrlPath,
 	apiUrlEndpt,
@@ -38,7 +38,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				},
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -62,26 +62,26 @@ export class ReleasesImplement implements ReleasesRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async setPrivStatus(id: number, isPublic: boolean): Promise<boolean> {
+	async setPublicStatus(id: number, isPublic: boolean): Promise<boolean> {
 		try {
 			return await axios({
 				method: "patch",
 				url: `${
-					apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.setPrivStatus + id
+					apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.setPublicStatus + id
 				}`,
 				withCredentials: true,
 				data: { id: id, isPublic: isPublic },
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async get(id: EntityID): Promise<GetReleaseDTO> {
+	async get(id: EntityID): Promise<GetFullReleaseDTO> {
 		try {
 			return await axios({
 				method: "get",
@@ -89,11 +89,11 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<ReleaseShortDTO[]> {
+	async getAll(): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -101,11 +101,11 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
+	async findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -115,10 +115,10 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<ReleaseShortDTO[]> {
+	async findManyByDate(date: Date): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -126,11 +126,11 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByArtist(id: EntityID): Promise<ReleaseShortDTO[]> {
+	async findManyByArtist(id: EntityID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -138,7 +138,7 @@ export class ReleasesImplement implements ReleasesRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -18,7 +18,7 @@ export class CredentialsValidator {
 				throw new ErrorMsg(`${value}s must be different`, htmlError[422].value)
 			else return
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -35,7 +35,7 @@ export class CredentialsValidator {
 			if (!validEmail) throw new ErrorMsg("invalid email format", htmlError[422].value)
 			else return true
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

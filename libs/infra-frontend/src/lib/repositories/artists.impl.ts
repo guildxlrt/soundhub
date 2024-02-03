@@ -42,7 +42,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				},
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -59,7 +59,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -71,7 +71,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -84,7 +84,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -96,7 +96,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -108,7 +108,7 @@ export class ArtistsImplement implements ArtistsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

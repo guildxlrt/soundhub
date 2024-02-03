@@ -1,5 +1,4 @@
-import { ErrorHandler, ErrorMsg, htmlError } from "../../errors"
-import { ReleaseEnum } from "../../types"
+import { ReleaseEnum, ErrorHandler, ErrorMsg, htmlError } from "Shared"
 
 export class FieldsValidator {
 	place(value: unknown): void {
@@ -7,7 +6,7 @@ export class FieldsValidator {
 			if (typeof value !== "string")
 				throw new ErrorMsg("place is not valid", htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during place validation")
+			throw ErrorHandler.handle(error).setMessage("error during place validation")
 		}
 	}
 	price(value: unknown): void {
@@ -15,7 +14,7 @@ export class FieldsValidator {
 			if (typeof value !== "number")
 				throw new ErrorMsg("Price is not valid", htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during price validation")
+			throw ErrorHandler.handle(error).setMessage("error during price validation")
 		}
 	}
 	date(value: string | number | Date): void {
@@ -24,7 +23,7 @@ export class FieldsValidator {
 			const isValidDate = !isNaN(date.getTime())
 			if (!isValidDate) throw new ErrorMsg("unknow release type", htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during date validation")
+			throw ErrorHandler.handle(error).setMessage("error during date validation")
 		}
 	}
 
@@ -34,7 +33,7 @@ export class FieldsValidator {
 
 			if (!validType) throw new ErrorMsg("unknow release type", htmlError[422].value)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during release validation")
+			throw ErrorHandler.handle(error).setMessage("error during release validation")
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { AnnouncesImplement, ApiErrHandler, StorageImplement } from "Infra-backend"
+import { AnnouncesImplement, StorageImplement } from "Infra-backend"
 import { StreamFile } from "Domain"
 import {
 	CreateAnnounceUsecase,
@@ -13,6 +13,8 @@ import {
 	StorageService,
 	EditAnnounceUsecaseParams,
 	NewAnnounceUsecaseParams,
+	FindAnnouncesByDateUsecase,
+	DateUsecaseParams,
 } from "Application"
 import {
 	htmlError,
@@ -23,7 +25,7 @@ import {
 	ExpressRequest,
 	ExpressResponse,
 } from "Shared"
-import { IAnnoncesCtrl } from "../assets"
+import { ApiErrorHandler, IAnnoncesCtrl } from "../assets"
 
 export class AnnoncesController implements IAnnoncesCtrl {
 	private storageImplement = new StorageImplement()
@@ -39,10 +41,6 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const owner = req.auth?.profileID as number
 			const file = req.image as StreamFile
 
-			// // OPERATORS
-			// // file
-			// if (file) validators.file(file, IMAGE_MIME_TYPES)
-
 			// Saving Profile
 			const createAnnounce = new CreateAnnounceUsecase(
 				this.announcesService,
@@ -55,9 +53,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(201).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -70,9 +68,6 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const dto = req.body as EditAnnounceDTO
 
-			// Operators
-			// ... doing some heathcheck
-
 			// Saving Profile
 			const EditAnnounce = new EditAnnounceUsecase(this.announcesService, this.storageService)
 			const params = EditAnnounceUsecaseParams.fromDto(dto, owner, file)
@@ -82,9 +77,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -93,9 +88,6 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 			const user = req.auth?.profileID as number
 			const id = Number(req.params["id"])
-
-			// Operators
-			// ... doing some heathcheck
 
 			// Saving Profile
 			const deleteAnnounce = new DeleteAnnounceUsecase(
@@ -109,9 +101,9 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -131,7 +123,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -148,27 +140,51 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
-	async findManyByArtist(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+	async findMany(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
-			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(this.announcesService)
+		const date = req.query?.["date"] as string
+		const artistID = req.query?.["artist"] as string
 
-			const { data, error } = await findAnnouncesByArtist.execute(params)
+		if (artistID) {
+			try {
+				const params = new IDUsecaseParams(artistID)
+				const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(
+					this.announcesService
+				)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+				const { data, error } = await findAnnouncesByArtist.execute(params)
 
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
+		if (date) {
+			try {
+				const params = DateUsecaseParams.fromReqParams(date)
+				const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(this.announcesService)
+
+				const { data, error } = await findAnnouncesByArtist.execute(params)
+
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
+		}
+
+		return res.status(400).end()
 	}
 }

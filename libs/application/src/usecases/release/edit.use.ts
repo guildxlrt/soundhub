@@ -30,7 +30,7 @@ export class EditReleaseUsecase {
 				throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -42,7 +42,7 @@ export class EditReleaseUsecase {
 			const res = await this.mainService.edit({ data: data, cover }, songs)
 			return new UsecaseReply<boolean>(res)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -91,7 +91,7 @@ export class EditReleaseUsecase {
 
 			return new UsecaseReply<boolean>(true)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

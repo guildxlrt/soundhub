@@ -49,7 +49,7 @@ export class NewReleaseUsecaseParams {
 
 		const songs = songsArray.map((song, index) => {
 			return {
-				data: new Song(null, null, null, song.title, song.featuring, song.lyrics),
+				data: new Song(null, null, null, song.title, song.feats, song.lyrics),
 				audio: audio[index],
 			}
 		})
@@ -100,7 +100,7 @@ export class EditReleaseUsecaseParams {
 		)
 
 		const songs = songsArray.map((song) => {
-			return new Song(song.id, id, null, song.title, song.featuring, song.lyrics)
+			return new Song(song.id, id, null, song.title, song.feats, song.lyrics)
 		})
 
 		return new EditReleaseUsecaseParams(
@@ -114,7 +114,15 @@ export class EditReleaseUsecaseParams {
 	}
 }
 
-export class SetPrivStatusReleaseUsecaseParams {
+export class FindReleasesByReleaseTypeUsecase {
+	type: ReleaseType
+
+	constructor(type: ReleaseType) {
+		this.type = type
+	}
+}
+
+export class SetPublicStatusReleaseUsecaseParams {
 	id: ReleaseID
 	ownerID?: ProfileID
 

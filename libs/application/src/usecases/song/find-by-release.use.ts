@@ -14,7 +14,7 @@ export class FindSongsByReleaseUsecase {
 			const data = await this.mainService.findByRelease(id)
 			return new UsecaseReply<SongDTO[]>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

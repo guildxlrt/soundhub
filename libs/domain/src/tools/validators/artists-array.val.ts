@@ -1,6 +1,6 @@
 import { ExtBackArtistsRepos } from "Domain"
-import { ErrorHandler, ErrorMsg, htmlError } from "../../errors"
-import { AnyObject, InstrumentEnum } from "../../types"
+
+import { AnyObject, ErrorHandler, ErrorMsg, InstrumentEnum, htmlError } from "Shared"
 
 export class ArtistsArrayValidator {
 	async validateIDs(artists: number[], service: ExtBackArtistsRepos): Promise<void[]> {
@@ -13,11 +13,13 @@ export class ArtistsArrayValidator {
 				})
 			)
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
 		}
 	}
-	async validateMembers(array: AnyObject[]) {
+	async validateMembers(json: Record<string, any>) {
 		try {
+			const array: AnyObject[] = json?.["members"]
+
 			array.forEach((member) => {
 				if (typeof member?.["name"] !== "string")
 					throw new ErrorMsg("members names are is not valid", htmlError[422].value)
@@ -30,7 +32,7 @@ export class ArtistsArrayValidator {
 					throw new ErrorMsg("unknow release type", htmlError[422].value)
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
 		}
 	}
 }

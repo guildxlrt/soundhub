@@ -1,9 +1,10 @@
-import { ProfileID, EventID, ArtistsArrayValidator, StringFormatter, FieldsValidator } from "Shared"
+import { ProfileID, EventID } from "Shared"
 import { EntityLayer } from "./layers"
 import { ExtBackArtistsRepos } from "../repositories"
+import { ArtistsArrayValidator, StringFormatter, FieldsValidator } from "../tools"
 
 export class Event extends EntityLayer {
-	readonly owner_id: ProfileID
+	readonly organisator_id: ProfileID
 	date: Date
 	place: string
 	artists: ProfileID[]
@@ -17,7 +18,7 @@ export class Event extends EntityLayer {
 
 	constructor(
 		id: EventID | null,
-		owner_id: ProfileID,
+		organisator_id: ProfileID,
 		date: Date,
 		place: string,
 		artists: ProfileID[],
@@ -27,7 +28,7 @@ export class Event extends EntityLayer {
 	) {
 		super(id)
 
-		this.owner_id = owner_id
+		this.organisator_id = organisator_id
 		this.date = date
 		this.artists = artists
 		this.place = place

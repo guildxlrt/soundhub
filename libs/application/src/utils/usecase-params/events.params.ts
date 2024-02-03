@@ -51,18 +51,6 @@ export class DeleteEventUsecaseParams {
 	}
 }
 
-export class DateUsecaseParams {
-	date: Date
-
-	constructor(date: Date) {
-		this.date = date
-	}
-
-	static fromDto(data: string) {
-		return new DateUsecaseParams(new Date(data))
-	}
-}
-
 export class PlaceUsecaseParams {
 	place: string
 

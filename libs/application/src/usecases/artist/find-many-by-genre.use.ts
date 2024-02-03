@@ -15,7 +15,7 @@ export class FindArtistsByGenreUsecase {
 			const data = await this.mainService.findManyByGenre(genre)
 			return new UsecaseReply<ArtistShortestDTO[]>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

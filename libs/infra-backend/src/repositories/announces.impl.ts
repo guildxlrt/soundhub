@@ -2,7 +2,7 @@ import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
 import { AnnounceID, AnnounceDTO, AnnounceShortDTO } from "Shared"
 import { dbClient } from "../prisma"
-import { ApiErrHandler } from "../utils"
+import { DatabaseErrorHandler } from "../utils"
 
 export class AnnouncesImplement implements AnnouncesBackendRepos {
 	private announce = dbClient.announce
@@ -23,7 +23,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			// RESPO NSE
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -45,7 +45,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -59,7 +59,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -80,7 +80,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 			return AnnounceDTO.createFromData(announce)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -97,17 +97,15 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 			return AnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
 	async findManyByArtist(id: AnnounceID): Promise<AnnounceShortDTO[]> {
 		try {
-			const profileID = id
-
 			const announces = await this.announce.findMany({
 				where: {
-					owner_id: profileID,
+					owner_id: id,
 				},
 				select: {
 					id: true,
@@ -119,7 +117,27 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 			return AnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async findManyByDate(date: Date) {
+		try {
+			const announces = await this.announce.findMany({
+				where: {
+					createdAt: date,
+				},
+				select: {
+					id: true,
+					owner_id: true,
+					title: true,
+					imagePath: true,
+				},
+			})
+
+			return AnnounceShortDTO.createArrayFromData(announces)
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -135,7 +153,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.owner_id
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -151,7 +169,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return announce?.imagePath
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error getting image path")
+			throw DatabaseErrorHandler.handle(error).setMessage("error getting image path")
 		}
 	}
 
@@ -167,7 +185,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			})
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

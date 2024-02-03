@@ -8,13 +8,15 @@ import {
 	UserEmail,
 	htmlError,
 	UserAuthID,
-	UserProfileType,
 	ArtistDTO,
 	INewArtistBackSucces,
-	IFindByAuthID,
+	IFindByAuthIDSuccess,
+	IGetArtistAuthsSuccess,
+	IGetArtistNameSuccess,
+	IArtistName,
 } from "Shared"
 import { dbClient } from "../prisma"
-import { ApiErrHandler } from "../utils"
+import { DatabaseErrorHandler } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {
 	private userAuth = dbClient.userAuth
@@ -61,7 +63,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				authID: authID,
 			}
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -84,7 +86,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -105,7 +107,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 			return ArtistShortDTO.createFromData(user)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -130,7 +132,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 			return ArtistShortDTO.createFromData(user)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -148,7 +150,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			// Reorganize
 			return ArtistShortestDTO.createArrayFromData(artists)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -168,7 +170,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 			return ArtistShortestDTO.createArrayFromData(artists)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -185,14 +187,11 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 			return user.id
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
-	async getAuths(id: ProfileID): Promise<{
-		id: number
-		user_auth_id: number
-	}> {
+	async getAuths(id: ProfileID): Promise<IGetArtistAuthsSuccess> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -206,11 +205,28 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 			return user
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
-	async findByAuthID(userAuthID: UserAuthID): Promise<IFindByAuthID> {
+	async getNames(ids: ProfileID[]): Promise<IArtistName[]> {
+		const results = await Promise.all(
+			ids.map(async (id) => {
+				return await this.artist.findMany({
+					where: {
+						id: id,
+					},
+					select: {
+						id: true,
+						name: true,
+					},
+				})
+			})
+		)
+		return results.flat(Infinity) as IArtistName[]
+	}
+
+	async findByAuthID(userAuthID: UserAuthID): Promise<IFindByAuthIDSuccess> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -225,7 +241,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				profileType: "artist",
 			}
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to authentificate")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
 	}
 
@@ -241,7 +257,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 			return data.avatarPath
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 
@@ -257,7 +273,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			})
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

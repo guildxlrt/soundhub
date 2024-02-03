@@ -1,12 +1,21 @@
-import { ApiErrHandler, SongsImplement } from "Infra-backend"
-import { ExpressRequest, ExpressResponse, ErrorMsg, ResponseDTO, htmlError } from "Shared"
+import { SongsImplement } from "Infra-backend"
 import {
+	ExpressRequest,
+	ExpressResponse,
+	ErrorMsg,
+	ResponseDTO,
+	htmlError,
+	GenreType,
+} from "Shared"
+import {
+	FindSongsByReleaseGenreUsecase,
 	FindSongsByReleaseUsecase,
+	GenreUsecaseParams,
 	GetSongUsecase,
 	IDUsecaseParams,
 	SongsService,
 } from "Application"
-import { ISongsCtrl } from "../assets"
+import { ApiErrorHandler, ISongsCtrl } from "../assets"
 
 export class SongsController implements ISongsCtrl {
 	private songsImplement = new SongsImplement()
@@ -28,27 +37,70 @@ export class SongsController implements ISongsCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
-	async findByRelease(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+	async findMany(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+		const artistID = req.query?.["artist"] as string
+		const releaseID = req.query?.["release"] as string
+		const releaseGenre = req.query?.["genre"] as string
 
-			const getSong = new FindSongsByReleaseUsecase(this.songsService)
-			const { data, error } = await getSong.execute(params)
+		if (artistID) {
+			try {
+				const params = new IDUsecaseParams(artistID)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+				const getSong = new FindSongsByReleaseUsecase(this.songsService)
+				const { data, error } = await getSong.execute(params)
 
-			const reponse = new ResponseDTO(data)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
 		}
+
+		if (releaseID) {
+			try {
+				const params = new IDUsecaseParams(releaseID)
+
+				const getSong = new FindSongsByReleaseUsecase(this.songsService)
+				const { data, error } = await getSong.execute(params)
+
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
+		}
+		if (releaseGenre) {
+			try {
+				if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+				const genre = req.params["genre"] as GenreType
+				const params = new GenreUsecaseParams(genre)
+
+				const getSong = new FindSongsByReleaseGenreUsecase(this.songsService)
+				const { data, error } = await getSong.execute(params)
+
+				if (error) throw error
+				if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+				const reponse = new ResponseDTO(data)
+				return res.status(200).send(reponse)
+			} catch (error) {
+				return new ApiErrorHandler().reply(error, res)
+			}
+		}
+
+		return res.status(400).end()
 	}
 }

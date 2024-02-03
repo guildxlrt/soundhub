@@ -1,14 +1,6 @@
 import { EntityLayer } from "./layers"
-import {
-	ProfileID,
-	GenresArray,
-	ReleaseID,
-	ReleasePrice,
-	ReleaseType,
-	GenresFormatter,
-	StringFormatter,
-	FieldsValidator,
-} from "Shared"
+import { ProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
+import { GenresFormatter, StringFormatter, FieldsValidator } from "../tools"
 
 export class Release extends EntityLayer {
 	readonly owner_id: ProfileID

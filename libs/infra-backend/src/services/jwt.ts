@@ -28,7 +28,7 @@ export class JwtService {
 				{ expiresIn: expires, algorithm: "RS256" }
 			)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -56,7 +56,7 @@ export class JwtService {
 
 			return
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

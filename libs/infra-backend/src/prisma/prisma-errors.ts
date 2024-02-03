@@ -1,8 +1,8 @@
 import { Prisma } from "@prisma/client"
 import { ErrorMsg, htmlError } from "Shared"
 
-export class DbErrorHandler {
-	check(error: unknown): ErrorMsg | void {
+export class PrismaErrorHandler {
+	static handle(error: unknown): ErrorMsg | void {
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
 			switch (error.code) {
 				case "P2002":

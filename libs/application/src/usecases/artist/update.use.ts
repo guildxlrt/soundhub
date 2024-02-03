@@ -23,7 +23,7 @@ export class UpdateArtistUsecase {
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -34,7 +34,7 @@ export class UpdateArtistUsecase {
 			const data = await this.mainService.update(profile, delAvatar, file)
 			return new UsecaseReply<boolean>(data)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -80,7 +80,7 @@ export class UpdateArtistUsecase {
 
 			return new UsecaseReply<boolean>(true)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

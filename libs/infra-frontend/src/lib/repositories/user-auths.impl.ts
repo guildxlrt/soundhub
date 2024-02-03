@@ -12,7 +12,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 				data: { email: email, password: password },
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -24,7 +24,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -41,7 +41,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 				data: input,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -58,7 +58,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 				data: input,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

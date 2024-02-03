@@ -25,7 +25,7 @@ export class EventsImplement implements EventsRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -42,7 +42,7 @@ export class EventsImplement implements EventsRepository {
 				data: formData,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -54,7 +54,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -66,7 +66,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -78,7 +78,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -90,7 +90,7 @@ export class EventsImplement implements EventsRepository {
 				withCredentials: true,
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -105,7 +105,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -120,7 +120,7 @@ export class EventsImplement implements EventsRepository {
 				},
 			})
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

@@ -1,11 +1,19 @@
 import { ReleasesBackendRepos, StreamFile } from "Domain"
 import { Release, Song } from "Domain"
-import { GenreType, ReleaseID, ReleaseShortDTO, ReleaseType, GetReleaseDTO } from "Shared"
+import {
+	GenreType,
+	ReleaseID,
+	GetShortReleaseDTO,
+	ReleaseType,
+	IGetFullReleaseSuccess,
+	ProfileID,
+} from "Shared"
 import { dbClient } from "../prisma"
-import { ApiErrHandler } from "../utils"
+import { DatabaseErrorHandler } from "../utils"
 
 export class ReleasesImplement implements ReleasesBackendRepos {
 	private release = dbClient.release
+	private song = dbClient.song
 
 	async create(
 		release: { data: Release; cover: StreamFile },
@@ -17,12 +25,12 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			// songs
 			const songsData = await Promise.all(
 				songs.map(async (song) => {
-					const { title, featuring, lyrics, audioPath } = song.data
+					const { title, feats, lyrics, audioPath } = song.data
 
 					return {
 						audioPath: audioPath as string,
 						title: title,
-						featuring: featuring,
+						feats: feats,
 						lyrics: lyrics,
 					}
 				})
@@ -46,7 +54,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -70,11 +78,11 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async setPrivStatus(id: ReleaseID, isPublic: boolean): Promise<boolean> {
+	async setPublicStatus(id: ReleaseID, isPublic: boolean): Promise<boolean> {
 		try {
 			await this.release.update({
 				where: {
@@ -87,11 +95,11 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async get(id: ReleaseID): Promise<GetReleaseDTO> {
+	async get(id: ReleaseID): Promise<IGetFullReleaseSuccess> {
 		try {
 			const data = await this.release.findUniqueOrThrow({
 				where: {
@@ -112,7 +120,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 						select: {
 							id: true,
 							title: true,
-							featuring: true,
+							feats: true,
 							lyrics: true,
 							audioPath: true,
 						},
@@ -120,13 +128,13 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			return GetReleaseDTO.createFromData(data)
+			return data
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<ReleaseShortDTO[]> {
+	async getAll(): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				select: {
@@ -136,19 +144,23 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					releaseType: true,
 					genres: true,
 				},
+				where: {
+					isPublic: true,
+				},
 			})
 
-			return ReleaseShortDTO.createArrayFromData(data)
+			return GetShortReleaseDTO.createArrayFromData(data)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<ReleaseShortDTO[]> {
+	async findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {
 					genres: { has: genre },
+					isPublic: true,
 				},
 				select: {
 					id: true,
@@ -158,17 +170,18 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					genres: true,
 				},
 			})
-			return ReleaseShortDTO.createArrayFromData(data)
+			return GetShortReleaseDTO.createArrayFromData(data)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<ReleaseShortDTO[]> {
+	async findManyByDate(date: Date): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {
 					createdAt: date,
+					isPublic: true,
 				},
 				select: {
 					id: true,
@@ -178,19 +191,18 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					genres: true,
 				},
 			})
-			return ReleaseShortDTO.createArrayFromData(data)
+			return GetShortReleaseDTO.createArrayFromData(data)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByArtist(id: ReleaseID): Promise<ReleaseShortDTO[]> {
+	async findManyByArtist(id: ProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
-			const profileID = id
-
 			const data = await this.release.findMany({
 				where: {
-					owner_id: profileID,
+					owner_id: id,
+					isPublic: true,
 				},
 				select: {
 					id: true,
@@ -201,13 +213,82 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			return ReleaseShortDTO.createArrayFromData(data)
+			return GetShortReleaseDTO.createArrayFromData(data)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async getOwner(id: number) {
+	async findManyByArtistFeats(id: ProfileID): Promise<GetShortReleaseDTO[]> {
+		try {
+			const releases = (
+				await this.song.findMany({
+					where: {
+						feats: {
+							has: id,
+						},
+					},
+					select: {
+						release_id: true,
+					},
+				})
+			).map((release) => release.release_id)
+
+			const results: {
+				id: number
+				owner_id: number
+				title: string
+				releaseType: string
+				genres: string[]
+			}[] = await Promise.all(
+				releases.map(async (id) => {
+					const result = await this.release.findUniqueOrThrow({
+						where: {
+							id: id,
+							isPublic: true,
+						},
+						select: {
+							id: true,
+							owner_id: true,
+							title: true,
+							releaseType: true,
+							genres: true,
+						},
+					})
+
+					return result
+				})
+			)
+
+			return results
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
+		try {
+			const data = await this.release.findMany({
+				where: {
+					releaseType: type,
+					isPublic: true,
+				},
+				select: {
+					id: true,
+					owner_id: true,
+					title: true,
+					releaseType: true,
+					genres: true,
+				},
+			})
+
+			return GetShortReleaseDTO.createArrayFromData(data)
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getOwner(id: ProfileID) {
 		try {
 			const release = await this.release.findUniqueOrThrow({
 				where: {
@@ -219,11 +300,11 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			})
 			return release?.owner_id
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async getPrivStatus(id: ReleaseID): Promise<boolean> {
+	async getPublicStatus(id: ReleaseID): Promise<boolean> {
 		try {
 			const release = await this.release.findUniqueOrThrow({
 				where: {
@@ -236,7 +317,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return release?.isPublic
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -253,7 +334,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 			return releaseData?.coverPath
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -269,7 +350,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			})
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error).setMessage("error to get image path")
+			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

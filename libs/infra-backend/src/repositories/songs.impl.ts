@@ -1,7 +1,7 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { ReleaseID, SongDTO, SongID } from "Shared"
+import { GenreType, ProfileID, ReleaseID, SongDTO, SongID } from "Shared"
 import { dbClient } from "../prisma"
-import { ApiErrHandler } from "../utils"
+import { DatabaseErrorHandler } from "../utils"
 
 export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
@@ -23,7 +23,7 @@ export class SongsImplement implements SongsBackendRepos {
 			// RESPONSE
 			return SongDTO.createFromData(songs)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
@@ -32,6 +32,9 @@ export class SongsImplement implements SongsBackendRepos {
 			const songs = await this.song.findMany({
 				where: {
 					release_id: id,
+					release: {
+						isPublic: true,
+					},
 				},
 				select: {
 					id: true,
@@ -44,13 +47,64 @@ export class SongsImplement implements SongsBackendRepos {
 			// RESPONSE
 			return SongDTO.createArrayFromData(songs)
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async findByArtist(id: ProfileID): Promise<SongDTO[]> {
+		try {
+			const songs = await this.song.findMany({
+				where: {
+					feats: {
+						has: id,
+					},
+					release: {
+						owner_id: id,
+						isPublic: true,
+					},
+				},
+				select: {
+					id: true,
+					release_id: true,
+					audioPath: true,
+					title: true,
+				},
+			})
+
+			// RESPONSE
+			return SongDTO.createArrayFromData(songs)
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async findByReleaseGenre(genre: GenreType): Promise<SongDTO[]> {
+		try {
+			const songs = await this.song.findMany({
+				where: {
+					release: {
+						genres: { has: genre },
+						isPublic: true,
+					},
+				},
+				select: {
+					id: true,
+					release_id: true,
+					audioPath: true,
+					title: true,
+				},
+			})
+
+			// RESPONSE
+			return SongDTO.createArrayFromData(songs)
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
 	async update(data: Song): Promise<boolean> {
 		try {
-			const { title, featuring, lyrics, id } = data
+			const { title, feats, lyrics, id } = data
 
 			// PERSIST
 			await this.song.update({
@@ -59,13 +113,13 @@ export class SongsImplement implements SongsBackendRepos {
 				},
 				data: {
 					title: title,
-					featuring: featuring,
+					feats: feats,
 					lyrics: lyrics,
 				},
 			})
 			return true
 		} catch (error) {
-			throw new ApiErrHandler().handleDBError(error)
+			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 }

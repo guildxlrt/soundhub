@@ -1,6 +1,7 @@
-import { CredentialsValidator, ErrorHandler, UserEmail, UserPassword } from "Shared"
+import { ErrorHandler, UserEmail, UserPassword } from "Shared"
 import { EntityLayer } from "./layers"
 import { PasswordServicePort, ValidationServicePort } from "../ports"
+import { CredentialsValidator } from "../tools"
 
 export class UserAuth extends EntityLayer {
 	email: UserEmail | null
@@ -18,7 +19,7 @@ export class UserAuth extends EntityLayer {
 		try {
 			return await service.hash(this.password as string)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -26,7 +27,7 @@ export class UserAuth extends EntityLayer {
 		try {
 			return await this.validator.signUp(service, this.email, this.password)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 

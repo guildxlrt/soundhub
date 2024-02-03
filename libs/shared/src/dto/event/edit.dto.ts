@@ -2,7 +2,7 @@ import { AnyObject } from "../../types"
 
 export class EditEventDTO {
 	readonly id: number
-	readonly owner_id: number
+	readonly organisator_id: number
 	readonly date: Date
 	readonly place: string
 	readonly artists: number[]
@@ -12,7 +12,7 @@ export class EditEventDTO {
 
 	constructor(
 		id: number,
-		owner_id: number,
+		organisator_id: number,
 		date: Date,
 		place: string,
 		artists: number[],
@@ -21,7 +21,7 @@ export class EditEventDTO {
 		delImage?: boolean
 	) {
 		this.id = id
-		this.owner_id = owner_id
+		this.organisator_id = organisator_id
 		this.date = date
 		this.place = place
 		this.artists = artists
@@ -33,7 +33,7 @@ export class EditEventDTO {
 	static createFromInput(data: AnyObject) {
 		return new EditEventDTO(
 			data?.["id"],
-			data?.["owner_id"],
+			data?.["organisator_id"],
 			data?.["date"],
 			data?.["place"],
 			data?.["artists"],

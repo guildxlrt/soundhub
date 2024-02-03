@@ -1,20 +1,12 @@
-import {
-	ProfileID,
-	GenresArray,
-	UserAuthID,
-	StringFormatter,
-	FieldsValidator,
-	GenresFormatter,
-	ArtistsArrayValidator,
-	IMember,
-} from "Shared"
+import { ProfileID, GenresArray, UserAuthID } from "Shared"
 import { EntityLayer } from "./layers"
+import { ArtistsArrayValidator, GenresFormatter, StringFormatter } from "../tools"
 
 export class Artist extends EntityLayer {
 	readonly user_auth_id: UserAuthID | null
 	name: string
 	bio: string
-	members: IMember[]
+	members: Record<string, any>
 	genres: GenresArray
 	avatarPath: string | null
 
@@ -27,7 +19,7 @@ export class Artist extends EntityLayer {
 		user_auth_id: UserAuthID | null,
 		name: string,
 		bio: string,
-		members: IMember[],
+		members: Record<string, any>,
 		genres: GenresArray,
 		avatarPath: string | null
 	) {

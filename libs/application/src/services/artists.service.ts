@@ -15,8 +15,11 @@ import {
 	GenreType,
 	UserAuthID,
 	ErrorHandler,
-	INewArtistSucces,
-	IFindByAuthID,
+	INewArtistSuccess,
+	IFindByAuthIDSuccess,
+	IGetArtistAuthsSuccess,
+	IGetArtistNameSuccess,
+	IArtistName,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ExtBackArtistsRepos, ExtFrontArtistsRepos {}
@@ -36,46 +39,46 @@ export class ArtistsService implements IArtistsService {
 			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
 		},
 		file?: File
-	): Promise<INewArtistSucces> {
+	): Promise<INewArtistSuccess> {
 		try {
 			return await this.service.create(data, file)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async update(profile: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
 		try {
 			return await this.service.update(profile, delAvatar, file)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
 		try {
 			return await this.service.getByID(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async getByEmail(email: UserEmail): Promise<ArtistShortDTO> {
 		try {
 			return await this.service.getByEmail(email)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async getAll(): Promise<ArtistShortestDTO[]> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
 		try {
 			return await this.service.findManyByGenre(genre)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	// BACKEND
@@ -83,25 +86,30 @@ export class ArtistsService implements IArtistsService {
 		try {
 			return await this.service.verifyExistence(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAuths(id: ProfileID): Promise<{
-		id: number
-		user_auth_id: number
-	}> {
+	async getAuths(id: ProfileID): Promise<IGetArtistAuthsSuccess> {
 		try {
 			return await this.service.getAuths(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByAuthID(id: UserAuthID): Promise<IFindByAuthID> {
+
+	async getNames(ids: ProfileID[]): Promise<IArtistName[]> {
+		try {
+			return await this.service.getNames(ids)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async findByAuthID(id: UserAuthID): Promise<IFindByAuthIDSuccess> {
 		try {
 			return await this.service.findByAuthID(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -109,14 +117,14 @@ export class ArtistsService implements IArtistsService {
 		try {
 			return await this.service.getAvatarPath(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async setAvatarPath(path: string | null, id: ProfileID): Promise<boolean> {
 		try {
 			return await this.service.setAvatarPath(path, id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }

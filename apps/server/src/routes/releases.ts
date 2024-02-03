@@ -1,18 +1,16 @@
 import { Router } from "express"
-import { audioStorage, authMiddleware, imageStorage } from "Infra-backend"
-import { controller } from "Interface-back"
+import { controller, authMiddleware, imageStorage, audioStorage } from "Interface-back"
 import { apiUrlEndpt } from "Shared"
 
 const router = Router()
 const ctrl = controller.releases
 const endpts = apiUrlEndpt.releases
 
-router.post(endpts.create, authMiddleware, imageStorage, audioStorage, ctrl.create)
+router.post(endpts.create, authMiddleware, audioStorage, imageStorage, ctrl.create)
 router.put(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
-router.patch(endpts.setPrivStatus, authMiddleware, ctrl.setPrivStatus)
-router.get(endpts.oneByID + "id", ctrl.get)
-router.get(endpts.all, ctrl.getAll)
-router.get(endpts.manyByArtist + "id", ctrl.findManyByArtist)
-router.get(endpts.manyByGenre + "genre", ctrl.findManyByGenre)
+router.patch(endpts.setPublicStatus, authMiddleware, ctrl.setPublicStatus)
+router.get(endpts.get + "id", ctrl.get)
+router.get(endpts.getAll, ctrl.getAll)
+router.get(endpts.find, ctrl.findMany)
 
 export default router

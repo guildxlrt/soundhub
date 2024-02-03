@@ -1,19 +1,13 @@
-import {
-	ArtistsArrayValidator,
-	FieldsValidator,
-	ProfileID,
-	ReleaseID,
-	SongID,
-	StringFormatter,
-} from "Shared"
+import { ProfileID, ReleaseID, SongID } from "Shared"
 import { EntityLayer } from "./layers"
 import { ExtBackArtistsRepos } from "../repositories"
+import { StringFormatter, ArtistsArrayValidator } from "../tools"
 
 export class Song extends EntityLayer {
 	readonly release_id: ReleaseID | null
 	audioPath: string | null
 	title: string
-	readonly featuring: ProfileID[]
+	readonly feats: ProfileID[]
 	lyrics: string | null
 
 	private formatter = new StringFormatter()
@@ -24,7 +18,7 @@ export class Song extends EntityLayer {
 		release_id: ReleaseID | null,
 		audioPath: string | null,
 		title: string,
-		featuring: ProfileID[],
+		feats: ProfileID[],
 		lyrics: string | null
 	) {
 		super(id)
@@ -34,9 +28,7 @@ export class Song extends EntityLayer {
 		this.title = title
 		this.lyrics = lyrics
 
-		featuring !== null && featuring.length >= 1
-			? (this.featuring = featuring)
-			: (this.featuring = [])
+		feats !== null && feats.length >= 1 ? (this.feats = feats) : (this.feats = [])
 	}
 
 	setAudioPath(newAudioPath: string) {
@@ -50,6 +42,6 @@ export class Song extends EntityLayer {
 	}
 
 	async validateArtistArray(service: ExtBackArtistsRepos) {
-		await this.artistsArrayValidator.validateIDs(this.featuring, service)
+		await this.artistsArrayValidator.validateIDs(this.feats, service)
 	}
 }

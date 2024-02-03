@@ -1,4 +1,4 @@
-import { ApiErrHandler, ArtistsImplement, BcryptService, UserAuthsImplement } from "Infra-backend"
+import { ArtistsImplement, BcryptService, UserAuthsImplement } from "Infra-backend"
 import {
 	ArtistsService,
 	ChangeEmailUsecaseParams,
@@ -20,7 +20,7 @@ import {
 	ResponseDTO,
 	htmlError,
 } from "Shared"
-import { Cookie, IAuthCtrl, cookieName } from "../assets"
+import { ApiErrorHandler, Cookie, IAuthCtrl, cookieName } from "../assets"
 
 export class UserAuthController implements IAuthCtrl {
 	private userAuthsImplement = new UserAuthsImplement()
@@ -54,7 +54,7 @@ export class UserAuthController implements IAuthCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.cookie(name, val, options).status(202).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -74,7 +74,7 @@ export class UserAuthController implements IAuthCtrl {
 			const reponse = new ResponseDTO(data)
 			return res.clearCookie(cookieName).status(202).json(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -86,16 +86,6 @@ export class UserAuthController implements IAuthCtrl {
 			const user = req.auth?.id as number
 			const params = ChangeEmailUsecaseParams.fromDto(dto, user)
 
-			// // Operators
-			// validators.changePass(
-			// 	{
-			// 		actual: actual,
-			// 		newOne: newOne,
-			// 		confirm: confirm,
-			// 	},
-			// 	envs.backend
-			// )
-
 			// Saving changes
 			const changeEmail = new ChangeEmailUsecase(this.userAuthService)
 			const { data, error } = await changeEmail.execute(params)
@@ -104,9 +94,9 @@ export class UserAuthController implements IAuthCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 
@@ -118,27 +108,17 @@ export class UserAuthController implements IAuthCtrl {
 			const user = req.auth?.id as number
 			const params = ChangePassUsecaseParams.fromDto(dto, user)
 
-			// // Operators
-			// validators.changePass(
-			// 	{
-			// 		actual: actual,
-			// 		newOne: newOne,
-			// 		confirm: confirm,
-			// 	},
-			// 	envs.backend
-			// )
-
 			// Saving Changes
-			const changePass = new ChangePassUsecase(this.userAuthService)
+			const changePass = new ChangePassUsecase(this.userAuthService, this.passwordService)
 			const { data, error } = await changePass.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data)
-			return res.status(202).send(reponse)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrHandler().reply(error, res)
+			return new ApiErrorHandler().reply(error, res)
 		}
 	}
 }

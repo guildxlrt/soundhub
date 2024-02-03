@@ -1,5 +1,5 @@
 import { ExtBackUserAuthsRepos, ExtFrontUserAuthsRepos, UserAuthsRepository } from "Domain"
-import { ErrorHandler, UserAuthID, UserEmail, UserPassword } from "Shared"
+import { AnyObject, ErrorHandler, UserAuthID, UserEmail, UserPassword } from "Shared"
 
 interface IUserAuthService
 	extends UserAuthsRepository,
@@ -17,7 +17,7 @@ export class UserAuthService implements IUserAuthService {
 		try {
 			return await this.service.login(email, password)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
@@ -25,22 +25,27 @@ export class UserAuthService implements IUserAuthService {
 		try {
 			return await this.service.logout()
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async changePass(input: unknown): Promise<boolean> {
+	async changePass(input: AnyObject): Promise<boolean> {
 		try {
 			return await this.service.changePass(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
-	async changeEmail(input: unknown): Promise<boolean> {
+	async changeEmail(input: {
+		actual: UserPassword
+		newOne: UserPassword
+		confirm: UserPassword | null
+		userAuthID?: UserAuthID
+	}): Promise<boolean> {
 		try {
 			return await this.service.changeEmail(input)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	// BACKEND
@@ -53,7 +58,7 @@ export class UserAuthService implements IUserAuthService {
 		try {
 			return await this.service.getByID(id)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 	async getByEmail(email: UserEmail): Promise<{
@@ -64,7 +69,7 @@ export class UserAuthService implements IUserAuthService {
 		try {
 			return await this.service.getByEmail(email)
 		} catch (error) {
-			throw new ErrorHandler().handle(error)
+			throw ErrorHandler.handle(error)
 		}
 	}
 }
