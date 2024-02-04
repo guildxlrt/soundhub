@@ -1,6 +1,7 @@
-import { UsecaseReply, SetPublicStatusReleaseUsecaseParams } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
+import { SetPublicStatusReleaseUsecaseParams } from "../params-adapters"
 
 export class SetPublicStatusReleaseUsecase {
 	mainService: ReleasesService
@@ -31,7 +32,7 @@ export class SetPublicStatusReleaseUsecase {
 
 			// persist
 			const res = await this.mainService.setPublicStatus(id, isPublic)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -42,7 +43,7 @@ export class SetPublicStatusReleaseUsecase {
 			const { id } = input
 
 			const res = await this.mainService.setPublicStatus(id)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

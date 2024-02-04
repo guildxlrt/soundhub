@@ -18,9 +18,6 @@ import {
 import { ApiErrorHandler, ISongsCtrl } from "../assets"
 
 export class SongsController implements ISongsCtrl {
-	private songsImplement = new SongsImplement()
-	private songsService = new SongsService(this.songsImplement)
-
 	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
@@ -28,16 +25,21 @@ export class SongsController implements ISongsCtrl {
 			const id = req.params["id"]
 			const params = new IDUsecaseParams(id)
 
-			const getSong = new GetSongUsecase(this.songsService)
+			// services
+			const songsImplement = new SongsImplement()
+			const songsService = new SongsService(songsImplement)
+
+			// Calling database
+			const getSong = new GetSongUsecase(songsService)
 			const { data, error } = await getSong.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -48,20 +50,25 @@ export class SongsController implements ISongsCtrl {
 		const releaseID = req.query?.["release"] as string
 		const releaseGenre = req.query?.["genre"] as string
 
+		// services
+		const songsImplement = new SongsImplement()
+		const songsService = new SongsService(songsImplement)
+
 		if (artistID) {
 			try {
 				const params = new IDUsecaseParams(artistID)
 
-				const getSong = new FindSongsByReleaseUsecase(this.songsService)
+				// Calling database
+				const getSong = new FindSongsByReleaseUsecase(songsService)
 				const { data, error } = await getSong.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 
@@ -69,16 +76,17 @@ export class SongsController implements ISongsCtrl {
 			try {
 				const params = new IDUsecaseParams(releaseID)
 
-				const getSong = new FindSongsByReleaseUsecase(this.songsService)
+				// Calling database
+				const getSong = new FindSongsByReleaseUsecase(songsService)
 				const { data, error } = await getSong.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		if (releaseGenre) {
@@ -88,16 +96,17 @@ export class SongsController implements ISongsCtrl {
 				const genre = req.params["genre"] as GenreType
 				const params = new GenreUsecaseParams(genre)
 
-				const getSong = new FindSongsByReleaseGenreUsecase(this.songsService)
+				// Calling database
+				const getSong = new FindSongsByReleaseGenreUsecase(songsService)
 				const { data, error } = await getSong.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 

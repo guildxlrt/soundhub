@@ -1,12 +1,7 @@
-import { DateUsecaseParams, UsecaseReply } from "../../utils"
-import {
-	ErrorHandler,
-	EventShortDTO,
-	IGetArtistNameSuccess,
-	IGetEventShortSuccess,
-	envs,
-} from "Shared"
+import { UsecaseReply } from "../../utils"
+import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
+import { DateUsecaseParams } from "../params-adapters"
 
 export class FindEventsByDateUsecase {
 	mainService: EventsService
@@ -32,7 +27,7 @@ export class FindEventsByDateUsecase {
 			const date = input.date
 
 			const data = (await this.mainService.findManyByDate(date)) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data)
+			return new UsecaseReply<EventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -59,7 +54,7 @@ export class FindEventsByDateUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results)
+			return new UsecaseReply<EventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

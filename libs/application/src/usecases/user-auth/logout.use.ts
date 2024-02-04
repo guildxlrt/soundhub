@@ -12,7 +12,7 @@ export class LogoutUsecase {
 	async execute(): Promise<UsecaseReply<boolean>> {
 		try {
 			const res = await this.mainService.logout()
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

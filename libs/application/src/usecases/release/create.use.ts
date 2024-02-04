@@ -1,7 +1,8 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
-import { NewReleaseUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ReleasesService, StorageService } from "../../services"
 import { Song } from "Domain"
+import { NewReleaseUsecaseParams } from "../params-adapters"
 
 export class CreateReleaseUsecase {
 	private mainService: ReleasesService
@@ -39,7 +40,7 @@ export class CreateReleaseUsecase {
 			const { cover, data } = release
 
 			const res = await this.mainService.create({ data: data, cover }, songs)
-			return new UsecaseReply(res)
+			return new UsecaseReply(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -88,7 +89,7 @@ export class CreateReleaseUsecase {
 				await this.mainService.setCoverPath(newImagePath, id as number)
 			}
 
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

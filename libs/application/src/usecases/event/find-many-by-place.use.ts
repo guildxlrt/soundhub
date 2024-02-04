@@ -1,6 +1,7 @@
-import { PlaceUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
+import { PlaceUsecaseParams } from "../params-adapters"
 
 export class FindEventsByPlaceUsecase {
 	mainService: EventsService
@@ -26,7 +27,7 @@ export class FindEventsByPlaceUsecase {
 			const place = input.place
 
 			const data = (await this.mainService.findManyByPlace(place)) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data)
+			return new UsecaseReply<EventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -53,7 +54,7 @@ export class FindEventsByPlaceUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results)
+			return new UsecaseReply<EventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

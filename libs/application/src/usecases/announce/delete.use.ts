@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { AnnouncesService, StorageService } from "../../services"
-import { DeleteAnnounceUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
+import { DeleteAnnounceUsecaseParams } from "../params-adapters"
 
 export class DeleteAnnounceUsecase {
 	private announcesService: AnnouncesService
@@ -26,7 +27,7 @@ export class DeleteAnnounceUsecase {
 			const { id } = input
 
 			const res = await this.announcesService.delete(id)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -49,7 +50,7 @@ export class DeleteAnnounceUsecase {
 
 			// persist
 			const res = await this.announcesService.delete(id)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

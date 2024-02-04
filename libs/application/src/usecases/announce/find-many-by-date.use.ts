@@ -1,6 +1,7 @@
-import { DateUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { AnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
+import { DateUsecaseParams } from "../params-adapters"
 
 export class FindAnnouncesByDateUsecase {
 	announcesService: AnnouncesService
@@ -12,7 +13,7 @@ export class FindAnnouncesByDateUsecase {
 			const date = input.date
 
 			const data = await this.announcesService.findManyByDate(date)
-			return new UsecaseReply<AnnounceShortDTO[]>(data)
+			return new UsecaseReply<AnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

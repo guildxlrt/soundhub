@@ -1,4 +1,4 @@
-import { GenreType } from "Shared"
+import { GenreType, ReleaseType } from "Shared"
 
 export class IDUsecaseParams {
 	id: number
@@ -26,5 +26,17 @@ export class DateUsecaseParams {
 	static fromReqParams(reqParams: string | number | Date) {
 		const date = new Date(reqParams)
 		return new DateUsecaseParams(date)
+	}
+}
+
+export class ReleaseTypeUsecaseParams {
+	type: ReleaseType
+
+	constructor(type: ReleaseType) {
+		this.type = type
+	}
+
+	static fromReqParams(type: string | ReleaseType) {
+		return new ReleaseTypeUsecaseParams(type as ReleaseType)
 	}
 }

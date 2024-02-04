@@ -1,8 +1,9 @@
 import { ErrorHandler, envs, htmlError } from "Shared"
-import { ChangePassUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 import { PasswordServicePort, UserAuth } from "Domain"
+import { ChangePassUsecaseParams } from "../params-adapters"
 
 export class ChangePassUsecase {
 	private mainService: UserAuthService
@@ -33,7 +34,7 @@ export class ChangePassUsecase {
 				newOne: newOne,
 				confirm: confirm,
 			})
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -64,7 +65,7 @@ export class ChangePassUsecase {
 				pass: hashed,
 			})
 
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

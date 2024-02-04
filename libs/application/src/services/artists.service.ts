@@ -18,7 +18,6 @@ import {
 	INewArtistSuccess,
 	IFindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
-	IGetArtistNameSuccess,
 	IArtistName,
 } from "Shared"
 

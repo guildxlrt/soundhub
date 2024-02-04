@@ -1,8 +1,9 @@
 import { ErrorHandler, envs, htmlError } from "Shared"
-import { ChangeEmailUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 import { UserAuth } from "Domain"
+import { ChangeEmailUsecaseParams } from "../params-adapters"
 
 export class ChangeEmailUsecase {
 	private mainService: UserAuthService
@@ -28,7 +29,7 @@ export class ChangeEmailUsecase {
 				newOne: newOne,
 				confirm: confirm,
 			})
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -55,7 +56,7 @@ export class ChangeEmailUsecase {
 				pass: newOne,
 			})
 
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

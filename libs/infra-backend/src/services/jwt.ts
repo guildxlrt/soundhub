@@ -3,7 +3,10 @@ import * as fs from "fs"
 import { ExpressRequest, ErrorHandler, ErrorMsg, UserToken, htmlError } from "Shared"
 
 export class JwtService {
-	static async generate(userToken: UserToken | undefined, expires: string | number | undefined) {
+	static async generate(
+		userToken: UserToken | undefined,
+		expires: string | number | undefined
+	): Promise<string> {
 		try {
 			if (!userToken) throw ErrorMsg.htmlError(htmlError[400])
 
@@ -32,7 +35,7 @@ export class JwtService {
 		}
 	}
 
-	static async decode(req: ExpressRequest) {
+	static async decode(req: ExpressRequest): Promise<void> {
 		try {
 			const token = req.cookies.jwt
 			if (!token) ErrorMsg.htmlError(htmlError[400])

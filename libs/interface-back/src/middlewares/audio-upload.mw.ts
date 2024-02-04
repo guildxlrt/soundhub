@@ -23,6 +23,6 @@ export const audioStorage = async (
 
 		next()
 	} catch (error) {
-		await new ApiErrorHandler().reply(error, res)
+		await ApiErrorHandler.reply(error, res)
 	}
 }

@@ -1,6 +1,7 @@
-import { IDUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { AnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
+import { IDUsecaseParams } from "../params-adapters"
 
 export class FindAnnouncesByArtistUsecase {
 	announcesService: AnnouncesService
@@ -12,7 +13,7 @@ export class FindAnnouncesByArtistUsecase {
 			const id = input.id
 
 			const data = await this.announcesService.findManyByArtist(id)
-			return new UsecaseReply<AnnounceShortDTO[]>(data)
+			return new UsecaseReply<AnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -11,7 +11,7 @@ export class GetAllAnnouncesUsecase {
 		try {
 			const data = await this.announcesService.getAll()
 
-			return new UsecaseReply<AnnounceShortDTO[]>(data)
+			return new UsecaseReply<AnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

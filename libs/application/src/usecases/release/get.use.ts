@@ -1,6 +1,7 @@
-import { IDUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetFullReleaseDTO, IGetFullReleaseSuccess, envs } from "Shared"
 import { ArtistsService, ReleasesService } from "../../services"
+import { IDUsecaseParams } from "../params-adapters"
 
 export class GetReleaseUsecase {
 	mainService: ReleasesService
@@ -24,7 +25,7 @@ export class GetReleaseUsecase {
 		try {
 			const id = input.id
 			const data = (await this.mainService.get(id)) as GetFullReleaseDTO
-			return new UsecaseReply<GetFullReleaseDTO>(data)
+			return new UsecaseReply<GetFullReleaseDTO>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -53,7 +54,7 @@ export class GetReleaseUsecase {
 
 			const dto = GetFullReleaseDTO.createFromData(release, songsWithArtistsNames)
 
-			return new UsecaseReply<GetFullReleaseDTO>(dto)
+			return new UsecaseReply<GetFullReleaseDTO>(dto, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

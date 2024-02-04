@@ -114,14 +114,6 @@ export class EditReleaseUsecaseParams {
 	}
 }
 
-export class FindReleasesByReleaseTypeUsecase {
-	type: ReleaseType
-
-	constructor(type: ReleaseType) {
-		this.type = type
-	}
-}
-
 export class SetPublicStatusReleaseUsecaseParams {
 	id: ReleaseID
 	ownerID?: ProfileID

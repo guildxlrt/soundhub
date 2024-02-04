@@ -23,7 +23,7 @@ export class GetAllEventsUsecase {
 	async frontend(): Promise<UsecaseReply<EventShortDTO[]>> {
 		try {
 			const data = (await this.mainService.getAll()) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data)
+			return new UsecaseReply<EventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -45,7 +45,7 @@ export class GetAllEventsUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results)
+			return new UsecaseReply<EventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

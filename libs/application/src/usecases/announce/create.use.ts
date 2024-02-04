@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath } from "Shared"
-import { NewAnnounceUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { AnnouncesService, StorageService } from "../../services"
+import { NewAnnounceUsecaseParams } from "../params-adapters"
 
 export class CreateAnnounceUsecase {
 	private announcesService: AnnouncesService
@@ -31,7 +32,7 @@ export class CreateAnnounceUsecase {
 		try {
 			const { file, announce } = input
 			const data = await this.announcesService.create(announce, file)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -54,7 +55,7 @@ export class CreateAnnounceUsecase {
 			// persist
 			await this.announcesService.create(announce)
 
-			return new UsecaseReply<boolean>(true)
+			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -1,7 +1,8 @@
-import { ErrorHandler, ErrorMsg, INewArtistBackSucces, UserToken, envs, filePath } from "Shared"
-import { NewArtistUsecaseParams, UsecaseReply } from "../../utils"
+import { ErrorMsg, INewArtistBackSucces, UserToken, envs, filePath } from "Shared"
+import { UsecaseReply } from "../../utils"
 import { Artist, PasswordServicePort, UserAuth, ValidationServicePort } from "Domain"
 import { ArtistsService, StorageService } from "../../services"
+import { NewArtistUsecaseParams } from "../params-adapters"
 
 export class CreateArtistUsecase {
 	private mainService: ArtistsService
@@ -42,7 +43,7 @@ export class CreateArtistUsecase {
 				throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			return new UsecaseReply<UserToken>(null, error as ErrorMsg)
 		}
 	}
 
@@ -56,6 +57,7 @@ export class CreateArtistUsecase {
 			const { file, profile, auth } = input
 			// validate
 			await auth.validateNewAuths(validationService)
+
 			auth.hashPass(passwordService)
 
 			// Persist
@@ -78,9 +80,9 @@ export class CreateArtistUsecase {
 			const userToken = new UserToken(artist.id as number, artist.authID, "artist")
 			if (!userToken) throw new ErrorMsg("Error to get cookie")
 
-			return new UsecaseReply<UserToken>(userToken)
+			return new UsecaseReply<UserToken>(userToken, null)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			return new UsecaseReply<UserToken>(null, error as ErrorMsg)
 		}
 	}
 
@@ -103,9 +105,9 @@ export class CreateArtistUsecase {
 				file
 			)) as boolean
 
-			return new UsecaseReply<boolean>(newUserAuth)
+			return new UsecaseReply<boolean>(newUserAuth, null)
 		} catch (error) {
-			throw ErrorHandler.handle(error)
+			return new UsecaseReply<boolean>(null, error as ErrorMsg)
 		}
 	}
 }

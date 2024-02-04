@@ -1,6 +1,7 @@
-import { IDUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
+import { IDUsecaseParams } from "../params-adapters"
 
 export class GetEventUsecase {
 	mainService: EventsService
@@ -26,7 +27,7 @@ export class GetEventUsecase {
 			const id = input.id
 
 			const data = (await this.mainService.get(id)) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data)
+			return new UsecaseReply<EventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -53,7 +54,7 @@ export class GetEventUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results)
+			return new UsecaseReply<EventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

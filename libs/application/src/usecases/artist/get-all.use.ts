@@ -12,7 +12,7 @@ export class GetAllArtistsUsecase {
 		try {
 			const data = await this.mainService.getAll()
 
-			return new UsecaseReply<ArtistShortestDTO[]>(data)
+			return new UsecaseReply<ArtistShortestDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

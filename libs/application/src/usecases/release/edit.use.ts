@@ -1,6 +1,7 @@
-import { EditReleaseUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { ReleasesService, SongsService, StorageService } from "../../services"
+import { EditReleaseUsecaseParams } from "../params-adapters"
 
 export class EditReleaseUsecase {
 	private mainService: ReleasesService
@@ -40,7 +41,7 @@ export class EditReleaseUsecase {
 			const { cover, data } = release
 
 			const res = await this.mainService.edit({ data: data, cover }, songs)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -89,7 +90,7 @@ export class EditReleaseUsecase {
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new UsecaseReply<boolean>(true)
+			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

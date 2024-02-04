@@ -1,6 +1,7 @@
 import { ErrorHandler, SongDTO } from "Shared"
-import { IDUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { SongsService } from "../../services"
+import { IDUsecaseParams } from "../params-adapters"
 
 export class FindSongsByArtistUsecase {
 	mainService: SongsService
@@ -12,7 +13,7 @@ export class FindSongsByArtistUsecase {
 		try {
 			const id = input.id
 			const data = await this.mainService.findByArtist(id)
-			return new UsecaseReply<SongDTO[]>(data)
+			return new UsecaseReply<SongDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

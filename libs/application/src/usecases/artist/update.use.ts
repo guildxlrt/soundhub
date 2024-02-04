@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
-import { UsecaseReply, UpdateArtistUsecaseParams } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ArtistsService, StorageService } from "../../services"
+import { UpdateArtistUsecaseParams } from "../params-adapters"
 
 export class UpdateArtistUsecase {
 	mainService: ArtistsService
@@ -32,7 +33,7 @@ export class UpdateArtistUsecase {
 			const { profile, delAvatar, file } = input
 
 			const data = await this.mainService.update(profile, delAvatar, file)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -78,7 +79,7 @@ export class UpdateArtistUsecase {
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new UsecaseReply<boolean>(true)
+			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

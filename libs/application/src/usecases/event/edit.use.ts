@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
-import { EditEventUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ArtistsService, EventsService, StorageService } from "../../services"
+import { EditEventUsecaseParams } from "../params-adapters"
 
 export class EditEventUsecase {
 	private mainService: EventsService
@@ -33,7 +34,7 @@ export class EditEventUsecase {
 			const { event, file } = input
 
 			const data = await this.mainService.edit(event, file)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -79,7 +80,7 @@ export class EditEventUsecase {
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new UsecaseReply<boolean>(true)
+			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

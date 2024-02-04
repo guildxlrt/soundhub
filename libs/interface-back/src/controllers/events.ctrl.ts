@@ -32,11 +32,6 @@ import {
 import { ApiErrorHandler, IEventsCtrl } from "../assets"
 
 export class EventsController implements IEventsCtrl {
-	private storageImplement = new StorageImplement()
-	private storageService = new StorageService(this.storageImplement)
-	private eventsImplement = new EventsImplement()
-	private eventsService = new EventsService(this.eventsImplement)
-
 	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
@@ -46,17 +41,23 @@ export class EventsController implements IEventsCtrl {
 			const event = req.body as CreateEventDTO
 			const params = NewEventUsecaseParams.fromDto(event, owner, file)
 
-			// Saving Profile
-			const createEvent = new CreateEventUsecase(this.eventsService, this.storageService)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database Profile
+			const createEvent = new CreateEventUsecase(eventsService, storageService)
 			const { data, error } = await createEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -69,17 +70,23 @@ export class EventsController implements IEventsCtrl {
 			const event = req.body as EditEventDTO
 			const params = EditEventUsecaseParams.fromDto(event, owner, file)
 
-			// Saving Changes
-			const EditEvent = new EditEventUsecase(this.eventsService, this.storageService)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const EditEvent = new EditEventUsecase(eventsService, storageService)
 			const { data, error } = await EditEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -91,20 +98,23 @@ export class EventsController implements IEventsCtrl {
 			const owner = req.auth?.profileID as number
 			const params = DeleteEventUsecaseParams.fromDtoBackend(id, owner)
 
-			// Operators
-			// ... doing some heathcheck
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
 
-			// Saving Profile
-			const deleteEvent = new DeleteEventUsecase(this.eventsService, this.storageService)
+			// Calling database
+			const deleteEvent = new DeleteEventUsecase(eventsService, storageService)
 			const { data, error } = await deleteEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -115,16 +125,21 @@ export class EventsController implements IEventsCtrl {
 			const id = req.params["id"]
 			const params = new IDUsecaseParams(id)
 
-			const getEvent = new GetEventUsecase(this.eventsService)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+
+			// Calling database
+			const getEvent = new GetEventUsecase(eventsService)
 			const { data, error } = await getEvent.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -132,16 +147,23 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const getAllEvents = new GetAllEventsUsecase(this.eventsService)
+			// Services
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+
+			// Calling database
+			const getAllEvents = new GetAllEventsUsecase(eventsService)
 			const { data, error } = await getAllEvents.execute()
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -153,68 +175,76 @@ export class EventsController implements IEventsCtrl {
 		const genre = req.query?.["genre"] as string
 		const place = req.query?.["place"] as string
 
+		// Services
+		const eventsImplement = new EventsImplement()
+		const eventsService = new EventsService(eventsImplement)
+
 		if (artistID) {
 			try {
 				const params = new IDUsecaseParams(artistID)
 
-				const findEventsByArtist = new FindEventsByArtistUsecase(this.eventsService)
+				// Calling database
+				const findEventsByArtist = new FindEventsByArtistUsecase(eventsService)
 				const { data, error } = await findEventsByArtist.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		if (date) {
 			try {
 				const params = DateUsecaseParams.fromReqParams(date)
 
-				const findEventsByDate = new FindEventsByDateUsecase(this.eventsService)
+				// Calling database
+				const findEventsByDate = new FindEventsByDateUsecase(eventsService)
 				const { data, error } = await findEventsByDate.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		if (genre) {
 			try {
 				const params = new PlaceUsecaseParams(genre)
 
-				const findEventsByPlace = new FindEventsByPlaceUsecase(this.eventsService)
+				// Calling database
+				const findEventsByPlace = new FindEventsByPlaceUsecase(eventsService)
 				const { data, error } = await findEventsByPlace.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		if (place) {
 			try {
 				const params = new GenreUsecaseParams(place)
 
-				const findEventsByGenre = new FindEventsByArtistGenreUsecase(this.eventsService)
+				// Calling database
+				const findEventsByGenre = new FindEventsByArtistGenreUsecase(eventsService)
 				const { data, error } = await findEventsByGenre.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 

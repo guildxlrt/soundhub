@@ -28,10 +28,10 @@ export class CredentialsValidator {
 		password: string | null
 	): Promise<boolean> {
 		try {
-			const validPass = await service.password(password as string)
-			if (validPass) throw new ErrorMsg("weak Password", htmlError[422].value)
+			const validPass = service.password(password as string)
+			if (!validPass) throw new ErrorMsg("weak password", htmlError[422].value)
 
-			const validEmail = await service.email(email as string)
+			const validEmail = service.email(email as string)
 			if (!validEmail) throw new ErrorMsg("invalid email format", htmlError[422].value)
 			else return true
 		} catch (error) {

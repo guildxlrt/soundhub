@@ -1,7 +1,8 @@
 import { ErrorHandler, ErrorMsg, ILoginSuccess, UserToken, envs, htmlError } from "Shared"
 import { ArtistsService, UserAuthService } from "../../services"
 import { PasswordServicePort } from "Domain"
-import { LoginUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
+import { LoginUsecaseParams } from "../params-adapters"
 
 export class LoginUsecase {
 	private mainService: UserAuthService
@@ -34,7 +35,7 @@ export class LoginUsecase {
 		try {
 			const { email, password } = input
 			const login = (await this.mainService.login(email, password)) as boolean
-			return new UsecaseReply<boolean>(login)
+			return new UsecaseReply<boolean>(login, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -63,7 +64,7 @@ export class LoginUsecase {
 			const userToken = new UserToken(authDb.id, userData.profile.id as number, "artist")
 			if (!userToken) throw new ErrorMsg("internal server errror")
 
-			return new UsecaseReply<UserToken>(userToken)
+			return new UsecaseReply<UserToken>(userToken, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

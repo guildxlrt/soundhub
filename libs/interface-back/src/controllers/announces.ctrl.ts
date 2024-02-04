@@ -28,11 +28,6 @@ import {
 import { ApiErrorHandler, IAnnoncesCtrl } from "../assets"
 
 export class AnnoncesController implements IAnnoncesCtrl {
-	private storageImplement = new StorageImplement()
-	private storageService = new StorageService(this.storageImplement)
-	private announcesImplement = new AnnouncesImplement()
-	private announcesService = new AnnouncesService(this.announcesImplement)
-
 	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
@@ -41,21 +36,24 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const owner = req.auth?.profileID as number
 			const file = req.image as StreamFile
 
-			// Saving Profile
-			const createAnnounce = new CreateAnnounceUsecase(
-				this.announcesService,
-				this.storageService
-			)
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const createAnnounce = new CreateAnnounceUsecase(announcesService, storageService)
 			const params = NewAnnounceUsecaseParams.fromDto(dto, owner, file)
 
 			const { data, error } = await createAnnounce.execute(params)
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(201).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -68,18 +66,24 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const dto = req.body as EditAnnounceDTO
 
-			// Saving Profile
-			const EditAnnounce = new EditAnnounceUsecase(this.announcesService, this.storageService)
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const EditAnnounce = new EditAnnounceUsecase(announcesService, storageService)
 			const params = EditAnnounceUsecaseParams.fromDto(dto, owner, file)
 
 			const { data, error } = await EditAnnounce.execute(params)
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -89,21 +93,24 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			const user = req.auth?.profileID as number
 			const id = Number(req.params["id"])
 
-			// Saving Profile
-			const deleteAnnounce = new DeleteAnnounceUsecase(
-				this.announcesService,
-				this.storageService
-			)
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const deleteAnnounce = new DeleteAnnounceUsecase(announcesService, storageService)
 			const params = DeleteAnnounceUsecaseParams.fromDtoBackend(id, user)
 
 			const { data, error } = await deleteAnnounce.execute(params)
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -113,17 +120,23 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			const id = req.params["id"]
 			const params = new IDUsecaseParams(id)
-			const getAnnounce = new GetAnnounceUsecase(this.announcesService)
+
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+
+			// Calling database
+			const getAnnounce = new GetAnnounceUsecase(announcesService)
 
 			const { data, error } = await getAnnounce.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -131,16 +144,21 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const getAllAnnounces = new GetAllAnnouncesUsecase(this.announcesService)
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+
+			// Calling database
+			const getAllAnnounces = new GetAllAnnouncesUsecase(announcesService)
 			const { data, error } = await getAllAnnounces.execute()
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -150,38 +168,44 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		const date = req.query?.["date"] as string
 		const artistID = req.query?.["artist"] as string
 
+		// Services
+		const announcesImplement = new AnnouncesImplement()
+		const announcesService = new AnnouncesService(announcesImplement)
+
 		if (artistID) {
 			try {
 				const params = new IDUsecaseParams(artistID)
-				const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(
-					this.announcesService
-				)
+
+				// Calling database
+				const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(announcesService)
 
 				const { data, error } = await findAnnouncesByArtist.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		if (date) {
 			try {
 				const params = DateUsecaseParams.fromReqParams(date)
-				const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(this.announcesService)
+
+				// Calling database
+				const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(announcesService)
 
 				const { data, error } = await findAnnouncesByArtist.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 

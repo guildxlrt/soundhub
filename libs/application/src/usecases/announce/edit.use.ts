@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
-import { EditAnnounceUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { AnnouncesService, StorageService } from "../../services"
+import { EditAnnounceUsecaseParams } from "../params-adapters"
 
 export class EditAnnounceUsecase {
 	private announcesService: AnnouncesService
@@ -32,7 +33,7 @@ export class EditAnnounceUsecase {
 			const { file, announce } = input
 
 			const data = await this.announcesService.edit(announce, file)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -74,7 +75,7 @@ export class EditAnnounceUsecase {
 				await storageService.delete(oldImagePath as string)
 			}
 
-			return new UsecaseReply<boolean>(true)
+			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

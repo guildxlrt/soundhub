@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath } from "Shared"
-import { NewEventUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
 import { ArtistsService, EventsService, StorageService } from "../../services"
+import { NewEventUsecaseParams } from "../params-adapters"
 
 export class CreateEventUsecase {
 	private mainService: EventsService
@@ -32,7 +33,7 @@ export class CreateEventUsecase {
 		try {
 			const { event, file } = input
 			const data = await this.mainService.create(event, file)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -56,7 +57,7 @@ export class CreateEventUsecase {
 
 			// persist
 			const data = await this.mainService.create(event)
-			return new UsecaseReply<boolean>(data)
+			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

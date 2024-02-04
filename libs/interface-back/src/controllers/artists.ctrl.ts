@@ -27,14 +27,6 @@ import {
 import { ApiErrorHandler, Cookie, IArtistCtrl } from "../assets"
 
 export class ArtistsController implements IArtistCtrl {
-	private storageImplement = new StorageImplement()
-	private storageService = new StorageService(this.storageImplement)
-	private artistsImplement = new ArtistsImplement()
-	private artistsService = new ArtistsService(this.artistsImplement)
-
-	private passwordService = new BcryptService()
-	private validationService = new ValidatorService()
-
 	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
@@ -43,12 +35,20 @@ export class ArtistsController implements IArtistCtrl {
 			const file = req.image as StreamFile
 			const params = NewArtistUsecaseParams.fromDto(dto, file)
 
-			// Saving Profile
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+			const passwordService = new BcryptService()
+			const validationService = new ValidatorService()
+
+			// Calling database
 			const createArtist = new CreateArtistUsecase(
-				this.artistsService,
-				this.storageService,
-				this.passwordService,
-				this.validationService
+				artistsService,
+				storageService,
+				passwordService,
+				validationService
 			)
 			const { data, error } = await createArtist.execute(params)
 
@@ -59,9 +59,9 @@ export class ArtistsController implements IArtistCtrl {
 			return res
 				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
-				.send(new ResponseDTO(true))
+				.send(new ResponseDTO(true, error))
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -74,17 +74,23 @@ export class ArtistsController implements IArtistCtrl {
 			const file = req.image as StreamFile
 			const params = UpdateArtistUsecaseParams.fromDto(dto, user, file)
 
-			// Saving Changes
-			const editArtist = new UpdateArtistUsecase(this.artistsService, this.storageService)
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database Changes
+			const editArtist = new UpdateArtistUsecase(artistsService, storageService)
 			const { data, error } = await editArtist.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -95,16 +101,21 @@ export class ArtistsController implements IArtistCtrl {
 			const id = req.params["id"]
 			const params = new IDUsecaseParams(id)
 
-			const getArtistByID = new GetArtistByIDUsecase(this.artistsService)
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const getArtistByID = new GetArtistByIDUsecase(artistsService)
 			const { data, error } = await getArtistByID.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -112,16 +123,21 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const getAllArtists = new GetAllArtistsUsecase(this.artistsService)
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const getAllArtists = new GetAllArtistsUsecase(artistsService)
 			const { data, error } = await getAllArtists.execute()
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			const reponse = new ResponseDTO(data)
+			const reponse = new ResponseDTO(data, error)
 			return res.status(200).send(reponse)
 		} catch (error) {
-			return new ApiErrorHandler().reply(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
@@ -131,20 +147,25 @@ export class ArtistsController implements IArtistCtrl {
 		const email = req.query?.["email"] as string
 		const genre = req.query?.["genre"] as string
 
+		// Services
+		const artistsImplement = new ArtistsImplement()
+		const artistsService = new ArtistsService(artistsImplement)
+
 		if (email) {
 			try {
 				const params = new EmailUsecaseParams(email)
 
-				const getArtistByEmail = new GetArtistByEmailUsecase(this.artistsService)
+				// Calling database
+				const getArtistByEmail = new GetArtistByEmailUsecase(artistsService)
 				const { data, error } = await getArtistByEmail.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 
@@ -152,16 +173,17 @@ export class ArtistsController implements IArtistCtrl {
 			try {
 				const params = new GenreUsecaseParams(genre)
 
-				const findArtistsByGenre = new FindArtistsByGenreUsecase(this.artistsService)
+				// Calling database
+				const findArtistsByGenre = new FindArtistsByGenreUsecase(artistsService)
 				const { data, error } = await findArtistsByGenre.execute(params)
 
 				if (error) throw error
 				if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-				const reponse = new ResponseDTO(data)
+				const reponse = new ResponseDTO(data, error)
 				return res.status(200).send(reponse)
 			} catch (error) {
-				return new ApiErrorHandler().reply(error, res)
+				return ApiErrorHandler.reply(error, res)
 			}
 		}
 		return res.status(400).end()

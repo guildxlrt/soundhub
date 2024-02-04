@@ -1,6 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { EventsService, StorageService } from "../../services"
-import { DeleteEventUsecaseParams, UsecaseReply } from "../../utils"
+import { UsecaseReply } from "../../utils"
+import { DeleteEventUsecaseParams } from "../params-adapters"
 
 export class DeleteEventUsecase {
 	private mainService: EventsService
@@ -26,7 +27,7 @@ export class DeleteEventUsecase {
 			const { id } = input
 
 			const res = await this.mainService.delete(id)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -49,7 +50,7 @@ export class DeleteEventUsecase {
 
 			// persist
 			const res = await this.mainService.delete(id)
-			return new UsecaseReply<boolean>(res)
+			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

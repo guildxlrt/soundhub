@@ -11,7 +11,7 @@ export class GetAllReleasesUsecase {
 	async execute(): Promise<UsecaseReply<GetShortReleaseDTO[]>> {
 		try {
 			const data = await this.mainService.getAll()
-			return new UsecaseReply<GetShortReleaseDTO[]>(data)
+			return new UsecaseReply<GetShortReleaseDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
