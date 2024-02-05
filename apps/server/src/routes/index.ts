@@ -23,7 +23,7 @@ router.get(endpts.releases, ctrl.releases.getAll)
 router.get(endpts.events, ctrl.events.getAll)
 router.get(endpts.announces, ctrl.announces.getAll)
 
-// user
+// User
 router.post(endpts.signup, imageStorage, ctrl.artists.create)
 router.put(endpts.update, authMiddleware, imageStorage, ctrl.artists.update)
 router.patch(endpts.setPublicStatus, authMiddleware, ctrl.artists.setPublicStatus)
