@@ -1,143 +1,192 @@
-import { errorMsg, ApiRequest, ApiReply, Token } from "Shared-utils"
+import { ArtistsImplement, BcryptService, StorageImplement, ValidatorService } from "Infra-backend"
 import {
-	CreateArtistInputDTO,
-	FindArtistsByGenreInputDTO,
-	GetArtistByEmailInputDTO,
-	GetArtistByIdInputDTO,
-	ModifyArtistInputDTO,
-} from "Dto"
+	UpdateArtistDTO,
+	htmlError,
+	ResponseDTO,
+	NewArtistDTO,
+	ErrorMsg,
+	ExpressRequest,
+	ExpressResponse,
+} from "Shared"
 import {
+	UpdateArtistUsecaseParams,
+	NewArtistUsecaseParams,
 	CreateArtistUsecase,
-	FindArtistsByGenreUsecase,
 	GetAllArtistsUsecase,
+	GetArtistByIDUsecase,
+	UpdateArtistUsecase,
+	IDUsecaseParams,
+	StorageService,
+	ArtistsService,
+	EmailUsecaseParams,
 	GetArtistByEmailUsecase,
-	GetArtistByIdUsecase,
-	ModifyArtistUsecase,
-} from "Interactors"
-import { databaseServices } from "Infra-backend"
-import { formatters } from "Operators"
-import { IArtistController, authExpires, errHandler } from "../assets"
+	SetPublicStatusArtistUsecaseParams,
+	SetPublicStatusArtistUsecase,
+} from "Application"
+import { ApiErrorHandler, Cookie, IArtistCtrl } from "../assets"
 
-export class ArtistsController implements IArtistController {
-	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
-
+export class ArtistsController implements IArtistCtrl {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs = req.body as CreateArtistInputDTO
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const { password } = inputs.auths
+			const dto = req.body as NewArtistDTO
+			const file = req.image as unknown
+			const params = NewArtistUsecaseParams.fromDto(dto, file)
 
-			// Hash
-			const hash = await formatters.passwd(password)
-			const hashedPass = hash
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+			const passwordService = new BcryptService()
+			const validationService = new ValidatorService()
 
-			// Call DB
-			const createArtist = new CreateArtistUsecase(databaseServices)
-			const { data, error } = await createArtist.execute({
-				data: inputs,
-				cleanPass: hashedPass,
-			})
+			// Calling database
+			const createArtist = new CreateArtistUsecase(
+				artistsService,
+				storageService,
+				passwordService,
+				validationService
+			)
+			const { data, error } = await createArtist.execute(params)
+
 			if (error) throw error
+			if (!data || typeof data === "boolean") throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			const expires = authExpires.oneYear
-			const token = new Token().generate(data.userAuthId, expires)
-
+			const cookie = new Cookie(data)
 			return res
-				.cookie("jwt", token, {
-					maxAge: expires,
-					httpOnly: true,
-					sameSite: "lax",
-					secure: false,
-				})
+				.cookie(cookie?.name, cookie?.val, cookie?.options)
 				.status(202)
-				.send(data.message)
+				.send(new ResponseDTO(true, error))
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
-
+	async update(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs = req.body as ModifyArtistInputDTO
+			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Saving Changes
-			const modifyArtist = new ModifyArtistUsecase(databaseServices)
-			const { data, error } = await modifyArtist.execute(inputs)
+			const user = req.auth?.ArtistProfileID as number
+			const dto = req.body as UpdateArtistDTO
+			const file = req.image as unknown
+			const params = UpdateArtistUsecaseParams.fromDto(dto, user, file)
+
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database Changes
+			const editArtist = new UpdateArtistUsecase(artistsService, storageService)
+			const { data, error } = await editArtist.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async getById(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async setPublicStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs = req.body.id as GetArtistByIdInputDTO
+			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const getArtistById = new GetArtistByIdUsecase(databaseServices)
-			const { data, error } = await getArtistById.execute(inputs)
+			const user = req.auth?.ArtistProfileID as number
+			const params = SetPublicStatusArtistUsecaseParams.fromDtoBackend(user)
+
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const setPublicStatusArtist = new SetPublicStatusArtistUsecase(artistsService)
+			const { data, error } = await setPublicStatusArtist.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async getByEmail(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async getByID(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs = req.body.email as GetArtistByEmailInputDTO
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			const getArtistByEmail = new GetArtistByEmailUsecase(databaseServices)
-			const { data, error } = await getArtistByEmail.execute(inputs)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
+
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const getArtistByID = new GetArtistByIDUsecase(artistsService)
+			const { data, error } = await getArtistByID.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async getByEmail(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const getAllArtists = new GetAllArtistsUsecase(databaseServices)
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			const email = req.query?.["email"] as string
+			const params = new EmailUsecaseParams(email)
+
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const getArtistByEmail = new GetArtistByEmailUsecase(artistsService)
+			const { data, error } = await getArtistByEmail.execute(params)
+
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
+		} catch (error) {
+			return ApiErrorHandler.reply(error, res)
+		}
+	}
+
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+		try {
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			// Services
+			const artistsImplement = new ArtistsImplement()
+			const artistsService = new ArtistsService(artistsImplement)
+
+			// Calling database
+			const getAllArtists = new GetAllArtistsUsecase(artistsService)
 			const { data, error } = await getAllArtists.execute()
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
-		}
-	}
-
-	async findManyByGenre(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
-		try {
-			const inputs = req.params.genre as FindArtistsByGenreInputDTO
-
-			const findArtistsByGenre = new FindArtistsByGenreUsecase(databaseServices)
-			const { data, error } = await findArtistsByGenre.execute(inputs)
-			if (error) throw error
-
-			// Return infos
-			return res.status(200).send(data)
-		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 }

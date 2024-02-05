@@ -4,10 +4,10 @@
 	"license": "MIT",
 	"scripts": {
 		"format": "nx format:write && prisma format",
-		"lint": "nx run-many -t lint --projects=tag:type:shared,tag:scope:api",
+		"lint": "nx run-many -t lint --all",
 		"prepare": "husky install",
-		"build": "nx run-many -t build --projects=tag:type:backend",
-		"serve": "nx run server:serve",
+		"build": "nx run-many -t build --all",
+		"serve": "nx run-many -t serve --all",
 		"graph": "nx graph",
 		"migrate": "prisma migrate dev --name init"
 	},
@@ -16,7 +16,7 @@
 		"libs/*"
 	],
 	"prisma": {
-		"schema": "libs/infra-backend/prisma/schema.prisma"
+		"schema": "libs/infra-backend/src/prisma/schema.prisma"
 	},
 	"private": true,
 	"dependencies": {
@@ -26,10 +26,13 @@
 		"axios": "^1.0.0",
 		"bcrypt": "^5.1.1",
 		"body-parser": "^1.20.2",
+		"bulma": "^0.9.4",
+		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"dotenv": "^16.3.1",
 		"express": "~4.18.1",
 		"jsonwebtoken": "^9.0.2",
+		"multer": "1.4.5-lts.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"react-router-dom": "6.11.2",
@@ -55,9 +58,11 @@
 		"@testing-library/react": "14.0.0",
 		"@types/bcrypt": "^5.0.2",
 		"@types/body-parser": "^1.19.5",
+		"@types/cookie-parser": "^1.4.6",
 		"@types/cors": "^2.8.17",
 		"@types/express": "~4.17.13",
 		"@types/jest": "^29.4.0",
+		"@types/multer": "^1.4.11",
 		"@types/node": "18.16.9",
 		"@types/react": "18.2.33",
 		"@types/react-dom": "18.2.14",

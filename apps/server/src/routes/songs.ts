@@ -1,9 +1,11 @@
 import { Router } from "express"
-import { controllers } from "Interface-back"
+import { controller } from "Interface-back"
+import { apiPathEnd } from "../config"
 
 const router = Router()
-const controller = controllers.songs
+const ctrl = controller.songs
+const endpts = apiPathEnd.songs
 
-router.get("/:id", controller.get)
+router.get(endpts.get, ctrl.get)
 
 export default router

@@ -1,0 +1,145 @@
+import {
+	Artist,
+	ExtBackArtistsRepos,
+	ExtFrontArtistsRepos,
+	ArtistsRepository,
+	File,
+	UserAuth,
+} from "Domain"
+import {
+	ArtistProfileID,
+	UserEmail,
+	UserPassword,
+	GetArtistDTO,
+	GetArtistShortDTO,
+	GenreType,
+	UserAuthID,
+	ErrorHandler,
+	INewArtistSuccess,
+	IfindManyByAuthIDSuccess,
+	IGetArtistAuthsSuccess,
+	IArtistName,
+} from "Shared"
+
+interface IArtistsService extends ArtistsRepository, ExtBackArtistsRepos, ExtFrontArtistsRepos {}
+
+export class ArtistsService implements IArtistsService {
+	private service: IArtistsService
+
+	constructor(service: IArtistsService) {
+		this.service = service
+	}
+
+	// SERVIVES
+	async create(
+		data: {
+			profile: Artist
+			userAuth: UserAuth
+			authConfirm?: { confirmEmail: UserEmail; confirmPass: UserPassword }
+		},
+		file?: File
+	): Promise<INewArtistSuccess> {
+		try {
+			return await this.service.create(data, file)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async update(profile: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
+		try {
+			return await this.service.update(profile, delAvatar, file)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
+		try {
+			return await this.service.getPublicStatus(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async setPublicStatus(id?: ArtistProfileID, isPublic?: boolean): Promise<boolean> {
+		try {
+			return await this.service.setPublicStatus(id, isPublic)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async getByID(id: ArtistProfileID): Promise<GetArtistDTO> {
+		try {
+			return await this.service.getByID(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async getByEmail(email: UserEmail): Promise<GetArtistDTO> {
+		try {
+			return await this.service.getByEmail(email)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async getAll(): Promise<GetArtistShortDTO[]> {
+		try {
+			return await this.service.getAll()
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
+		try {
+			return await this.service.findManyByGenre(genre)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	// BACKEND
+	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
+		try {
+			return await this.service.verifyExistence(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess> {
+		try {
+			return await this.service.getAuths(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async getNames(ids: ArtistProfileID[]): Promise<IArtistName[]> {
+		try {
+			return await this.service.getNames(ids)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async findManyByAuthID(id: UserAuthID): Promise<IfindManyByAuthIDSuccess> {
+		try {
+			return await this.service.findManyByAuthID(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
+		try {
+			return await this.service.getAvatarPath(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
+		try {
+			return await this.service.setAvatarPath(path, id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+}

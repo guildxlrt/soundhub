@@ -4,7 +4,6 @@
 	"sourceRoot": "libs/interface-front/src",
 	"projectType": "library",
 	"tags": ["type:shared", "scope:interface", "scope:ui"],
-	"implicitDependencies": ["shared-utils", "dto", "infra-frontend", "interactors"],
 	"targets": {
 		"lint": {
 			"executor": "@nx/eslint:lint",
@@ -17,5 +16,6 @@
 				"jestConfig": "libs/interface-front/jest.config.ts"
 			}
 		}
-	}
+	},
+	"implicitDependencies": ["infra-frontend", "application"]
 }

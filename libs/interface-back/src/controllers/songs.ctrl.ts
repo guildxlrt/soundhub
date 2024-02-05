@@ -1,24 +1,31 @@
-import { GetSongInputDTO } from "Dto"
-import { ISongsController } from "../assets"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { GetSongUsecase } from "Interactors"
-import { databaseServices } from "Infra-backend"
-import { errHandler } from "../assets/error-handler"
+import { SongsImplement } from "Infra-backend"
+import { ExpressRequest, ExpressResponse, ErrorMsg, ResponseDTO, htmlError } from "Shared"
+import { GetSongUsecase, IDUsecaseParams, SongsService } from "Application"
+import { ApiErrorHandler, ISongsCtrl } from "../assets"
 
-export class SongsController implements ISongsController {
-	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+export class SongsController implements ISongsCtrl {
+	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: GetSongInputDTO = req.body as GetSongInputDTO
-			const getSong = new GetSongUsecase(databaseServices)
-			const { data, error } = await getSong.execute(inputs)
-			if (error) throw error
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Return infos
-			return res.status(200).send(data)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
+
+			// services
+			const songsImplement = new SongsImplement()
+			const songsService = new SongsService(songsImplement)
+
+			// Calling database
+			const getSong = new GetSongUsecase(songsService)
+			const { data, error } = await getSong.execute(params)
+
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 }

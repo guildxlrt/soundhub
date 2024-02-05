@@ -1,19 +1,12 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { controller } from "Interface-back"
+import { apiPathEnd } from "../config"
 
 const router = Router()
-const controller = controllers.artists
+const ctrl = controller.artists
+const endpts = apiPathEnd.artist
 
-router.post("/signup", controller.create)
-
-router.put("/update", authMiddleware, controller.modify)
-
-router.get("/one-by-id", controller.getById)
-
-router.get("/one-by-email", controller.getByEmail)
-
-router.get("/", controller.getAll)
-
-router.get("/by-genre/:genre", controller.findManyByGenre)
+router.get(endpts.getByID, ctrl.getByID)
+router.get(endpts.getByEmail, ctrl.getByEmail)
 
 export default router

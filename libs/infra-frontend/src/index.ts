@@ -1,1 +1,1 @@
-export * from "./lib/infra-frontend"
+export * from "./lib"

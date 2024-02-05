@@ -1,13 +1,18 @@
-import { Request, Response, NextFunction } from "express"
-import { Token } from "Shared-utils"
-import { errHandler } from "../assets"
+import { JwtService } from "Infra-backend"
+import { NextResponse, ExpressRequest, ExpressResponse, ErrorMsg, htmlError } from "Shared"
+import { ApiErrorHandler } from "../assets"
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (
+	req: ExpressRequest,
+	res: ExpressResponse,
+	next: NextResponse
+) => {
 	try {
-		new Token().decode(req)
+		JwtService.decode(req)
+		if (!req.auth) throw ErrorMsg.htmlError(htmlError[401])
 
 		next()
 	} catch (error) {
-		errHandler(error, res)
+		await ApiErrorHandler.reply(error, res)
 	}
 }

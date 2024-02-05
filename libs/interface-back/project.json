@@ -17,5 +17,5 @@
 		}
 	},
 	"tags": ["type:shared", "scope:interface", "scope:api"],
-	"implicitDependencies": ["shared-utils", "dto", "infra-backend", "interactors"]
+	"implicitDependencies": ["infra-backend", "application"]
 }

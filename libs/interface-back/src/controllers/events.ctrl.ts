@@ -1,167 +1,159 @@
-import { IEventsController } from "../assets"
-import {
-	CreateEventInputDTO,
-	DeleteEventInputDTO,
-	FindEventsByArtistInputDTO,
-	FindEventsByDateInputDTO,
-	FindEventsByPlaceInputDTO,
-	GetEventInputDTO,
-	ModifyEventInputDTO,
-} from "Dto"
+import { EventsImplement, StorageImplement } from "Infra-backend"
 import {
 	CreateEventUsecase,
+	DeleteEventUsecaseParams,
 	DeleteEventUsecase,
-	FindEventsByArtistUsecase,
-	FindEventsByDateUsecase,
-	FindEventsByPlaceUsecase,
 	GetAllEventsUsecase,
 	GetEventUsecase,
-	ModifyEventUsecase,
-} from "Interactors"
-import { databaseServices } from "Infra-backend"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
+	EditEventUsecase,
+	IDUsecaseParams,
+	NewEventUsecaseParams,
+	EditEventUsecaseParams,
+	StorageService,
+	EventsService,
+} from "Application"
+import {
+	ExpressRequest,
+	ExpressResponse,
+	CreateEventDTO,
+	EditEventDTO,
+	htmlError,
+	ErrorMsg,
+	ResponseDTO,
+} from "Shared"
+import { ApiErrorHandler, IEventsCtrl } from "../assets"
 
-export class EventsController implements IEventsController {
-	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
-
+export class EventsController implements IEventsCtrl {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: CreateEventInputDTO = req.body as CreateEventInputDTO
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Operators
-			// ... doing some heathcheck
+			const owner = req.auth?.ArtistProfileID as number
+			const file = req.image as unknown
+			const event = req.body as CreateEventDTO
+			const params = NewEventUsecaseParams.fromDto(event, owner, file)
 
-			// Saving Profile
-			const createEvent = new CreateEventUsecase(databaseServices)
-			const { data, error } = await createEvent.execute(inputs)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database Profile
+			const createEvent = new CreateEventUsecase(eventsService, storageService)
+			const { data, error } = await createEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "PUT") return res.status(405).send({ error: errorMsg.e405 })
-
+	async edit(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: ModifyEventInputDTO = req.body as ModifyEventInputDTO
+			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Operators
-			// ... doing some heathcheck
+			const owner = req.auth?.ArtistProfileID as number
+			const file = req.image as unknown
+			const event = req.body as EditEventDTO
+			const params = EditEventUsecaseParams.fromDto(event, owner, file)
 
-			// Saving Profile
-			const ModifyEvent = new ModifyEventUsecase(databaseServices)
-			const { data, error } = await ModifyEvent.execute(inputs)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const EditEvent = new EditEventUsecase(eventsService, storageService)
+			const { data, error } = await EditEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
-
+	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: DeleteEventInputDTO = req.body as DeleteEventInputDTO
+			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Operators
-			// ... doing some heathcheck
+			const id = Number(req.params["id"])
+			const owner = req.auth?.ArtistProfileID as number
+			const params = DeleteEventUsecaseParams.fromDtoBackend(id, owner)
 
-			// Saving Profile
-			const deleteEvent = new DeleteEventUsecase(databaseServices)
-			const { data, error } = await deleteEvent.execute(inputs)
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const deleteEvent = new DeleteEventUsecase(eventsService, storageService)
+			const { data, error } = await deleteEvent.execute(params)
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: GetEventInputDTO = req.body as GetEventInputDTO
-			const getEvent = new GetEventUsecase(databaseServices)
-			const { data, error } = await getEvent.execute(inputs)
-			if (error) throw error
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Return infos
-			return res.status(200).send(data)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
+
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+
+			// Calling database
+			const getEvent = new GetEventUsecase(eventsService)
+			const { data, error } = await getEvent.execute(params)
+
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const getAllEvents = new GetAllEventsUsecase(databaseServices)
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			// Services
+			const eventsImplement = new EventsImplement()
+			const eventsService = new EventsService(eventsImplement)
+
+			// Calling database
+			const getAllEvents = new GetAllEventsUsecase(eventsService)
 			const { data, error } = await getAllEvents.execute()
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
-		}
-	}
-
-	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
-		try {
-			const inputs: FindEventsByArtistInputDTO = req.body as FindEventsByArtistInputDTO
-			const findEventsByArtist = new FindEventsByArtistUsecase(databaseServices)
-			const { data, error } = await findEventsByArtist.execute(inputs)
-			if (error) throw error
-
-			// Return infos
-			return res.status(200).send(data)
-		} catch (error) {
-			errHandler(error, res)
-		}
-	}
-
-	async findManyByDate(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
-		try {
-			const inputs: FindEventsByDateInputDTO = req.body as FindEventsByDateInputDTO
-			const findEventsByDate = new FindEventsByDateUsecase(databaseServices)
-			const { data, error } = await findEventsByDate.execute(inputs)
-			if (error) throw error
-
-			// Return infos
-			return res.status(200).send(data)
-		} catch (error) {
-			errHandler(error, res)
-		}
-	}
-
-	async findManyByPlace(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
-		try {
-			const inputs: FindEventsByPlaceInputDTO = req.body as FindEventsByPlaceInputDTO
-			const findEventsByPlace = new FindEventsByPlaceUsecase(databaseServices)
-			const { data, error } = await findEventsByPlace.execute(inputs)
-			if (error) throw error
-
-			// Return infos
-			return res.status(200).send(data)
-		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 }

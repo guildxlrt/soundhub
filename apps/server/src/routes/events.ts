@@ -1,23 +1,14 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { controller, authMiddleware, imageStorage } from "Interface-back"
+import { apiPathEnd } from "../config"
 
 const router = Router()
-const controller = controllers.events
+const ctrl = controller.events
 
-router.post("/new", authMiddleware, controller.create)
+const endpts = apiPathEnd.event
 
-router.get("/modify", authMiddleware, controller.modify)
-
-router.delete("/delete", authMiddleware, controller.delete)
-
-router.get("/:id", controller.get)
-
-router.get("/", controller.getAll)
-
-router.get("/by-artist/:id/", controller.findManyByArtist)
-
-router.get("/by-date/:id/", controller.findManyByDate)
-
-router.get("/by-location/:id/", controller.findManyByPlace)
+router.post(endpts.create, authMiddleware, imageStorage, ctrl.create)
+router.get(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
+router.delete(endpts.delete, authMiddleware, ctrl.delete)
 
 export default router

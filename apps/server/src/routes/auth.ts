@@ -1,15 +1,14 @@
 import { Router } from "express"
-import { controllers, authMiddleware } from "Interface-back"
+import { controller, authMiddleware } from "Interface-back"
+import { apiPathEnd } from "../config"
 
 const router = Router()
-const controller = controllers.auth
+const ctrl = controller.auth
+const endpts = apiPathEnd.auth
 
-router.post("/login", controller.login)
-
-router.delete("/logout", controller.logout)
-
-router.put("/change-email", authMiddleware, controller.changeEmail)
-
-router.put("/change-pass", authMiddleware, controller.changePass)
+router.post(endpts.login, ctrl.login)
+router.delete(endpts.logout, ctrl.logout)
+router.put(endpts.changeEmail, authMiddleware, ctrl.changeEmail)
+router.put(endpts.changePass, authMiddleware, ctrl.changePass)
 
 export default router

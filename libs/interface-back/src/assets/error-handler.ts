@@ -1,16 +1,11 @@
-import { errorMsg } from "Shared-utils"
-import { ApiReply } from "../../../shared-utils/src/express-js/params"
+import { ErrorHandler, ExpressResponse, ResponseDTO } from "Shared"
 
-export const errHandler = (error: any, res: ApiReply) => {
-	try {
-		console.error(error)
+export class ApiErrorHandler {
+	static async reply(error: any, res: ExpressResponse): Promise<ExpressResponse> {
+		const errorMsg = ErrorHandler.handle(error)
 
-		if (error.status) {
-			return res.status(error.status).send(error.message)
-		}
+		const response = new ResponseDTO(null, errorMsg)
 
-		return res.status(500).send(error)
-	} catch (error) {
-		return res.status(500).send(errorMsg.e500)
+		return res.status(errorMsg.status ? errorMsg.status : 500).send(response)
 	}
 }

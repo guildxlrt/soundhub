@@ -1,131 +1,160 @@
-import {
-	CreateAnnounceInputDTO,
-	DeleteAnnounceInputDTO,
-	FindAnnouncesByArtistInputDTO,
-	GetAnnounceInputDTO,
-	ModifyAnnounceInputDTO,
-} from "Dto"
-import { IAnnoncesController } from "../assets"
+import { AnnouncesImplement, StorageImplement } from "Infra-backend"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
-	FindAnnouncesByArtistUsecase,
 	GetAllAnnouncesUsecase,
 	GetAnnounceUsecase,
-	ModifyAnnounceUsecase,
-} from "Interactors"
-import { databaseServices } from "Infra-backend"
-import { errorMsg, ApiRequest, ApiReply } from "Shared-utils"
-import { errHandler } from "../assets/error-handler"
+	EditAnnounceUsecase,
+	DeleteAnnounceUsecaseParams,
+	IDUsecaseParams,
+	AnnouncesService,
+	StorageService,
+	EditAnnounceUsecaseParams,
+	NewAnnounceUsecaseParams,
+} from "Application"
+import {
+	htmlError,
+	ResponseDTO,
+	CreateAnnounceDTO,
+	EditAnnounceDTO,
+	ErrorMsg,
+	ExpressRequest,
+	ExpressResponse,
+} from "Shared"
+import { ApiErrorHandler, IAnnoncesCtrl } from "../assets"
 
-export class AnnoncesController implements IAnnoncesController {
-	async create(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
-
+export class AnnoncesController implements IAnnoncesCtrl {
+	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: CreateAnnounceInputDTO = req.body as CreateAnnounceInputDTO
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Operators
-			// ... doing some heathcheck
+			const dto = req.body as CreateAnnounceDTO
+			const owner = req.auth?.ArtistProfileID as number
+			const file = req.image as unknown
 
-			// Saving Profile
-			const createAnnounce = new CreateAnnounceUsecase(databaseServices)
-			const { data, error } = await createAnnounce.execute(inputs)
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const createAnnounce = new CreateAnnounceUsecase(announcesService, storageService)
+			const params = NewAnnounceUsecaseParams.fromDto(dto, owner, file)
+
+			const { data, error } = await createAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(201).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async modify(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "POST") return res.status(405).send({ error: errorMsg.e405 })
-
+	async edit(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: ModifyAnnounceInputDTO = req.body as ModifyAnnounceInputDTO
+			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Operators
-			// ... doing some heathcheck
+			const file = req.image as unknown
+			const owner = req.auth?.ArtistProfileID as number
 
-			// Saving Profile
-			const ModifyAnnounce = new ModifyAnnounceUsecase(databaseServices)
-			const { data, error } = await ModifyAnnounce.execute(inputs)
+			const dto = req.body as EditAnnounceDTO
+
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
+
+			// Calling database
+			const EditAnnounce = new EditAnnounceUsecase(announcesService, storageService)
+			const params = EditAnnounceUsecaseParams.fromDto(dto, owner, file)
+
+			const { data, error } = await EditAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async delete(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "DELETE") return res.status(405).send({ error: errorMsg.e405 })
-
+	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: DeleteAnnounceInputDTO = req.body as DeleteAnnounceInputDTO
+			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
+			const user = req.auth?.ArtistProfileID as number
+			const id = Number(req.params["id"])
 
-			// Operators
-			// ... doing some heathcheck
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+			const storageImplement = new StorageImplement()
+			const storageService = new StorageService(storageImplement)
 
-			// Saving Profile
-			const deleteAnnounce = new DeleteAnnounceUsecase(databaseServices)
-			const { data, error } = await deleteAnnounce.execute(inputs)
+			// Calling database
+			const deleteAnnounce = new DeleteAnnounceUsecase(announcesService, storageService)
+			const params = DeleteAnnounceUsecaseParams.fromDtoBackend(id, user)
+
+			const { data, error } = await deleteAnnounce.execute(params)
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(202).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async get(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async get(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const inputs: GetAnnounceInputDTO = req.body as GetAnnounceInputDTO
-			const getAnnounce = new GetAnnounceUsecase(databaseServices)
-			const { data, error } = await getAnnounce.execute(inputs)
-			if (error) throw error
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Return infos
-			return res.status(200).send(data)
+			const id = req.params["id"]
+			const params = new IDUsecaseParams(id)
+
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+
+			// Calling database
+			const getAnnounce = new GetAnnounceUsecase(announcesService)
+
+			const { data, error } = await getAnnounce.execute(params)
+
+			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 
-	async getAll(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
+	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
-			const getAllAnnounces = new GetAllAnnouncesUsecase(databaseServices)
+			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			// Services
+			const announcesImplement = new AnnouncesImplement()
+			const announcesService = new AnnouncesService(announcesImplement)
+
+			// Calling database
+			const getAllAnnounces = new GetAllAnnouncesUsecase(announcesService)
 			const { data, error } = await getAllAnnounces.execute()
+
 			if (error) throw error
+			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
-			// Return infos
-			return res.status(200).send(data)
+			const reponse = new ResponseDTO(data, error)
+			return res.status(200).send(reponse)
 		} catch (error) {
-			errHandler(error, res)
-		}
-	}
-
-	async findManyByArtist(req: ApiRequest, res: ApiReply) {
-		if (req.method !== "GET") return res.status(405).send({ error: errorMsg.e405 })
-
-		try {
-			const inputs: FindAnnouncesByArtistInputDTO = req.body as FindAnnouncesByArtistInputDTO
-			const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(databaseServices)
-			const { data, error } = await findAnnouncesByArtist.execute(inputs)
-			if (error) throw error
-
-			// Return infos
-			return res.status(200).send(data)
-		} catch (error) {
-			errHandler(error, res)
+			return ApiErrorHandler.reply(error, res)
 		}
 	}
 }

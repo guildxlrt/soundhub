@@ -1,1 +1,2 @@
-export * from "./lib/interface-front"
+export * from "./components"
+export * from "./presenters"

@@ -1,6 +1,0 @@
-export * from "./user-auth"
-export * from "./artist"
-export * from "./release"
-export * from "./song"
-export * from "./announce"
-export * from "./event"
