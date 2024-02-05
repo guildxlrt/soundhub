@@ -1,4 +1,4 @@
-import { ArtistShortestDTO, ErrorHandler } from "Shared"
+import { GetArtistShortDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
 import { UsecaseReply } from "../../utils"
 
@@ -8,11 +8,11 @@ export class GetAllArtistsUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(): Promise<UsecaseReply<ArtistShortestDTO[]>> {
+	async execute(): Promise<UsecaseReply<GetArtistShortDTO[]>> {
 		try {
 			const data = await this.mainService.getAll()
 
-			return new UsecaseReply<ArtistShortestDTO[]>(data, null)
+			return new UsecaseReply<GetArtistShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

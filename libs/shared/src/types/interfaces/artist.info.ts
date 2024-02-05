@@ -1,12 +1,12 @@
 import { InstrumentType } from "../enums"
-import { ProfileID } from "../values"
+import { ArtistProfileID } from "../values"
 
 export interface IBandMember {
 	name: string
-	instrument: InstrumentType
+	instrument: InstrumentType[]
 }
 
 export interface IArtistName {
 	name: string
-	id: ProfileID
+	id: ArtistProfileID
 }

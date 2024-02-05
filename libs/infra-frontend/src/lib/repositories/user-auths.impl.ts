@@ -1,13 +1,14 @@
 import { UserAuthsFrontendRepos } from "Domain"
-import { ErrorHandler, UserEmail, UserPassword, apiUrlEndpt, apiUrlPath, apiUrlRoot } from "Shared"
+import { ErrorHandler, UserEmail, UserPassword } from "Shared"
 import axios from "axios"
+import { apiUrlPath, apiUrlRoot } from "../../assets"
 
 export class UserAuthsImplement implements UserAuthsFrontendRepos {
 	async login(email: string, password: string): Promise<boolean> {
 		try {
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.login}`,
+				url: `${apiUrlRoot + apiUrlPath.auth.login}`,
 				withCredentials: true,
 				data: { email: email, password: password },
 			})
@@ -20,7 +21,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		try {
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.logout}`,
+				url: `${apiUrlRoot + apiUrlPath.auth.logout}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -36,7 +37,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		try {
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changeEmail}`,
+				url: `${apiUrlRoot + apiUrlPath.auth.changeEmail}`,
 				withCredentials: true,
 				data: input,
 			})
@@ -53,7 +54,7 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		try {
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.auth.changePass}`,
+				url: `${apiUrlRoot + apiUrlPath.auth.changePass}`,
 				withCredentials: true,
 				data: input,
 			})

@@ -1,7 +1,7 @@
 import {
 	EventID,
-	EventDTO,
-	EventShortDTO,
+	GetEventDTO,
+	GetEventShortDTO,
 	UserAuthID,
 	GenreType,
 	IFindManyByArtistGenreSuccess,
@@ -43,10 +43,10 @@ export interface EventsBackendRepos extends EventsRepository, ExtBackEventsRepos
 export interface EventsFrontendRepos extends EventsRepository, ExtFrontEventsRepos {
 	create(data: Event, file?: RawFile): Promise<boolean>
 	edit(data: Event, file?: RawFile): Promise<boolean>
-	get(id: EventID): Promise<EventDTO>
-	getAll(): Promise<EventShortDTO[]>
-	findManyByArtist(id: EventID): Promise<EventShortDTO[]>
-	findManyByArtistGenre(genre: GenreType): Promise<EventShortDTO[]>
-	findManyByDate(date: Date): Promise<EventShortDTO[]>
-	findManyByPlace(place: string): Promise<EventShortDTO[]>
+	get(id: EventID): Promise<GetEventDTO>
+	getAll(): Promise<GetEventShortDTO[]>
+	findManyByArtist(id: EventID): Promise<GetEventShortDTO[]>
+	findManyByArtistGenre(genre: GenreType): Promise<GetEventShortDTO[]>
+	findManyByDate(date: Date): Promise<GetEventShortDTO[]>
+	findManyByPlace(place: string): Promise<GetEventShortDTO[]>
 }

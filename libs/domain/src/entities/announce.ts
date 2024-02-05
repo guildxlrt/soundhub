@@ -1,9 +1,9 @@
-import { AnnounceID, ProfileID } from "Shared"
+import { AnnounceID, ArtistProfileID } from "Shared"
 import { EntityLayer } from "./layers"
 import { StringFormatter } from "../tools"
 
 export class Announce extends EntityLayer {
-	readonly owner_id: ProfileID
+	readonly owner_id: ArtistProfileID
 	title: string
 	text: string
 	imagePath: string | null
@@ -11,7 +11,7 @@ export class Announce extends EntityLayer {
 
 	constructor(
 		id: AnnounceID | null,
-		owner_id: ProfileID,
+		owner_id: ArtistProfileID,
 		title: string,
 		text: string,
 		imagePath: string | null

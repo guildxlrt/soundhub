@@ -1,15 +1,13 @@
 import { Router } from "express"
 import { controller, authMiddleware, imageStorage } from "Interface-back"
-import { apiUrlEndpt } from "Shared"
+import { apiPathEnd } from "../config"
 
 const router = Router()
 const ctrl = controller.announces
-const endpts = apiUrlEndpt.announces
+const endpts = apiPathEnd.announce
 
 router.post(endpts.create, authMiddleware, imageStorage, ctrl.create)
 router.put(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
-router.delete(endpts.delete + "id", authMiddleware, ctrl.delete)
-router.get(endpts.getAll, ctrl.getAll)
-router.get(endpts.find, ctrl.findMany)
+router.delete(endpts.delete, authMiddleware, ctrl.delete)
 
 export default router

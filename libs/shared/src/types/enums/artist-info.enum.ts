@@ -1,3 +1,4 @@
+// GENRES
 export const GenresEnum = {
 	rock: "rock",
 	metal: "metal",
@@ -8,8 +9,9 @@ export const GenresEnum = {
 
 export type GenreType = (typeof GenresEnum)[keyof typeof GenresEnum]
 
-export type GenresArray = [GenreType, GenreType | undefined, GenreType | undefined]
+export type GenresArray = [GenreType, GenreType | null, GenreType | null]
 
+// INSTRUMENTS
 export const InstrumentEnum = {
 	vocals: "vocals",
 	guitar: "guitar",
@@ -19,3 +21,5 @@ export const InstrumentEnum = {
 } as const
 
 export type InstrumentType = (typeof InstrumentEnum)[keyof typeof InstrumentEnum]
+
+export const ValidInstruments = Object.values(InstrumentEnum)

@@ -1,6 +1,6 @@
 import { AnyObject } from "../../types"
 
-export class EventDTO {
+export class GetEventDTO {
 	readonly id: number
 	readonly organisator_id: number
 	readonly date: Date
@@ -31,7 +31,7 @@ export class EventDTO {
 	}
 
 	static createFromData(data: AnyObject) {
-		return new EventDTO(
+		return new GetEventDTO(
 			data?.["id"],
 			data?.["organisator_id"],
 			data?.["date"],

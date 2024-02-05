@@ -6,7 +6,7 @@ import {
 	GetShortReleaseDTO,
 	ReleaseType,
 	IGetFullReleaseSuccess,
-	ProfileID,
+	ArtistProfileID,
 } from "Shared"
 import { dbClient } from "../prisma"
 import { DatabaseErrorHandler } from "../utils"
@@ -197,7 +197,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async findManyByArtist(id: ProfileID): Promise<GetShortReleaseDTO[]> {
+	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {
@@ -219,7 +219,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async findManyByArtistFeats(id: ProfileID): Promise<GetShortReleaseDTO[]> {
+	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			const releases = (
 				await this.song.findMany({
@@ -288,7 +288,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async getOwner(id: ProfileID) {
+	async getOwner(id: ArtistProfileID) {
 		try {
 			const release = await this.release.findUniqueOrThrow({
 				where: {

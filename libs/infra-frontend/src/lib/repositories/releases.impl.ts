@@ -4,12 +4,12 @@ import {
 	EntityID,
 	GetFullReleaseDTO,
 	GetShortReleaseDTO,
-	apiUrlRoot,
-	apiUrlPath,
-	apiUrlEndpt,
 	ErrorHandler,
+	ArtistProfileID,
+	ReleaseID,
+	ReleaseType,
 } from "Shared"
-import { NewFormData } from "../../assets"
+import { NewFormData, apiUriRequest, apiUrlPath, apiUrlRoot } from "../../assets"
 import axios from "axios"
 import { ReleasesRepository } from "Domain"
 
@@ -30,7 +30,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.create}`,
+				url: `${apiUrlRoot + apiUrlPath.releases.create}`,
 				withCredentials: true,
 				data: {
 					release: release,
@@ -47,8 +47,9 @@ export class ReleasesImplement implements ReleasesRepository {
 		songs: Song[]
 	): Promise<boolean> {
 		try {
+			const id = release.data.id
 			const formData = new FormData()
-			NewFormData.fromFile(formData, release.cover, "cover")
+			NewFormData.fromFile(formData, release?.cover as RawFile, "cover")
 			NewFormData.fromObject(formData, release.data, "release")
 
 			songs.forEach((song, index) => {
@@ -57,7 +58,7 @@ export class ReleasesImplement implements ReleasesRepository {
 
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.edit}`,
+				url: `${apiUrlRoot + apiUrlPath.releases.edit + id}`,
 				withCredentials: true,
 				data: formData,
 			})
@@ -66,13 +67,12 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async setPublicStatus(id: number, isPublic: boolean): Promise<boolean> {
+	async setPublicStatus(id: ReleaseID, isPublic: boolean): Promise<boolean> {
 		try {
 			return await axios({
 				method: "patch",
-				url: `${
-					apiUrlRoot + apiUrlPath.releases + apiUrlEndpt.releases.setPublicStatus + id
-				}`,
+				url: `${apiUrlRoot + apiUrlPath.releases.setPublicStatus + id}`,
+
 				withCredentials: true,
 				data: { id: id, isPublic: isPublic },
 			})
@@ -85,7 +85,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.oneByID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.releases.get + id}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -97,7 +97,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.all}`,
+				url: `${apiUrlRoot + apiUrlPath.releases.getAll}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -109,9 +109,8 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			return await axios({
 				method: "get",
-				url: `${
-					apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.releases.manyByGenre + genre
-				}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.genre + genre}`,
+
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -122,7 +121,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.releases.manyByGenre + date}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.date + date}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -130,11 +129,35 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityID): Promise<GetShortReleaseDTO[]> {
+	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.releases.manyByArtist + id}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistFeatsID + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.releaseType + type}`,
 				withCredentials: true,
 			})
 		} catch (error) {

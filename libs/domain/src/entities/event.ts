@@ -1,27 +1,27 @@
-import { ProfileID, EventID } from "Shared"
+import { ArtistProfileID, EventID } from "Shared"
 import { EntityLayer } from "./layers"
 import { ExtBackArtistsRepos } from "../repositories"
-import { ArtistsArrayValidator, StringFormatter, FieldsValidator } from "../tools"
+import { ArrayValidator, StringFormatter, FieldsValidator } from "../tools"
 
 export class Event extends EntityLayer {
-	readonly organisator_id: ProfileID
+	readonly organisator_id: ArtistProfileID
 	date: Date
 	place: string
-	artists: ProfileID[]
+	artists: ArtistProfileID[]
 	title: string
 	text: string
 	imagePath: string | null
 
 	private formatter = new StringFormatter()
 	private validator = new FieldsValidator()
-	private artistsArrayValidator = new ArtistsArrayValidator()
+	private artistsArrayValidator = new ArrayValidator()
 
 	constructor(
 		id: EventID | null,
-		organisator_id: ProfileID,
+		organisator_id: ArtistProfileID,
 		date: Date,
 		place: string,
-		artists: ProfileID[],
+		artists: ArtistProfileID[],
 		title: string,
 		text: string,
 		imagePath: string | null

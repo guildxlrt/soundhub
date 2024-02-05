@@ -7,16 +7,16 @@ import {
 	UserAuth,
 } from "Domain"
 import {
-	ProfileID,
+	ArtistProfileID,
 	UserEmail,
 	UserPassword,
-	ArtistShortDTO,
-	ArtistShortestDTO,
+	GetArtistDTO,
+	GetArtistShortDTO,
 	GenreType,
 	UserAuthID,
 	ErrorHandler,
 	INewArtistSuccess,
-	IFindByAuthIDSuccess,
+	IfindManyByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
@@ -52,28 +52,44 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
+
+	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
+		try {
+			return await this.service.getPublicStatus(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async setPublicStatus(id?: ArtistProfileID, isPublic?: boolean): Promise<boolean> {
+		try {
+			return await this.service.setPublicStatus(id, isPublic)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+	async getByID(id: ArtistProfileID): Promise<GetArtistDTO> {
 		try {
 			return await this.service.getByID(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getByEmail(email: UserEmail): Promise<ArtistShortDTO> {
+	async getByEmail(email: UserEmail): Promise<GetArtistDTO> {
 		try {
 			return await this.service.getByEmail(email)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<ArtistShortestDTO[]> {
+	async getAll(): Promise<GetArtistShortDTO[]> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
+	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
 			return await this.service.findManyByGenre(genre)
 		} catch (error) {
@@ -81,7 +97,7 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 	// BACKEND
-	async verifyExistence(id: ProfileID): Promise<ProfileID> {
+	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
 		try {
 			return await this.service.verifyExistence(id)
 		} catch (error) {
@@ -89,7 +105,7 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 
-	async getAuths(id: ProfileID): Promise<IGetArtistAuthsSuccess> {
+	async getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess> {
 		try {
 			return await this.service.getAuths(id)
 		} catch (error) {
@@ -97,29 +113,29 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 
-	async getNames(ids: ProfileID[]): Promise<IArtistName[]> {
+	async getNames(ids: ArtistProfileID[]): Promise<IArtistName[]> {
 		try {
 			return await this.service.getNames(ids)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByAuthID(id: UserAuthID): Promise<IFindByAuthIDSuccess> {
+	async findManyByAuthID(id: UserAuthID): Promise<IfindManyByAuthIDSuccess> {
 		try {
-			return await this.service.findByAuthID(id)
+			return await this.service.findManyByAuthID(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAvatarPath(id: ProfileID): Promise<string | null> {
+	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
 		try {
 			return await this.service.getAvatarPath(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async setAvatarPath(path: string | null, id: ProfileID): Promise<boolean> {
+	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
 		try {
 			return await this.service.setAvatarPath(path, id)
 		} catch (error) {

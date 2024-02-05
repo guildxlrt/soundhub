@@ -1,4 +1,4 @@
 export * from "./create.dto"
 export * from "./edit.dto"
-export * from "./announce.dto"
-export * from "./announce-short.dto"
+export * from "./get.dto"
+export * from "./get-short.dto"

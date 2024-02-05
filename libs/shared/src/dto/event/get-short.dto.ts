@@ -1,6 +1,6 @@
 import { AnyObject, IArtistName } from "../../types"
 
-export class EventShortDTO {
+export class GetEventShortDTO {
 	readonly id: number
 	readonly date: Date
 	readonly place: string
@@ -15,7 +15,7 @@ export class EventShortDTO {
 		this.title = title
 	}
 
-	static createFromData(data: AnyObject): EventShortDTO {
+	static createFromData(data: AnyObject): GetEventShortDTO {
 		const artists: AnyObject[] = data?.["artists"]
 		const artistWithNames: IArtistName[] = artists.map((artist) => {
 			return {
@@ -24,7 +24,7 @@ export class EventShortDTO {
 			}
 		})
 
-		return new EventShortDTO(
+		return new GetEventShortDTO(
 			data?.["id"],
 			data?.["date"],
 			data?.["place"],
@@ -32,8 +32,8 @@ export class EventShortDTO {
 			data?.["title"]
 		)
 	}
-	static createArrayFromData(data: AnyObject[]): EventShortDTO[] {
-		return data.map((event): EventShortDTO => {
+	static createArrayFromData(data: AnyObject[]): GetEventShortDTO[] {
+		return data.map((event): GetEventShortDTO => {
 			const artists: AnyObject[] = event?.["artists"]
 			const artistWithNames: IArtistName[] = artists.map((artist) => {
 				return {
@@ -42,7 +42,7 @@ export class EventShortDTO {
 				}
 			})
 
-			return new EventShortDTO(
+			return new GetEventShortDTO(
 				event?.["id"],
 				event?.["date"],
 				event?.["place"],

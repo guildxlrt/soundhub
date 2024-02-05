@@ -5,7 +5,13 @@ import {
 	AnnouncesRepository,
 	File,
 } from "Domain"
-import { ProfileID, AnnounceID, ErrorHandler, AnnounceDTO, AnnounceShortDTO } from "Shared"
+import {
+	ArtistProfileID,
+	AnnounceID,
+	ErrorHandler,
+	GetAnnounceDTO,
+	GetAnnounceShortDTO,
+} from "Shared"
 
 interface IAnnouncesService
 	extends AnnouncesRepository,
@@ -41,28 +47,28 @@ export class AnnouncesService implements IAnnouncesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async get(id: ProfileID): Promise<AnnounceDTO> {
+	async get(id: ArtistProfileID): Promise<GetAnnounceDTO> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<AnnounceShortDTO[]> {
+	async getAll(): Promise<GetAnnounceShortDTO[]> {
 		try {
 			return await this.service.getAll()
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ProfileID): Promise<AnnounceShortDTO[]> {
+	async findManyByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<AnnounceShortDTO[]> {
+	async findManyByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
 			return await this.service.findManyByDate(date)
 		} catch (error) {

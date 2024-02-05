@@ -1,5 +1,5 @@
 import { UsecaseReply } from "../../utils"
-import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
+import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
 import { IDUsecaseParams } from "../params-adapters"
 
@@ -12,7 +12,7 @@ export class FindEventsByArtistUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
+	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService)
 				return await this.backend(input, this.artistsService)
@@ -22,12 +22,12 @@ export class FindEventsByArtistUsecase {
 		}
 	}
 
-	async frontend(input: IDUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
+	async frontend(input: IDUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			const id = input.id
 
-			const data = (await this.mainService.findManyByArtist(id)) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data, null)
+			const data = (await this.mainService.findManyByArtist(id)) as GetEventShortDTO[]
+			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -36,13 +36,13 @@ export class FindEventsByArtistUsecase {
 	async backend(
 		input: IDUsecaseParams,
 		artistsService: ArtistsService
-	): Promise<UsecaseReply<EventShortDTO[]>> {
+	): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			const id = input.id
 
 			const data = (await this.mainService.findManyByArtist(id)) as IGetEventShortSuccess[]
 
-			const results: EventShortDTO[] = await Promise.all(
+			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {
 					// separate
 					const { ["artists"]: artistsIDs, ...otherDatas } = event
@@ -54,7 +54,7 @@ export class FindEventsByArtistUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results, null)
+			return new UsecaseReply<GetEventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

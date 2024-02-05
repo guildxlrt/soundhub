@@ -15,17 +15,27 @@ export class UserAuth extends EntityLayer {
 		this.password = password
 	}
 
-	async hashPass(service: PasswordServicePort): Promise<string> {
+	async hashPass(service: PasswordServicePort): Promise<void> {
 		try {
-			return await service.hash(this.password as string)
+			this.password = await service.hash(this.password as string)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async validateNewAuths(service: ValidationServicePort): Promise<boolean> {
+	async validateNewAuths(
+		service: ValidationServicePort,
+		confirmEmail: string,
+		confirmPass: string
+	): Promise<boolean> {
 		try {
-			return await this.validator.signUp(service, this.email, this.password)
+			return await this.validator.signUp(
+				service,
+				this.email as string,
+				confirmEmail,
+				this.password as string,
+				confirmPass
+			)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

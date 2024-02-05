@@ -1,4 +1,4 @@
-import { ErrorHandler, SongDTO } from "Shared"
+import { ErrorHandler, GetSongDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { SongsService } from "../../services"
 import { IDUsecaseParams } from "../params-adapters"
@@ -9,11 +9,11 @@ export class FindSongsByArtistUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<UsecaseReply<SongDTO[]>> {
+	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetSongDTO[]>> {
 		try {
 			const id = input.id
-			const data = await this.mainService.findByArtist(id)
-			return new UsecaseReply<SongDTO[]>(data, null)
+			const data = await this.mainService.findManyByArtist(id)
+			return new UsecaseReply<GetSongDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

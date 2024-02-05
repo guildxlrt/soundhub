@@ -32,6 +32,7 @@ model Artist {
   members    Json
   genres     String[]
   avatarPath String?
+  isPublic    Boolean
 
   releases Release[]
   announce Announce[]

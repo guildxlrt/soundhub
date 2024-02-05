@@ -1,4 +1,4 @@
-import { ErrorHandler, ArtistShortDTO } from "Shared"
+import { ErrorHandler, GetArtistDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ArtistsService } from "../../services"
 import { EmailUsecaseParams } from "../params-adapters"
@@ -9,13 +9,13 @@ export class GetArtistByEmailUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(input: EmailUsecaseParams): Promise<UsecaseReply<ArtistShortDTO>> {
+	async execute(input: EmailUsecaseParams): Promise<UsecaseReply<GetArtistDTO>> {
 		try {
 			const { email } = input
 
 			const data = await this.mainService.getByEmail(email)
 
-			return new UsecaseReply<ArtistShortDTO>(data, null)
+			return new UsecaseReply<GetArtistDTO>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

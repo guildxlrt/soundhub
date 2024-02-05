@@ -1,4 +1,4 @@
-import { ErrorHandler, AnnounceShortDTO } from "Shared"
+import { ErrorHandler, GetAnnounceShortDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { AnnouncesService } from "../../services"
 import { IDUsecaseParams } from "../params-adapters"
@@ -9,12 +9,12 @@ export class GetAnnounceUsecase {
 		this.announcesService = announcesService
 	}
 
-	async execute(input: IDUsecaseParams): Promise<UsecaseReply<AnnounceShortDTO>> {
+	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetAnnounceShortDTO>> {
 		try {
 			const id = input.id
 
 			const data = await this.announcesService.get(id)
-			return new UsecaseReply<AnnounceShortDTO>(data, null)
+			return new UsecaseReply<GetAnnounceShortDTO>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

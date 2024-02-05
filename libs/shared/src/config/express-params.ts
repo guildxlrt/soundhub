@@ -4,7 +4,7 @@ import { Readable } from "stream"
 export interface ExpressRequest extends Request {
 	auth?: {
 		id: number
-		profileID: number
+		ArtistProfileID: number
 		profileType?: "artist" | "fan" | "admin"
 	}
 	image?: {

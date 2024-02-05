@@ -1,6 +1,6 @@
 import { ExtBackReleasesRepos, ExtFrontReleasesRepos, ReleasesRepository } from "Domain"
 import {
-	ProfileID,
+	ArtistProfileID,
 	ReleaseID,
 	GetShortReleaseDTO,
 	GenreType,
@@ -65,14 +65,14 @@ export class ReleasesService implements IReleasesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ProfileID): Promise<GetShortReleaseDTO[]> {
+	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await this.service.findManyByArtist(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtistFeats(id: ProfileID): Promise<GetShortReleaseDTO[]> {
+	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await this.service.findManyByArtistFeats(id)
 		} catch (error) {

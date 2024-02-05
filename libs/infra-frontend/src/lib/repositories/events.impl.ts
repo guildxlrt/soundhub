@@ -1,14 +1,6 @@
 import axios from "axios"
-import { NewFormData } from "../../assets"
-import {
-	EventDTO,
-	EntityID,
-	apiUrlRoot,
-	apiUrlPath,
-	apiUrlEndpt,
-	EventShortDTO,
-	ErrorHandler,
-} from "Shared"
+import { NewFormData, apiUriRequest, apiUrlPath, apiUrlRoot } from "../../assets"
+import { GetEventDTO, EntityID, GetEventShortDTO, ErrorHandler, EventID } from "Shared"
 import { EventsRepository, Event, RawFile } from "Domain"
 
 export class EventsImplement implements EventsRepository {
@@ -20,7 +12,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.create}`,
+				url: `${apiUrlRoot + apiUrlPath.events.create}`,
 				withCredentials: true,
 				data: formData,
 			})
@@ -30,6 +22,7 @@ export class EventsImplement implements EventsRepository {
 	}
 
 	async edit(data: Event, file?: RawFile): Promise<boolean> {
+		const id = data.id
 		const formData = new FormData()
 		NewFormData.fromFile(formData, file as RawFile)
 		NewFormData.fromObject(formData, data)
@@ -37,7 +30,7 @@ export class EventsImplement implements EventsRepository {
 		try {
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.create}`,
+				url: `${apiUrlRoot + apiUrlPath.events.edit + id}`,
 				withCredentials: true,
 				data: formData,
 			})
@@ -46,11 +39,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async delete(id: number): Promise<boolean> {
+	async delete(id: EventID): Promise<boolean> {
 		try {
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.delete + id}`,
+				url: `${apiUrlRoot + apiUrlPath.events.delete + id}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -58,11 +51,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async get(id: EntityID): Promise<EventDTO> {
+	async get(id: EntityID): Promise<GetEventDTO> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.oneByID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.events.get + id}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -70,11 +63,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async getAll(): Promise<EventShortDTO[]> {
+	async getAll(): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.all}`,
+				url: `${apiUrlRoot + apiUrlPath.events.getAll}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -82,11 +75,11 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityID): Promise<EventShortDTO[]> {
+	async findManyByArtist(id: EntityID): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByArtist + id}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -94,26 +87,35 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<EventShortDTO[]> {
+	async findManyByArtistGenre(genre: string): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByDate}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistGenre + genre}`,
 				withCredentials: true,
-				data: {
-					date: date,
-				},
 			})
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByPlace(place: string): Promise<EventShortDTO[]> {
+	async findManyByDate(date: Date): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.events + apiUrlEndpt.events.manyByPlace}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.date + date}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async findManyByPlace(place: string): Promise<GetEventShortDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.place + place}`,
 				withCredentials: true,
 				data: {
 					place: place,

@@ -24,6 +24,11 @@ export class CreateArtistUsecase {
 
 	async execute(input: NewArtistUsecaseParams): Promise<UsecaseReply<boolean | UserToken>> {
 		try {
+			const { file, profile } = input
+			// validate
+			profile.sanitize()
+			file?.validateImage()
+
 			if (
 				envs.backend &&
 				this.storageService &&
@@ -54,11 +59,18 @@ export class CreateArtistUsecase {
 		validationService: ValidationServicePort
 	): Promise<UsecaseReply<UserToken>> {
 		try {
-			const { file, profile, auth } = input
-			// validate
-			await auth.validateNewAuths(validationService)
+			const { file, profile, auth, authConfirm } = input
 
-			auth.hashPass(passwordService)
+			// validate
+			await auth
+				.validateNewAuths(
+					validationService,
+					authConfirm?.confirmEmail,
+					authConfirm?.confirmPass
+				)
+				.then(async () => {
+					await auth.hashPass(passwordService)
+				})
 
 			// Persist
 			const artist: INewArtistBackSucces = (await this.mainService.create({

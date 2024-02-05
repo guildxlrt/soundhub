@@ -1,11 +1,10 @@
 import { Router } from "express"
 import { controller, authMiddleware } from "Interface-back"
-
-import { apiUrlEndpt } from "Shared"
+import { apiPathEnd } from "../config"
 
 const router = Router()
 const ctrl = controller.auth
-const endpts = apiUrlEndpt.auth
+const endpts = apiPathEnd.auth
 
 router.post(endpts.login, ctrl.login)
 router.delete(endpts.logout, ctrl.logout)

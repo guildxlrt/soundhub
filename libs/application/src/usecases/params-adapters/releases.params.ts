@@ -2,12 +2,11 @@ import {
 	EditReleaseDTO,
 	GenresArray,
 	PostReleaseDTO,
-	ProfileID,
+	ArtistProfileID,
 	ReleaseID,
 	ReleaseType,
 } from "Shared"
 import { StreamFile, Release, Song } from "Domain"
-import { DeleteEventUsecaseParams } from "./events.params"
 
 export class NewReleaseUsecaseParams {
 	release: {
@@ -33,7 +32,12 @@ export class NewReleaseUsecaseParams {
 		this.songs = songs
 	}
 
-	static fromDto(dto: PostReleaseDTO, user: number, audio: StreamFile[], cover?: StreamFile) {
+	static fromDto(
+		dto: PostReleaseDTO,
+		user: number,
+		audio: StreamFile[] | unknown[],
+		cover?: StreamFile | unknown
+	) {
 		const songsArray = dto.songs
 		const { title, releaseType, descript, price, genres } = dto.release
 		const releaseData = new Release(
@@ -50,13 +54,13 @@ export class NewReleaseUsecaseParams {
 		const songs = songsArray.map((song, index) => {
 			return {
 				data: new Song(null, null, null, song.title, song.feats, song.lyrics),
-				audio: audio[index],
+				audio: audio[index] as StreamFile,
 			}
 		})
 		return new NewReleaseUsecaseParams(
 			{
 				data: releaseData,
-				cover: cover,
+				cover: cover as StreamFile,
 			},
 			songs
 		)
@@ -84,7 +88,7 @@ export class EditReleaseUsecaseParams {
 		this.delCover = delCover
 	}
 
-	static fromDto(dto: EditReleaseDTO, user: number, cover?: StreamFile) {
+	static fromDto(dto: EditReleaseDTO, user: number, cover?: StreamFile | unknown) {
 		const delCover = dto.delCover
 		const songsArray = dto.songs
 		const { title, price, descript, genres, id } = dto.release
@@ -106,7 +110,7 @@ export class EditReleaseUsecaseParams {
 		return new EditReleaseUsecaseParams(
 			{
 				data: releaseData,
-				cover: cover,
+				cover: cover as StreamFile,
 			},
 			songs,
 			delCover
@@ -116,14 +120,14 @@ export class EditReleaseUsecaseParams {
 
 export class SetPublicStatusReleaseUsecaseParams {
 	id: ReleaseID
-	ownerID?: ProfileID
+	ownerID?: ArtistProfileID
 
-	constructor(id: ReleaseID, ownerID?: ProfileID) {
+	constructor(id: ReleaseID, ownerID?: ArtistProfileID) {
 		this.id = id
 		this.ownerID = ownerID
 	}
 
-	static fromDtoBackend(id: ReleaseID, ownerID: ProfileID) {
-		return new DeleteEventUsecaseParams(id, ownerID)
+	static fromDtoBackend(id: ReleaseID, ownerID: ArtistProfileID) {
+		return new SetPublicStatusReleaseUsecaseParams(id, ownerID)
 	}
 }

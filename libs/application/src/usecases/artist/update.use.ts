@@ -16,8 +16,8 @@ export class UpdateArtistUsecase {
 		try {
 			const { file, profile } = input
 			// validate
-			file?.validateImage
-			profile.sanitize
+			profile.sanitize()
+			file?.validateImage()
 
 			if (envs.backend && this.storageService)
 				return await this.backend(input, this.storageService)

@@ -121,11 +121,11 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async findManyByArtist(id: EventID): Promise<IGetEventShortSuccess[]> {
 		try {
-			const profileID = id
+			const ArtistProfileID = id
 
 			const events: IGetEventShortSuccess[] = await this.event.findMany({
 				where: {
-					artists: { has: profileID },
+					artists: { has: ArtistProfileID },
 				},
 				select: {
 					id: true,

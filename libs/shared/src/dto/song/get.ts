@@ -1,6 +1,6 @@
 import { AnyObject } from "../../types"
 
-export class SongDTO {
+export class GetSongDTO {
 	readonly id: number
 	readonly release_id: number
 	readonly title: string
@@ -13,8 +13,8 @@ export class SongDTO {
 		this.audioPath = audioPath
 	}
 
-	static createFromData(data: AnyObject): SongDTO {
-		return new SongDTO(
+	static createFromData(data: AnyObject): GetSongDTO {
+		return new GetSongDTO(
 			data?.["id"],
 			data?.["title"],
 			data?.["releaseType"],
@@ -22,9 +22,9 @@ export class SongDTO {
 		)
 	}
 
-	static createArrayFromData(data: AnyObject[]): SongDTO[] {
-		return data.map((release): SongDTO => {
-			return new SongDTO(
+	static createArrayFromData(data: AnyObject[]): GetSongDTO[] {
+		return data.map((release): GetSongDTO => {
+			return new GetSongDTO(
 				release?.["id"],
 				release?.["title"],
 				release?.["releaseType"],

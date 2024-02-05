@@ -1,11 +1,11 @@
-import { GenreType, ProfileID, ReleaseID, SongDTO, SongID } from "Shared"
+import { GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
 import { Song } from "../entities"
 
 export interface SongsRepository {
-	get(id: SongID): Promise<SongDTO>
-	findByRelease(id: ReleaseID): Promise<SongDTO[]>
-	findByArtist(id: ProfileID): Promise<SongDTO[]>
-	findByReleaseGenre(genre: GenreType): Promise<SongDTO[]>
+	get(id: SongID): Promise<GetSongDTO>
+	findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]>
+	findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]>
+	findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]>
 }
 
 export interface ExtBackSongsRepos {

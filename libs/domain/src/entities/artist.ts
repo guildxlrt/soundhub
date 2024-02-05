@@ -1,6 +1,6 @@
-import { ProfileID, GenresArray, UserAuthID } from "Shared"
+import { ArtistProfileID, GenresArray, UserAuthID } from "Shared"
 import { EntityLayer } from "./layers"
-import { ArtistsArrayValidator, GenresFormatter, StringFormatter } from "../tools"
+import { ArrayValidator, GenresFormatter, StringFormatter } from "../tools"
 
 export class Artist extends EntityLayer {
 	readonly user_auth_id: UserAuthID | null
@@ -12,10 +12,10 @@ export class Artist extends EntityLayer {
 
 	private stringFormatter = new StringFormatter()
 	private genresFormatter = new GenresFormatter()
-	private artistsArrayValidator = new ArtistsArrayValidator()
+	private arrayValidator = new ArrayValidator()
 
 	constructor(
-		id: ProfileID | null,
+		id: ArtistProfileID | null,
 		user_auth_id: UserAuthID | null,
 		name: string,
 		bio: string,
@@ -29,7 +29,7 @@ export class Artist extends EntityLayer {
 		this.name = name
 		this.bio = bio
 		this.members = members
-		this.genres = genres
+		this.genres = [genres[0], genres[1] ? genres[1] : null, genres[2] ? genres[2] : null]
 		this.avatarPath = avatarPath
 	}
 
@@ -37,13 +37,13 @@ export class Artist extends EntityLayer {
 		this.genres = genres as GenresArray
 	}
 	updateAvatarPath(avatarPath: string | null) {
-		this.avatarPath = avatarPath
+		this.avatarPath = avatarPath as string
 	}
 
-	async sanitize() {
+	sanitize(): void {
+		this.arrayValidator.validateMembers(this.members)
 		this.name = this.stringFormatter.short(this.name)
 		this.bio = this.stringFormatter.long(this.bio)
-		await this.artistsArrayValidator.validateMembers(this.members)
 		this.genres = this.genresFormatter.format(this.genres)
 	}
 }

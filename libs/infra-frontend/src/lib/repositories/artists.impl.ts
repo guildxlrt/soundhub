@@ -1,15 +1,13 @@
 import axios from "axios"
-import { NewFormData } from "../../assets"
+import { NewFormData, apiUrlPath, apiUrlRoot, apiUriRequest } from "../../assets"
 import { Artist, RawFile, UserAuth } from "Domain"
 import {
-	ArtistShortDTO,
-	ArtistShortestDTO,
+	GetArtistDTO,
+	GetArtistShortDTO,
 	GenreType,
-	apiUrlRoot,
-	apiUrlPath,
-	apiUrlEndpt,
-	ProfileID,
+	ArtistProfileID,
 	ErrorHandler,
+	UserEmail,
 } from "Shared"
 import { ArtistsRepository } from "Domain"
 
@@ -33,7 +31,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
+				url: `${apiUrlRoot + apiUrlPath.artists.signup}`,
 				withCredentials: true,
 				data: {
 					profile: profile,
@@ -54,7 +52,7 @@ export class ArtistsImplement implements ArtistsRepository {
 
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.announces + apiUrlEndpt.announces.create}`,
+				url: `${apiUrlRoot + apiUrlPath.artists.update}`,
 				withCredentials: true,
 				data: formData,
 			})
@@ -63,11 +61,12 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByID(id: ProfileID): Promise<ArtistShortDTO> {
+	async setPublicStatus(): Promise<boolean> {
 		try {
 			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID + id}`,
+				method: "patch",
+				url: `${apiUrlRoot + apiUrlPath.artists.setPublicStatus}`,
+
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -75,11 +74,23 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getByEmail(email: string): Promise<ArtistShortDTO> {
+	async getByID(id: ArtistProfileID): Promise<GetArtistDTO> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.oneByID}`,
+				url: `${apiUrlRoot + apiUrlPath.artists.getById + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async getByEmail(email: UserEmail): Promise<GetArtistDTO> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.artists.getByEmail + email}`,
 				data: { email: email },
 				withCredentials: true,
 			})
@@ -88,11 +99,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getAll(): Promise<ArtistShortestDTO[]> {
+	async getAll(): Promise<GetArtistShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.all}`,
+				url: `${apiUrlRoot + apiUrlPath.artists.getAll}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -100,11 +111,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]> {
+	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists + apiUrlEndpt.artists.manyByGenre + genre}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.genre + genre}`,
 				withCredentials: true,
 			})
 		} catch (error) {

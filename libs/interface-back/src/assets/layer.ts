@@ -8,9 +8,10 @@ export interface IAuthCtrl {
 export interface IArtistCtrl {
 	create(req: unknown, res: unknown): Promise<unknown>
 	update(req: unknown, res: unknown): Promise<unknown>
+	setPublicStatus(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
-	get(req: unknown, res: unknown): Promise<unknown>
-	findMany(req: unknown, res: unknown): Promise<unknown>
+	getByID(req: unknown, res: unknown): Promise<unknown>
+	getByEmail(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface IReleasesCtrl {
@@ -19,12 +20,10 @@ export interface IReleasesCtrl {
 	setPublicStatus(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
-	findMany(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface ISongsCtrl {
 	get(req: unknown, res: unknown): Promise<unknown>
-	findMany(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface IAnnoncesCtrl {
@@ -33,7 +32,6 @@ export interface IAnnoncesCtrl {
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
-	findMany(req: unknown, res: unknown): Promise<unknown>
 }
 
 export interface IEventsCtrl {
@@ -42,5 +40,4 @@ export interface IEventsCtrl {
 	delete(req: unknown, res: unknown): Promise<unknown>
 	get(req: unknown, res: unknown): Promise<unknown>
 	getAll(req: unknown, res: unknown): Promise<unknown>
-	findMany(req: unknown, res: unknown): Promise<unknown>
 }

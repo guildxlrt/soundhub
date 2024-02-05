@@ -10,7 +10,7 @@ export class JwtService {
 		try {
 			if (!userToken) throw ErrorMsg.htmlError(htmlError[400])
 
-			const { id, profileID, profileType } = userToken
+			const { id, ArtistProfileID, profileType } = userToken
 
 			const privateKey = fs.promises
 				.readFile("private.pem", "utf8")
@@ -24,7 +24,7 @@ export class JwtService {
 			return jwt.sign(
 				{
 					id: id,
-					profileID: profileID,
+					ArtistProfileID: ArtistProfileID,
 					profileType: profileType,
 				},
 				(await privateKey) as string,
@@ -53,7 +53,7 @@ export class JwtService {
 
 			req.auth = {
 				id: decoded.id,
-				profileID: decoded.profileID,
+				ArtistProfileID: decoded.ArtistProfileID,
 				profileType: decoded.profileType,
 			}
 

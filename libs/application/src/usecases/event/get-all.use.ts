@@ -1,5 +1,5 @@
 import { UsecaseReply } from "../../utils"
-import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
+import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
 
 export class GetAllEventsUsecase {
@@ -11,7 +11,7 @@ export class GetAllEventsUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(): Promise<UsecaseReply<EventShortDTO[]>> {
+	async execute(): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService) return await this.backend(this.artistsService)
 			else return await this.frontend()
@@ -20,20 +20,20 @@ export class GetAllEventsUsecase {
 		}
 	}
 
-	async frontend(): Promise<UsecaseReply<EventShortDTO[]>> {
+	async frontend(): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const data = (await this.mainService.getAll()) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data, null)
+			const data = (await this.mainService.getAll()) as GetEventShortDTO[]
+			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async backend(artistsService: ArtistsService): Promise<UsecaseReply<EventShortDTO[]>> {
+	async backend(artistsService: ArtistsService): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			const data = (await this.mainService.getAll()) as IGetEventShortSuccess[]
 
-			const results: EventShortDTO[] = await Promise.all(
+			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {
 					// separate
 					const { ["artists"]: artistsIDs, ...otherDatas } = event
@@ -45,7 +45,7 @@ export class GetAllEventsUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results, null)
+			return new UsecaseReply<GetEventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

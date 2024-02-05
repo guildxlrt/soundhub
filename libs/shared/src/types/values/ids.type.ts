@@ -1,7 +1,7 @@
 // entities ID
 export type EntityID = number
 export type UserAuthID = EntityID
-export type ProfileID = EntityID
+export type ArtistProfileID = EntityID
 export type AnnounceID = EntityID
 export type EventID = EntityID
 export type ReleaseID = EntityID

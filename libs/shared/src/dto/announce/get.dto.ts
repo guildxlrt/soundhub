@@ -1,6 +1,6 @@
 import { AnyObject } from "../../types"
 
-export class AnnounceDTO {
+export class GetAnnounceDTO {
 	readonly id: number
 	readonly owner_id: number
 	readonly title: string
@@ -22,7 +22,7 @@ export class AnnounceDTO {
 	}
 
 	static createFromData(data: AnyObject) {
-		return new AnnounceDTO(
+		return new GetAnnounceDTO(
 			data?.["id"],
 			data?.["owner_id"],
 			data?.["title"],

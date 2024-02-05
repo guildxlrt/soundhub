@@ -1,38 +1,47 @@
 import { Artist, StreamFile, UserAuth } from "Domain"
-import { NewArtistDTO, UpdateArtistDTO, UserEmail, UserPassword } from "Shared"
+import { ArtistProfileID, NewArtistDTO, UpdateArtistDTO, UserEmail, UserPassword } from "Shared"
 
 export class NewArtistUsecaseParams {
 	profile: Artist
 	auth: UserAuth
-	file?: StreamFile
-	authConfirm?: {
+	authConfirm: {
 		confirmEmail: UserEmail
 		confirmPass: UserPassword
 	}
+	file?: StreamFile
 
 	constructor(
 		profile: Artist,
 		auth: UserAuth,
-		file?: StreamFile,
-		authConfirm?: {
-			confirmEmail: UserEmail
-			confirmPass: UserPassword
-		}
+		confirmEmail: UserEmail,
+		confirmPass: UserPassword,
+		file?: StreamFile
 	) {
 		this.profile = profile
 		this.auth = auth
-		this.file = file
-		this.authConfirm = authConfirm
+		this.authConfirm = {
+			confirmEmail: confirmEmail,
+			confirmPass: confirmPass,
+		}
+		this.file = file as StreamFile
 	}
 
-	static fromDto(dto: NewArtistDTO, file?: StreamFile) {
+	static fromDto(dto: NewArtistDTO, file?: StreamFile | unknown) {
 		const { profile, auth, authConfirm } = dto
 		const { bio, genres, members, name } = profile
 		const { password, email } = auth
+		const { confirmEmail, confirmPass } = authConfirm
 
 		const artist = new Artist(null, null, name, bio, members, genres, null)
 		const userAuth = new UserAuth(null, email, password)
-		return new NewArtistUsecaseParams(artist, userAuth, file, authConfirm)
+
+		return new NewArtistUsecaseParams(
+			artist,
+			userAuth,
+			confirmEmail,
+			confirmPass,
+			file as StreamFile
+		)
 	}
 }
 
@@ -41,13 +50,13 @@ export class UpdateArtistUsecaseParams {
 	delAvatar?: boolean
 	file?: StreamFile
 
-	constructor(profile: Artist, delAvatar?: boolean, file?: StreamFile) {
+	constructor(profile: Artist, delAvatar?: boolean, file?: StreamFile | unknown) {
 		this.profile = profile
 		this.delAvatar = delAvatar
-		this.file = file
+		this.file = file as StreamFile
 	}
 
-	static fromDto(dto: UpdateArtistDTO, user: number, file?: StreamFile) {
+	static fromDto(dto: UpdateArtistDTO, user: number, file?: StreamFile | unknown) {
 		const { bio, genres, members, name, delAvatar } = dto
 
 		const artist = new Artist(user, user, name, bio, members, genres, null)
@@ -55,10 +64,26 @@ export class UpdateArtistUsecaseParams {
 	}
 }
 
-export class EmailUsecaseParams {
-	email: UserEmail
+export class GetPublicStatusArtistUsecaseParams {
+	id: ArtistProfileID
 
-	constructor(email: string) {
-		this.email = email
+	constructor(id: ArtistProfileID) {
+		this.id = id
+	}
+
+	static fromDtoBackend(id: ArtistProfileID) {
+		return new SetPublicStatusArtistUsecaseParams(id)
+	}
+}
+
+export class SetPublicStatusArtistUsecaseParams {
+	id?: ArtistProfileID
+
+	constructor(id?: ArtistProfileID) {
+		this.id = id
+	}
+
+	static fromDtoBackend(id: ArtistProfileID) {
+		return new SetPublicStatusArtistUsecaseParams(id)
 	}
 }

@@ -1,9 +1,7 @@
 import { AnnouncesImplement, StorageImplement } from "Infra-backend"
-import { StreamFile } from "Domain"
 import {
 	CreateAnnounceUsecase,
 	DeleteAnnounceUsecase,
-	FindAnnouncesByArtistUsecase,
 	GetAllAnnouncesUsecase,
 	GetAnnounceUsecase,
 	EditAnnounceUsecase,
@@ -13,8 +11,6 @@ import {
 	StorageService,
 	EditAnnounceUsecaseParams,
 	NewAnnounceUsecaseParams,
-	FindAnnouncesByDateUsecase,
-	DateUsecaseParams,
 } from "Application"
 import {
 	htmlError,
@@ -33,8 +29,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as CreateAnnounceDTO
-			const owner = req.auth?.profileID as number
-			const file = req.image as StreamFile
+			const owner = req.auth?.ArtistProfileID as number
+			const file = req.image as unknown
 
 			// Services
 			const announcesImplement = new AnnouncesImplement()
@@ -61,8 +57,8 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const file = req.image as StreamFile
-			const owner = req.auth?.profileID as number
+			const file = req.image as unknown
+			const owner = req.auth?.ArtistProfileID as number
 
 			const dto = req.body as EditAnnounceDTO
 
@@ -90,7 +86,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
-			const user = req.auth?.profileID as number
+			const user = req.auth?.ArtistProfileID as number
 			const id = Number(req.params["id"])
 
 			// Services
@@ -160,55 +156,5 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)
 		}
-	}
-
-	async findMany(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
-
-		const date = req.query?.["date"] as string
-		const artistID = req.query?.["artist"] as string
-
-		// Services
-		const announcesImplement = new AnnouncesImplement()
-		const announcesService = new AnnouncesService(announcesImplement)
-
-		if (artistID) {
-			try {
-				const params = new IDUsecaseParams(artistID)
-
-				// Calling database
-				const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(announcesService)
-
-				const { data, error } = await findAnnouncesByArtist.execute(params)
-
-				if (error) throw error
-				if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-				const reponse = new ResponseDTO(data, error)
-				return res.status(200).send(reponse)
-			} catch (error) {
-				return ApiErrorHandler.reply(error, res)
-			}
-		}
-		if (date) {
-			try {
-				const params = DateUsecaseParams.fromReqParams(date)
-
-				// Calling database
-				const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(announcesService)
-
-				const { data, error } = await findAnnouncesByArtist.execute(params)
-
-				if (error) throw error
-				if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-				const reponse = new ResponseDTO(data, error)
-				return res.status(200).send(reponse)
-			} catch (error) {
-				return ApiErrorHandler.reply(error, res)
-			}
-		}
-
-		return res.status(400).end()
 	}
 }

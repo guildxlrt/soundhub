@@ -1,14 +1,14 @@
-import { AnnounceDTO, AnnounceID, AnnounceShortDTO, ProfileID } from "Shared"
+import { GetAnnounceDTO, AnnounceID, GetAnnounceShortDTO, ArtistProfileID } from "Shared"
 import { StreamFile, Announce, File } from "Domain"
 
 export interface AnnouncesRepository {
 	create(data: Announce, file?: File): Promise<boolean>
 	edit(data: Announce, file?: File): Promise<boolean>
 	delete(id: AnnounceID): Promise<boolean>
-	get(id: ProfileID): Promise<AnnounceDTO>
-	getAll(): Promise<AnnounceShortDTO[]>
-	findManyByArtist(id: ProfileID): Promise<AnnounceShortDTO[]>
-	findManyByDate(date: Date): Promise<AnnounceShortDTO[]>
+	get(id: ArtistProfileID): Promise<GetAnnounceDTO>
+	getAll(): Promise<GetAnnounceShortDTO[]>
+	findManyByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]>
+	findManyByDate(date: Date): Promise<GetAnnounceShortDTO[]>
 }
 
 export interface ExtBackAnnouncesRepo {

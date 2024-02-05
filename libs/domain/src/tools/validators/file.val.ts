@@ -24,7 +24,7 @@ export class FileValidator {
 				if (!check) throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
 			} else throw new ErrorMsg(`${type} file is not valid`, htmlError[422].value)
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during file validation")
 		}
 	}
 }

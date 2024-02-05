@@ -7,16 +7,17 @@ export class GenresFormatter {
 
 			const formattedArray = genres.map((genre, index) => {
 				const value = String(genre).toLocaleLowerCase("en-US")
-				const find = list.includes(value)
 
-				if (find !== true) {
-					if (index === 0) throw new ErrorMsg(`Genres: '${value}' is not a genre`)
-					else return undefined
-				}
-				return genre
+				const find = list.includes(value)
+				if (find !== true && index === 0)
+					throw new ErrorMsg(
+						`Genres: '${value}' is not a genre, at least one valid genre is required`
+					)
+
+				return value
 			}) as GenresArray
 
-			return [formattedArray[0], formattedArray[1], formattedArray[0]]
+			return [formattedArray[0], formattedArray[1], formattedArray[2]]
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

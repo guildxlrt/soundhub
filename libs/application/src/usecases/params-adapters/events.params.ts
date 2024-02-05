@@ -1,4 +1,4 @@
-import { ProfileID, EventID, CreateEventDTO, EditEventDTO } from "Shared"
+import { ArtistProfileID, EventID, CreateEventDTO, EditEventDTO } from "Shared"
 import { Event, StreamFile } from "Domain"
 
 export class NewEventUsecaseParams {
@@ -10,11 +10,11 @@ export class NewEventUsecaseParams {
 		this.file = file
 	}
 
-	static fromDto(dto: CreateEventDTO, owner: number, file?: StreamFile) {
+	static fromDto(dto: CreateEventDTO, owner: number, file?: StreamFile | unknown) {
 		const { date, place, artists, title, text } = dto
 		const event = new Event(null, owner as number, date, place, artists, title, text, null)
 
-		return new NewEventUsecaseParams(event, file)
+		return new NewEventUsecaseParams(event, file as StreamFile)
 	}
 }
 
@@ -29,24 +29,24 @@ export class EditEventUsecaseParams {
 		this.delImage = delImage
 	}
 
-	static fromDto(dto: EditEventDTO, owner: number, file?: StreamFile) {
+	static fromDto(dto: EditEventDTO, owner: number, file?: StreamFile | unknown) {
 		const { id, date, place, artists, title, text, delImage } = dto
 		const event = new Event(id, owner as number, date, place, artists, title, text, null)
 
-		return new EditEventUsecaseParams(event, delImage, file)
+		return new EditEventUsecaseParams(event, delImage, file as StreamFile)
 	}
 }
 
 export class DeleteEventUsecaseParams {
 	id: EventID
-	ownerID?: ProfileID
+	ownerID?: ArtistProfileID
 
-	constructor(id: EventID, ownerID?: ProfileID) {
+	constructor(id: EventID, ownerID?: ArtistProfileID) {
 		this.id = id
 		this.ownerID = ownerID
 	}
 
-	static fromDtoBackend(id: EventID, ownerID: ProfileID) {
+	static fromDtoBackend(id: EventID, ownerID: ArtistProfileID) {
 		return new DeleteEventUsecaseParams(id, ownerID)
 	}
 }

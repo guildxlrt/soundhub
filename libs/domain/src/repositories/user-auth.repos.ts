@@ -1,4 +1,4 @@
-import { AnyObject, ProfileID, UserAuthID, UserEmail, UserPassword } from "Shared"
+import { AnyObject, ArtistProfileID, UserAuthID, UserEmail, UserPassword } from "Shared"
 
 export interface UserAuthsRepository {
 	login(email: unknown, password: unknown): Promise<boolean>
@@ -23,15 +23,15 @@ export interface ExtBackUserAuthsRepos {
 export interface ExtFrontUserAuthsRepos {}
 
 export interface UserAuthsBackendRepos extends UserAuthsRepository, ExtBackUserAuthsRepos {
-	changePass(input: { id: ProfileID; pass: UserPassword }): Promise<boolean>
-	changeEmail(input: { id: ProfileID; email: UserEmail }): Promise<boolean>
+	changePass(input: { id: ArtistProfileID; pass: UserPassword }): Promise<boolean>
+	changeEmail(input: { id: ArtistProfileID; email: UserEmail }): Promise<boolean>
 }
 
 export interface UserAuthsFrontendRepos extends UserAuthsRepository {
 	changePass(input: {
 		actual: UserPassword
 		newOne: UserPassword
-		confirm: UserPassword | null
+		confirm: UserPassword
 		userAuthID: UserAuthID
 	}): Promise<boolean>
 	login(email: UserEmail, password: UserPassword): Promise<boolean>

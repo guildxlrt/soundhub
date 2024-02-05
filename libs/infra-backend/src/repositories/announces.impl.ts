@@ -1,6 +1,6 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import { AnnounceID, AnnounceDTO, AnnounceShortDTO } from "Shared"
+import { AnnounceID, GetAnnounceDTO, GetAnnounceShortDTO } from "Shared"
 import { dbClient } from "../prisma"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -63,7 +63,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		}
 	}
 
-	async get(id: AnnounceID): Promise<AnnounceDTO> {
+	async get(id: AnnounceID): Promise<GetAnnounceDTO> {
 		try {
 			const announce = await this.announce.findUniqueOrThrow({
 				where: {
@@ -78,13 +78,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return AnnounceDTO.createFromData(announce)
+			return GetAnnounceDTO.createFromData(announce)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async getAll(): Promise<AnnounceShortDTO[]> {
+	async getAll(): Promise<GetAnnounceShortDTO[]> {
 		try {
 			const announces = await this.announce.findMany({
 				select: {
@@ -95,13 +95,13 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return AnnounceShortDTO.createArrayFromData(announces)
+			return GetAnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByArtist(id: AnnounceID): Promise<AnnounceShortDTO[]> {
+	async findManyByArtist(id: AnnounceID): Promise<GetAnnounceShortDTO[]> {
 		try {
 			const announces = await this.announce.findMany({
 				where: {
@@ -115,7 +115,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return AnnounceShortDTO.createArrayFromData(announces)
+			return GetAnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -135,7 +135,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 			})
 
-			return AnnounceShortDTO.createArrayFromData(announces)
+			return GetAnnounceShortDTO.createArrayFromData(announces)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

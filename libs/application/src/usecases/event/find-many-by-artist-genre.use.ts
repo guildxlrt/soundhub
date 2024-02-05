@@ -1,5 +1,5 @@
 import { UsecaseReply } from "../../utils"
-import { ErrorHandler, EventShortDTO, IGetEventShortSuccess, envs } from "Shared"
+import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
 import { GenreUsecaseParams } from "../params-adapters"
 
@@ -12,7 +12,7 @@ export class FindEventsByArtistGenreUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: GenreUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
+	async execute(input: GenreUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService)
 				return await this.backend(input, this.artistsService)
@@ -22,12 +22,12 @@ export class FindEventsByArtistGenreUsecase {
 		}
 	}
 
-	async frontend(input: GenreUsecaseParams): Promise<UsecaseReply<EventShortDTO[]>> {
+	async frontend(input: GenreUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			const genre = input.genre
 
-			const data = (await this.mainService.findManyByArtistGenre(genre)) as EventShortDTO[]
-			return new UsecaseReply<EventShortDTO[]>(data, null)
+			const data = (await this.mainService.findManyByArtistGenre(genre)) as GetEventShortDTO[]
+			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -36,7 +36,7 @@ export class FindEventsByArtistGenreUsecase {
 	async backend(
 		input: GenreUsecaseParams,
 		artistsService: ArtistsService
-	): Promise<UsecaseReply<EventShortDTO[]>> {
+	): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			const genre = input.genre
 
@@ -44,7 +44,7 @@ export class FindEventsByArtistGenreUsecase {
 				genre
 			)) as IGetEventShortSuccess[]
 
-			const results: EventShortDTO[] = await Promise.all(
+			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {
 					// separate
 					const { ["artists"]: artistsIDs, ...otherDatas } = event
@@ -56,7 +56,7 @@ export class FindEventsByArtistGenreUsecase {
 				})
 			)
 
-			return new UsecaseReply<EventShortDTO[]>(results, null)
+			return new UsecaseReply<GetEventShortDTO[]>(results, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

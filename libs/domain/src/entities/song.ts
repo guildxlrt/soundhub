@@ -1,24 +1,24 @@
-import { ProfileID, ReleaseID, SongID } from "Shared"
+import { ArtistProfileID, ReleaseID, SongID } from "Shared"
 import { EntityLayer } from "./layers"
 import { ExtBackArtistsRepos } from "../repositories"
-import { StringFormatter, ArtistsArrayValidator } from "../tools"
+import { StringFormatter, ArrayValidator } from "../tools"
 
 export class Song extends EntityLayer {
 	readonly release_id: ReleaseID | null
 	audioPath: string | null
 	title: string
-	readonly feats: ProfileID[]
+	readonly feats: ArtistProfileID[]
 	lyrics: string | null
 
 	private formatter = new StringFormatter()
-	private artistsArrayValidator = new ArtistsArrayValidator()
+	private artistsArrayValidator = new ArrayValidator()
 
 	constructor(
 		id: SongID | null,
 		release_id: ReleaseID | null,
 		audioPath: string | null,
 		title: string,
-		feats: ProfileID[],
+		feats: ArtistProfileID[],
 		lyrics: string | null
 	) {
 		super(id)

@@ -1,5 +1,5 @@
 import {
-	ProfileID,
+	ArtistProfileID,
 	GenreType,
 	GetShortReleaseDTO,
 	ReleaseID,
@@ -15,8 +15,8 @@ export interface ReleasesRepository {
 	setPublicStatus(id: ReleaseID, isPublic?: boolean): Promise<boolean>
 	get(id: ReleaseID): Promise<unknown>
 	getAll(): Promise<GetShortReleaseDTO[]>
-	findManyByArtist(id: ProfileID): Promise<GetShortReleaseDTO[]>
-	findManyByArtistFeats(id: ProfileID): Promise<GetShortReleaseDTO[]>
+	findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]>
+	findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]>
 	findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]>
 	findManyByDate(date: Date): Promise<GetShortReleaseDTO[]>
 	findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]>

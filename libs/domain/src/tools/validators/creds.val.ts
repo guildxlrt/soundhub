@@ -24,10 +24,17 @@ export class CredentialsValidator {
 
 	async signUp(
 		service: ValidationServicePort,
-		email: string | null,
-		password: string | null
+		email: string,
+		confirmEmail: string,
+		password: string,
+		confirmPass: string
 	): Promise<boolean> {
 		try {
+			if (email !== confirmEmail)
+				throw new ErrorMsg(`Email's don't match`, htmlError[422].value)
+			if (password !== confirmPass)
+				throw new ErrorMsg(`Passwords's don't match`, htmlError[422].value)
+
 			const validPass = service.password(password as string)
 			if (!validPass) throw new ErrorMsg("weak password", htmlError[422].value)
 

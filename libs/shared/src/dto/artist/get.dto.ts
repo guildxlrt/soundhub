@@ -1,6 +1,6 @@
 import { GenresArray, AnyObject } from "../../types"
 
-export class ArtistDTO {
+export class GetArtistDTO {
 	readonly id: number | null
 	readonly createdAt: Date
 	readonly name: string
@@ -28,7 +28,9 @@ export class ArtistDTO {
 	}
 
 	static createFromData(data: AnyObject) {
-		return new ArtistDTO(
+		console.log(data)
+
+		return new GetArtistDTO(
 			data?.["id"],
 			data?.["createdAt"],
 			data?.["name"],

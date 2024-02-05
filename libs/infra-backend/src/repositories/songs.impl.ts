@@ -1,12 +1,12 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { GenreType, ProfileID, ReleaseID, SongDTO, SongID } from "Shared"
+import { GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
 import { dbClient } from "../prisma"
 import { DatabaseErrorHandler } from "../utils"
 
 export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
 
-	async get(id: SongID): Promise<SongDTO> {
+	async get(id: SongID): Promise<GetSongDTO> {
 		try {
 			const songs = await this.song.findUniqueOrThrow({
 				where: {
@@ -21,13 +21,13 @@ export class SongsImplement implements SongsBackendRepos {
 			})
 
 			// RESPONSE
-			return SongDTO.createFromData(songs)
+			return GetSongDTO.createFromData(songs)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findByRelease(id: ReleaseID): Promise<SongDTO[]> {
+	async findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
@@ -45,13 +45,13 @@ export class SongsImplement implements SongsBackendRepos {
 			})
 
 			// RESPONSE
-			return SongDTO.createArrayFromData(songs)
+			return GetSongDTO.createArrayFromData(songs)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findByArtist(id: ProfileID): Promise<SongDTO[]> {
+	async findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
@@ -72,13 +72,13 @@ export class SongsImplement implements SongsBackendRepos {
 			})
 
 			// RESPONSE
-			return SongDTO.createArrayFromData(songs)
+			return GetSongDTO.createArrayFromData(songs)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findByReleaseGenre(genre: GenreType): Promise<SongDTO[]> {
+	async findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
@@ -96,7 +96,7 @@ export class SongsImplement implements SongsBackendRepos {
 			})
 
 			// RESPONSE
-			return SongDTO.createArrayFromData(songs)
+			return GetSongDTO.createArrayFromData(songs)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

@@ -7,7 +7,7 @@ export class StringFormatter {
 				throw new ErrorMsg("title is not valid ", htmlError[422].value)
 			else return value
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during short string validation")
 		}
 	}
 
@@ -17,7 +17,7 @@ export class StringFormatter {
 				throw new ErrorMsg("text is not valid", htmlError[422].value)
 			else return value
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during Genres validation")
+			throw ErrorHandler.handle(error).setMessage("error during long string validation")
 		}
 	}
 }

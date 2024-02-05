@@ -1,16 +1,15 @@
 import {
-	ProfileID,
+	ArtistProfileID,
 	GenreType,
-	ArtistShortDTO,
-	ArtistShortestDTO,
+	GetArtistDTO,
+	GetArtistShortDTO,
 	UserEmail,
 	UserPassword,
 	UserAuthID,
 	INewArtistSuccess,
 	INewArtistBackSucces,
-	IFindByAuthIDSuccess,
+	IfindManyByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
-	IGetArtistNameSuccess,
 	IArtistName,
 } from "Shared"
 import { StreamFile, Artist, UserAuth, RawFile, File } from "Domain"
@@ -25,24 +24,27 @@ export interface ArtistsRepository {
 		file?: File
 	): Promise<INewArtistSuccess>
 	update(data: Artist, delAvatar?: boolean, file?: File): Promise<boolean>
-	getByID(id: ProfileID): Promise<ArtistShortDTO>
-	getByEmail(email: UserEmail): Promise<ArtistShortDTO>
-	getAll(): Promise<ArtistShortestDTO[]>
-	findManyByGenre(genre: GenreType): Promise<ArtistShortestDTO[]>
+	setPublicStatus(id?: number, isPublic?: boolean): Promise<boolean>
+	getByID(id: ArtistProfileID): Promise<GetArtistDTO>
+	getByEmail(email: UserEmail): Promise<GetArtistDTO>
+	getAll(): Promise<GetArtistShortDTO[]>
+	findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]>
 }
 
 export interface ExtBackArtistsRepos {
-	verifyExistence(id: ProfileID): Promise<ProfileID>
-	getAuths(id: ProfileID): Promise<IGetArtistAuthsSuccess>
-	getNames(ids: ProfileID[]): Promise<IArtistName[]>
-	findByAuthID(id: UserAuthID): Promise<IFindByAuthIDSuccess>
-	getAvatarPath(id: ProfileID): Promise<string | null>
-	setAvatarPath(path: string | null, id: ProfileID): Promise<boolean>
+	getPublicStatus(id: ArtistProfileID): Promise<boolean>
+	verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID>
+	getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess>
+	getNames(ids: ArtistProfileID[]): Promise<IArtistName[]>
+	findManyByAuthID(id: UserAuthID): Promise<IfindManyByAuthIDSuccess>
+	getAvatarPath(id: ArtistProfileID): Promise<string | null>
+	setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean>
 }
 
 export interface ExtFrontArtistsRepos {}
 
 export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRepos {
+	setPublicStatus(id: ArtistProfileID, isPublic: boolean): Promise<boolean>
 	create(
 		data: {
 			profile: Artist
@@ -54,6 +56,7 @@ export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRe
 }
 
 export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtistsRepos {
+	setPublicStatus(id?: number, isPublic?: boolean): Promise<boolean>
 	create(
 		data: {
 			profile: Artist

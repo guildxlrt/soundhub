@@ -1,9 +1,9 @@
 import { EntityLayer } from "./layers"
-import { ProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
+import { ArtistProfileID, GenresArray, ReleaseID, ReleasePrice, ReleaseType } from "Shared"
 import { GenresFormatter, StringFormatter, FieldsValidator } from "../tools"
 
 export class Release extends EntityLayer {
-	readonly owner_id: ProfileID
+	readonly owner_id: ArtistProfileID
 	title: string
 	readonly releaseType: ReleaseType | null
 	descript: string | null
@@ -17,7 +17,7 @@ export class Release extends EntityLayer {
 
 	constructor(
 		id: ReleaseID | null,
-		owner_id: ProfileID,
+		owner_id: ArtistProfileID,
 		title: string,
 		releaseType: ReleaseType | null,
 		descript: string | null,
