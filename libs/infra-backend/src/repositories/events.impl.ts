@@ -1,12 +1,6 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import {
-	EventID,
-	GenreType,
-	IGetEventSuccess,
-	IGetEventShortSuccess,
-	IFindManyByArtistGenreSuccess,
-} from "Shared"
+import { EventID, GenreType, IGetEventSuccess, IGetEventShortSuccess } from "Shared"
 import { dbClient } from "../prisma"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -220,7 +214,8 @@ export class EventsImplement implements EventsBackendRepos {
 				})
 			)
 
-			const events = results.flat(Infinity) as IGetEventShortSuccess[]
+			const flat = results.flat(Infinity) as IGetEventShortSuccess[]
+			const events = [...new Set(flat)]
 
 			return events
 		} catch (error) {

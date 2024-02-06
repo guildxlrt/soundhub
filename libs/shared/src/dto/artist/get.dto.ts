@@ -8,6 +8,7 @@ export class GetArtistDTO {
 	readonly members: string[]
 	readonly genres: GenresArray
 	readonly avatarPath: string | null
+	readonly isPublic: boolean
 
 	constructor(
 		id: number | null,
@@ -16,7 +17,8 @@ export class GetArtistDTO {
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarPath: string | null
+		avatarPath: string | null,
+		isPublic: boolean
 	) {
 		this.id = id
 		this.createdAt = createdAt
@@ -25,11 +27,10 @@ export class GetArtistDTO {
 		this.members = members
 		this.genres = genres
 		this.avatarPath = avatarPath
+		this.isPublic = isPublic
 	}
 
 	static createFromData(data: AnyObject) {
-		console.log(data)
-
 		return new GetArtistDTO(
 			data?.["id"],
 			data?.["createdAt"],
@@ -37,7 +38,8 @@ export class GetArtistDTO {
 			data?.["bio"],
 			data?.["members"],
 			data?.["genres"],
-			data?.["avatarPath"]
+			data?.["avatarPath"],
+			data?.["isPublic"]
 		)
 	}
 }

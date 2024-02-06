@@ -112,13 +112,6 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				where: {
 					id: id,
 				},
-				select: {
-					name: true,
-					bio: true,
-					members: true,
-					genres: true,
-					avatarPath: true,
-				},
 			})
 
 			return GetArtistDTO.createFromData(user)
@@ -132,18 +125,6 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			const user = await this.userAuth.findUniqueOrThrow({
 				where: {
 					email: email,
-				},
-				select: {
-					artists: {
-						select: {
-							id: true,
-							name: true,
-							bio: true,
-							members: true,
-							genres: true,
-							avatarPath: true,
-						},
-					},
 				},
 			})
 			return GetArtistDTO.createFromData(user)
@@ -159,7 +140,9 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					id: true,
 					name: true,
 					genres: true,
-					avatarPath: true,
+				},
+				where: {
+					isPublic: true,
 				},
 			})
 
@@ -175,6 +158,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			const artists = await this.artist.findMany({
 				where: {
 					genres: { has: genre },
+					isPublic: true,
 				},
 				select: {
 					id: true,

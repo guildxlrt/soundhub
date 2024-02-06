@@ -10,12 +10,12 @@ export const apiPath = {
 
 export const apiPathEnd = {
 	onRoot: {
+		search: "/search?",
 		artists: "/artists",
 		releases: "/releases",
 		songs: "/songs",
 		events: "/events",
 		announces: "/announces",
-		search: "/search?",
 		signup: "/signup",
 		update: "/update",
 		setPublicStatus: "/set-private-status",
