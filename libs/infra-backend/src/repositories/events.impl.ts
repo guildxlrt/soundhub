@@ -1,7 +1,7 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
 import { EventID, GenreType, IGetEventSuccess, IGetEventShortSuccess } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class EventsImplement implements EventsBackendRepos {

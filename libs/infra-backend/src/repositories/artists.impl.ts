@@ -13,7 +13,7 @@ import {
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {

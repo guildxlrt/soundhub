@@ -8,7 +8,7 @@ import {
 	IGetFullReleaseSuccess,
 	ArtistProfileID,
 } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class ReleasesImplement implements ReleasesBackendRepos {

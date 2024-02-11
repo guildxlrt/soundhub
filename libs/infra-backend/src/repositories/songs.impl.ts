@@ -1,6 +1,6 @@
 import { Song, SongsBackendRepos } from "Domain"
 import { GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class SongsImplement implements SongsBackendRepos {

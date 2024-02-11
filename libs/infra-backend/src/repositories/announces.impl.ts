@@ -1,7 +1,7 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
 import { AnnounceID, GetAnnounceDTO, GetAnnounceShortDTO } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class AnnouncesImplement implements AnnouncesBackendRepos {

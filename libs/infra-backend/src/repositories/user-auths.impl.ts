@@ -1,7 +1,7 @@
 import { UserAuthsBackendRepos } from "Domain"
 import { ErrorMsg, UserAuthID, htmlError, UserEmail, AnyObject } from "Shared"
 import { DatabaseErrorHandler } from "../utils"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 
 export class UserAuthsImplement implements UserAuthsBackendRepos {
 	private userAuth = dbClient.userAuth

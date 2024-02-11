@@ -1,5 +1,5 @@
 import { ErrorHandler, ErrorMsg } from "Shared"
-import { PrismaErrorHandler } from "../prisma"
+import { PrismaErrorHandler } from "../database"
 
 export class DatabaseErrorHandler {
 	static handle(error: unknown): ErrorMsg {
