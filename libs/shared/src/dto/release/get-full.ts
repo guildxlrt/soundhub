@@ -9,7 +9,7 @@ interface ReleaseDTO {
 	readonly descript: string | null
 	readonly price: number | null
 	readonly genres: string[]
-	readonly coverPath: string | null
+	readonly folderPath: string | null
 	readonly isPublic: boolean
 }
 
@@ -40,7 +40,7 @@ export class GetFullReleaseDTO {
 			descript: release?.["descript"],
 			price: release?.["price"],
 			genres: release?.["genres"],
-			coverPath: release?.["coverPath"],
+			folderPath: release?.["folderPath"],
 			isPublic: release?.["isPublic"],
 		}
 

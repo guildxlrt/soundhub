@@ -176,7 +176,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
 		try {
-			const release = await this.artist.findUniqueOrThrow({
+			const { isPublic } = await this.artist.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -185,7 +185,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return release?.isPublic
+			return isPublic
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -264,7 +264,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			const data = await this.artist.findUniqueOrThrow({
+			const { avatarPath } = await this.artist.findUniqueOrThrow({
 				where: {
 					user_auth_id: id,
 				},
@@ -272,7 +272,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					avatarPath: true,
 				},
 			})
-			return data.avatarPath
+			return avatarPath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}

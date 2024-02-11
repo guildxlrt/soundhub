@@ -1,0 +1,6 @@
+export * from "./announces-ctrl.type"
+export * from "./artist-ctrl.type"
+export * from "./auth-ctrl.type"
+export * from "./event-ctrl.type"
+export * from "./releases-ctrl.type"
+export * from "./songs-ctrl.type"

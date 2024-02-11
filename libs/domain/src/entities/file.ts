@@ -8,9 +8,13 @@ export type File = StreamFile | RawFile
 export class StreamFile extends Stream {
 	private validator = new FileValidator()
 
-	async move(storage: StorageRepository, destination: string): Promise<string> {
+	async move(
+		storage: StorageRepository,
+		destination: string,
+		newFileName?: string
+	): Promise<string> {
 		try {
-			return await storage.move(this, destination)
+			return await storage.move(this, destination, newFileName)
 		} catch (error) {
 			await storage.delete(this.path)
 			throw ErrorHandler.handle(error, "Error: failed to store")

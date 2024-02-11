@@ -78,8 +78,9 @@ model Release {
   descript    String?
   price       Int?
   genres      String[]
-  coverPath   String?
+  folderPath   String
   isPublic    Boolean
+  isReadOnly Boolean
 
   songs Song[]
 }
@@ -95,4 +96,5 @@ model Song {
   audioPath String
   feats Int[]
   lyrics    String?
+  isReadOnly Boolean
 }

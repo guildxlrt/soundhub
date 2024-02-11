@@ -19,7 +19,7 @@ export interface ExpressRequest extends Request {
 		path: string
 		buffer: Buffer
 	}
-	songs?: {
+	audio?: {
 		fieldname: string
 		originalname: string
 		encoding: string
@@ -30,7 +30,7 @@ export interface ExpressRequest extends Request {
 		filename: string
 		path: string
 		buffer: Buffer
-	}[]
+	}
 }
 
 export interface ExpressResponse extends Response {}

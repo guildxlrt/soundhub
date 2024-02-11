@@ -2,7 +2,7 @@ import { UsecaseReply } from "../../utils"
 import { ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
 import { GetShortReleaseDTO } from "Shared"
-import { IDUsecaseParams } from "../params-adapters"
+import { IDUsecaseParams } from "../../adapters"
 
 export class FindReleasesByArtistUsecase {
 	mainService: ReleasesService

@@ -26,7 +26,7 @@ export class NewArtistUsecaseParams {
 		this.file = file as StreamFile
 	}
 
-	static fromDto(dto: NewArtistDTO, file?: StreamFile | unknown) {
+	static fromBackend(dto: NewArtistDTO, file?: StreamFile | unknown) {
 		const { profile, auth, authConfirm } = dto
 		const { bio, genres, members, name } = profile
 		const { password, email } = auth
@@ -56,7 +56,7 @@ export class UpdateArtistUsecaseParams {
 		this.file = file as StreamFile
 	}
 
-	static fromDto(dto: UpdateArtistDTO, user: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: UpdateArtistDTO, user: number, file?: StreamFile | unknown) {
 		const { bio, genres, members, name, delAvatar } = dto
 
 		const artist = new Artist(user, user, name, bio, members, genres, null)
@@ -71,7 +71,7 @@ export class GetPublicStatusArtistUsecaseParams {
 		this.id = id
 	}
 
-	static fromDtoBackend(id: ArtistProfileID) {
+	static fromBackend(id: ArtistProfileID) {
 		return new SetPublicStatusArtistUsecaseParams(id)
 	}
 }
@@ -83,7 +83,7 @@ export class SetPublicStatusArtistUsecaseParams {
 		this.id = id
 	}
 
-	static fromDtoBackend(id: ArtistProfileID) {
+	static fromBackend(id: ArtistProfileID) {
 		return new SetPublicStatusArtistUsecaseParams(id)
 	}
 }

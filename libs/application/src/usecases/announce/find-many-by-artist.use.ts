@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { GetAnnounceShortDTO, ErrorHandler } from "Shared"
 import { AnnouncesService } from "../../services"
-import { IDUsecaseParams } from "../params-adapters"
+import { IDUsecaseParams } from "../../adapters"
 
 export class FindAnnouncesByArtistUsecase {
 	announcesService: AnnouncesService

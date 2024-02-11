@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
-import { GenreUsecaseParams } from "../params-adapters"
+import { GenreUsecaseParams } from "../../adapters"
 
 export class FindEventsByArtistGenreUsecase {
 	mainService: EventsService

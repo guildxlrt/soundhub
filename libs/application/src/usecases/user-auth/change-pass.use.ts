@@ -3,7 +3,7 @@ import { UsecaseReply } from "../../utils"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 import { PasswordServicePort, UserAuth } from "Domain"
-import { ChangePassUsecaseParams } from "../params-adapters"
+import { ChangePassUsecaseParams } from "../../adapters"
 
 export class ChangePassUsecase {
 	private mainService: UserAuthService

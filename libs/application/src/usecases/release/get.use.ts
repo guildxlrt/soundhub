@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetFullReleaseDTO, IGetFullReleaseSuccess, envs } from "Shared"
 import { ArtistsService, ReleasesService } from "../../services"
-import { IDUsecaseParams } from "../params-adapters"
+import { IDUsecaseParams } from "../../adapters"
 
 export class GetReleaseUsecase {
 	mainService: ReleasesService

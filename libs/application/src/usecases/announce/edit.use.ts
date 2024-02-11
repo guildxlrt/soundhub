@@ -1,7 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { AnnouncesService, StorageService } from "../../services"
-import { EditAnnounceUsecaseParams } from "../params-adapters"
+import { EditAnnounceUsecaseParams } from "../../adapters"
 
 export class EditAnnounceUsecase {
 	private announcesService: AnnouncesService

@@ -2,7 +2,7 @@ import { ErrorHandler, ErrorMsg, ILoginSuccess, UserToken, envs, htmlError } fro
 import { ArtistsService, UserAuthService } from "../../services"
 import { PasswordServicePort } from "Domain"
 import { UsecaseReply } from "../../utils"
-import { LoginUsecaseParams } from "../params-adapters"
+import { LoginUsecaseParams } from "../../adapters"
 
 export class LoginUsecase {
 	private mainService: UserAuthService

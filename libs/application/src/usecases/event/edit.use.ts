@@ -1,7 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ArtistsService, EventsService, StorageService } from "../../services"
-import { EditEventUsecaseParams } from "../params-adapters"
+import { EditEventUsecaseParams } from "../../adapters"
 
 export class EditEventUsecase {
 	private mainService: EventsService

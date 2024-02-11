@@ -9,7 +9,7 @@ export class LoginUsecaseParams {
 		this.password = password
 	}
 
-	static fromDto(dto: LoginDTO) {
+	static fromBackend(dto: LoginDTO) {
 		const { email, password } = dto
 		return new LoginUsecaseParams(email, password)
 	}
@@ -28,7 +28,7 @@ export class ChangeEmailUsecaseParams {
 		this.id = id
 	}
 
-	static fromDto(dto: ChangeEmailDTO, user: number) {
+	static fromBackend(dto: ChangeEmailDTO, user: number) {
 		const { actual, confirm, newOne } = dto
 		return new ChangeEmailUsecaseParams(actual, confirm, newOne, user)
 	}
@@ -47,7 +47,7 @@ export class ChangePassUsecaseParams {
 		this.id = id
 	}
 
-	static fromDto(dto: ChangePassDTO, user: number) {
+	static fromBackend(dto: ChangePassDTO, user: number) {
 		const { actual, confirm, newOne } = dto
 		return new ChangePassUsecaseParams(actual, confirm, newOne, user)
 	}

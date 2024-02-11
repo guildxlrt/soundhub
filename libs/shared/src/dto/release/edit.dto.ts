@@ -8,25 +8,16 @@ interface UpdateReleaseDTO {
 	readonly genres: string[]
 }
 
-interface UpdateSongDTO {
-	readonly id: number
-	readonly title: string
-	readonly feats: number[]
-	readonly lyrics: string | null
-}
-
 export class EditReleaseDTO {
 	readonly release: UpdateReleaseDTO
-	readonly songs: UpdateSongDTO[]
 	readonly delCover?: boolean
 
-	constructor(release: UpdateReleaseDTO, songs: UpdateSongDTO[], delCover?: boolean) {
+	constructor(release: UpdateReleaseDTO, delCover?: boolean) {
 		this.release = release
-		this.songs = songs
 		this.delCover = delCover
 	}
 
-	static createFromInput(release: AnyObject, songs: AnyObject[]) {
+	static createFromInput(release: AnyObject) {
 		const cleanRelease: UpdateReleaseDTO = {
 			id: release?.["id"],
 			title: release?.["title"],
@@ -34,14 +25,7 @@ export class EditReleaseDTO {
 			price: release?.["price"],
 			genres: release?.["genres"],
 		}
-		const cleanSongs: UpdateSongDTO[] = songs.map((data) => {
-			return {
-				id: data?.["id"],
-				title: data?.["title"],
-				feats: data?.["feats"],
-				lyrics: data?.["lyrics"],
-			}
-		})
-		return new EditReleaseDTO(cleanRelease, cleanSongs)
+
+		return new EditReleaseDTO(cleanRelease)
 	}
 }

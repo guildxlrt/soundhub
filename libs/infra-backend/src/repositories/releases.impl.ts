@@ -1,5 +1,5 @@
-import { ReleasesBackendRepos, StreamFile } from "Domain"
-import { Release, Song } from "Domain"
+import { ReleasesBackendRepos } from "Domain"
+import { Release } from "Domain"
 import {
 	GenreType,
 	ReleaseID,
@@ -15,26 +15,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 	private release = dbClient.release
 	private song = dbClient.song
 
-	async create(
-		release: { data: Release; cover: StreamFile },
-		songs: { data: Song }[]
-	): Promise<true> {
+	async create(release: Release): Promise<true> {
 		try {
-			const { owner_id, title, releaseType, descript, price, genres } = release.data
-
-			// songs
-			const songsData = await Promise.all(
-				songs.map(async (song) => {
-					const { title, feats, lyrics, audioPath } = song.data
-
-					return {
-						audioPath: audioPath as string,
-						title: title,
-						feats: feats,
-						lyrics: lyrics,
-					}
-				})
-			)
+			const { owner_id, title, releaseType, descript, price, genres, folderPath } = release
 
 			// PERSIST
 			await this.release.create({
@@ -45,10 +28,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					descript: descript,
 					price: price,
 					genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-					isPublic: true,
-					songs: {
-						create: songsData,
-					},
+					isPublic: false,
+					isReadOnly: false,
+					folderPath: folderPath as string,
 				},
 			})
 
@@ -58,9 +40,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async edit(release: { data: Release }): Promise<boolean> {
+	async edit(release: Release): Promise<boolean> {
 		try {
-			const { id, owner_id, price, descript, genres, title } = release.data
+			const { id, owner_id, price, descript, genres, title } = release
 
 			// persist
 			await this.release.update({
@@ -75,6 +57,51 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					genres: genres as string[],
 				},
 			})
+
+			return true
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async delete(id: number): Promise<boolean> {
+		try {
+			// persist
+			await this.release.delete({
+				where: {
+					id: id,
+				},
+			})
+
+			return true
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async publish(id: ReleaseID) {
+		try {
+			// persist
+			await this.release
+				.update({
+					where: {
+						id: id as number,
+					},
+					data: {
+						isPublic: true,
+						isReadOnly: true,
+					},
+				})
+				.then(async (data) => {
+					await this.song.updateMany({
+						where: {
+							release_id: data.id,
+						},
+						data: {
+							isReadOnly: true,
+						},
+					})
+				})
 
 			return true
 		} catch (error) {
@@ -114,7 +141,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					descript: true,
 					price: true,
 					genres: true,
-					coverPath: true,
+					folderPath: true,
 					isPublic: true,
 					songs: {
 						select: {
@@ -288,9 +315,25 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async getOwner(id: ArtistProfileID) {
+	async getEditability(id: ReleaseID): Promise<boolean> {
 		try {
-			const release = await this.release.findUniqueOrThrow({
+			const { isReadOnly } = await this.release.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					isReadOnly: true,
+				},
+			})
+			return isReadOnly
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getOwner(id: ArtistProfileID): Promise<number | undefined> {
+		try {
+			const { owner_id } = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -298,7 +341,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					owner_id: true,
 				},
 			})
-			return release?.owner_id
+			return owner_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -306,7 +349,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async getPublicStatus(id: ReleaseID): Promise<boolean> {
 		try {
-			const release = await this.release.findUniqueOrThrow({
+			const { isPublic } = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -315,42 +358,26 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 			})
 
-			return release?.isPublic
+			return isPublic
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async getCoverPath(releaseID: ReleaseID): Promise<string | null> {
+	async getFolderPath(releaseID: ReleaseID): Promise<string | null> {
 		try {
-			const releaseData = await this.release.findUniqueOrThrow({
+			const { folderPath } = await this.release.findUniqueOrThrow({
 				where: {
 					id: releaseID as number,
 				},
 				select: {
-					coverPath: true,
+					folderPath: true,
 				},
 			})
 
-			return releaseData?.coverPath
+			return folderPath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async setCoverPath(path: string | null, id: ReleaseID): Promise<boolean> {
-		try {
-			await this.release.update({
-				where: {
-					id: id,
-				},
-				data: {
-					coverPath: path,
-				},
-			})
-			return true
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

@@ -6,6 +6,62 @@ import { DatabaseErrorHandler } from "../utils"
 export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
 
+	async add(song: Song): Promise<boolean> {
+		try {
+			const { title, feats, lyrics, audioPath, release_id } = song
+
+			// PERSIST
+			await this.song.create({
+				data: {
+					release_id: release_id as number,
+					audioPath: audioPath as string,
+					title: title,
+					feats: feats,
+					lyrics: lyrics,
+					isReadOnly: false,
+				},
+			})
+			return true
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async edit(data: Song): Promise<boolean> {
+		try {
+			const { title, feats, lyrics, id } = data
+
+			// PERSIST
+			await this.song.update({
+				where: {
+					id: id as number,
+				},
+				data: {
+					title: title,
+					feats: feats,
+					lyrics: lyrics,
+				},
+			})
+			return true
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async delete(id: SongID): Promise<boolean> {
+		try {
+			// PERSIST
+			await this.song.delete({
+				where: {
+					id: id,
+				},
+			})
+			return true
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
 	async get(id: SongID): Promise<GetSongDTO> {
 		try {
 			const songs = await this.song.findUniqueOrThrow({
@@ -102,24 +158,52 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async update(data: Song): Promise<boolean> {
+	async getEditability(id: SongID): Promise<boolean> {
 		try {
-			const { title, feats, lyrics, id } = data
-
-			// PERSIST
-			await this.song.update({
+			const { isReadOnly } = await this.song.findUniqueOrThrow({
 				where: {
-					id: id as number,
+					id: id,
 				},
-				data: {
-					title: title,
-					feats: feats,
-					lyrics: lyrics,
+				select: {
+					isReadOnly: true,
 				},
 			})
-			return true
+			return isReadOnly
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getAudioPath(releaseID: ReleaseID): Promise<string | null> {
+		try {
+			const { audioPath } = await this.song.findUniqueOrThrow({
+				where: {
+					id: releaseID as number,
+				},
+				select: {
+					audioPath: true,
+				},
+			})
+
+			return audioPath
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getReleaseID(id: SongID): Promise<number> {
+		try {
+			const { release_id } = await this.song.findUniqueOrThrow({
+				where: {
+					id: id,
+				},
+				select: {
+					release_id: true,
+				},
+			})
+			return release_id
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 }

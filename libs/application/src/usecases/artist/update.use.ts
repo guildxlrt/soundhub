@@ -1,7 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ArtistsService, StorageService } from "../../services"
-import { UpdateArtistUsecaseParams } from "../params-adapters"
+import { UpdateArtistUsecaseParams } from "../../adapters"
 
 export class UpdateArtistUsecase {
 	mainService: ArtistsService

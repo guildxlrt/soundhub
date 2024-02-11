@@ -21,21 +21,37 @@ export class ReleasesService implements IReleasesService {
 	}
 
 	// SERVIVES
-	async create(release: unknown, songs: unknown[]): Promise<boolean> {
+	async create(release: unknown): Promise<boolean> {
 		try {
-			return await this.service.create(release, songs)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async edit(release: unknown, songs?: unknown[]): Promise<boolean> {
-		try {
-			return await this.service.edit(release, songs)
+			return await this.service.create(release)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
+	async edit(release: unknown): Promise<boolean> {
+		try {
+			return await this.service.edit(release)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async delete(id: ReleaseID): Promise<boolean> {
+		try {
+			return await this.service.delete(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async publish(id: ReleaseID): Promise<boolean> {
+		try {
+			return await this.service.publish(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
 	async getPublicStatus(id: ReleaseID): Promise<boolean> {
 		try {
 			return await this.service.getPublicStatus(id)
@@ -103,6 +119,13 @@ export class ReleasesService implements IReleasesService {
 	}
 
 	// BACKEND
+	async getEditability(id: number): Promise<boolean> {
+		try {
+			return await this.service.getEditability(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
 	async getOwner(id: number): Promise<number | undefined> {
 		try {
 			return await this.service.getOwner(id)
@@ -110,17 +133,9 @@ export class ReleasesService implements IReleasesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getCoverPath(releaseID: ReleaseID): Promise<string | null | undefined> {
+	async getFolderPath(releaseID: ReleaseID): Promise<string | null | undefined> {
 		try {
-			return await this.service.getCoverPath(releaseID)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setCoverPath(path: string | null, id: ReleaseID): Promise<boolean> {
-		try {
-			return await this.service.setCoverPath(path, id)
+			return await this.service.getFolderPath(releaseID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

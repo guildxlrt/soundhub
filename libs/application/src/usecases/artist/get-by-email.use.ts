@@ -1,7 +1,7 @@
 import { ErrorHandler, GetArtistDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ArtistsService } from "../../services"
-import { EmailUsecaseParams } from "../params-adapters"
+import { EmailUsecaseParams } from "../../adapters"
 
 export class GetArtistByEmailUsecase {
 	mainService: ArtistsService

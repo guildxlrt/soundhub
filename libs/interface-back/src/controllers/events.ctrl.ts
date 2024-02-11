@@ -31,7 +31,7 @@ export class EventsController implements IEventsCtrl {
 			const owner = req.auth?.ArtistProfileID as number
 			const file = req.image as unknown
 			const event = req.body as CreateEventDTO
-			const params = NewEventUsecaseParams.fromDto(event, owner, file)
+			const params = NewEventUsecaseParams.fromBackend(event, owner, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -47,7 +47,7 @@ export class EventsController implements IEventsCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data, error)
-			return res.status(200).send(reponse)
+			return res.status(201).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)
 		}
@@ -60,7 +60,7 @@ export class EventsController implements IEventsCtrl {
 			const owner = req.auth?.ArtistProfileID as number
 			const file = req.image as unknown
 			const event = req.body as EditEventDTO
-			const params = EditEventUsecaseParams.fromDto(event, owner, file)
+			const params = EditEventUsecaseParams.fromBackend(event, owner, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -88,7 +88,7 @@ export class EventsController implements IEventsCtrl {
 
 			const id = Number(req.params["id"])
 			const owner = req.auth?.ArtistProfileID as number
-			const params = DeleteEventUsecaseParams.fromDtoBackend(id, owner)
+			const params = DeleteEventUsecaseParams.fromBackend(id, owner)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -115,7 +115,7 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+			const params = IDUsecaseParams.fromBackend(id)
 
 			// Services
 			const eventsImplement = new EventsImplement()

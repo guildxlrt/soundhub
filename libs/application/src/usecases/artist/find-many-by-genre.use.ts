@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { GetArtistShortDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
-import { GenreUsecaseParams } from "../params-adapters"
+import { GenreUsecaseParams } from "../../adapters"
 
 export class FindArtistsByGenreUsecase {
 	mainService: ArtistsService

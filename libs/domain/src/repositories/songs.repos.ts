@@ -1,7 +1,11 @@
 import { GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
-import { Song } from "../entities"
+import { RawFile, Song } from "../entities"
 
 export interface SongsRepository {
+	add(song: unknown): Promise<boolean>
+	edit(data: unknown): Promise<boolean>
+	delete(id: SongID): Promise<boolean>
+
 	get(id: SongID): Promise<GetSongDTO>
 	findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]>
 	findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]>
@@ -9,10 +13,18 @@ export interface SongsRepository {
 }
 
 export interface ExtBackSongsRepos {
-	update(data: Song): Promise<boolean>
+	getEditability(id: number): Promise<boolean>
+	getAudioPath(releaseID: ReleaseID): Promise<string | null | undefined>
+	getReleaseID(id: SongID): Promise<number | undefined>
 }
 export interface ExtFrontSongsRepos {}
 
-export interface SongsBackendRepos extends SongsRepository, ExtBackSongsRepos {}
+export interface SongsBackendRepos extends SongsRepository, ExtBackSongsRepos {
+	add(song: Song): Promise<boolean>
+	edit(data: Song): Promise<boolean>
+}
 
-export interface SongsFrontendRepos extends SongsRepository, ExtFrontSongsRepos {}
+export interface SongsFrontendRepos extends SongsRepository, ExtFrontSongsRepos {
+	add(song: { data: Song; audio: RawFile }): Promise<boolean>
+	edit(song: { data: Song; audio: RawFile }): Promise<boolean>
+}

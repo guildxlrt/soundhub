@@ -1,7 +1,7 @@
 import { ArtistProfileID, EventID } from "Shared"
 import { EntityLayer } from "./layers"
 import { ExtBackArtistsRepos } from "../repositories"
-import { ArrayValidator, StringFormatter, FieldsValidator } from "../tools"
+import { ArrayValidator, StringFormatter, FieldsValidator, DateFormatter } from "../tools"
 
 export class Event extends EntityLayer {
 	readonly organisator_id: ArtistProfileID
@@ -12,7 +12,8 @@ export class Event extends EntityLayer {
 	text: string
 	imagePath: string | null
 
-	private formatter = new StringFormatter()
+	private stringFormatter = new StringFormatter()
+	private dateFormatter = new DateFormatter()
 	private validator = new FieldsValidator()
 	private artistsArrayValidator = new ArrayValidator()
 
@@ -42,10 +43,10 @@ export class Event extends EntityLayer {
 	}
 
 	sanitize() {
-		this.title = this.formatter.short(this.title)
-		this.text = this.formatter.long(this.text)
-		this.validator.date(this.date)
 		this.validator.place(this.text)
+		this.title = this.stringFormatter.short(this.title)
+		this.text = this.stringFormatter.long(this.text)
+		this.date = this.dateFormatter.format(this.date)
 	}
 
 	async validateArtistArray(service: ExtBackArtistsRepos) {

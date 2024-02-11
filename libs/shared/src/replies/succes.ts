@@ -20,7 +20,7 @@ export interface IGetFullReleaseSuccess {
 	releaseType: string
 	descript: string | null
 	price: number | null
-	coverPath: string | null
+	folderPath: string | null
 	isPublic: boolean
 	songs: {
 		id: number

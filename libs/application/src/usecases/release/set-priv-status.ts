@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorMsg, envs, htmlError, ErrorHandler } from "Shared"
 import { ReleasesService } from "../../services"
-import { SetPublicStatusReleaseUsecaseParams } from "../params-adapters"
+import { PatchDeleteUsecaseParams } from "../../adapters"
 
 export class SetPublicStatusReleaseUsecase {
 	mainService: ReleasesService
@@ -10,7 +10,7 @@ export class SetPublicStatusReleaseUsecase {
 		this.mainService = mainService
 	}
 
-	async execute(input: SetPublicStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
+	async execute(input: PatchDeleteUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			if (envs.backend) return await this.backend(input)
 			else return await this.frontend(input)
@@ -19,7 +19,7 @@ export class SetPublicStatusReleaseUsecase {
 		}
 	}
 
-	async backend(input: SetPublicStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
+	async backend(input: PatchDeleteUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id, ownerID } = input
 
@@ -38,7 +38,7 @@ export class SetPublicStatusReleaseUsecase {
 		}
 	}
 
-	async frontend(input: SetPublicStatusReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
+	async frontend(input: PatchDeleteUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id } = input
 

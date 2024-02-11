@@ -1,7 +1,7 @@
 import { ErrorHandler, GetShortReleaseDTO } from "Shared"
 import { ReleasesService } from "../../services"
 import { UsecaseReply } from "../../utils"
-import { GenreUsecaseParams } from "../params-adapters"
+import { GenreUsecaseParams } from "../../adapters"
 
 export class FindReleasesByGenreUsecase {
 	mainService: ReleasesService

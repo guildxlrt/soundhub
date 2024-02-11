@@ -143,7 +143,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async getOwner(id: AnnounceID): Promise<number> {
 		try {
-			const announce = await this.announce.findUniqueOrThrow({
+			const { owner_id } = await this.announce.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -151,7 +151,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 					owner_id: true,
 				},
 			})
-			return announce?.owner_id
+			return owner_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
@@ -159,7 +159,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async getImagePath(id: AnnounceID): Promise<string | null> {
 		try {
-			const announce = await this.announce.findUniqueOrThrow({
+			const { imagePath } = await this.announce.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -167,7 +167,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 					imagePath: true,
 				},
 			})
-			return announce?.imagePath
+			return imagePath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error getting image path")
 		}

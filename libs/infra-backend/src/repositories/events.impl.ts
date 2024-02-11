@@ -225,7 +225,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getOwner(id: number) {
 		try {
-			const event = await this.event.findUniqueOrThrow({
+			const { organisator_id } = await this.event.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -233,7 +233,7 @@ export class EventsImplement implements EventsBackendRepos {
 					organisator_id: true,
 				},
 			})
-			return event?.organisator_id
+			return organisator_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
@@ -241,7 +241,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getImagePath(id: EventID): Promise<string | null> {
 		try {
-			const event = await this.event.findUniqueOrThrow({
+			const { imagePath } = await this.event.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -249,7 +249,7 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: true,
 				},
 			})
-			return event?.imagePath
+			return imagePath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error getting image path")
 		}

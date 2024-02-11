@@ -110,7 +110,7 @@ export class SearchController {
 					const errors: ErrorMsg[] = []
 
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 
 						// Calling database
 						const findReleasesByArtist = new FindReleasesByArtistUsecase(
@@ -125,7 +125,7 @@ export class SearchController {
 						if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 						const id = req.params["id"]
-						const params = new IDUsecaseParams(id)
+						const params = IDUsecaseParams.fromBackend(id)
 
 						// Calling database
 						const findManyByArtistFeats = new FindReleasesByArtistFeatsUsecase(
@@ -149,7 +149,7 @@ export class SearchController {
 					}
 
 					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
+						const params = DateUsecaseParams.fromBackend(date)
 
 						// Calling database
 						const findEventsByDate = new FindReleasesByDateUsecase(releasesService)
@@ -160,7 +160,7 @@ export class SearchController {
 					}
 					if (releaseType) {
 						try {
-							const params = ReleaseTypeUsecaseParams.fromReqParams(releaseType)
+							const params = new ReleaseTypeUsecaseParams(releaseType)
 
 							// Calling database
 							const findEventsByDate = new FindReleasesByTypeUsecase(releasesService)
@@ -192,7 +192,7 @@ export class SearchController {
 					const errors: ErrorMsg[] = []
 
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 
 						// Calling database
 						const getSong = new FindSongsByArtistUsecase(songsService)
@@ -203,7 +203,7 @@ export class SearchController {
 					}
 
 					if (releaseID) {
-						const params = new IDUsecaseParams(releaseID)
+						const params = IDUsecaseParams.fromBackend(releaseID)
 
 						// Calling database
 						const getSong = new FindSongsByReleaseUsecase(songsService)
@@ -242,7 +242,7 @@ export class SearchController {
 					const errors: ErrorMsg[] = []
 
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 						const findEventsByArtist = new FindEventsByArtistUsecase(eventsService)
 						const resultsByArtist = await findEventsByArtist.execute(params)
 
@@ -250,7 +250,7 @@ export class SearchController {
 						if (resultsByArtist.error) errors.push(resultsByArtist.error)
 					}
 					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
+						const params = DateUsecaseParams.fromBackend(date)
 						const findEventsByDate = new FindEventsByDateUsecase(eventsService)
 						const resultsByDate = await findEventsByDate.execute(params)
 
@@ -289,7 +289,7 @@ export class SearchController {
 					const errors: ErrorMsg[] = []
 
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 						const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(
 							announcesService
 						)
@@ -299,7 +299,7 @@ export class SearchController {
 						if (resultsByArtist.error) errors.push(resultsByArtist.error)
 					}
 					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
+						const params = DateUsecaseParams.fromBackend(date)
 						const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(
 							announcesService
 						)

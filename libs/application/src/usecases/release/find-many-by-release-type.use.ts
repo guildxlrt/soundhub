@@ -1,7 +1,7 @@
-import { ErrorHandler, GetShortReleaseDTO } from "Shared"
+import { ErrorHandler, GetShortReleaseDTO, ReleaseType } from "Shared"
 import { ReleasesService } from "../../services"
 import { UsecaseReply } from "../../utils"
-import { ReleaseTypeUsecaseParams } from "../params-adapters"
+import { ReleaseTypeUsecaseParams } from "../../adapters"
 
 export class FindReleasesByTypeUsecase {
 	mainService: ReleasesService
@@ -12,7 +12,7 @@ export class FindReleasesByTypeUsecase {
 	async execute(input: ReleaseTypeUsecaseParams): Promise<UsecaseReply<GetShortReleaseDTO[]>> {
 		try {
 			const type = input.type
-			const data = await this.mainService.findManyByReleaseType(type)
+			const data = await this.mainService.findManyByReleaseType(type as ReleaseType)
 
 			return new UsecaseReply<GetShortReleaseDTO[]>(data, null)
 		} catch (error) {

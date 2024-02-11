@@ -1,7 +1,7 @@
 import { ErrorHandler, GetSongDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { SongsService } from "../../services"
-import { GenreUsecaseParams } from "../params-adapters"
+import { GenreUsecaseParams } from "../../adapters"
 
 export class FindSongsByReleaseGenreUsecase {
 	mainService: SongsService

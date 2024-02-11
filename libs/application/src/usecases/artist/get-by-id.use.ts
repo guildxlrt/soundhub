@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetArtistDTO } from "Shared"
 import { ArtistsService } from "../../services"
-import { IDUsecaseParams } from "../params-adapters"
+import { IDUsecaseParams } from "../../adapters"
 
 export class GetArtistByIDUsecase {
 	mainService: ArtistsService
