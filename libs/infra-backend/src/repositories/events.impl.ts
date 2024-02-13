@@ -1,23 +1,21 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import { EventID, GenreType, IGetEventSuccess, IGetEventShortSuccess } from "Shared"
+import { EventID, IGetEventSuccess, IGetEventShortSuccess } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class EventsImplement implements EventsBackendRepos {
 	private event = dbClient.event
-	private artist = dbClient.artist
 
 	async create(data: Event): Promise<boolean> {
 		try {
-			const { organisator_id, date, place, artists, title, text } = data
+			const { organisator_id, date, place, title, text } = data
 
 			await this.event.create({
 				data: {
 					organisator_id: organisator_id as number,
 					date: date,
 					place: place,
-					artists: artists,
 					title: title,
 					text: text,
 				},
@@ -32,7 +30,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async edit(data: Event): Promise<boolean> {
 		try {
-			const { id, organisator_id, date, place, artists, title, text } = data
+			const { id, organisator_id, date, place, title, text } = data
 
 			// persist
 			await this.event.update({
@@ -43,7 +41,6 @@ export class EventsImplement implements EventsBackendRepos {
 				data: {
 					date: date,
 					place: place,
-					artists: artists,
 					title: title,
 					text: text,
 				},
@@ -82,7 +79,6 @@ export class EventsImplement implements EventsBackendRepos {
 					organisator_id: true,
 					date: true,
 					place: true,
-					artists: true,
 					title: true,
 					text: true,
 					imagePath: true,
@@ -102,32 +98,8 @@ export class EventsImplement implements EventsBackendRepos {
 					id: true,
 					date: true,
 					place: true,
-					artists: true,
+
 					title: true,
-				},
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByArtist(id: EventID): Promise<IGetEventShortSuccess[]> {
-		try {
-			const ArtistProfileID = id
-
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					artists: { has: ArtistProfileID },
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-					imagePath: true,
 				},
 			})
 
@@ -147,7 +119,7 @@ export class EventsImplement implements EventsBackendRepos {
 					id: true,
 					date: true,
 					place: true,
-					artists: true,
+
 					title: true,
 				},
 			})
@@ -168,54 +140,10 @@ export class EventsImplement implements EventsBackendRepos {
 					id: true,
 					date: true,
 					place: true,
-					artists: true,
+
 					title: true,
 				},
 			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByArtistGenre(genre: GenreType): Promise<IGetEventShortSuccess[]> {
-		try {
-			const artists = (
-				await this.artist.findMany({
-					where: {
-						genres: { has: genre },
-					},
-					select: {
-						id: true,
-					},
-				})
-			).map((artist) => artist.id)
-
-			const results = await Promise.all(
-				artists.map(async (id) => {
-					const result = await this.event.findMany({
-						where: {
-							organisator: {
-								genres: { has: genre },
-							},
-							artists: { has: id },
-						},
-						select: {
-							id: true,
-							date: true,
-							place: true,
-							artists: true,
-							title: true,
-						},
-					})
-
-					return result
-				})
-			)
-
-			const flat = results.flat(Infinity) as IGetEventShortSuccess[]
-			const events = [...new Set(flat)]
 
 			return events
 		} catch (error) {

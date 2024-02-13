@@ -11,7 +11,7 @@ import {
 import { GenresFormatter, StringFormatter, FieldsValidator } from "../tools"
 
 export class Release extends EntityLayer {
-	readonly owner_id: ArtistProfileID
+	readonly publisher_id: ArtistProfileID
 	title: string
 	readonly releaseType: ReleaseType | null
 	descript: string | null
@@ -27,7 +27,7 @@ export class Release extends EntityLayer {
 
 	constructor(
 		id: ReleaseID | null,
-		owner_id: ArtistProfileID,
+		publisher_id: ArtistProfileID,
 		title: string,
 		releaseType: ReleaseType | null,
 		descript: string | null,
@@ -39,7 +39,7 @@ export class Release extends EntityLayer {
 	) {
 		super(id)
 
-		this.owner_id = owner_id
+		this.publisher_id = publisher_id
 		this.title = title
 		this.releaseType = releaseType
 		this.descript = descript

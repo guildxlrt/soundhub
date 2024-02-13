@@ -8,7 +8,7 @@ export interface SongsRepository {
 
 	get(id: SongID): Promise<GetSongDTO>
 	findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]>
-	findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]>
+	findSongsInArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]>
 	findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]>
 }
 

@@ -17,7 +17,10 @@ model UserAuth {
   email    String @unique
   password String
 
-  artists Artist[]
+  artists  Artist[]
+  events   Event[]
+  announce Announce[]
+  release  Release[]
 }
 
 model Artist {
@@ -32,19 +35,19 @@ model Artist {
   members    Json
   genres     String[]
   avatarPath String?
-  isPublic    Boolean
+  isPublic   Boolean
 
-  releases Release[]
-  announce Announce[]
-  events   Event[]
+  playAtEvent   PlayAtEvent[]
+  songsFeats    SongFeat[]
+  releaseArtist ReleaseArtist[]
 }
 
 model Announce {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  owner_id Int
-  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  publisher_id Int
+  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
 
   title     String
   text      String
@@ -56,33 +59,35 @@ model Event {
   createdAt DateTime @default(now())
 
   organisator_id Int
-  organisator    Artist @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
+  organisator    UserAuth @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
 
   date      DateTime
   place     String
-  artists   Int[]
   title     String
   text      String
   imagePath String?
+
+  playAtEvent PlayAtEvent[]
 }
 
 model Release {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  owner_id Int
-  owner    Artist @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  publisher_id Int
+  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
 
   title       String
   releaseType String
   descript    String?
   price       Int?
   genres      String[]
-  folderPath   String
+  folderPath  String
   isPublic    Boolean
-  isReadOnly Boolean
+  isReadOnly  Boolean
 
-  songs Song[]
+  songs           Song[]
+  releasesArtists ReleaseArtist[]
 }
 
 model Song {
@@ -92,9 +97,42 @@ model Song {
   release_id Int
   release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
 
-  title     String
-  audioPath String
-  feats Int[]
-  lyrics    String?
+  title      String
+  audioPath  String
+  lyrics     String?
   isReadOnly Boolean
+
+  songsFeats SongFeat[]
+}
+
+// INTERMEDIARY TABLES
+
+model PlayAtEvent {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  event_id Int
+  event    Event @relation(fields: [event_id], references: [id], onDelete: Cascade)
+}
+
+model SongFeat {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  song_id Int
+  song    Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+}
+
+model ReleaseArtist {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  release_id Int
+  realease   Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
 }

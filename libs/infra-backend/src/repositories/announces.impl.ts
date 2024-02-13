@@ -9,11 +9,11 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async create(data: Announce): Promise<boolean> {
 		try {
-			const { owner_id, title, text, imagePath } = data
+			const { publisher_id, title, text, imagePath } = data
 
 			await this.announce.create({
 				data: {
-					owner_id: owner_id as number,
+					publisher_id: publisher_id as number,
 					title: title,
 					text: text,
 					imagePath: imagePath,
@@ -29,12 +29,12 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async edit(data: Announce): Promise<boolean> {
 		try {
-			const { owner_id, title, text, id, imagePath } = data
+			const { publisher_id, title, text, id, imagePath } = data
 
 			await this.announce.update({
 				where: {
 					id: id as number,
-					owner_id: owner_id,
+					publisher_id: publisher_id,
 				},
 				data: {
 					title: title,
@@ -71,7 +71,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					text: true,
 					imagePath: true,
@@ -89,7 +89,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			const announces = await this.announce.findMany({
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					imagePath: true,
 				},
@@ -105,11 +105,11 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		try {
 			const announces = await this.announce.findMany({
 				where: {
-					owner_id: id,
+					publisher_id: id,
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					imagePath: true,
 				},
@@ -129,7 +129,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					imagePath: true,
 				},
@@ -143,15 +143,15 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async getOwner(id: AnnounceID): Promise<number> {
 		try {
-			const { owner_id } = await this.announce.findUniqueOrThrow({
+			const { publisher_id } = await this.announce.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
-					owner_id: true,
+					publisher_id: true,
 				},
 			})
-			return owner_id
+			return publisher_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}

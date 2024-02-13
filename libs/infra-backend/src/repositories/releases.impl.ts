@@ -17,12 +17,13 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async create(release: Release): Promise<true> {
 		try {
-			const { owner_id, title, releaseType, descript, price, genres, folderPath } = release
+			const { publisher_id, title, releaseType, descript, price, genres, folderPath } =
+				release
 
 			// PERSIST
 			await this.release.create({
 				data: {
-					owner_id: owner_id,
+					publisher_id: publisher_id,
 					title: title,
 					releaseType: releaseType as ReleaseType,
 					descript: descript,
@@ -42,13 +43,13 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async edit(release: Release): Promise<boolean> {
 		try {
-			const { id, owner_id, price, descript, genres, title } = release
+			const { id, publisher_id, price, descript, genres, title } = release
 
 			// persist
 			await this.release.update({
 				where: {
 					id: id as number,
-					owner_id: owner_id,
+					publisher_id: publisher_id,
 				},
 				data: {
 					title: title,
@@ -135,7 +136,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				select: {
 					id: true,
 					createdAt: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					releaseType: true,
 					descript: true,
@@ -147,7 +148,6 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 						select: {
 							id: true,
 							title: true,
-							feats: true,
 							lyrics: true,
 							audioPath: true,
 						},
@@ -166,7 +166,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 			const data = await this.release.findMany({
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -191,7 +191,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -212,82 +212,13 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
 				},
 			})
 			return GetShortReleaseDTO.createArrayFromData(data)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
-		try {
-			const data = await this.release.findMany({
-				where: {
-					owner_id: id,
-					isPublic: true,
-				},
-				select: {
-					id: true,
-					owner_id: true,
-					title: true,
-					releaseType: true,
-					genres: true,
-				},
-			})
-
-			return GetShortReleaseDTO.createArrayFromData(data)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
-		try {
-			const releases = (
-				await this.song.findMany({
-					where: {
-						feats: {
-							has: id,
-						},
-					},
-					select: {
-						release_id: true,
-					},
-				})
-			).map((release) => release.release_id)
-
-			const results: {
-				id: number
-				owner_id: number
-				title: string
-				releaseType: string
-				genres: string[]
-			}[] = await Promise.all(
-				releases.map(async (id) => {
-					const result = await this.release.findUniqueOrThrow({
-						where: {
-							id: id,
-							isPublic: true,
-						},
-						select: {
-							id: true,
-							owner_id: true,
-							title: true,
-							releaseType: true,
-							genres: true,
-						},
-					})
-
-					return result
-				})
-			)
-
-			return results
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -302,7 +233,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 				},
 				select: {
 					id: true,
-					owner_id: true,
+					publisher_id: true,
 					title: true,
 					releaseType: true,
 					genres: true,
@@ -333,15 +264,15 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 
 	async getOwner(id: ArtistProfileID): Promise<number | undefined> {
 		try {
-			const { owner_id } = await this.release.findUniqueOrThrow({
+			const { publisher_id } = await this.release.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
-					owner_id: true,
+					publisher_id: true,
 				},
 			})
-			return owner_id
+			return publisher_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

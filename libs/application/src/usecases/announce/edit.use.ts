@@ -45,11 +45,11 @@ export class EditAnnounceUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, delImage, announce } = input
-			const { owner_id, id } = announce
+			const { publisher_id, id } = announce
 
 			// owner verification
 			const announceOwner = await this.announcesService.getOwner(id as number)
-			if (owner_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (publisher_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
 			await this.announcesService.edit(announce)

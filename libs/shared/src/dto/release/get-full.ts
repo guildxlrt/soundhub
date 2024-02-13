@@ -3,7 +3,7 @@ import { AnyObject, IArtistName } from "../../types"
 interface ReleaseDTO {
 	readonly id: number
 	readonly createdAt: Date
-	readonly owner_id: number
+	readonly publisher_id: number
 	readonly title: string
 	readonly releaseType: string
 	readonly descript: string | null
@@ -34,7 +34,7 @@ export class GetFullReleaseDTO {
 		const cleanRelease = {
 			id: release?.["id"],
 			createdAt: release?.["createdAt"],
-			owner_id: release?.["owner_id"],
+			publisher_id: release?.["publisher_id"],
 			title: release?.["title"],
 			releaseType: release?.["releaseType"],
 			descript: release?.["descript"],

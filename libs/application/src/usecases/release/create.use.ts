@@ -45,11 +45,11 @@ export class CreateReleaseUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { cover, data } = input
-			const { owner_id, id } = data
+			const { publisher_id, id } = data
 
 			// owner verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
-			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (publisher_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// CREATE RELEASE FOLDER
 			const newFolder = await storageService.mkdir()

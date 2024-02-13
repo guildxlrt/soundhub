@@ -15,7 +15,7 @@ export interface IGetFullReleaseSuccess {
 	id: number
 	createdAt: Date
 	title: string
-	owner_id: number
+	publisher_id: number
 	genres: string[]
 	releaseType: string
 	descript: string | null
@@ -26,7 +26,6 @@ export interface IGetFullReleaseSuccess {
 		id: number
 		title: string
 		audioPath: string
-		feats: number[]
 		lyrics: string | null
 	}[]
 }
@@ -47,7 +46,7 @@ export interface IGetEventSuccess {
 	organisator_id: number
 	date: Date
 	place: string
-	artists: number[]
+
 	text: string
 	imagePath: string | null
 }
@@ -57,14 +56,13 @@ export interface IGetEventShortSuccess {
 	title: string
 	date: Date
 	place: string
-	artists: number[]
 }
 export type IFindManyByArtistGenreSuccess = FlatArray<
 	{
 		id: number
 		date: Date
 		place: string
-		artists: number[]
+
 		title: string
 	}[],
 	| 0

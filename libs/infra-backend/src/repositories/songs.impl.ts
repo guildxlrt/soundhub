@@ -1,5 +1,5 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
+import { GenreType, ReleaseID, GetSongDTO, SongID, ArtistProfileID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -8,7 +8,7 @@ export class SongsImplement implements SongsBackendRepos {
 
 	async add(song: Song): Promise<boolean> {
 		try {
-			const { title, feats, lyrics, audioPath, release_id } = song
+			const { title, lyrics, audioPath, release_id } = song
 
 			// PERSIST
 			await this.song.create({
@@ -16,7 +16,7 @@ export class SongsImplement implements SongsBackendRepos {
 					release_id: release_id as number,
 					audioPath: audioPath as string,
 					title: title,
-					feats: feats,
+
 					lyrics: lyrics,
 					isReadOnly: false,
 				},
@@ -29,7 +29,7 @@ export class SongsImplement implements SongsBackendRepos {
 
 	async edit(data: Song): Promise<boolean> {
 		try {
-			const { title, feats, lyrics, id } = data
+			const { title, lyrics, id } = data
 
 			// PERSIST
 			await this.song.update({
@@ -38,7 +38,6 @@ export class SongsImplement implements SongsBackendRepos {
 				},
 				data: {
 					title: title,
-					feats: feats,
 					lyrics: lyrics,
 				},
 			})
@@ -107,15 +106,12 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]> {
+	async findSongsInArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					feats: {
-						has: id,
-					},
 					release: {
-						owner_id: id,
+						publisher_id: id,
 						isPublic: true,
 					},
 				},
