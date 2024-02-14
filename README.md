@@ -12,7 +12,7 @@ To start the development server run `nx serve server`. Open your browser and nav
 
 ## Generate code
 
-If you happen to use Nx plugins, you can leverage code generators that might come with it.
+If you happen to use Nx plugins, you can leverage code generators that might come with it...
 
 Run `nx list` to get a list of available plugins and whether they have generators. Then run `nx list <plugin-name>` to see what generators are available.
 
