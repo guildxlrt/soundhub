@@ -44,7 +44,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async update(data: Artist, delAvatar?: boolean, file?: RawFile): Promise<boolean> {
+	async update(data: Artist, delLogo?: boolean, file?: RawFile): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			NewFormData.fromFile(formData, file as RawFile)

@@ -1,1 +1,1 @@
-export * from "./release-path"
+export * from "./record-path"

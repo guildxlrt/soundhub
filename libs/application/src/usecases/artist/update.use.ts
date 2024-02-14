@@ -30,9 +30,9 @@ export class UpdateArtistUsecase {
 
 	async frontend(input: UpdateArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { profile, delAvatar, file } = input
+			const { profile, delLogo, file } = input
 
-			const data = await this.mainService.update(profile, delAvatar, file)
+			const data = await this.mainService.update(profile, delLogo, file)
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -45,7 +45,7 @@ export class UpdateArtistUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { user_auth_id, id } = input.profile
-			const { file, profile, delAvatar } = input
+			const { file, profile, delLogo } = input
 
 			// publisher verification
 			const userAuths = await this.mainService.getAuths(user_auth_id as number)
@@ -60,11 +60,11 @@ export class UpdateArtistUsecase {
 
 			// STORING NEW FILE
 			// contradiction
-			if (file && delAvatar === true)
+			if (file && delLogo === true)
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
-			if (file || delAvatar === true) {
-				const oldImagePath = await this.mainService.getAvatarPath(id as number)
+			if (file || delLogo === true) {
+				const oldImagePath = await this.mainService.getLogoPath(id as number)
 				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
 
 				if (file) {
@@ -72,7 +72,7 @@ export class UpdateArtistUsecase {
 					const newImagePath = await storageService.move(file, filePath.store.artist)
 
 					// persist path
-					await this.mainService.setAvatarPath(newImagePath, id as number)
+					await this.mainService.setLogoPath(newImagePath, id as number)
 				}
 
 				// delete old

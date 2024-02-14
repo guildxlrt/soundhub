@@ -2,7 +2,7 @@ export const apiPath = {
 	onRoot: "",
 	auth: "/",
 	artist: "/artist",
-	release: "/release",
+	record: "/record",
 	song: "/song",
 	announce: "/announce",
 	event: "/event",
@@ -12,7 +12,7 @@ export const apiPathEnd = {
 	onRoot: {
 		search: "/search?",
 		artists: "/artists",
-		releases: "/releases",
+		records: "/records",
 		songs: "/songs",
 		events: "/events",
 		announces: "/announces",
@@ -30,7 +30,7 @@ export const apiPathEnd = {
 		getByID: "/:id",
 		getByEmail: "/email",
 	},
-	release: {
+	record: {
 		create: "/create",
 		edit: "/edit",
 		setPublicStatus: "/set-private-status",

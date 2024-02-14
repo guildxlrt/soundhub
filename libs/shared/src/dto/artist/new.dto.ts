@@ -46,7 +46,7 @@ export class NewArtistDTO {
 	}
 
 	static createFromInput(profile: AnyObject, auth: AnyObject, authConfirm: AnyObject) {
-		const newRelease = new NewArtistProfileDTO(
+		const newRecord = new NewArtistProfileDTO(
 			profile?.["name"],
 			profile?.["bio"],
 			profile?.["members"],
@@ -58,6 +58,6 @@ export class NewArtistDTO {
 			authConfirm?.["confirmPass"]
 		)
 
-		return new NewArtistDTO(newRelease, newAuth, newAuthConfirm)
+		return new NewArtistDTO(newRecord, newAuth, newAuthConfirm)
 	}
 }

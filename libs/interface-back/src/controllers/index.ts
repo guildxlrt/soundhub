@@ -2,7 +2,7 @@ import { AnnoncesController } from "./announces.ctrl"
 import { ArtistsController } from "./artists.ctrl"
 import { UserAuthController } from "./user-auth.ctrl"
 import { EventsController } from "./events.ctrl"
-import { ReleasesController } from "./releases.ctrl"
+import { RecordsController } from "./records.ctrl"
 import { SongsController } from "./songs.ctrl"
 import { SearchController } from "./search.ctrl"
 
@@ -12,6 +12,6 @@ export const controller = {
 	artists: new ArtistsController(),
 	auth: new UserAuthController(),
 	events: new EventsController(),
-	releases: new ReleasesController(),
+	records: new RecordsController(),
 	songs: new SongsController(),
 }

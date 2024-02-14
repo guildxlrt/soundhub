@@ -5,20 +5,20 @@ export class UpdateArtistDTO {
 	readonly bio: string
 	readonly members: string[]
 	readonly genres: GenresArray
-	readonly delAvatar?: boolean
+	readonly delLogo?: boolean
 
 	constructor(
 		name: string,
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		delAvatar?: boolean
+		delLogo?: boolean
 	) {
 		this.name = name
 		this.bio = bio
 		this.members = members
 		this.genres = genres
-		this.delAvatar = delAvatar
+		this.delLogo = delLogo
 	}
 
 	static createFromInput(data: AnyObject) {
@@ -27,7 +27,7 @@ export class UpdateArtistDTO {
 			data?.["bio"],
 			data?.["members"],
 			data?.["genres"],
-			data?.["delAvatar"]
+			data?.["delLogo"]
 		)
 	}
 }

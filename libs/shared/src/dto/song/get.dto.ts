@@ -2,14 +2,14 @@ import { AnyObject } from "../../types"
 
 export class GetSongDTO {
 	readonly id: number
-	readonly release_id: number
+	readonly record_id: number
 	readonly title: string
 	readonly audioPath: string
 
-	constructor(id: number, release_id: number, title: string, audioPath: string) {
+	constructor(id: number, record_id: number, title: string, audioPath: string) {
 		this.id = id
 		this.title = title
-		this.release_id = release_id
+		this.record_id = record_id
 		this.audioPath = audioPath
 	}
 
@@ -17,18 +17,18 @@ export class GetSongDTO {
 		return new GetSongDTO(
 			data?.["id"],
 			data?.["title"],
-			data?.["releaseType"],
+			data?.["recordType"],
 			data?.["audioPath"]
 		)
 	}
 
 	static createArrayFromData(data: AnyObject[]): GetSongDTO[] {
-		return data.map((release): GetSongDTO => {
+		return data.map((record): GetSongDTO => {
 			return new GetSongDTO(
-				release?.["id"],
-				release?.["title"],
-				release?.["releaseType"],
-				release?.["audioPath"]
+				record?.["id"],
+				record?.["title"],
+				record?.["recordType"],
+				record?.["audioPath"]
 			)
 		})
 	}

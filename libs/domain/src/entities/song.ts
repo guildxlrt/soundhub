@@ -1,9 +1,9 @@
-import { ErrorMsg, ReleaseID, SongID, htmlError } from "Shared"
+import { ErrorMsg, RecordID, SongID, htmlError } from "Shared"
 import { EntityLayer } from "./layers"
 import { StringFormatter } from "../tools"
 
 export class Song extends EntityLayer {
-	readonly release_id: ReleaseID | null
+	readonly record_id: RecordID | null
 	audioPath: string | null
 	title: string
 	lyrics: string | null
@@ -13,7 +13,7 @@ export class Song extends EntityLayer {
 
 	constructor(
 		id: SongID | null,
-		release_id: ReleaseID | null,
+		record_id: RecordID | null,
 		audioPath: string | null,
 		title: string,
 		lyrics: string | null,
@@ -21,7 +21,7 @@ export class Song extends EntityLayer {
 	) {
 		super(id)
 
-		this.release_id = release_id
+		this.record_id = record_id
 		this.audioPath = audioPath
 		this.title = title
 		this.lyrics = lyrics

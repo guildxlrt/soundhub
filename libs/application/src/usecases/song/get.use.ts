@@ -37,7 +37,7 @@ export class GetSongUsecase {
 	): Promise<UsecaseReply<GetFullSongDTO>> {
 		try {
 			const id = input.id
-			// get the release
+			// get the record
 			const data = (await this.mainService.get(id)) as IGetFullSongSuccess
 
 			// get artists names

@@ -1,7 +1,7 @@
 import * as express from "express"
 import authRoutes from "./auth"
 import artistsRoutes from "./artists"
-import releasesRoutes from "./releases"
+import recordsRoutes from "./records"
 import songsRoutes from "./songs"
 import announcesRoutes from "./announces"
 import eventsRoutes from "./events"
@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 })
 router.use(endpts.search, ctrl.search.findMany)
 router.get(endpts.artists, ctrl.artists.getAll)
-router.get(endpts.releases, ctrl.releases.getAll)
+router.get(endpts.records, ctrl.records.getAll)
 router.get(endpts.events, ctrl.events.getAll)
 router.get(endpts.announces, ctrl.announces.getAll)
 
@@ -32,7 +32,7 @@ router.patch(endpts.setPublicStatus, authMiddleware, ctrl.artists.setPublicStatu
 router.use(apiPath.onRoot, announcesRoutes)
 router.use(apiPath.auth, authRoutes)
 router.use(apiPath.artist, artistsRoutes)
-router.use(apiPath.release, releasesRoutes)
+router.use(apiPath.record, recordsRoutes)
 router.use(apiPath.song, songsRoutes)
 router.use(apiPath.event, eventsRoutes)
 router.use(apiPath.announce, announcesRoutes)

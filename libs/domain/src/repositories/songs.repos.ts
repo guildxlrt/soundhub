@@ -1,7 +1,7 @@
 import {
 	GenreType,
 	ArtistProfileID,
-	ReleaseID,
+	RecordID,
 	GetSongDTO,
 	SongID,
 	GetFullSongDTO,
@@ -15,15 +15,15 @@ export interface SongsRepository {
 	delete(id: SongID): Promise<boolean>
 
 	get(id: SongID): Promise<unknown>
-	findByRelease(id: ReleaseID): Promise<GetSongDTO[]>
-	findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]>
-	findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]>
+	findByRecord(id: RecordID): Promise<GetSongDTO[]>
+	findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]>
+	findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]>
 }
 
 export interface ExtBackSongsRepos {
 	getEditability(id: number): Promise<boolean>
-	getAudioPath(releaseID: ReleaseID): Promise<string | null | undefined>
-	getReleaseID(id: SongID): Promise<number | undefined>
+	getAudioPath(recordID: RecordID): Promise<string | null | undefined>
+	getRecordID(id: SongID): Promise<number | undefined>
 }
 export interface ExtFrontSongsRepos {}
 

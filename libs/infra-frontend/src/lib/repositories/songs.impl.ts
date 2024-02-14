@@ -1,6 +1,6 @@
 import axios from "axios"
 import { RawFile, Song, SongsRepository } from "Domain"
-import { GetSongDTO, ErrorHandler, SongID, ReleaseID, ArtistProfileID, GenreType } from "Shared"
+import { GetSongDTO, ErrorHandler, SongID, RecordID, ArtistProfileID, GenreType } from "Shared"
 import { NewFormData, apiUriRequest, apiUrlPath, apiUrlRoot } from "../../assets"
 
 export class SongsImplement implements SongsRepository {
@@ -64,11 +64,11 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRecord(id: RecordID): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.releaseID + id}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.recordID + id}`,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -76,7 +76,7 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findByArtistReleases(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByArtistRecords(id: RecordID): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -88,11 +88,11 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.releaseGenre + genre}`,
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.recordGenre + genre}`,
 				withCredentials: true,
 			})
 		} catch (error) {

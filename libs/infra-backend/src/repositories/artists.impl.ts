@@ -164,7 +164,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					id: true,
 					name: true,
 					genres: true,
-					avatarPath: true,
+					logoPath: true,
 				},
 			})
 
@@ -262,30 +262,30 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
+	async getLogoPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			const { avatarPath } = await this.artist.findUniqueOrThrow({
+			const { logoPath } = await this.artist.findUniqueOrThrow({
 				where: {
 					user_auth_id: id,
 				},
 				select: {
-					avatarPath: true,
+					logoPath: true,
 				},
 			})
-			return avatarPath
+			return logoPath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 
-	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
+	async setLogoPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
 		try {
 			await this.artist.update({
 				where: {
 					id: id,
 				},
 				data: {
-					avatarPath: path,
+					logoPath: path,
 				},
 			})
 			return true

@@ -8,7 +8,7 @@ export class Artist extends EntityLayer {
 	bio: string
 	members: Record<string, any>
 	genres: GenresArray
-	avatarPath: string | null
+	logoPath: string | null
 
 	private stringFormatter = new StringFormatter()
 	private genresFormatter = new GenresFormatter()
@@ -21,7 +21,7 @@ export class Artist extends EntityLayer {
 		bio: string,
 		members: Record<string, any>,
 		genres: GenresArray,
-		avatarPath: string | null
+		logoPath: string | null
 	) {
 		super(id)
 
@@ -30,14 +30,14 @@ export class Artist extends EntityLayer {
 		this.bio = bio
 		this.members = members
 		this.genres = [genres[0], genres[1] ? genres[1] : null, genres[2] ? genres[2] : null]
-		this.avatarPath = avatarPath
+		this.logoPath = logoPath
 	}
 
 	setGenres(genres: GenresArray | string[]) {
 		this.genres = genres as GenresArray
 	}
-	updateAvatarPath(avatarPath: string | null) {
-		this.avatarPath = avatarPath as string
+	updateLogoPath(logoPath: string | null) {
+		this.logoPath = logoPath as string
 	}
 
 	sanitize(): void {

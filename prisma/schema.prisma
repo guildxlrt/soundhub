@@ -20,7 +20,7 @@ model UserAuth {
   artists  Artist[]
   events   Event[]
   announce Announce[]
-  release  Release[]
+  record   Record[]
 }
 
 model Artist {
@@ -30,16 +30,29 @@ model Artist {
   user_auth_id Int      @unique
   user         UserAuth @relation(fields: [user_auth_id], references: [id], onDelete: Cascade)
 
-  name       String
-  bio        String?
-  members    Json
-  genres     String[]
-  avatarPath String?
-  isPublic   Boolean
+  name     String   @unique
+  bio      String?
+  members  Json
+  genres   String[]
+  website  String?
+  country  String?
+  logoPath String?
+  isPublic Boolean
 
-  playAtEvent   PlayAtEvent[]
-  songsFeats    SongFeat[]
-  releaseArtist ReleaseArtist[]
+  playAtEvent  PlayAtEvent[]
+  songsFeats   SongFeat[]
+  recordArtist RecordArtist[]
+}
+
+model Label {
+  id Int @id @default(autoincrement())
+
+  name          String        @unique
+  creationDate  DateTime
+  website       String?
+  country       String?
+  logoPath      String?
+  recordsLabels RecordLabel[]
 }
 
 model Announce {
@@ -70,32 +83,33 @@ model Event {
   playAtEvent PlayAtEvent[]
 }
 
-model Release {
+model Record {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   publisher_id Int
   publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
 
-  title       String
-  releaseType String
-  descript    String?
-  price       Int?
-  genres      String[]
-  folderPath  String
-  isPublic    Boolean
-  isReadOnly  Boolean
+  title      String
+  recordType String
+  descript   String?
+  price      Int?
+  genres     String[]
+  folderPath String
+  isPublic   Boolean
+  isReadOnly Boolean
 
-  songs           Song[]
-  releasesArtists ReleaseArtist[]
+  songs          Song[]
+  recordsArtists RecordArtist[]
+  recordsLabels  RecordLabel[]
 }
 
 model Song {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  release_id Int
-  release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+  record_id Int
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
 
   title      String
   audioPath  String
@@ -106,7 +120,6 @@ model Song {
 }
 
 // INTERMEDIARY TABLES
-
 model PlayAtEvent {
   id Int @id @default(autoincrement())
 
@@ -127,12 +140,20 @@ model SongFeat {
   song    Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
 }
 
-model ReleaseArtist {
+model RecordArtist {
   id Int @id @default(autoincrement())
 
   artist_id Int
   artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 
-  release_id Int
-  realease   Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+  record_id Int
+  realease  Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
+}
+
+model RecordLabel {
+  record_id Int    @unique
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
+
+  label_id Int
+  label    Label @relation(fields: [label_id], references: [id], onDelete: Cascade)
 }

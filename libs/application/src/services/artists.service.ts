@@ -45,9 +45,9 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async update(profile: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
+	async update(profile: Artist, delLogo?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(profile, delAvatar, file)
+			return await this.service.update(profile, delLogo, file)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -128,16 +128,16 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 
-	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
+	async getLogoPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			return await this.service.getAvatarPath(id)
+			return await this.service.getLogoPath(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
+	async setLogoPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
 		try {
-			return await this.service.setAvatarPath(path, id)
+			return await this.service.setLogoPath(path, id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

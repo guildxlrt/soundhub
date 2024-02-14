@@ -11,13 +11,13 @@ export type INewArtistSuccess = INewArtistBackSucces | boolean
 
 export type IfindByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
 
-export interface IGetFullReleaseSuccess {
+export interface IGetFullRecordSuccess {
 	id: number
 	createdAt: Date
 	title: string
 	publisher_id: number
 	genres: string[]
-	releaseType: string
+	recordType: string
 	descript: string | null
 	price: number | null
 	folderPath: string | null
@@ -61,7 +61,7 @@ export interface IGetEventShortSuccess {
 
 export interface IGetFullSongSuccess {
 	readonly id: number
-	readonly release_id: number
+	readonly record_id: number
 	readonly title: string
 	readonly audioPath: string
 }

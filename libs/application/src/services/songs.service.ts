@@ -3,7 +3,7 @@ import {
 	ErrorHandler,
 	GenreType,
 	ArtistProfileID,
-	ReleaseID,
+	RecordID,
 	GetSongDTO,
 	SongID,
 	IGetFullSongSuccess,
@@ -51,24 +51,24 @@ export class SongsService implements ISongsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRecord(id: RecordID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findByRelease(id)
+			return await this.service.findByRecord(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findByReleaseGenre(genre)
+			return await this.service.findByRecordGenre(genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
+	async findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findByArtistReleases(id)
+			return await this.service.findByArtistRecords(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -82,17 +82,17 @@ export class SongsService implements ISongsService {
 		}
 	}
 
-	async getAudioPath(releaseID: ReleaseID): Promise<string | null | undefined> {
+	async getAudioPath(recordID: RecordID): Promise<string | null | undefined> {
 		try {
-			return await this.service.getAudioPath(releaseID)
+			return await this.service.getAudioPath(recordID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getReleaseID(releaseID: ReleaseID): Promise<number | undefined> {
+	async getRecordID(recordID: RecordID): Promise<number | undefined> {
 		try {
-			return await this.service.getReleaseID(releaseID)
+			return await this.service.getRecordID(recordID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -85,7 +85,7 @@ export class CreateArtistUsecase {
 				const newImagePath = await file.move(storageService, filePath.store.artist)
 
 				// persist
-				await this.mainService.setAvatarPath(newImagePath, artist.id as number)
+				await this.mainService.setLogoPath(newImagePath, artist.id as number)
 			}
 
 			// Cookie

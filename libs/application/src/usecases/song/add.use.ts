@@ -1,12 +1,12 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
-import { ReleasesService, SongsService, StorageService } from "../../services"
+import { RecordsService, SongsService, StorageService } from "../../services"
 import { UsecaseReply } from "../../utils"
 import { AddSongUsecaseParams } from "../../adapters"
 
 export class AddSongUsecase {
 	private mainService: SongsService
 	private storageService?: StorageService
-	private releasesService?: ReleasesService
+	private recordsService?: RecordsService
 
 	constructor(mainService: SongsService, storageService?: StorageService) {
 		this.mainService = mainService
@@ -19,8 +19,8 @@ export class AddSongUsecase {
 			audio?.validateAudio()
 			data.sanitize()
 
-			if (envs.backend && this.storageService && this.releasesService)
-				return await this.backend(input, this.storageService, this.releasesService)
+			if (envs.backend && this.storageService && this.recordsService)
+				return await this.backend(input, this.storageService, this.recordsService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -42,21 +42,21 @@ export class AddSongUsecase {
 	async backend(
 		input: AddSongUsecaseParams,
 		storageService: StorageService,
-		releasesService: ReleasesService
+		recordsService: RecordsService
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { audio, data, artistsIDs, ownerID } = input
 
 			// publisher verification
-			const releaseOwner = await releasesService.getOwner(data.release_id as number)
-			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			const recordOwner = await recordsService.getOwner(data.record_id as number)
+			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// STORING AUDIOFILE
-			// release folder
-			const releaseFolder = await releasesService.getFolderPath(data.release_id as number)
-			if (!releaseFolder) throw new ErrorMsg(`Error: failed to store`)
+			// record folder
+			const recordFolder = await recordsService.getFolderPath(data.record_id as number)
+			if (!recordFolder) throw new ErrorMsg(`Error: failed to store`)
 			// move and update entity
-			const audioPath = await storageService.move(audio, releaseFolder)
+			const audioPath = await storageService.move(audio, recordFolder)
 			data.setAudioPath(audioPath)
 
 			// persist

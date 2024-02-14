@@ -1,4 +1,4 @@
-import { GenreType, ReleaseType, UserEmail } from "Shared"
+import { GenreType, RecordType, UserEmail } from "Shared"
 
 export class IDUsecaseParams {
 	id: number
@@ -39,10 +39,10 @@ export class EmailUsecaseParams {
 	}
 }
 
-export class ReleaseTypeUsecaseParams {
-	type: ReleaseType | string
+export class RecordTypeUsecaseParams {
+	type: RecordType | string
 
-	constructor(type: ReleaseType | string) {
+	constructor(type: RecordType | string) {
 		this.type = type
 	}
 }

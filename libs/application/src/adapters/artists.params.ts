@@ -47,20 +47,20 @@ export class NewArtistUsecaseParams {
 
 export class UpdateArtistUsecaseParams {
 	profile: Artist
-	delAvatar?: boolean
+	delLogo?: boolean
 	file?: StreamFile
 
-	constructor(profile: Artist, delAvatar?: boolean, file?: StreamFile | unknown) {
+	constructor(profile: Artist, delLogo?: boolean, file?: StreamFile | unknown) {
 		this.profile = profile
-		this.delAvatar = delAvatar
+		this.delLogo = delLogo
 		this.file = file as StreamFile
 	}
 
 	static fromBackend(dto: UpdateArtistDTO, user: number, file?: StreamFile | unknown) {
-		const { bio, genres, members, name, delAvatar } = dto
+		const { bio, genres, members, name, delLogo } = dto
 
 		const artist = new Artist(user, user, name, bio, members, genres, null)
-		return new UpdateArtistUsecaseParams(artist, delAvatar, file)
+		return new UpdateArtistUsecaseParams(artist, delLogo, file)
 	}
 }
 

@@ -41,9 +41,9 @@ export class EditSongUsecaseParams {
 	}
 
 	static fromBackend(dto: EditSongDTO, ownerID: number, audio?: StreamFile | unknown) {
-		const { title, feats, lyrics, id, releaseID } = dto
+		const { title, feats, lyrics, id, recordID } = dto
 
-		const song = new Song(id, releaseID, null, title, lyrics, true)
+		const song = new Song(id, recordID, null, title, lyrics, true)
 
 		return new EditSongUsecaseParams(
 			song,
@@ -64,7 +64,7 @@ export class DeleteSongUsecaseParams {
 	}
 
 	static fromBackend(id: number | string, ownerID: ArtistProfileID) {
-		const releaseID = typeof id === "string" ? Number(id) : id
-		return new DeleteSongUsecaseParams(releaseID, ownerID)
+		const recordID = typeof id === "string" ? Number(id) : id
+		return new DeleteSongUsecaseParams(recordID, ownerID)
 	}
 }

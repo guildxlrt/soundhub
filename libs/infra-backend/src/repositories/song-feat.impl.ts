@@ -1,11 +1,11 @@
 import { SongFeatRepository } from "Domain"
-import { ArtistProfileID, GetShortReleaseDTO, IArtistName, SongID } from "Shared"
+import { ArtistProfileID, GetShortRecordDTO, IArtistName, SongID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class SongFeatImplement implements SongFeatRepository {
 	private relation = dbClient.songFeat
-	private release = dbClient.release
+	private record = dbClient.record
 
 	async addArtists(artistsIDs: ArtistProfileID[], songID: SongID): Promise<boolean> {
 		try {
@@ -48,9 +48,9 @@ export class SongFeatImplement implements SongFeatRepository {
 		}
 	}
 
-	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
 		try {
-			const releasesIDs = (
+			const recordsIDs = (
 				await this.relation.findMany({
 					where: {
 						artist_id: id,
@@ -58,18 +58,18 @@ export class SongFeatImplement implements SongFeatRepository {
 					select: {
 						song: {
 							select: {
-								release_id: true,
+								record_id: true,
 							},
 						},
 					},
 				})
 			).map((result) => {
-				return result.song.release_id
+				return result.song.record_id
 			})
 
 			const results = await Promise.all(
-				releasesIDs.map(async (id) => {
-					const result = await this.release.findUniqueOrThrow({
+				recordsIDs.map(async (id) => {
+					const result = await this.record.findUniqueOrThrow({
 						where: {
 							id: id,
 							isPublic: true,
@@ -78,7 +78,7 @@ export class SongFeatImplement implements SongFeatRepository {
 							id: true,
 							publisher_id: true,
 							title: true,
-							releaseType: true,
+							recordType: true,
 							genres: true,
 						},
 					})

@@ -23,7 +23,7 @@ export interface ArtistsRepository {
 		},
 		file?: File
 	): Promise<INewArtistSuccess>
-	update(data: Artist, delAvatar?: boolean, file?: File): Promise<boolean>
+	update(data: Artist, delLogo?: boolean, file?: File): Promise<boolean>
 	setPublicStatus(id?: number, isPublic?: boolean): Promise<boolean>
 	getByID(id: ArtistProfileID): Promise<GetArtistDTO>
 	getByEmail(email: UserEmail): Promise<GetArtistDTO>
@@ -37,8 +37,8 @@ export interface ExtBackArtistsRepos {
 	getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess>
 	getNames(ids: ArtistProfileID[]): Promise<IArtistName[]>
 	findByAuthID(id: UserAuthID): Promise<IfindByAuthIDSuccess>
-	getAvatarPath(id: ArtistProfileID): Promise<string | null>
-	setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean>
+	getLogoPath(id: ArtistProfileID): Promise<string | null>
+	setLogoPath(path: string | null, id: ArtistProfileID): Promise<boolean>
 }
 
 export interface ExtFrontArtistsRepos {}
@@ -52,7 +52,7 @@ export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRe
 		},
 		file?: StreamFile
 	): Promise<INewArtistBackSucces>
-	update(data: Artist, delAvatar?: boolean, file?: StreamFile): Promise<boolean>
+	update(data: Artist, delLogo?: boolean, file?: StreamFile): Promise<boolean>
 }
 
 export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtistsRepos {
@@ -65,5 +65,5 @@ export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtists
 		},
 		file?: RawFile
 	): Promise<boolean>
-	update(data: Artist, delAvatar?: boolean, file?: RawFile): Promise<boolean>
+	update(data: Artist, delLogo?: boolean, file?: RawFile): Promise<boolean>
 }

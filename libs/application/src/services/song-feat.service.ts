@@ -3,7 +3,7 @@ import {
 	ArtistProfileID,
 	ErrorHandler,
 	EventID,
-	GetShortReleaseDTO,
+	GetShortRecordDTO,
 	IArtistName,
 	SongID,
 } from "Shared"
@@ -32,7 +32,7 @@ export class SongFeatService implements ISongFeatService {
 		}
 	}
 
-	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
 		try {
 			return await this.service.findSongsByArtistFeats(id)
 		} catch (error) {

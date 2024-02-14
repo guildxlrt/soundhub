@@ -7,7 +7,7 @@ export class GetArtistDTO {
 	readonly bio: string
 	readonly members: string[]
 	readonly genres: GenresArray
-	readonly avatarPath: string | null
+	readonly logoPath: string | null
 	readonly isPublic: boolean
 
 	constructor(
@@ -17,7 +17,7 @@ export class GetArtistDTO {
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		avatarPath: string | null,
+		logoPath: string | null,
 		isPublic: boolean
 	) {
 		this.id = id
@@ -26,7 +26,7 @@ export class GetArtistDTO {
 		this.bio = bio
 		this.members = members
 		this.genres = genres
-		this.avatarPath = avatarPath
+		this.logoPath = logoPath
 		this.isPublic = isPublic
 	}
 
@@ -38,7 +38,7 @@ export class GetArtistDTO {
 			data?.["bio"],
 			data?.["members"],
 			data?.["genres"],
-			data?.["avatarPath"],
+			data?.["logoPath"],
 			data?.["isPublic"]
 		)
 	}

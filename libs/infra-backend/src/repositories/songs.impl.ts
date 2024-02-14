@@ -1,7 +1,7 @@
 import { Song, SongsBackendRepos } from "Domain"
 import {
 	GenreType,
-	ReleaseID,
+	RecordID,
 	GetSongDTO,
 	SongID,
 	ArtistProfileID,
@@ -16,12 +16,12 @@ export class SongsImplement implements SongsBackendRepos {
 	async add(data: { song: Song; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
 			const { song, artists } = data
-			const { title, lyrics, audioPath, release_id } = song
+			const { title, lyrics, audioPath, record_id } = song
 
 			// PERSIST
 			await this.song.create({
 				data: {
-					release_id: release_id as number,
+					record_id: record_id as number,
 					audioPath: audioPath as string,
 					title: title,
 					lyrics: lyrics,
@@ -85,7 +85,7 @@ export class SongsImplement implements SongsBackendRepos {
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					title: true,
 					audioPath: true,
 				},
@@ -98,18 +98,18 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRecord(id: RecordID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					release_id: id,
-					release: {
+					record_id: id,
+					record: {
 						isPublic: true,
 					},
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					audioPath: true,
 					title: true,
 				},
@@ -122,18 +122,18 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
+	async findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					release: {
+					record: {
 						publisher_id: id,
 						isPublic: true,
 					},
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					audioPath: true,
 					title: true,
 				},
@@ -146,18 +146,18 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					release: {
+					record: {
 						genres: { has: genre },
 						isPublic: true,
 					},
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					audioPath: true,
 					title: true,
 				},
@@ -186,11 +186,11 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async getAudioPath(releaseID: ReleaseID): Promise<string | null> {
+	async getAudioPath(recordID: RecordID): Promise<string | null> {
 		try {
 			const { audioPath } = await this.song.findUniqueOrThrow({
 				where: {
-					id: releaseID as number,
+					id: recordID as number,
 				},
 				select: {
 					audioPath: true,
@@ -203,17 +203,17 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async getReleaseID(id: SongID): Promise<number> {
+	async getRecordID(id: SongID): Promise<number> {
 		try {
-			const { release_id } = await this.song.findUniqueOrThrow({
+			const { record_id } = await this.song.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
-					release_id: true,
+					record_id: true,
 				},
 			})
-			return release_id
+			return record_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}

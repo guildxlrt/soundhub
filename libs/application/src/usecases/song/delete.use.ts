@@ -1,27 +1,27 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
-import { ReleasesService, SongsService, StorageService } from "../../services"
+import { RecordsService, SongsService, StorageService } from "../../services"
 import { UsecaseReply } from "../../utils"
 import { DeleteSongUsecaseParams } from "../../adapters"
 
 export class DeleteSongUsecase {
 	private mainService: SongsService
 	private storageService?: StorageService
-	private releasesService?: ReleasesService
+	private recordsService?: RecordsService
 
 	constructor(
 		mainService: SongsService,
 		storageService?: StorageService,
-		releasesService?: ReleasesService
+		recordsService?: RecordsService
 	) {
 		this.mainService = mainService
 		this.storageService = storageService
-		this.releasesService = releasesService
+		this.recordsService = recordsService
 	}
 
 	async execute(input: DeleteSongUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			if (envs.backend && this.storageService && this.releasesService)
-				return await this.backend(input, this.storageService, this.releasesService)
+			if (envs.backend && this.storageService && this.recordsService)
+				return await this.backend(input, this.storageService, this.recordsService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -43,15 +43,15 @@ export class DeleteSongUsecase {
 	async backend(
 		input: DeleteSongUsecaseParams,
 		storageService: StorageService,
-		releasesService: ReleasesService
+		recordsService: RecordsService
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id, ownerID } = input
 
 			// publisher verification
-			const releaseID = await this.mainService.getReleaseID(id as number)
-			const releaseOwner = await releasesService.getOwner(releaseID as number)
-			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			const recordID = await this.mainService.getRecordID(id as number)
+			const recordOwner = await recordsService.getOwner(recordID as number)
+			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// editability verification
 			const isReadOnly = await this.mainService.getEditability(id as number)

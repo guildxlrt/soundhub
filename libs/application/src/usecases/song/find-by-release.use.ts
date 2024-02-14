@@ -3,7 +3,7 @@ import { UsecaseReply } from "../../utils"
 import { SongsService } from "../../services"
 import { IDUsecaseParams } from "../../adapters"
 
-export class FindSongsByReleaseUsecase {
+export class FindSongsByRecordUsecase {
 	mainService: SongsService
 	constructor(mainService: SongsService) {
 		this.mainService = mainService
@@ -12,7 +12,7 @@ export class FindSongsByReleaseUsecase {
 	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetSongDTO[]>> {
 		try {
 			const id = input.id
-			const data = await this.mainService.findByRelease(id)
+			const data = await this.mainService.findByRecord(id)
 			return new UsecaseReply<GetSongDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

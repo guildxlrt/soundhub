@@ -1,4 +1,4 @@
-import { ReleaseEnum, ErrorHandler, ErrorMsg, htmlError } from "Shared"
+import { RecordEnum, ErrorHandler, ErrorMsg, htmlError } from "Shared"
 
 export class FieldsValidator {
 	place(value: unknown): void {
@@ -18,13 +18,13 @@ export class FieldsValidator {
 		}
 	}
 
-	releaseType(value: unknown): void {
+	recordType(value: unknown): void {
 		try {
-			const validType = Object.entries(ReleaseEnum).find((element) => element === value)
+			const validType = Object.entries(RecordEnum).find((element) => element === value)
 
-			if (!validType) throw new ErrorMsg("unknow release type", htmlError[422].value)
+			if (!validType) throw new ErrorMsg("unknow record type", htmlError[422].value)
 		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during release validation")
+			throw ErrorHandler.handle(error).setMessage("error during record validation")
 		}
 	}
 }
