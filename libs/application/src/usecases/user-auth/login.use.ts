@@ -2,7 +2,7 @@ import { ErrorHandler, ErrorMsg, ILoginSuccess, UserToken, envs, htmlError } fro
 import { ArtistsService, UserAuthService } from "../../services"
 import { PasswordServicePort } from "Domain"
 import { UsecaseReply } from "../../utils"
-import { LoginUsecaseParams } from "../params-adapters"
+import { LoginUsecaseParams } from "../../adapters"
 
 export class LoginUsecase {
 	private mainService: UserAuthService
@@ -57,7 +57,7 @@ export class LoginUsecase {
 			if (!emailMustBeSimilar || !passMustBeSimilar) throw ErrorMsg.htmlError(htmlError[403])
 
 			// GET THE PROFILE
-			const userData = await profileService.findManyByAuthID(authDb.id)
+			const userData = await profileService.findByAuthID(authDb.id)
 			if (!userData) throw new ErrorMsg("internal server errror")
 
 			// Cookie

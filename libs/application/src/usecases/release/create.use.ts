@@ -1,8 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ReleasesService, StorageService } from "../../services"
-import { Song } from "Domain"
-import { NewReleaseUsecaseParams } from "../params-adapters"
+import { NewReleaseUsecaseParams } from "../../adapters"
 
 export class CreateReleaseUsecase {
 	private mainService: ReleasesService
@@ -15,15 +14,10 @@ export class CreateReleaseUsecase {
 
 	async execute(input: NewReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { cover, data } = input.release
+			const { cover, data } = input
 			cover?.validateImage()
 			data.sanitize(true)
 			data.validateReleaseType()
-
-			input.songs.forEach((song) => {
-				song.data.sanitize(true)
-				song.audio.validateAudio()
-			})
 
 			if (envs.backend && this.storageService)
 				return await this.backend(input, this.storageService)
@@ -36,10 +30,9 @@ export class CreateReleaseUsecase {
 
 	async frontend(input: NewReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { songs, release } = input
-			const { cover, data } = release
+			const { cover, data } = input
 
-			const res = await this.mainService.create({ data: data, cover }, songs)
+			const res = await this.mainService.create({ data: data, cover })
 			return new UsecaseReply(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -51,42 +44,30 @@ export class CreateReleaseUsecase {
 		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { songs, release } = input
-			const { cover, data } = release
-			const { owner_id, id } = data
+			const { cover, data, artistsIDs } = input
+			const { publisher_id, id } = data
 
-			// owner verification
+			// publisher verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
-			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (publisher_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
-			// CREATE FOLDER RELEASE
+			// CREATE RELEASE FOLDER
 			const newFolder = await storageService.mkdir()
 			if (!newFolder) throw new ErrorMsg(`Error: failed to store`)
-
-			// AUDIOFILE
-			const songsData: Song[] = await Promise.all(
-				songs.map(async (song) => {
-					const { audio } = song
-
-					// STORING SONGS
-					const audioPath = await storageService.move(audio, newFolder)
-
-					// return data
-					song.data.setAudioPath(audioPath)
-					return song.data
-				})
-			)
+			data.updateFolderPath(newFolder)
 
 			// persist
-			const res = await this.mainService.create(data, songsData)
+			const res = await this.mainService.create({
+				release: data,
+				artists: artistsIDs,
+			})
 
 			// STORING NEW FILE
 			if (cover) {
 				// move
-				const newImagePath = await cover.move(storageService, filePath.store.release)
-
-				// persist path
-				await this.mainService.setCoverPath(newImagePath, id as number)
+				const filename = "cover.webp"
+				const path = filePath.store.release + newFolder
+				await cover.move(storageService, path, filename)
 			}
 
 			return new UsecaseReply<boolean>(res, null)

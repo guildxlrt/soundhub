@@ -61,16 +61,16 @@ export class AnnouncesService implements IAnnouncesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
+	async findByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
 		try {
-			return await this.service.findManyByArtist(id)
+			return await this.service.findByArtist(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
+	async findByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
-			return await this.service.findManyByDate(date)
+			return await this.service.findByDate(date)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

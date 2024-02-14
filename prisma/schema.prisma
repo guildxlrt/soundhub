@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserAuth {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  email    String @unique
+  password String
+
+  artists  Artist[]
+  events   Event[]
+  announce Announce[]
+  release  Release[]
+}
+
+model Artist {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  user_auth_id Int      @unique
+  user         UserAuth @relation(fields: [user_auth_id], references: [id], onDelete: Cascade)
+
+  name       String
+  bio        String?
+  members    Json
+  genres     String[]
+  avatarPath String?
+  isPublic   Boolean
+
+  playAtEvent   PlayAtEvent[]
+  songsFeats    SongFeat[]
+  releaseArtist ReleaseArtist[]
+}
+
+model Announce {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  publisher_id Int
+  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+
+  title     String
+  text      String
+  imagePath String?
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  organisator_id Int
+  organisator    UserAuth @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
+
+  date      DateTime
+  place     String
+  title     String
+  text      String
+  imagePath String?
+
+  playAtEvent PlayAtEvent[]
+}
+
+model Release {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  publisher_id Int
+  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+
+  title       String
+  releaseType String
+  descript    String?
+  price       Int?
+  genres      String[]
+  folderPath  String
+  isPublic    Boolean
+  isReadOnly  Boolean
+
+  songs           Song[]
+  releasesArtists ReleaseArtist[]
+}
+
+model Song {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  release_id Int
+  release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+
+  title      String
+  audioPath  String
+  lyrics     String?
+  isReadOnly Boolean
+
+  songsFeats SongFeat[]
+}
+
+// INTERMEDIARY TABLES
+
+model PlayAtEvent {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  event_id Int
+  event    Event @relation(fields: [event_id], references: [id], onDelete: Cascade)
+}
+
+model SongFeat {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  song_id Int
+  song    Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+}
+
+model ReleaseArtist {
+  id Int @id @default(autoincrement())
+
+  artist_id Int
+  artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  release_id Int
+  realease   Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+}

@@ -8,9 +8,9 @@ export class StorageService implements StorageRepository {
 		this.service = service
 	}
 
-	async move(file: StreamFile, destination: string): Promise<string> {
+	async move(file: StreamFile, destination: string, newFileName?: string): Promise<string> {
 		try {
-			return await this.service.move(file, destination)
+			return await this.service.move(file, destination, newFileName)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -25,6 +25,14 @@ export class StorageService implements StorageRepository {
 	async mkdir(): Promise<string> {
 		try {
 			return await this.service.mkdir()
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async rmdir(directoryPath: string): Promise<boolean> {
+		try {
+			return await this.service.rmdir(directoryPath)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

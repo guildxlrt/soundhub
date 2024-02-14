@@ -2,7 +2,7 @@ import { ErrorMsg, INewArtistBackSucces, UserToken, envs, filePath } from "Share
 import { UsecaseReply } from "../../utils"
 import { Artist, PasswordServicePort, UserAuth, ValidationServicePort } from "Domain"
 import { ArtistsService, StorageService } from "../../services"
-import { NewArtistUsecaseParams } from "../params-adapters"
+import { NewArtistUsecaseParams } from "../../adapters"
 
 export class CreateArtistUsecase {
 	private mainService: ArtistsService

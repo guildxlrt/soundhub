@@ -14,6 +14,10 @@ export class ErrorMsg extends Error {
 
 		if (status) this.status = status
 		if (!status && envs.backend) this.status = htmlError[500].value
+		if (status && !envs.backend) {
+			this.status = null
+			this.message = htmlError[500].message
+		}
 	}
 
 	static htmlError(htmlError: HtmlError) {

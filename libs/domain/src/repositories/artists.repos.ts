@@ -8,7 +8,7 @@ import {
 	UserAuthID,
 	INewArtistSuccess,
 	INewArtistBackSucces,
-	IfindManyByAuthIDSuccess,
+	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
@@ -28,7 +28,7 @@ export interface ArtistsRepository {
 	getByID(id: ArtistProfileID): Promise<GetArtistDTO>
 	getByEmail(email: UserEmail): Promise<GetArtistDTO>
 	getAll(): Promise<GetArtistShortDTO[]>
-	findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]>
+	findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]>
 }
 
 export interface ExtBackArtistsRepos {
@@ -36,7 +36,7 @@ export interface ExtBackArtistsRepos {
 	verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID>
 	getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess>
 	getNames(ids: ArtistProfileID[]): Promise<IArtistName[]>
-	findManyByAuthID(id: UserAuthID): Promise<IfindManyByAuthIDSuccess>
+	findByAuthID(id: UserAuthID): Promise<IfindByAuthIDSuccess>
 	getAvatarPath(id: ArtistProfileID): Promise<string | null>
 	setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean>
 }

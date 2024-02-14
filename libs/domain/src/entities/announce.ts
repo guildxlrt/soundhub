@@ -3,7 +3,7 @@ import { EntityLayer } from "./layers"
 import { StringFormatter } from "../tools"
 
 export class Announce extends EntityLayer {
-	readonly owner_id: ArtistProfileID
+	readonly publisher_id: ArtistProfileID
 	title: string
 	text: string
 	imagePath: string | null
@@ -11,14 +11,14 @@ export class Announce extends EntityLayer {
 
 	constructor(
 		id: AnnounceID | null,
-		owner_id: ArtistProfileID,
+		publisher_id: ArtistProfileID,
 		title: string,
 		text: string,
 		imagePath: string | null
 	) {
 		super(id)
 
-		this.owner_id = owner_id
+		this.publisher_id = publisher_id
 		this.title = title
 		this.text = text
 		this.imagePath = imagePath

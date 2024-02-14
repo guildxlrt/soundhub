@@ -29,7 +29,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as CreateAnnounceDTO
-			const owner = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const file = req.image as unknown
 
 			// Services
@@ -40,7 +40,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const createAnnounce = new CreateAnnounceUsecase(announcesService, storageService)
-			const params = NewAnnounceUsecaseParams.fromDto(dto, owner, file)
+			const params = NewAnnounceUsecaseParams.fromBackend(dto, publisher, file)
 
 			const { data, error } = await createAnnounce.execute(params)
 			if (error) throw error
@@ -58,7 +58,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const file = req.image as unknown
-			const owner = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 
 			const dto = req.body as EditAnnounceDTO
 
@@ -70,7 +70,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const EditAnnounce = new EditAnnounceUsecase(announcesService, storageService)
-			const params = EditAnnounceUsecaseParams.fromDto(dto, owner, file)
+			const params = EditAnnounceUsecaseParams.fromBackend(dto, publisher, file)
 
 			const { data, error } = await EditAnnounce.execute(params)
 			if (error) throw error
@@ -86,7 +86,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const id = Number(req.params["id"])
 
 			// Services
@@ -97,7 +97,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const deleteAnnounce = new DeleteAnnounceUsecase(announcesService, storageService)
-			const params = DeleteAnnounceUsecaseParams.fromDtoBackend(id, user)
+			const params = DeleteAnnounceUsecaseParams.fromBackend(id, publisher)
 
 			const { data, error } = await deleteAnnounce.execute(params)
 			if (error) throw error
@@ -115,7 +115,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+			const params = IDUsecaseParams.fromBackend(id)
 
 			// Services
 			const announcesImplement = new AnnouncesImplement()

@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { envs, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
-import { SetPublicStatusArtistUsecaseParams } from "../params-adapters"
+import { SetPublicStatusArtistUsecaseParams } from "../../adapters"
 
 export class SetPublicStatusArtistUsecase {
 	mainService: ArtistsService

@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express"
 import { Readable } from "stream"
+import { UserProfileType } from "../types"
 
 export interface ExpressRequest extends Request {
 	auth?: {
-		id: number
-		ArtistProfileID: number
-		profileType?: "artist" | "fan" | "admin"
+		authID: number
+		profileID: number
+		profileType: UserProfileType
 	}
 	image?: {
 		fieldname: string
@@ -19,7 +20,7 @@ export interface ExpressRequest extends Request {
 		path: string
 		buffer: Buffer
 	}
-	songs?: {
+	audio?: {
 		fieldname: string
 		originalname: string
 		encoding: string
@@ -30,7 +31,7 @@ export interface ExpressRequest extends Request {
 		filename: string
 		path: string
 		buffer: Buffer
-	}[]
+	}
 }
 
 export interface ExpressResponse extends Response {}

@@ -1,7 +1,7 @@
 import { ErrorHandler, GetAnnounceShortDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { AnnouncesService } from "../../services"
-import { IDUsecaseParams } from "../params-adapters"
+import { IDUsecaseParams } from "../../adapters"
 
 export class GetAnnounceUsecase {
 	announcesService: AnnouncesService

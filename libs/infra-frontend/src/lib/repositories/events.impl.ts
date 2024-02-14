@@ -75,7 +75,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtist(id: EntityID): Promise<GetEventShortDTO[]> {
+	async findByArtist(id: EntityID): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -87,7 +87,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByArtistGenre(genre: string): Promise<GetEventShortDTO[]> {
+	async findByArtistGenre(genre: string): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -99,7 +99,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<GetEventShortDTO[]> {
+	async findByDate(date: Date): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -111,7 +111,7 @@ export class EventsImplement implements EventsRepository {
 		}
 	}
 
-	async findManyByPlace(place: string): Promise<GetEventShortDTO[]> {
+	async findByPlace(place: string): Promise<GetEventShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",

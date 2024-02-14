@@ -5,7 +5,6 @@ export class EditEventDTO {
 	readonly organisator_id: number
 	readonly date: Date
 	readonly place: string
-	readonly artists: number[]
 	readonly title: string
 	readonly text: string
 	readonly delImage?: boolean
@@ -15,7 +14,6 @@ export class EditEventDTO {
 		organisator_id: number,
 		date: Date,
 		place: string,
-		artists: number[],
 		title: string,
 		text: string,
 		delImage?: boolean
@@ -24,7 +22,6 @@ export class EditEventDTO {
 		this.organisator_id = organisator_id
 		this.date = date
 		this.place = place
-		this.artists = artists
 		this.title = title
 		this.text = text
 		this.delImage = delImage
@@ -36,7 +33,6 @@ export class EditEventDTO {
 			data?.["organisator_id"],
 			data?.["date"],
 			data?.["place"],
-			data?.["artists"],
 			data?.["title"],
 			data?.["text"]
 		)

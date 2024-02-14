@@ -1,12 +1,11 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
-import { ArtistsService, EventsService, StorageService } from "../../services"
-import { EditEventUsecaseParams } from "../params-adapters"
+import { EventsService, StorageService } from "../../services"
+import { EditEventUsecaseParams } from "../../adapters"
 
 export class EditEventUsecase {
 	private mainService: EventsService
 	private storageService?: StorageService
-	private artistService?: ArtistsService
 
 	constructor(mainService: EventsService, storageService?: StorageService) {
 		this.mainService = mainService
@@ -20,8 +19,8 @@ export class EditEventUsecase {
 			file?.validateImage()
 			event.sanitize()
 
-			if (envs.backend && this.storageService && this.artistService)
-				return await this.backend(input, this.storageService, this.artistService)
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -33,7 +32,7 @@ export class EditEventUsecase {
 		try {
 			const { event, file } = input
 
-			const data = await this.mainService.edit(event, file)
+			const data = await this.mainService.edit({ event, file })
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -42,19 +41,15 @@ export class EditEventUsecase {
 
 	async backend(
 		input: EditEventUsecaseParams,
-		storageService: StorageService,
-		artistService: ArtistsService
+		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, event, delImage } = input
 			const { organisator_id, id } = input.event
 
-			// owner verification
+			// publisher verification
 			const eventOwner = await this.mainService.getOwner(id as number)
 			if (organisator_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// validate
-			await event.validateArtistArray(artistService)
 
 			// persist
 			await this.mainService.edit(event)

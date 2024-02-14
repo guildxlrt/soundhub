@@ -1,7 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { EventsService, StorageService } from "../../services"
 import { UsecaseReply } from "../../utils"
-import { DeleteEventUsecaseParams } from "../params-adapters"
+import { DeleteEventUsecaseParams } from "../../adapters"
 
 export class DeleteEventUsecase {
 	private mainService: EventsService
@@ -40,7 +40,7 @@ export class DeleteEventUsecase {
 		try {
 			const { id, ownerID } = input
 
-			// owner verification
+			// publisher verification
 			const eventOwner = await this.mainService.getOwner(id as number)
 			if (ownerID !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 

@@ -1,7 +1,7 @@
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { ArtistsService, StorageService } from "../../services"
-import { UpdateArtistUsecaseParams } from "../params-adapters"
+import { UpdateArtistUsecaseParams } from "../../adapters"
 
 export class UpdateArtistUsecase {
 	mainService: ArtistsService
@@ -47,7 +47,7 @@ export class UpdateArtistUsecase {
 			const { user_auth_id, id } = input.profile
 			const { file, profile, delAvatar } = input
 
-			// owner verification
+			// publisher verification
 			const userAuths = await this.mainService.getAuths(user_auth_id as number)
 			if (
 				(id as number) !== (userAuths.id as number) ||

@@ -17,15 +17,6 @@ export class FieldsValidator {
 			throw ErrorHandler.handle(error).setMessage("error during price validation")
 		}
 	}
-	date(value: string | number | Date): void {
-		try {
-			const date = new Date(value)
-			const isValidDate = !isNaN(date.getTime())
-			if (!isValidDate) throw new ErrorMsg("unknow release type", htmlError[422].value)
-		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error during date validation")
-		}
-	}
 
 	releaseType(value: unknown): void {
 		try {

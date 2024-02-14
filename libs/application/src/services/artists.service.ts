@@ -16,7 +16,7 @@ import {
 	UserAuthID,
 	ErrorHandler,
 	INewArtistSuccess,
-	IfindManyByAuthIDSuccess,
+	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
@@ -89,9 +89,9 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
-			return await this.service.findManyByGenre(genre)
+			return await this.service.findByGenre(genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -120,9 +120,9 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByAuthID(id: UserAuthID): Promise<IfindManyByAuthIDSuccess> {
+	async findByAuthID(id: UserAuthID): Promise<IfindByAuthIDSuccess> {
 		try {
-			return await this.service.findManyByAuthID(id)
+			return await this.service.findByAuthID(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

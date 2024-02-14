@@ -1,5 +1,3 @@
-import { ExtBackArtistsRepos } from "Domain"
-
 import {
 	AnyObject,
 	ErrorHandler,
@@ -10,19 +8,6 @@ import {
 } from "Shared"
 
 export class ArrayValidator {
-	async validateIDs(artists: number[], service: ExtBackArtistsRepos): Promise<void[]> {
-		try {
-			return await Promise.all(
-				artists.map(async (id) => {
-					const exist = await service.verifyExistence(id)
-					if (!exist) throw new ErrorMsg("Artist not found", htmlError[422].value)
-					else return
-				})
-			)
-		} catch (error) {
-			throw ErrorHandler.handle(error).setMessage("error with ID's array")
-		}
-	}
 	validateMembers(json: Record<string, any>): void {
 		try {
 			const array = json as AnyObject[]

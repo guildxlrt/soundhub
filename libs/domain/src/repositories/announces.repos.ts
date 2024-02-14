@@ -7,8 +7,8 @@ export interface AnnouncesRepository {
 	delete(id: AnnounceID): Promise<boolean>
 	get(id: ArtistProfileID): Promise<GetAnnounceDTO>
 	getAll(): Promise<GetAnnounceShortDTO[]>
-	findManyByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]>
-	findManyByDate(date: Date): Promise<GetAnnounceShortDTO[]>
+	findByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]>
+	findByDate(date: Date): Promise<GetAnnounceShortDTO[]>
 }
 
 export interface ExtBackAnnouncesRepo {

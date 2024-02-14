@@ -82,7 +82,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
+	async findByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -94,7 +94,7 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
+	async findByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",

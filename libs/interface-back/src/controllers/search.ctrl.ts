@@ -2,7 +2,10 @@ import {
 	AnnouncesImplement,
 	ArtistsImplement,
 	EventsImplement,
+	PlayAtEventImplement,
+	ReleaseArtistImplement,
 	ReleasesImplement,
+	SongFeatImplement,
 	SongsImplement,
 } from "Infra-backend"
 import {
@@ -12,25 +15,28 @@ import {
 	FindAnnouncesByDateUsecase,
 	DateUsecaseParams,
 	EventsService,
-	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
 	PlaceUsecaseParams,
 	FindEventsByPlaceUsecase,
 	GenreUsecaseParams,
-	FindEventsByArtistGenreUsecase,
 	SongsService,
 	FindSongsByReleaseUsecase,
 	FindSongsByReleaseGenreUsecase,
 	FindSongsByArtistUsecase,
 	ReleasesService,
-	FindReleasesByArtistUsecase,
-	FindReleasesByArtistFeatsUsecase,
 	FindReleasesByGenreUsecase,
 	FindReleasesByDateUsecase,
 	ReleaseTypeUsecaseParams,
 	FindReleasesByTypeUsecase,
 	ArtistsService,
 	FindArtistsByGenreUsecase,
+	FindReleasesByArtistUsecase,
+	FindSongsByArtistFeatsUsecase,
+	FindEventsByArtistUsecase,
+	FindEventsByArtistGenreUsecase,
+	ReleaseArtistService,
+	SongFeatService,
+	PlayAtEventService,
 } from "Application"
 import {
 	htmlError,
@@ -39,6 +45,12 @@ import {
 	ExpressRequest,
 	ExpressResponse,
 	GenreType,
+	GetAnnounceShortDTO,
+	SearchResponseDTO,
+	GetEventShortDTO,
+	GetSongDTO,
+	GetShortReleaseDTO,
+	GetArtistShortDTO,
 } from "Shared"
 import { ApiErrorHandler } from "../assets"
 
@@ -47,13 +59,12 @@ export class SearchController {
 		if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 		const query = req.query?.["q"] as string
-
 		const date = req.query?.["date"] as string
 		const artistID = req.query?.["artist-id"] as string
 		const genre = req.query?.["genre"] as string
 		const place = req.query?.["place"] as string
 		const releaseID = req.query?.["release"] as string
-		const releaseGenre = req.query?.["genre"] as string
+		const releaseGenre = req.query?.["release-genre"] as string
 		const feats = req.query?.["feats"] as string
 		const releaseType = req.query?.["release-type"] as string
 
@@ -68,66 +79,72 @@ export class SearchController {
 		const announcesService = new AnnouncesService(announcesImplement)
 		const eventsImplement = new EventsImplement()
 		const eventsService = new EventsService(eventsImplement)
+		const releaseArtistImplement = new ReleaseArtistImplement()
+		const releaseArtistService = new ReleaseArtistService(releaseArtistImplement)
+		const songFeatImplement = new SongFeatImplement()
+		const songFeatService = new SongFeatService(songFeatImplement)
+		const playAtEventImplement = new PlayAtEventImplement()
+		const playAtEventService = new PlayAtEventService(playAtEventImplement)
 
 		// Searchs
 		switch (query) {
-			case "artist":
+			case "artists":
 				try {
+					if (!genre) throw ErrorMsg.htmlError(htmlError[400])
+
+					const results: GetArtistShortDTO[] = []
+					const errors: ErrorMsg[] = []
+
 					if (genre) {
 						const params = new GenreUsecaseParams(genre)
 
 						// Calling database
 						const findArtistsByGenre = new FindArtistsByGenreUsecase(artistsService)
-						const { data, error } = await findArtistsByGenre.execute(params)
+						const resultsByGenre = await findArtistsByGenre.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByGenre.data) results.push(...resultsByGenre.data)
+						if (resultsByGenre.error) errors.push(resultsByGenre.error)
 					}
 
-					if (!genre) throw ErrorMsg.htmlError(htmlError[400])
+					// RETURN RESULTS
+					const reponse = new SearchResponseDTO([...new Set(results)], errors)
+					return res.status(200).send(reponse)
 				} catch (error) {
 					return ApiErrorHandler.reply(error, res)
 				}
 
-				break
-
 			case "releases":
 				try {
+					if (!date || !genre || !artistID || !feats || !releaseType)
+						throw ErrorMsg.htmlError(htmlError[400])
+
+					const results: GetShortReleaseDTO[] = []
+					const errors: ErrorMsg[] = []
+
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 
 						// Calling database
 						const findReleasesByArtist = new FindReleasesByArtistUsecase(
-							releasesService
+							releaseArtistService
 						)
-						const { data, error } = await findReleasesByArtist.execute(params)
+						const resultsByArtist = await findReleasesByArtist.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByArtist.data) results.push(...resultsByArtist.data)
+						if (resultsByArtist.error) errors.push(resultsByArtist.error)
 					}
 					if (feats) {
 						if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 						const id = req.params["id"]
-						const params = new IDUsecaseParams(id)
+						const params = IDUsecaseParams.fromBackend(id)
 
 						// Calling database
-						const findManyByArtistFeats = new FindReleasesByArtistFeatsUsecase(
-							releasesService
-						)
-						const { data, error } = await findManyByArtistFeats.execute(params)
+						const findByArtistFeats = new FindSongsByArtistFeatsUsecase(songFeatService)
+						const resultsByArtistFeats = await findByArtistFeats.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByArtistFeats.data) results.push(...resultsByArtistFeats.data)
+						if (resultsByArtistFeats.error) errors.push(resultsByArtistFeats.error)
 					}
 
 					if (genre) {
@@ -135,31 +152,25 @@ export class SearchController {
 
 						// Calling database
 						const findReleasesByGenre = new FindReleasesByGenreUsecase(releasesService)
-						const { data, error } = await findReleasesByGenre.execute(params)
+						const resultsByGenre = await findReleasesByGenre.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByGenre.data) results.push(...resultsByGenre.data)
+						if (resultsByGenre.error) errors.push(resultsByGenre.error)
 					}
 
 					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
+						const params = DateUsecaseParams.fromBackend(date)
 
 						// Calling database
 						const findEventsByDate = new FindReleasesByDateUsecase(releasesService)
-						const { data, error } = await findEventsByDate.execute(params)
+						const resultsByDate = await findEventsByDate.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByDate.data) results.push(...resultsByDate.data)
+						if (resultsByDate.error) errors.push(resultsByDate.error)
 					}
 					if (releaseType) {
 						try {
-							const params = ReleaseTypeUsecaseParams.fromReqParams(releaseType)
+							const params = new ReleaseTypeUsecaseParams(releaseType)
 
 							// Calling database
 							const findEventsByDate = new FindReleasesByTypeUsecase(releasesService)
@@ -175,42 +186,41 @@ export class SearchController {
 						}
 					}
 
-					if (!date || !genre || !artistID || !feats || !releaseType)
-						throw ErrorMsg.htmlError(htmlError[400])
+					// RETURN RESULTS
+					const reponse = new SearchResponseDTO([...new Set(results)], errors)
+					return res.status(200).send(reponse)
 				} catch (error) {
 					return ApiErrorHandler.reply(error, res)
 				}
 
-				break
-
 			case "songs":
 				try {
+					if (!artistID || !releaseID || !releaseGenre)
+						throw ErrorMsg.htmlError(htmlError[400])
+
+					const results: GetSongDTO[] = []
+					const errors: ErrorMsg[] = []
+
 					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+						const params = IDUsecaseParams.fromBackend(artistID)
 
 						// Calling database
 						const getSong = new FindSongsByArtistUsecase(songsService)
-						const { data, error } = await getSong.execute(params)
+						const resultsByArtist = await getSong.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByArtist.data) results.push(...resultsByArtist.data)
+						if (resultsByArtist.error) errors.push(resultsByArtist.error)
 					}
 
 					if (releaseID) {
-						const params = new IDUsecaseParams(releaseID)
+						const params = IDUsecaseParams.fromBackend(releaseID)
 
 						// Calling database
 						const getSong = new FindSongsByReleaseUsecase(songsService)
-						const { data, error } = await getSong.execute(params)
+						const resultsByRelease = await getSong.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByRelease.data) results.push(...resultsByRelease.data)
+						if (resultsByRelease.error) errors.push(resultsByRelease.error)
 					}
 					if (releaseGenre) {
 						if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
@@ -220,129 +230,110 @@ export class SearchController {
 
 						// Calling database
 						const getSong = new FindSongsByReleaseGenreUsecase(songsService)
-						const { data, error } = await getSong.execute(params)
+						const resultsByGenre = await getSong.execute(params)
 
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByGenre.data) results.push(...resultsByGenre.data)
+						if (resultsByGenre.error) errors.push(resultsByGenre.error)
 					}
 
-					if (!artistID || !releaseID || !releaseGenre)
-						throw ErrorMsg.htmlError(htmlError[400])
+					// RETURN RESULTS
+					const reponse = new SearchResponseDTO([...new Set(results)], errors)
+					return res.status(200).send(reponse)
 				} catch (error) {
 					return ApiErrorHandler.reply(error, res)
 				}
-
-				break
 
 			case "events":
 				try {
-					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
-
-						// Calling database
-						const findEventsByArtist = new FindEventsByArtistUsecase(eventsService)
-						const { data, error } = await findEventsByArtist.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
-					}
-					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
-
-						// Calling database
-						const findEventsByDate = new FindEventsByDateUsecase(eventsService)
-						const { data, error } = await findEventsByDate.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
-					}
-					if (genre) {
-						const params = new PlaceUsecaseParams(genre)
-
-						// Calling database
-						const findEventsByPlace = new FindEventsByPlaceUsecase(eventsService)
-						const { data, error } = await findEventsByPlace.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
-					}
-					if (place) {
-						const params = new GenreUsecaseParams(place)
-
-						// Calling database
-						const findEventsByGenre = new FindEventsByArtistGenreUsecase(eventsService)
-						const { data, error } = await findEventsByGenre.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
-					}
-
 					if (!date || !genre || !artistID || !place)
 						throw ErrorMsg.htmlError(htmlError[400])
+
+					const results: GetEventShortDTO[] = []
+					const errors: ErrorMsg[] = []
+
+					if (artistID) {
+						const params = IDUsecaseParams.fromBackend(artistID)
+						const findEventsByArtist = new FindEventsByArtistUsecase(
+							playAtEventService,
+							artistsService
+						)
+						const resultsByArtist = await findEventsByArtist.execute(params)
+
+						if (resultsByArtist.data) results.push(...resultsByArtist.data)
+						if (resultsByArtist.error) errors.push(resultsByArtist.error)
+					}
+					if (date) {
+						const params = DateUsecaseParams.fromBackend(date)
+						const findEventsByDate = new FindEventsByDateUsecase(eventsService)
+						const resultsByDate = await findEventsByDate.execute(params)
+
+						if (resultsByDate.data) results.push(...resultsByDate.data)
+						if (resultsByDate.error) errors.push(resultsByDate.error)
+					}
+					if (place) {
+						const params = new PlaceUsecaseParams(place)
+						const findEventsByPlace = new FindEventsByPlaceUsecase(eventsService)
+						const resultsByGenre = await findEventsByPlace.execute(params)
+
+						if (resultsByGenre.data) results.push(...resultsByGenre.data)
+						if (resultsByGenre.error) errors.push(resultsByGenre.error)
+					}
+					if (genre) {
+						const params = new GenreUsecaseParams(genre)
+						const findEventsByGenre = new FindEventsByArtistGenreUsecase(
+							playAtEventService,
+							artistsService
+						)
+						const resultsByPlace = await findEventsByGenre.execute(params)
+
+						if (resultsByPlace.data) results.push(...resultsByPlace.data)
+						if (resultsByPlace.error) errors.push(resultsByPlace.error)
+					}
+
+					// RETURN RESULTS
+					const reponse = new SearchResponseDTO([...new Set(results)], errors)
+					return res.status(200).send(reponse)
 				} catch (error) {
 					return ApiErrorHandler.reply(error, res)
 				}
-				break
 
 			case "announces":
 				try {
-					if (artistID) {
-						const params = new IDUsecaseParams(artistID)
+					if (!genre || !artistID) throw ErrorMsg.htmlError(htmlError[400])
 
-						// Calling database
+					const results: GetAnnounceShortDTO[] = []
+					const errors: ErrorMsg[] = []
+
+					if (artistID) {
+						const params = IDUsecaseParams.fromBackend(artistID)
 						const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(
 							announcesService
 						)
+						const resultsByArtist = await findAnnouncesByArtist.execute(params)
 
-						const { data, error } = await findAnnouncesByArtist.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByArtist.data) results.push(...resultsByArtist.data)
+						if (resultsByArtist.error) errors.push(resultsByArtist.error)
 					}
 					if (date) {
-						const params = DateUsecaseParams.fromReqParams(date)
-
-						// Calling database
+						const params = DateUsecaseParams.fromBackend(date)
 						const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(
 							announcesService
 						)
+						const resultsByDate = await findAnnouncesByArtist.execute(params)
 
-						const { data, error } = await findAnnouncesByArtist.execute(params)
-
-						if (error) throw error
-						if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-						const reponse = new ResponseDTO(data, error)
-						return res.status(200).send(reponse)
+						if (resultsByDate.data) results.push(...resultsByDate.data)
+						if (resultsByDate.error) errors.push(resultsByDate.error)
 					}
+
+					// RETURN RESULTS
+					const reponse = new SearchResponseDTO([...new Set(results)], errors)
+					return res.status(200).send(reponse)
 				} catch (error) {
 					return ApiErrorHandler.reply(error, res)
 				}
 
-				break
-
 			default:
-				break
+				return res.status(400).end()
 		}
-
-		return res.status(400).end()
 	}
 }

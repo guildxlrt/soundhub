@@ -3,7 +3,7 @@ import { UsecaseReply } from "../../utils"
 import { ErrorMsg } from "Shared"
 import { UserAuthService } from "../../services"
 import { UserAuth } from "Domain"
-import { ChangeEmailUsecaseParams } from "../params-adapters"
+import { ChangeEmailUsecaseParams } from "../../adapters"
 
 export class ChangeEmailUsecase {
 	private mainService: UserAuthService

@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { GetArtistShortDTO, ErrorHandler } from "Shared"
 import { ArtistsService } from "../../services"
-import { GenreUsecaseParams } from "../params-adapters"
+import { GenreUsecaseParams } from "../../adapters"
 
 export class FindArtistsByGenreUsecase {
 	mainService: ArtistsService
@@ -13,7 +13,7 @@ export class FindArtistsByGenreUsecase {
 		try {
 			const genre = input.genre
 
-			const data = await this.mainService.findManyByGenre(genre)
+			const data = await this.mainService.findByGenre(genre)
 			return new UsecaseReply<GetArtistShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

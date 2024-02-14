@@ -1,11 +1,12 @@
 import { UsecaseReply } from "../../utils"
-import { ErrorHandler, GetFullReleaseDTO, IGetFullReleaseSuccess, envs } from "Shared"
-import { ArtistsService, ReleasesService } from "../../services"
-import { IDUsecaseParams } from "../params-adapters"
+import { ErrorHandler, GetFullReleaseDTO, IArtistName, IGetFullReleaseSuccess, envs } from "Shared"
+import { ReleaseArtistService, ReleasesService, SongFeatService } from "../../services"
+import { IDUsecaseParams } from "../../adapters"
 
 export class GetReleaseUsecase {
 	mainService: ReleasesService
-	artistsService?: ArtistsService
+	releaseArtistService?: ReleaseArtistService
+	songFeatService?: SongFeatService
 
 	constructor(mainService: ReleasesService) {
 		this.mainService = mainService
@@ -13,8 +14,8 @@ export class GetReleaseUsecase {
 
 	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetFullReleaseDTO>> {
 		try {
-			if (envs.backend && this.artistsService)
-				return await this.backend(input, this.artistsService)
+			if (envs.backend && this.releaseArtistService && this.songFeatService)
+				return await this.backend(input, this.releaseArtistService, this.songFeatService)
 			else return await this.frontend(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -33,26 +34,26 @@ export class GetReleaseUsecase {
 
 	async backend(
 		input: IDUsecaseParams,
-		artistsService: ArtistsService
+		releaseArtistService: ReleaseArtistService,
+		songFeatService: SongFeatService
 	): Promise<UsecaseReply<GetFullReleaseDTO>> {
 		try {
 			const id = input.id
 			// get the release
 			const data = (await this.mainService.get(id)) as IGetFullReleaseSuccess
 
-			// separate
-			const { ["songs"]: songsData, ...release } = data
+			// get artists names
+			const names: IArtistName[] = await releaseArtistService.getArtistsNamesOfRelease(id)
 
 			// get artists names
-			const songsWithArtistsNames = await Promise.all(
-				songsData.map(async (song) => {
-					const feats = artistsService.getNames(song.feats)
-
+			const songsWithFeats = await Promise.all(
+				data.songs.map(async (song) => {
+					const feats = await songFeatService.getArtistsNamesOfSong(song.id)
 					return { ...song, feats }
 				})
 			)
 
-			const dto = GetFullReleaseDTO.createFromData(release, songsWithArtistsNames)
+			const dto = GetFullReleaseDTO.createFromData(data, names, songsWithFeats)
 
 			return new UsecaseReply<GetFullReleaseDTO>(dto, null)
 		} catch (error) {

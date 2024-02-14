@@ -1,34 +1,27 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, ErrorMsg, envs, filePath, htmlError } from "Shared"
-import { ReleasesService, SongsService, StorageService } from "../../services"
-import { EditReleaseUsecaseParams } from "../params-adapters"
+import { ReleasesService, StorageService } from "../../services"
+import { EditReleaseUsecaseParams } from "../../adapters"
 
 export class EditReleaseUsecase {
 	private mainService: ReleasesService
 	private storageService?: StorageService
-	private songsService?: SongsService
 
-	constructor(
-		mainService: ReleasesService,
-		storageService?: StorageService,
-		songsService?: SongsService
-	) {
+	constructor(mainService: ReleasesService, storageService?: StorageService) {
 		this.mainService = mainService
 		this.storageService = storageService
-		this.songsService = songsService
 	}
 
 	async execute(input: EditReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { cover, data } = input.release
+			const { cover, data } = input
 			cover?.validateImage()
 			data.sanitize()
 			data.validateReleaseType()
 
-			if (envs.backend && this.storageService && this.songsService)
-				return await this.backend(input, this.storageService, this.songsService)
-			else if (envs.backend && (!this.storageService || !this.songsService))
-				throw new ErrorMsg("services error")
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
+			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -37,10 +30,9 @@ export class EditReleaseUsecase {
 
 	async frontend(input: EditReleaseUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { songs, release } = input
-			const { cover, data } = release
+			const { cover, data } = input
 
-			const res = await this.mainService.edit({ data: data, cover }, songs)
+			const res = await this.mainService.edit({ data, cover })
 			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -49,25 +41,23 @@ export class EditReleaseUsecase {
 
 	async backend(
 		input: EditReleaseUsecaseParams,
-		storageService: StorageService,
-		songsService: SongsService
+		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { songs, release, delCover } = input
-			const { cover, data } = release
-			const { owner_id, id } = data
+			const { cover, data, delCover } = input
+			const { publisher_id, id } = data
 
-			// owner verification
+			// publisher verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
-			if (owner_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+			if (publisher_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
+
+			// editability verification
+			const isReadOnly = await this.mainService.getEditability(id as number)
+			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
 			// release
 			await this.mainService.edit(data)
-			// songs
-			songs.forEach(async (song) => {
-				await songsService?.update(song)
-			})
 
 			// STORING NEW FILE
 			// contradiction
@@ -75,19 +65,19 @@ export class EditReleaseUsecase {
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
 			if (cover || delCover === true) {
-				const oldImagePath = await this.mainService.getCoverPath(id as number)
-				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
+				const folderPath = await this.mainService.getFolderPath(id as number)
 
 				if (cover) {
+					// delete old
+					const oldCover = "cover.webp"
+					const oldCoverPath = filePath.store.release + folderPath + oldCover
+					await storageService.delete(oldCoverPath as string)
+
 					// move new
-					const newImagePath = await storageService.move(cover, filePath.store.release)
-
-					// persist path
-					await this.mainService.setCoverPath(newImagePath, id as number)
+					const newCover = "cover.webp"
+					const newCoverPath = filePath.store.release + folderPath
+					await storageService.move(cover, newCoverPath, newCover)
 				}
-
-				// delete old
-				await storageService.delete(oldImagePath as string)
 			}
 
 			return new UsecaseReply<boolean>(true, null)

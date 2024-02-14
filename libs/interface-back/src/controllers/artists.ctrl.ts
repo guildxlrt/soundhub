@@ -32,7 +32,7 @@ export class ArtistsController implements IArtistCtrl {
 
 			const dto = req.body as NewArtistDTO
 			const file = req.image as unknown
-			const params = NewArtistUsecaseParams.fromDto(dto, file)
+			const params = NewArtistUsecaseParams.fromBackend(dto, file)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
@@ -57,7 +57,7 @@ export class ArtistsController implements IArtistCtrl {
 			const cookie = new Cookie(data)
 			return res
 				.cookie(cookie?.name, cookie?.val, cookie?.options)
-				.status(202)
+				.status(201)
 				.send(new ResponseDTO(true, error))
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)
@@ -68,10 +68,10 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const dto = req.body as UpdateArtistDTO
 			const file = req.image as unknown
-			const params = UpdateArtistUsecaseParams.fromDto(dto, user, file)
+			const params = UpdateArtistUsecaseParams.fromBackend(dto, publisher, file)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
@@ -97,8 +97,8 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
-			const params = SetPublicStatusArtistUsecaseParams.fromDtoBackend(user)
+			const publisher = req.auth?.authID as number
+			const params = SetPublicStatusArtistUsecaseParams.fromBackend(publisher)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
@@ -123,7 +123,7 @@ export class ArtistsController implements IArtistCtrl {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = req.params["id"]
-			const params = new IDUsecaseParams(id)
+			const params = IDUsecaseParams.fromBackend(id)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()

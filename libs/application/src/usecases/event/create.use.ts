@@ -1,12 +1,11 @@
 import { ErrorHandler, ErrorMsg, envs, filePath } from "Shared"
 import { UsecaseReply } from "../../utils"
-import { ArtistsService, EventsService, StorageService } from "../../services"
-import { NewEventUsecaseParams } from "../params-adapters"
+import { EventsService, StorageService } from "../../services"
+import { NewEventUsecaseParams } from "../../adapters"
 
 export class CreateEventUsecase {
 	private mainService: EventsService
 	private storageService?: StorageService
-	private artistService?: ArtistsService
 
 	constructor(mainService: EventsService, storageService?: StorageService) {
 		this.mainService = mainService
@@ -20,8 +19,8 @@ export class CreateEventUsecase {
 			file?.validateImage()
 			event.sanitize()
 
-			if (envs.backend && this.storageService && this.artistService)
-				return await this.backend(input, this.storageService, this.artistService)
+			if (envs.backend && this.storageService)
+				return await this.backend(input, this.storageService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -31,8 +30,8 @@ export class CreateEventUsecase {
 
 	async frontend(input: NewEventUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { event, file } = input
-			const data = await this.mainService.create(event, file)
+			const { event, file, artists } = input
+			const data = await this.mainService.create({ event, artists, file })
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -41,13 +40,10 @@ export class CreateEventUsecase {
 
 	async backend(
 		input: NewEventUsecaseParams,
-		storageService: StorageService,
-		artistService: ArtistsService
+		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { event, file } = input
-			// validate
-			await event.validateArtistArray(artistService)
+			const { event, file, artists } = input
 
 			if (file) {
 				// move
@@ -56,7 +52,10 @@ export class CreateEventUsecase {
 			}
 
 			// persist
-			const data = await this.mainService.create(event)
+			const data = await this.mainService.create({
+				event: event,
+				artists: artists,
+			})
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

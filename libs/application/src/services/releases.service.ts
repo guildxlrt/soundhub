@@ -1,12 +1,5 @@
 import { ExtBackReleasesRepos, ExtFrontReleasesRepos, ReleasesRepository } from "Domain"
-import {
-	ArtistProfileID,
-	ReleaseID,
-	GetShortReleaseDTO,
-	GenreType,
-	ErrorHandler,
-	ReleaseType,
-} from "Shared"
+import { ReleaseID, GetShortReleaseDTO, GenreType, ErrorHandler, ReleaseType } from "Shared"
 
 interface IReleasesService
 	extends ReleasesRepository,
@@ -21,21 +14,37 @@ export class ReleasesService implements IReleasesService {
 	}
 
 	// SERVIVES
-	async create(release: unknown, songs: unknown[]): Promise<boolean> {
+	async create(release: unknown): Promise<boolean> {
 		try {
-			return await this.service.create(release, songs)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async edit(release: unknown, songs?: unknown[]): Promise<boolean> {
-		try {
-			return await this.service.edit(release, songs)
+			return await this.service.create(release)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
+	async edit(release: unknown): Promise<boolean> {
+		try {
+			return await this.service.edit(release)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async delete(id: ReleaseID): Promise<boolean> {
+		try {
+			return await this.service.delete(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async publish(id: ReleaseID): Promise<boolean> {
+		try {
+			return await this.service.publish(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
 	async getPublicStatus(id: ReleaseID): Promise<boolean> {
 		try {
 			return await this.service.getPublicStatus(id)
@@ -65,44 +74,37 @@ export class ReleasesService implements IReleasesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
-		try {
-			return await this.service.findManyByArtist(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
-		try {
-			return await this.service.findManyByArtistFeats(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
 		try {
-			return await this.service.findManyByGenre(genre)
+			return await this.service.findByGenre(genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<GetShortReleaseDTO[]> {
+	async findByDate(date: Date): Promise<GetShortReleaseDTO[]> {
 		try {
-			return await this.service.findManyByDate(date)
+			return await this.service.findByDate(date)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
+	async findByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
 		try {
-			return await this.service.findManyByReleaseType(type)
+			return await this.service.findByReleaseType(type)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
 	// BACKEND
+	async getEditability(id: number): Promise<boolean> {
+		try {
+			return await this.service.getEditability(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
 	async getOwner(id: number): Promise<number | undefined> {
 		try {
 			return await this.service.getOwner(id)
@@ -110,17 +112,9 @@ export class ReleasesService implements IReleasesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getCoverPath(releaseID: ReleaseID): Promise<string | null | undefined> {
+	async getFolderPath(releaseID: ReleaseID): Promise<string | null | undefined> {
 		try {
-			return await this.service.getCoverPath(releaseID)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setCoverPath(path: string | null, id: ReleaseID): Promise<boolean> {
-		try {
-			return await this.service.setCoverPath(path, id)
+			return await this.service.getFolderPath(releaseID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

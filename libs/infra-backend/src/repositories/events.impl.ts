@@ -1,31 +1,33 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import {
-	EventID,
-	GenreType,
-	IGetEventSuccess,
-	IGetEventShortSuccess,
-	IFindManyByArtistGenreSuccess,
-} from "Shared"
-import { dbClient } from "../prisma"
+import { EventID, IGetEventSuccess, IGetEventShortSuccess, ArtistProfileID } from "Shared"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class EventsImplement implements EventsBackendRepos {
 	private event = dbClient.event
-	private artist = dbClient.artist
 
-	async create(data: Event): Promise<boolean> {
+	async create(data: { event: Event; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
-			const { organisator_id, date, place, artists, title, text } = data
+			const { artists, event } = data
+			const { organisator_id, date, place, title, text } = event
 
 			await this.event.create({
 				data: {
 					organisator_id: organisator_id as number,
 					date: date,
 					place: place,
-					artists: artists,
 					title: title,
 					text: text,
+					playAtEvent: {
+						createMany: {
+							data: artists.map((id) => {
+								return {
+									artist_id: id,
+								}
+							}),
+						},
+					},
 				},
 			})
 
@@ -38,7 +40,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async edit(data: Event): Promise<boolean> {
 		try {
-			const { id, organisator_id, date, place, artists, title, text } = data
+			const { id, organisator_id, date, place, title, text } = data
 
 			// persist
 			await this.event.update({
@@ -49,7 +51,6 @@ export class EventsImplement implements EventsBackendRepos {
 				data: {
 					date: date,
 					place: place,
-					artists: artists,
 					title: title,
 					text: text,
 				},
@@ -79,21 +80,34 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async get(id: EventID): Promise<IGetEventSuccess> {
 		try {
-			const event: IGetEventSuccess = await this.event.findUniqueOrThrow({
-				where: {
-					id: id,
-				},
-				select: {
-					id: true,
-					organisator_id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-					text: true,
-					imagePath: true,
-				},
-			})
+			const event = await this.event
+				.findUniqueOrThrow({
+					where: {
+						id: id,
+					},
+					select: {
+						id: true,
+						organisator_id: true,
+						date: true,
+						place: true,
+						title: true,
+						text: true,
+						imagePath: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+				.then((event) => {
+					const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
+
+					const artists = playAtEvent.map((item) => {
+						return item.artist_id
+					})
+					return { ...otherDatas, artists }
+				})
 
 			return event
 		} catch (error) {
@@ -103,14 +117,27 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getAll(): Promise<IGetEventShortSuccess[]> {
 		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				select: {
-					id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-				},
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
+					select: {
+						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
+
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
 			})
 
 			return events
@@ -119,108 +146,67 @@ export class EventsImplement implements EventsBackendRepos {
 		}
 	}
 
-	async findManyByArtist(id: EventID): Promise<IGetEventShortSuccess[]> {
+	async findByDate(date: Date): Promise<IGetEventShortSuccess[]> {
 		try {
-			const ArtistProfileID = id
-
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					artists: { has: ArtistProfileID },
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-					imagePath: true,
-				},
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByDate(date: Date): Promise<IGetEventShortSuccess[]> {
-		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					date: date,
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-				},
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByPlace(place: string): Promise<IGetEventShortSuccess[]> {
-		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					place: place,
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
-					artists: true,
-					title: true,
-				},
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findManyByArtistGenre(genre: GenreType): Promise<IGetEventShortSuccess[]> {
-		try {
-			const artists = (
-				await this.artist.findMany({
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
 					where: {
-						genres: { has: genre },
+						date: date,
 					},
 					select: {
 						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
 					},
 				})
-			).map((artist) => artist.id)
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
 
-			const results = await Promise.all(
-				artists.map(async (id) => {
-					const result = await this.event.findMany({
-						where: {
-							organisator: {
-								genres: { has: genre },
-							},
-							artists: { has: id },
-						},
-						select: {
-							id: true,
-							date: true,
-							place: true,
-							artists: true,
-							title: true,
-						},
-					})
-
-					return result
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
 				})
-			)
+				return { ...otherDatas, artists }
+			})
 
-			const events = results.flat(Infinity) as IGetEventShortSuccess[]
+			return events
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async findByPlace(place: string): Promise<IGetEventShortSuccess[]> {
+		try {
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
+					where: {
+						place: place,
+					},
+					select: {
+						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
+
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
+			})
 
 			return events
 		} catch (error) {
@@ -230,7 +216,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getOwner(id: number) {
 		try {
-			const event = await this.event.findUniqueOrThrow({
+			const { organisator_id } = await this.event.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -238,7 +224,7 @@ export class EventsImplement implements EventsBackendRepos {
 					organisator_id: true,
 				},
 			})
-			return event?.organisator_id
+			return organisator_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
 		}
@@ -246,7 +232,7 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getImagePath(id: EventID): Promise<string | null> {
 		try {
-			const event = await this.event.findUniqueOrThrow({
+			const { imagePath } = await this.event.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -254,7 +240,7 @@ export class EventsImplement implements EventsBackendRepos {
 					imagePath: true,
 				},
 			})
-			return event?.imagePath
+			return imagePath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error getting image path")
 		}

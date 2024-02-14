@@ -28,7 +28,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as LoginDTO
-			const params = LoginUsecaseParams.fromDto(dto)
+			const params = LoginUsecaseParams.fromBackend(dto)
 
 			// Services
 			const userAuthsImplement = new UserAuthsImplement()
@@ -50,7 +50,7 @@ export class UserAuthController implements IAuthCtrl {
 
 			// Return infos
 			const reponse = new ResponseDTO(data, error)
-			return res.cookie(name, val, options).status(202).send(reponse)
+			return res.cookie(name, val, options).status(200).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)
 		}
@@ -75,7 +75,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data, error)
-			return res.clearCookie(cookieName).status(202).json(reponse)
+			return res.clearCookie(cookieName).status(200).json(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)
 		}
@@ -86,8 +86,8 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangeEmailDTO
-			const user = req.auth?.id as number
-			const params = ChangeEmailUsecaseParams.fromDto(dto, user)
+			const user = req.auth?.authID as number
+			const params = ChangeEmailUsecaseParams.fromBackend(dto, user)
 
 			// Services
 			const userAuthsImplement = new UserAuthsImplement()
@@ -112,8 +112,8 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangePassDTO
-			const user = req.auth?.id as number
-			const params = ChangePassUsecaseParams.fromDto(dto, user)
+			const user = req.auth?.authID as number
+			const params = ChangePassUsecaseParams.fromBackend(dto, user)
 
 			// Services
 			const userAuthsImplement = new UserAuthsImplement()

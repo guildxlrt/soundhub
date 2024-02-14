@@ -9,24 +9,23 @@ export interface INewArtistBackSucces {
 }
 export type INewArtistSuccess = INewArtistBackSucces | boolean
 
-export type IfindManyByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
+export type IfindByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
 
 export interface IGetFullReleaseSuccess {
 	id: number
 	createdAt: Date
 	title: string
-	owner_id: number
+	publisher_id: number
 	genres: string[]
 	releaseType: string
 	descript: string | null
 	price: number | null
-	coverPath: string | null
+	folderPath: string | null
 	isPublic: boolean
 	songs: {
 		id: number
 		title: string
 		audioPath: string
-		feats: number[]
 		lyrics: string | null
 	}[]
 }
@@ -36,7 +35,7 @@ export interface IGetArtistAuthsSuccess {
 	user_auth_id: number
 }
 
-export interface IGetArtistNameSuccess {
+export interface IArtistNameSuccess {
 	id: number
 	name: string
 }
@@ -59,34 +58,10 @@ export interface IGetEventShortSuccess {
 	place: string
 	artists: number[]
 }
-export type IFindManyByArtistGenreSuccess = FlatArray<
-	{
-		id: number
-		date: Date
-		place: string
-		artists: number[]
-		title: string
-	}[],
-	| 0
-	| 1
-	| 2
-	| -1
-	| 3
-	| 4
-	| 5
-	| 6
-	| 7
-	| 8
-	| 9
-	| 10
-	| 11
-	| 12
-	| 13
-	| 14
-	| 15
-	| 16
-	| 17
-	| 18
-	| 19
-	| 20
->[]
+
+export interface IGetFullSongSuccess {
+	readonly id: number
+	readonly release_id: number
+	readonly title: string
+	readonly audioPath: string
+}

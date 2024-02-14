@@ -9,11 +9,11 @@ import {
 	htmlError,
 	UserAuthID,
 	INewArtistBackSucces,
-	IfindManyByAuthIDSuccess,
+	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
-import { dbClient } from "../prisma"
+import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class ArtistsImplement implements ArtistsBackendRepos {
@@ -112,13 +112,6 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				where: {
 					id: id,
 				},
-				select: {
-					name: true,
-					bio: true,
-					members: true,
-					genres: true,
-					avatarPath: true,
-				},
 			})
 
 			return GetArtistDTO.createFromData(user)
@@ -132,18 +125,6 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			const user = await this.userAuth.findUniqueOrThrow({
 				where: {
 					email: email,
-				},
-				select: {
-					artists: {
-						select: {
-							id: true,
-							name: true,
-							bio: true,
-							members: true,
-							genres: true,
-							avatarPath: true,
-						},
-					},
 				},
 			})
 			return GetArtistDTO.createFromData(user)
@@ -159,7 +140,9 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					id: true,
 					name: true,
 					genres: true,
-					avatarPath: true,
+				},
+				where: {
+					isPublic: true,
 				},
 			})
 
@@ -170,11 +153,12 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
 			const artists = await this.artist.findMany({
 				where: {
 					genres: { has: genre },
+					isPublic: true,
 				},
 				select: {
 					id: true,
@@ -192,7 +176,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
 		try {
-			const release = await this.artist.findUniqueOrThrow({
+			const { isPublic } = await this.artist.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -201,7 +185,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				},
 			})
 
-			return release?.isPublic
+			return isPublic
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -259,7 +243,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		return results.flat(Infinity) as IArtistName[]
 	}
 
-	async findManyByAuthID(userAuthID: UserAuthID): Promise<IfindManyByAuthIDSuccess> {
+	async findByAuthID(userAuthID: UserAuthID): Promise<IfindByAuthIDSuccess> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {
@@ -280,7 +264,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 
 	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			const data = await this.artist.findUniqueOrThrow({
+			const { avatarPath } = await this.artist.findUniqueOrThrow({
 				where: {
 					user_auth_id: id,
 				},
@@ -288,7 +272,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					avatarPath: true,
 				},
 			})
-			return data.avatarPath
+			return avatarPath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
