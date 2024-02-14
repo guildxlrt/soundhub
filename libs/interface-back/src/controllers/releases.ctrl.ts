@@ -31,10 +31,10 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const inputs: PostReleaseDTO = req.body as PostReleaseDTO
 			const cover = req.image as unknown
-			const params = NewReleaseUsecaseParams.fromBackend(inputs, user, cover)
+			const params = NewReleaseUsecaseParams.fromBackend(inputs, publisher, cover)
 
 			// Services
 			const releasesImplement = new ReleasesImplement()
@@ -61,9 +61,9 @@ export class ReleasesController implements IReleasesCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto: EditReleaseDTO = req.body as EditReleaseDTO
-			const userID = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const cover = req.image as unknown
-			const params = EditReleaseUsecaseParams.fromBackend(dto, userID, cover)
+			const params = EditReleaseUsecaseParams.fromBackend(dto, publisher, cover)
 
 			// Services
 			const releasesImplement = new ReleasesImplement()
@@ -89,9 +89,9 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const id = req.params["id"]
-			const params = PatchDeleteUsecaseParams.fromBackend(id, user)
+			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
 
 			// Services
 			const releasesImplement = new ReleasesImplement()
@@ -117,9 +117,9 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const id = req.params["id"]
-			const params = PatchDeleteUsecaseParams.fromBackend(id, user)
+			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
 
 			// Services
 			const releasesImplement = new ReleasesImplement()
@@ -143,9 +143,9 @@ export class ReleasesController implements IReleasesCtrl {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const { id }: StatusDTO = req.body as StatusDTO
-			const params = PatchDeleteUsecaseParams.fromBackend(id, user)
+			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
 
 			// Services
 			const releasesImplement = new ReleasesImplement()

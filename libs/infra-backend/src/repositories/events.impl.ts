@@ -1,15 +1,16 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import { EventID, IGetEventSuccess, IGetEventShortSuccess } from "Shared"
+import { EventID, IGetEventSuccess, IGetEventShortSuccess, ArtistProfileID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class EventsImplement implements EventsBackendRepos {
 	private event = dbClient.event
 
-	async create(data: Event): Promise<boolean> {
+	async create(data: { event: Event; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
-			const { organisator_id, date, place, title, text } = data
+			const { artists, event } = data
+			const { organisator_id, date, place, title, text } = event
 
 			await this.event.create({
 				data: {
@@ -18,6 +19,15 @@ export class EventsImplement implements EventsBackendRepos {
 					place: place,
 					title: title,
 					text: text,
+					playAtEvent: {
+						createMany: {
+							data: artists.map((id) => {
+								return {
+									artist_id: id,
+								}
+							}),
+						},
+					},
 				},
 			})
 
@@ -70,20 +80,34 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async get(id: EventID): Promise<IGetEventSuccess> {
 		try {
-			const event: IGetEventSuccess = await this.event.findUniqueOrThrow({
-				where: {
-					id: id,
-				},
-				select: {
-					id: true,
-					organisator_id: true,
-					date: true,
-					place: true,
-					title: true,
-					text: true,
-					imagePath: true,
-				},
-			})
+			const event = await this.event
+				.findUniqueOrThrow({
+					where: {
+						id: id,
+					},
+					select: {
+						id: true,
+						organisator_id: true,
+						date: true,
+						place: true,
+						title: true,
+						text: true,
+						imagePath: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+				.then((event) => {
+					const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
+
+					const artists = playAtEvent.map((item) => {
+						return item.artist_id
+					})
+					return { ...otherDatas, artists }
+				})
 
 			return event
 		} catch (error) {
@@ -93,14 +117,27 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async getAll(): Promise<IGetEventShortSuccess[]> {
 		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				select: {
-					id: true,
-					date: true,
-					place: true,
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
+					select: {
+						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
 
-					title: true,
-				},
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
 			})
 
 			return events
@@ -109,19 +146,32 @@ export class EventsImplement implements EventsBackendRepos {
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<IGetEventShortSuccess[]> {
+	async findByDate(date: Date): Promise<IGetEventShortSuccess[]> {
 		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					date: date,
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
+					where: {
+						date: date,
+					},
+					select: {
+						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
 
-					title: true,
-				},
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
 			})
 
 			return events
@@ -130,19 +180,32 @@ export class EventsImplement implements EventsBackendRepos {
 		}
 	}
 
-	async findManyByPlace(place: string): Promise<IGetEventShortSuccess[]> {
+	async findByPlace(place: string): Promise<IGetEventShortSuccess[]> {
 		try {
-			const events: IGetEventShortSuccess[] = await this.event.findMany({
-				where: {
-					place: place,
-				},
-				select: {
-					id: true,
-					date: true,
-					place: true,
+			const events: IGetEventShortSuccess[] = (
+				await this.event.findMany({
+					where: {
+						place: place,
+					},
+					select: {
+						id: true,
+						date: true,
+						place: true,
+						title: true,
+						playAtEvent: {
+							select: {
+								artist_id: true,
+							},
+						},
+					},
+				})
+			).map((event) => {
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
 
-					title: true,
-				},
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
 			})
 
 			return events

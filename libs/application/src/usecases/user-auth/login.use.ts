@@ -57,7 +57,7 @@ export class LoginUsecase {
 			if (!emailMustBeSimilar || !passMustBeSimilar) throw ErrorMsg.htmlError(htmlError[403])
 
 			// GET THE PROFILE
-			const userData = await profileService.findManyByAuthID(authDb.id)
+			const userData = await profileService.findByAuthID(authDb.id)
 			if (!userData) throw new ErrorMsg("internal server errror")
 
 			// Cookie

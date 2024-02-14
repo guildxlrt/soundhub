@@ -10,15 +10,17 @@ import { StreamFile, Release } from "Domain"
 
 export class NewReleaseUsecaseParams {
 	data: Release
+	artistsIDs: ArtistProfileID[]
 	cover?: StreamFile
 
-	constructor(data: Release, cover?: StreamFile) {
+	constructor(data: Release, artistsIDs: ArtistProfileID[], cover?: StreamFile) {
 		this.data = data
 		this.cover = cover
+		this.artistsIDs = artistsIDs
 	}
 
 	static fromBackend(dto: PostReleaseDTO, user: number, cover?: StreamFile | unknown) {
-		const { title, releaseType, descript, price, genres } = dto
+		const { title, releaseType, descript, price, genres, artistsIDs } = dto
 		const releaseData = new Release(
 			null,
 			user,
@@ -32,7 +34,7 @@ export class NewReleaseUsecaseParams {
 			true
 		)
 
-		return new NewReleaseUsecaseParams(releaseData, cover as StreamFile)
+		return new NewReleaseUsecaseParams(releaseData, artistsIDs, cover as StreamFile)
 	}
 }
 

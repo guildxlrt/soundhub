@@ -6,19 +6,22 @@ export class PostReleaseDTO {
 	readonly descript: string | null
 	readonly price: number | null
 	readonly genres: string[]
+	readonly artistsIDs: number[]
 
 	constructor(
 		title: string,
 		releaseType: string,
 		descript: string | null,
 		price: number | null,
-		genres: string[]
+		genres: string[],
+		artistsIDs: number[]
 	) {
 		this.title = title
 		this.releaseType = releaseType
 		this.descript = descript
 		this.price = price
 		this.genres = genres
+		this.artistsIDs = artistsIDs
 	}
 
 	static createFromInput(release: AnyObject) {
@@ -27,7 +30,8 @@ export class PostReleaseDTO {
 			release?.["releaseType"],
 			release?.["descript"],
 			release?.["price"],
-			release?.["genres"]
+			release?.["genres"],
+			release?.["artistsIDs"]
 		)
 	}
 }

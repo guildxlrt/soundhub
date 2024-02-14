@@ -64,7 +64,7 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -76,7 +76,19 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByArtistReleases(id: ReleaseID): Promise<GetSongDTO[]> {
+		try {
+			return await axios({
+				method: "get",
+				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
+				withCredentials: true,
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -88,7 +100,7 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findManyByArtist(id: ArtistProfileID): Promise<GetSongDTO[]> {
+	async findByArtist(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
 			return await axios({
 				method: "get",

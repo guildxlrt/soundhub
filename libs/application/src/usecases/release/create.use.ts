@@ -44,10 +44,10 @@ export class CreateReleaseUsecase {
 		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { cover, data } = input
+			const { cover, data, artistsIDs } = input
 			const { publisher_id, id } = data
 
-			// owner verification
+			// publisher verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
 			if (publisher_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
@@ -57,7 +57,10 @@ export class CreateReleaseUsecase {
 			data.updateFolderPath(newFolder)
 
 			// persist
-			const res = await this.mainService.create(data)
+			const res = await this.mainService.create({
+				release: data,
+				artists: artistsIDs,
+			})
 
 			// STORING NEW FILE
 			if (cover) {

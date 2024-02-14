@@ -1,13 +1,13 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
-import { ArtistsService, EventsService } from "../../services"
+import { ArtistsService, PlayAtEventService } from "../../services"
 import { IDUsecaseParams } from "../../adapters"
 
 export class FindEventsByArtistUsecase {
-	mainService: EventsService
+	mainService: PlayAtEventService
 	artistsService?: ArtistsService
 
-	constructor(mainService: EventsService, artistsService?: ArtistsService) {
+	constructor(mainService: PlayAtEventService, artistsService?: ArtistsService) {
 		this.mainService = mainService
 		this.artistsService = artistsService
 	}
@@ -26,7 +26,7 @@ export class FindEventsByArtistUsecase {
 		try {
 			const id = input.id
 
-			const data = (await this.mainService.findManyByArtist(id)) as GetEventShortDTO[]
+			const data = (await this.mainService.findEventsByArtist(id)) as GetEventShortDTO[]
 			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -40,7 +40,7 @@ export class FindEventsByArtistUsecase {
 		try {
 			const id = input.id
 
-			const data = (await this.mainService.findManyByArtist(id)) as IGetEventShortSuccess[]
+			const data = (await this.mainService.findEventsByArtist(id)) as IGetEventShortSuccess[]
 
 			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {

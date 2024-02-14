@@ -34,7 +34,7 @@ export class PublishReleaseUsecase {
 		try {
 			const { id, ownerID } = input
 
-			// owner verification
+			// publisher verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
 			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 

@@ -1,4 +1,5 @@
-import { AnyObject, IArtistName } from "../../types"
+import { IGetFullReleaseSuccess } from "../../replies"
+import { IArtistName } from "../../types"
 
 interface ReleaseDTO {
 	readonly id: number
@@ -11,6 +12,7 @@ interface ReleaseDTO {
 	readonly genres: string[]
 	readonly folderPath: string | null
 	readonly isPublic: boolean
+	readonly artists: IArtistName[]
 }
 
 interface SongDTO {
@@ -30,38 +32,22 @@ export class GetFullReleaseDTO {
 		this.songs = songs
 	}
 
-	static createFromData(release: AnyObject, songs: AnyObject[]) {
+	static createFromData(
+		release: IGetFullReleaseSuccess,
+		artists: IArtistName[],
+		songsWithFeats: {
+			feats: IArtistName[]
+			id: number
+			title: string
+			audioPath: string
+			lyrics: string | null
+		}[]
+	) {
 		const cleanRelease = {
-			id: release?.["id"],
-			createdAt: release?.["createdAt"],
-			publisher_id: release?.["publisher_id"],
-			title: release?.["title"],
-			releaseType: release?.["releaseType"],
-			descript: release?.["descript"],
-			price: release?.["price"],
-			genres: release?.["genres"],
-			folderPath: release?.["folderPath"],
-			isPublic: release?.["isPublic"],
+			...release,
+			artists,
 		}
 
-		const cleanSongs = songs?.["map"]((song: AnyObject) => {
-			const feats: AnyObject[] = song?.["feats"]
-
-			const cleanFeat = feats.map((member) => {
-				return {
-					name: member?.["name"],
-					id: member?.["id"],
-				}
-			})
-
-			return {
-				id: song?.["id"],
-				title: song?.["title"],
-				audioPath: song?.["audioPath"],
-				feats: cleanFeat,
-				lyrics: song?.["lyrics"],
-			}
-		})
-		return new GetFullReleaseDTO(cleanRelease, cleanSongs)
+		return new GetFullReleaseDTO(cleanRelease, songsWithFeats)
 	}
 }

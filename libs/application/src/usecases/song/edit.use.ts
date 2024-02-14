@@ -1,12 +1,11 @@
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
-import { ArtistsService, ReleasesService, SongsService, StorageService } from "../../services"
+import { ReleasesService, SongsService, StorageService } from "../../services"
 import { UsecaseReply } from "../../utils"
 import { EditSongUsecaseParams } from "../../adapters"
 
 export class EditSongUsecase {
 	private mainService: SongsService
 	private storageService?: StorageService
-	private artistService?: ArtistsService
 	private releasesService?: ReleasesService
 
 	constructor(
@@ -25,13 +24,8 @@ export class EditSongUsecase {
 			audio?.validateAudio()
 			data.sanitize()
 
-			if (envs.backend && this.storageService && this.artistService && this.releasesService)
-				return await this.backend(
-					input,
-					this.storageService,
-					this.artistService,
-					this.releasesService
-				)
+			if (envs.backend && this.storageService && this.releasesService)
+				return await this.backend(input, this.storageService, this.releasesService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -53,22 +47,18 @@ export class EditSongUsecase {
 	async backend(
 		input: EditSongUsecaseParams,
 		storageService: StorageService,
-		artistService: ArtistsService,
 		releasesService: ReleasesService
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { audio, data, ownerID } = input
 			const { id, release_id } = data
-			// owner verification
+			// publisher verification
 			const releaseOwner = await releasesService.getOwner(release_id as number)
 			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// editability verification
 			const isReadOnly = await this.mainService.getEditability(id as number)
 			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
-
-			// validate
-			await data.validateArtistArray(artistService)
 
 			// STORING AUDIOFILE
 			if (audio) {

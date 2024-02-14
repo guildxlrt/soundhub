@@ -5,17 +5,18 @@ import {
 	UserAuthID,
 	IGetEventShortSuccess,
 	IGetEventSuccess,
+	ArtistProfileID,
 } from "Shared"
-import { Event, File, RawFile, StreamFile } from "Domain"
+import { Event, RawFile, StreamFile } from "Domain"
 
 export interface EventsRepository {
-	create(data: Event, file?: File): Promise<boolean>
-	edit(data: Event, file?: File): Promise<boolean>
+	create(data: unknown): Promise<boolean>
+	edit(data: unknown): Promise<boolean>
 	delete(id: EventID, userAuth?: UserAuthID): Promise<boolean>
 	get(id: EventID): Promise<unknown>
 	getAll(): Promise<unknown[]>
-	findManyByDate(date: Date): Promise<unknown[]>
-	findManyByPlace(place: string): Promise<unknown[]>
+	findByDate(date: Date): Promise<unknown[]>
+	findByPlace(place: string): Promise<unknown[]>
 }
 
 export interface ExtBackEventsRepos {
@@ -27,18 +28,18 @@ export interface ExtBackEventsRepos {
 export interface ExtFrontEventsRepos {}
 
 export interface EventsBackendRepos extends EventsRepository, ExtBackEventsRepos {
-	create(data: Event, file?: StreamFile): Promise<boolean>
+	create(data: { event: Event; artists: ArtistProfileID[]; file?: RawFile }): Promise<boolean>
 	edit(data: Event, file?: StreamFile): Promise<boolean>
 	get(id: EventID): Promise<IGetEventSuccess>
 	getAll(): Promise<IGetEventShortSuccess[]>
-	findManyByDate(date: Date): Promise<IGetEventShortSuccess[]>
-	findManyByPlace(place: string): Promise<IGetEventShortSuccess[]>
+	findByDate(date: Date): Promise<IGetEventShortSuccess[]>
+	findByPlace(place: string): Promise<IGetEventShortSuccess[]>
 }
 export interface EventsFrontendRepos extends EventsRepository, ExtFrontEventsRepos {
-	create(data: Event, file?: RawFile): Promise<boolean>
-	edit(data: Event, file?: RawFile): Promise<boolean>
+	create(data: { event: Event; artists: ArtistProfileID[]; file?: RawFile }): Promise<boolean>
+	edit(data: { event: Event; file?: RawFile }): Promise<boolean>
 	get(id: EventID): Promise<GetEventDTO>
 	getAll(): Promise<GetEventShortDTO[]>
-	findManyByDate(date: Date): Promise<GetEventShortDTO[]>
-	findManyByPlace(place: string): Promise<GetEventShortDTO[]>
+	findByDate(date: Date): Promise<GetEventShortDTO[]>
+	findByPlace(place: string): Promise<GetEventShortDTO[]>
 }

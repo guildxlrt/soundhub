@@ -12,7 +12,7 @@ export class FindSongsByReleaseGenreUsecase {
 	async execute(input: GenreUsecaseParams): Promise<UsecaseReply<GetSongDTO[]>> {
 		try {
 			const genre = input.genre
-			const data = await this.mainService.findManyByReleaseGenre(genre)
+			const data = await this.mainService.findByReleaseGenre(genre)
 
 			return new UsecaseReply<GetSongDTO[]>(data, null)
 		} catch (error) {

@@ -47,7 +47,7 @@ export class EditAnnounceUsecase {
 			const { file, delImage, announce } = input
 			const { publisher_id, id } = announce
 
-			// owner verification
+			// publisher verification
 			const announceOwner = await this.announcesService.getOwner(id as number)
 			if (publisher_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 

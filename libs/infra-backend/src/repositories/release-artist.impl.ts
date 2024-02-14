@@ -1,5 +1,5 @@
 import { ReleaseArtistRepository } from "Domain"
-import { ArtistProfileID, GetShortReleaseDTO, ReleaseID } from "Shared"
+import { ArtistProfileID, GetShortReleaseDTO, IArtistName, ReleaseID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -77,6 +77,33 @@ export class ReleaseArtistImplement implements ReleaseArtistRepository {
 			})
 
 			return GetShortReleaseDTO.createArrayFromData(data)
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getArtistsNamesOfRelease(id: ReleaseID): Promise<IArtistName[]> {
+		try {
+			const data = (
+				await this.relation.findMany({
+					where: {
+						release_id: id,
+					},
+					select: {
+						artist: {
+							select: { id: true, name: true },
+						},
+					},
+				})
+			).map((result) => {
+				const { name, id } = result.artist
+				return {
+					name: name,
+					id: id,
+				}
+			})
+
+			return data
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

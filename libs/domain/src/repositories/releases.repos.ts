@@ -5,6 +5,7 @@ import {
 	GetFullReleaseDTO,
 	IGetFullReleaseSuccess,
 	ReleaseType,
+	ArtistProfileID,
 } from "Shared"
 import { RawFile, Release } from "Domain"
 
@@ -17,9 +18,9 @@ export interface ReleasesRepository {
 
 	get(id: ReleaseID): Promise<unknown>
 	getAll(): Promise<GetShortReleaseDTO[]>
-	findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]>
-	findManyByDate(date: Date): Promise<GetShortReleaseDTO[]>
-	findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]>
+	findByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]>
+	findByDate(date: Date): Promise<GetShortReleaseDTO[]>
+	findByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]>
 }
 
 export interface ExtBackReleasesRepos {
@@ -32,7 +33,7 @@ export interface ExtBackReleasesRepos {
 export interface ExtFrontReleasesRepos {}
 
 export interface ReleasesBackendRepos extends ReleasesRepository, ExtBackReleasesRepos {
-	create(release: Release): Promise<boolean>
+	create(data: { release: Release; artists: ArtistProfileID[] }): Promise<boolean>
 	edit(release: Release): Promise<boolean>
 	setPublicStatus(id: ReleaseID, isPublic: boolean): Promise<boolean>
 	get(id: ReleaseID): Promise<IGetFullReleaseSuccess>

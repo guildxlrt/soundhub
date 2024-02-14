@@ -2,7 +2,10 @@ import {
 	AnnouncesImplement,
 	ArtistsImplement,
 	EventsImplement,
+	PlayAtEventImplement,
+	ReleaseArtistImplement,
 	ReleasesImplement,
+	SongFeatImplement,
 	SongsImplement,
 } from "Infra-backend"
 import {
@@ -12,25 +15,28 @@ import {
 	FindAnnouncesByDateUsecase,
 	DateUsecaseParams,
 	EventsService,
-	FindEventsByArtistUsecase,
 	FindEventsByDateUsecase,
 	PlaceUsecaseParams,
 	FindEventsByPlaceUsecase,
 	GenreUsecaseParams,
-	FindEventsByArtistGenreUsecase,
 	SongsService,
 	FindSongsByReleaseUsecase,
 	FindSongsByReleaseGenreUsecase,
 	FindSongsByArtistUsecase,
 	ReleasesService,
-	FindReleasesByArtistUsecase,
-	FindReleasesByArtistFeatsUsecase,
 	FindReleasesByGenreUsecase,
 	FindReleasesByDateUsecase,
 	ReleaseTypeUsecaseParams,
 	FindReleasesByTypeUsecase,
 	ArtistsService,
 	FindArtistsByGenreUsecase,
+	FindReleasesByArtistUsecase,
+	FindSongsByArtistFeatsUsecase,
+	FindEventsByArtistUsecase,
+	FindEventsByArtistGenreUsecase,
+	ReleaseArtistService,
+	SongFeatService,
+	PlayAtEventService,
 } from "Application"
 import {
 	htmlError,
@@ -73,6 +79,12 @@ export class SearchController {
 		const announcesService = new AnnouncesService(announcesImplement)
 		const eventsImplement = new EventsImplement()
 		const eventsService = new EventsService(eventsImplement)
+		const releaseArtistImplement = new ReleaseArtistImplement()
+		const releaseArtistService = new ReleaseArtistService(releaseArtistImplement)
+		const songFeatImplement = new SongFeatImplement()
+		const songFeatService = new SongFeatService(songFeatImplement)
+		const playAtEventImplement = new PlayAtEventImplement()
+		const playAtEventService = new PlayAtEventService(playAtEventImplement)
 
 		// Searchs
 		switch (query) {
@@ -114,7 +126,7 @@ export class SearchController {
 
 						// Calling database
 						const findReleasesByArtist = new FindReleasesByArtistUsecase(
-							releasesService
+							releaseArtistService
 						)
 						const resultsByArtist = await findReleasesByArtist.execute(params)
 
@@ -128,10 +140,8 @@ export class SearchController {
 						const params = IDUsecaseParams.fromBackend(id)
 
 						// Calling database
-						const findManyByArtistFeats = new FindReleasesByArtistFeatsUsecase(
-							releasesService
-						)
-						const resultsByArtistFeats = await findManyByArtistFeats.execute(params)
+						const findByArtistFeats = new FindSongsByArtistFeatsUsecase(songFeatService)
+						const resultsByArtistFeats = await findByArtistFeats.execute(params)
 
 						if (resultsByArtistFeats.data) results.push(...resultsByArtistFeats.data)
 						if (resultsByArtistFeats.error) errors.push(resultsByArtistFeats.error)
@@ -243,7 +253,10 @@ export class SearchController {
 
 					if (artistID) {
 						const params = IDUsecaseParams.fromBackend(artistID)
-						const findEventsByArtist = new FindEventsByArtistUsecase(eventsService)
+						const findEventsByArtist = new FindEventsByArtistUsecase(
+							playAtEventService,
+							artistsService
+						)
 						const resultsByArtist = await findEventsByArtist.execute(params)
 
 						if (resultsByArtist.data) results.push(...resultsByArtist.data)
@@ -257,17 +270,20 @@ export class SearchController {
 						if (resultsByDate.data) results.push(...resultsByDate.data)
 						if (resultsByDate.error) errors.push(resultsByDate.error)
 					}
-					if (genre) {
-						const params = new PlaceUsecaseParams(genre)
+					if (place) {
+						const params = new PlaceUsecaseParams(place)
 						const findEventsByPlace = new FindEventsByPlaceUsecase(eventsService)
 						const resultsByGenre = await findEventsByPlace.execute(params)
 
 						if (resultsByGenre.data) results.push(...resultsByGenre.data)
 						if (resultsByGenre.error) errors.push(resultsByGenre.error)
 					}
-					if (place) {
-						const params = new GenreUsecaseParams(place)
-						const findEventsByGenre = new FindEventsByArtistGenreUsecase(eventsService)
+					if (genre) {
+						const params = new GenreUsecaseParams(genre)
+						const findEventsByGenre = new FindEventsByArtistGenreUsecase(
+							playAtEventService,
+							artistsService
+						)
 						const resultsByPlace = await findEventsByGenre.execute(params)
 
 						if (resultsByPlace.data) results.push(...resultsByPlace.data)

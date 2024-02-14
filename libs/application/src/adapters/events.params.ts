@@ -3,18 +3,20 @@ import { Event, StreamFile } from "Domain"
 
 export class NewEventUsecaseParams {
 	event: Event
+	artists: ArtistProfileID[]
 	file?: StreamFile
 
-	constructor(event: Event, file?: StreamFile) {
+	constructor(event: Event, artists: ArtistProfileID[], file?: StreamFile) {
 		this.event = event
 		this.file = file
+		this.artists = artists
 	}
 
-	static fromBackend(dto: CreateEventDTO, owner: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: CreateEventDTO, publisher: number, file?: StreamFile | unknown) {
 		const { date, place, artists, title, text } = dto
-		const event = new Event(null, owner as number, date, place, artists, title, text, null)
+		const event = new Event(null, publisher as number, date, place, title, text, null)
 
-		return new NewEventUsecaseParams(event, file as StreamFile)
+		return new NewEventUsecaseParams(event, artists, file as StreamFile)
 	}
 }
 
@@ -29,9 +31,9 @@ export class EditEventUsecaseParams {
 		this.delImage = delImage
 	}
 
-	static fromBackend(dto: EditEventDTO, owner: number, file?: StreamFile | unknown) {
-		const { id, date, place, artists, title, text, delImage } = dto
-		const event = new Event(id, owner as number, date, place, artists, title, text, null)
+	static fromBackend(dto: EditEventDTO, publisher: number, file?: StreamFile | unknown) {
+		const { id, date, place, title, text, delImage } = dto
+		const event = new Event(id, publisher as number, date, place, title, text, null)
 
 		return new EditEventUsecaseParams(event, delImage, file as StreamFile)
 	}

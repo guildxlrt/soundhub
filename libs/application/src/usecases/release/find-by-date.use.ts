@@ -16,7 +16,7 @@ export class FindReleasesByDateUsecase {
 
 			const dateFormatter = new DateFormatter()
 			const cleanDate = dateFormatter.format(date)
-			const data = await this.mainService.findManyByDate(cleanDate)
+			const data = await this.mainService.findByDate(cleanDate)
 
 			return new UsecaseReply<GetShortReleaseDTO[]>(data, null)
 		} catch (error) {

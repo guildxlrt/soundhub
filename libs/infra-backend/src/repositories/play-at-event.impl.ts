@@ -9,18 +9,20 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 
 	async addArtists(artistsIDs: ArtistProfileID[], eventID: EventID): Promise<boolean> {
 		try {
-			return await this.relation
-				.createMany({
-					data: artistsIDs.map((id) => {
-						return {
-							artist_id: id,
-							event_id: eventID,
-						}
-					}),
-				})
-				.then(() => {
-					return true
-				})
+			if (artistsIDs.length < 1) return false
+			else
+				return await this.relation
+					.createMany({
+						data: artistsIDs.map((id) => {
+							return {
+								artist_id: id,
+								event_id: eventID,
+							}
+						}),
+					})
+					.then(() => {
+						return true
+					})
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
@@ -63,15 +65,24 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 								id: true,
 								date: true,
 								place: true,
-
 								title: true,
 								imagePath: true,
+								playAtEvent: {
+									select: {
+										artist_id: true,
+									},
+								},
 							},
 						},
 					},
 				})
 			).map((item) => {
-				return item.event
+				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = item.event
+
+				const artists = playAtEvent.map((item) => {
+					return item.artist_id
+				})
+				return { ...otherDatas, artists }
 			})
 
 			return result
@@ -106,19 +117,28 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 										id: true,
 										date: true,
 										place: true,
-
 										title: true,
+										playAtEvent: {
+											select: {
+												artist_id: true,
+											},
+										},
 									},
 								},
 							},
 						})
 					).map((item) => {
-						return item.event
+						const { ["playAtEvent"]: playAtEvent, ...otherDatas } = item.event
+
+						const artists = playAtEvent.map((item) => {
+							return item.artist_id
+						})
+						return { ...otherDatas, artists }
 					})
 				})
 			)
 
-			const flat = results.flat(Infinity) as IGetEventShortSuccess[]
+			const flat = results.flat(2)
 			const events = [...new Set(flat)]
 
 			return events

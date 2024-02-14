@@ -47,7 +47,7 @@ export class EditReleaseUsecase {
 			const { cover, data, delCover } = input
 			const { publisher_id, id } = data
 
-			// owner verification
+			// publisher verification
 			const releaseOwner = await this.mainService.getOwner(id as number)
 			if (publisher_id !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])
 

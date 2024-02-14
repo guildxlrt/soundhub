@@ -40,7 +40,7 @@ export class DeleteEventUsecase {
 		try {
 			const { id, ownerID } = input
 
-			// owner verification
+			// publisher verification
 			const eventOwner = await this.mainService.getOwner(id as number)
 			if (ownerID !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
 

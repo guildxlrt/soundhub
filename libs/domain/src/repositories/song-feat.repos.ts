@@ -1,8 +1,9 @@
-import { ArtistProfileID, GetShortReleaseDTO, SongID } from "Shared"
+import { ArtistProfileID, GetShortReleaseDTO, IArtistName, SongID } from "Shared"
 
 export interface SongFeatRepository {
 	addArtists(artists: ArtistProfileID[], songID: SongID): Promise<boolean>
 	deleteArtists(artists: ArtistProfileID[], songID: SongID): Promise<boolean>
 
-	findReleasesByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]>
+	findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]>
+	getArtistsNamesOfSong(id: SongID): Promise<IArtistName[]>
 }

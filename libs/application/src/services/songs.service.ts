@@ -1,5 +1,14 @@
 import { ExtBackSongsRepos, ExtFrontSongsRepos, SongsRepository } from "Domain"
-import { ErrorHandler, GenreType, ArtistProfileID, ReleaseID, GetSongDTO, SongID } from "Shared"
+import {
+	ErrorHandler,
+	GenreType,
+	ArtistProfileID,
+	ReleaseID,
+	GetSongDTO,
+	SongID,
+	IGetFullSongSuccess,
+	GetFullSongDTO,
+} from "Shared"
 
 interface ISongsService extends SongsRepository, ExtBackSongsRepos, ExtFrontSongsRepos {}
 
@@ -35,30 +44,31 @@ export class SongsService implements ISongsService {
 		}
 	}
 
-	async get(id: SongID): Promise<GetSongDTO> {
+	async get(id: SongID): Promise<unknown> {
 		try {
 			return await this.service.get(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findManyByRelease(id)
+			return await this.service.findByRelease(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findManyByReleaseGenre(genre)
+			return await this.service.findByReleaseGenre(genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: ArtistProfileID) {
+
+	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findManyByArtist(id)
+			return await this.service.findByArtistReleases(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -13,7 +13,7 @@ export class FindArtistsByGenreUsecase {
 		try {
 			const genre = input.genre
 
-			const data = await this.mainService.findManyByGenre(genre)
+			const data = await this.mainService.findByGenre(genre)
 			return new UsecaseReply<GetArtistShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

@@ -101,7 +101,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		}
 	}
 
-	async findManyByArtist(id: AnnounceID): Promise<GetAnnounceShortDTO[]> {
+	async findByArtist(id: AnnounceID): Promise<GetAnnounceShortDTO[]> {
 		try {
 			const announces = await this.announce.findMany({
 				where: {
@@ -121,7 +121,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		}
 	}
 
-	async findManyByDate(date: Date) {
+	async findByDate(date: Date) {
 		try {
 			const announces = await this.announce.findMany({
 				where: {

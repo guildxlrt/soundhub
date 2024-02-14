@@ -1,5 +1,5 @@
 import { Event, ExtBackEventsRepos, ExtFrontEventsRepos, EventsRepository, File } from "Domain"
-import { UserAuthID, EventID, ErrorHandler, GenreType } from "Shared"
+import { UserAuthID, EventID, ErrorHandler } from "Shared"
 
 interface IEventsService extends EventsRepository, ExtBackEventsRepos, ExtFrontEventsRepos {}
 
@@ -11,16 +11,16 @@ export class EventsService implements IEventsService {
 	}
 
 	// SERVIVES
-	async create(event: Event, file?: File): Promise<boolean> {
+	async create(data: unknown): Promise<boolean> {
 		try {
-			return await this.service.create(event, file)
+			return await this.service.create(data)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async edit(event: Event, file?: File): Promise<boolean> {
+	async edit(data: unknown): Promise<boolean> {
 		try {
-			return await this.service.edit(event, file)
+			return await this.service.edit(data)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -46,31 +46,17 @@ export class EventsService implements IEventsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByArtist(id: EventID): Promise<unknown[]> {
-		try {
-			return await this.service.findManyByArtist(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
 
-	async findManyByArtistGenre(genre: GenreType): Promise<unknown[]> {
+	async findByDate(date: Date): Promise<unknown[]> {
 		try {
-			return await this.service.findManyByArtistGenre(genre)
+			return await this.service.findByDate(date)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<unknown[]> {
+	async findByPlace(place: string): Promise<unknown[]> {
 		try {
-			return await this.service.findManyByDate(date)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findManyByPlace(place: string): Promise<unknown[]> {
-		try {
-			return await this.service.findManyByPlace(place)
+			return await this.service.findByPlace(place)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

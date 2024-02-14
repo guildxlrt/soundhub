@@ -10,9 +10,9 @@ export class NewAnnounceUsecaseParams {
 		this.file = file
 	}
 
-	static fromBackend(dto: CreateAnnounceDTO, owner: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: CreateAnnounceDTO, publisher: number, file?: StreamFile | unknown) {
 		const { text, title } = dto
-		const announce = new Announce(null, owner, title, text, null)
+		const announce = new Announce(null, publisher, title, text, null)
 
 		return new NewAnnounceUsecaseParams(announce, file as StreamFile)
 	}
@@ -29,9 +29,9 @@ export class EditAnnounceUsecaseParams {
 		this.delImage = delImage
 	}
 
-	static fromBackend(dto: EditAnnounceDTO, owner: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: EditAnnounceDTO, publisher: number, file?: StreamFile | unknown) {
 		const { text, title, id, delImage } = dto
-		const announce = new Announce(id, owner, title, text, null)
+		const announce = new Announce(id, publisher, title, text, null)
 
 		return new EditAnnounceUsecaseParams(announce, delImage, file as StreamFile)
 	}

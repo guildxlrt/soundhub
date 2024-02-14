@@ -9,7 +9,7 @@ export interface INewArtistBackSucces {
 }
 export type INewArtistSuccess = INewArtistBackSucces | boolean
 
-export type IfindManyByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
+export type IfindByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
 
 export interface IGetFullReleaseSuccess {
 	id: number
@@ -35,7 +35,7 @@ export interface IGetArtistAuthsSuccess {
 	user_auth_id: number
 }
 
-export interface IGetArtistNameSuccess {
+export interface IArtistNameSuccess {
 	id: number
 	name: string
 }
@@ -46,7 +46,7 @@ export interface IGetEventSuccess {
 	organisator_id: number
 	date: Date
 	place: string
-
+	artists: number[]
 	text: string
 	imagePath: string | null
 }
@@ -56,35 +56,12 @@ export interface IGetEventShortSuccess {
 	title: string
 	date: Date
 	place: string
+	artists: number[]
 }
-export type IFindManyByArtistGenreSuccess = FlatArray<
-	{
-		id: number
-		date: Date
-		place: string
 
-		title: string
-	}[],
-	| 0
-	| 1
-	| 2
-	| -1
-	| 3
-	| 4
-	| 5
-	| 6
-	| 7
-	| 8
-	| 9
-	| 10
-	| 11
-	| 12
-	| 13
-	| 14
-	| 15
-	| 16
-	| 17
-	| 18
-	| 19
-	| 20
->[]
+export interface IGetFullSongSuccess {
+	readonly id: number
+	readonly release_id: number
+	readonly title: string
+	readonly audioPath: string
+}

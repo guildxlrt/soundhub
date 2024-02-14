@@ -15,8 +15,9 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 	private release = dbClient.release
 	private song = dbClient.song
 
-	async create(release: Release): Promise<true> {
+	async create(data: { release: Release; artists: ArtistProfileID[] }): Promise<true> {
 		try {
+			const { release, artists } = data
 			const { publisher_id, title, releaseType, descript, price, genres, folderPath } =
 				release
 
@@ -32,6 +33,15 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 					isPublic: false,
 					isReadOnly: false,
 					folderPath: folderPath as string,
+					releasesArtists: {
+						createMany: {
+							data: artists.map((id) => {
+								return {
+									artist_id: id,
+								}
+							}),
+						},
+					},
 				},
 			})
 
@@ -182,7 +192,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {
@@ -203,7 +213,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async findManyByDate(date: Date): Promise<GetShortReleaseDTO[]> {
+	async findByDate(date: Date): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {
@@ -224,7 +234,7 @@ export class ReleasesImplement implements ReleasesBackendRepos {
 		}
 	}
 
-	async findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
+	async findByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
 		try {
 			const data = await this.release.findMany({
 				where: {

@@ -1,9 +1,10 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
-import { PlaceUsecaseParams } from "../../adapters"
+import { DateUsecaseParams } from "../../adapters"
+import { DateFormatter } from "Domain"
 
-export class FindEventsByPlaceUsecase {
+export class FindEventsByDateUsecase {
 	mainService: EventsService
 	artistsService?: ArtistsService
 
@@ -12,7 +13,7 @@ export class FindEventsByPlaceUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: PlaceUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async execute(input: DateUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService)
 				return await this.backend(input, this.artistsService)
@@ -22,11 +23,14 @@ export class FindEventsByPlaceUsecase {
 		}
 	}
 
-	async frontend(input: PlaceUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async frontend(input: DateUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const place = input.place
+			const { date } = input
 
-			const data = (await this.mainService.findManyByPlace(place)) as GetEventShortDTO[]
+			const dateFormatter = new DateFormatter()
+			const cleanDate = dateFormatter.format(date)
+
+			const data = (await this.mainService.findByDate(cleanDate)) as GetEventShortDTO[]
 			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -34,13 +38,16 @@ export class FindEventsByPlaceUsecase {
 	}
 
 	async backend(
-		input: PlaceUsecaseParams,
+		input: DateUsecaseParams,
 		artistsService: ArtistsService
 	): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const place = input.place
+			const { date } = input
 
-			const data = (await this.mainService.findManyByPlace(place)) as IGetEventShortSuccess[]
+			const dateFormatter = new DateFormatter()
+			const cleanDate = dateFormatter.format(date)
+
+			const data = (await this.mainService.findByDate(cleanDate)) as IGetEventShortSuccess[]
 
 			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {

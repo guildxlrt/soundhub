@@ -48,7 +48,7 @@ export class DeleteSongUsecase {
 		try {
 			const { id, ownerID } = input
 
-			// owner verification
+			// publisher verification
 			const releaseID = await this.mainService.getReleaseID(id as number)
 			const releaseOwner = await releasesService.getOwner(releaseID as number)
 			if (ownerID !== releaseOwner) throw ErrorMsg.htmlError(htmlError[403])

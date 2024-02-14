@@ -112,7 +112,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -124,7 +124,7 @@ export class ReleasesImplement implements ReleasesRepository {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findManyByDate(date: Date): Promise<GetShortReleaseDTO[]> {
+	async findByDate(date: Date): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -136,7 +136,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+	async findByArtist(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -148,7 +148,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+	async findByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",
@@ -160,7 +160,7 @@ export class ReleasesImplement implements ReleasesRepository {
 		}
 	}
 
-	async findManyByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
+	async findByReleaseType(type: ReleaseType): Promise<GetShortReleaseDTO[]> {
 		try {
 			return await axios({
 				method: "get",

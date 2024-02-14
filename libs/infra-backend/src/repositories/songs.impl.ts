@@ -1,13 +1,21 @@
 import { Song, SongsBackendRepos } from "Domain"
-import { GenreType, ReleaseID, GetSongDTO, SongID, ArtistProfileID } from "Shared"
+import {
+	GenreType,
+	ReleaseID,
+	GetSongDTO,
+	SongID,
+	ArtistProfileID,
+	IGetFullSongSuccess,
+} from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
 export class SongsImplement implements SongsBackendRepos {
 	private song = dbClient.song
 
-	async add(song: Song): Promise<boolean> {
+	async add(data: { song: Song; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
+			const { song, artists } = data
 			const { title, lyrics, audioPath, release_id } = song
 
 			// PERSIST
@@ -16,9 +24,17 @@ export class SongsImplement implements SongsBackendRepos {
 					release_id: release_id as number,
 					audioPath: audioPath as string,
 					title: title,
-
 					lyrics: lyrics,
 					isReadOnly: false,
+					songsFeats: {
+						createMany: {
+							data: artists.map((id) => {
+								return {
+									artist_id: id,
+								}
+							}),
+						},
+					},
 				},
 			})
 			return true
@@ -61,9 +77,9 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async get(id: SongID): Promise<GetSongDTO> {
+	async get(id: SongID): Promise<IGetFullSongSuccess> {
 		try {
-			const songs = await this.song.findUniqueOrThrow({
+			const data = await this.song.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
@@ -76,13 +92,13 @@ export class SongsImplement implements SongsBackendRepos {
 			})
 
 			// RESPONSE
-			return GetSongDTO.createFromData(songs)
+			return data
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async findManyByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
@@ -106,7 +122,7 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findSongsInArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
+	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
@@ -130,7 +146,7 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findManyByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
+	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {

@@ -47,7 +47,7 @@ export class UpdateArtistUsecase {
 			const { user_auth_id, id } = input.profile
 			const { file, profile, delAvatar } = input
 
-			// owner verification
+			// publisher verification
 			const userAuths = await this.mainService.getAuths(user_auth_id as number)
 			if (
 				(id as number) !== (userAuths.id as number) ||

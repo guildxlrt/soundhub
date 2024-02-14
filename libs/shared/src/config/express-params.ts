@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express"
 import { Readable } from "stream"
+import { UserProfileType } from "../types"
 
 export interface ExpressRequest extends Request {
 	auth?: {
-		id: number
-		ArtistProfileID: number
-		profileType?: "artist" | "fan" | "admin"
+		authID: number
+		profileID: number
+		profileType: UserProfileType
 	}
 	image?: {
 		fieldname: string

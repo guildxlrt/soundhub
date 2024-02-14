@@ -9,7 +9,7 @@ import {
 	htmlError,
 	UserAuthID,
 	INewArtistBackSucces,
-	IfindManyByAuthIDSuccess,
+	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
 } from "Shared"
@@ -153,7 +153,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
 			const artists = await this.artist.findMany({
 				where: {
@@ -243,7 +243,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		return results.flat(Infinity) as IArtistName[]
 	}
 
-	async findManyByAuthID(userAuthID: UserAuthID): Promise<IfindManyByAuthIDSuccess> {
+	async findByAuthID(userAuthID: UserAuthID): Promise<IfindByAuthIDSuccess> {
 		try {
 			const user = await this.artist.findUniqueOrThrow({
 				where: {

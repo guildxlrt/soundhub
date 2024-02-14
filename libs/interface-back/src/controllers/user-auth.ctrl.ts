@@ -86,7 +86,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangeEmailDTO
-			const user = req.auth?.id as number
+			const user = req.auth?.authID as number
 			const params = ChangeEmailUsecaseParams.fromBackend(dto, user)
 
 			// Services
@@ -112,7 +112,7 @@ export class UserAuthController implements IAuthCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as ChangePassDTO
-			const user = req.auth?.id as number
+			const user = req.auth?.authID as number
 			const params = ChangePassUsecaseParams.fromBackend(dto, user)
 
 			// Services

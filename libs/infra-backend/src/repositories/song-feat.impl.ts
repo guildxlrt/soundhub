@@ -1,5 +1,5 @@
 import { SongFeatRepository } from "Domain"
-import { ArtistProfileID, GetShortReleaseDTO, SongID } from "Shared"
+import { ArtistProfileID, GetShortReleaseDTO, IArtistName, SongID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -48,7 +48,7 @@ export class SongFeatImplement implements SongFeatRepository {
 		}
 	}
 
-	async findReleasesByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
+	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
 		try {
 			const releasesIDs = (
 				await this.relation.findMany({
@@ -88,6 +88,33 @@ export class SongFeatImplement implements SongFeatRepository {
 			)
 
 			return results
+		} catch (error) {
+			throw DatabaseErrorHandler.handle(error)
+		}
+	}
+
+	async getArtistsNamesOfSong(id: SongID): Promise<IArtistName[]> {
+		try {
+			const data = (
+				await this.relation.findMany({
+					where: {
+						song_id: id,
+					},
+					select: {
+						artist: {
+							select: { id: true, name: true },
+						},
+					},
+				})
+			).map((result) => {
+				const { name, id } = result.artist
+				return {
+					name: name,
+					id: id,
+				}
+			})
+
+			return data
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

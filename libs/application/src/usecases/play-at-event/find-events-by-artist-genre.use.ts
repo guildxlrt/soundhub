@@ -1,13 +1,13 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
-import { ArtistsService, EventsService } from "../../services"
+import { ArtistsService, PlayAtEventService } from "../../services"
 import { GenreUsecaseParams } from "../../adapters"
 
 export class FindEventsByArtistGenreUsecase {
-	mainService: EventsService
+	mainService: PlayAtEventService
 	artistsService?: ArtistsService
 
-	constructor(mainService: EventsService, artistsService?: ArtistsService) {
+	constructor(mainService: PlayAtEventService, artistsService?: ArtistsService) {
 		this.mainService = mainService
 		this.artistsService = artistsService
 	}
@@ -26,7 +26,9 @@ export class FindEventsByArtistGenreUsecase {
 		try {
 			const genre = input.genre
 
-			const data = (await this.mainService.findManyByArtistGenre(genre)) as GetEventShortDTO[]
+			const data = (await this.mainService.findEventsByArtistGenre(
+				genre
+			)) as GetEventShortDTO[]
 			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -40,7 +42,7 @@ export class FindEventsByArtistGenreUsecase {
 		try {
 			const genre = input.genre
 
-			const data = (await this.mainService.findManyByArtistGenre(
+			const data = (await this.mainService.findEventsByArtistGenre(
 				genre
 			)) as IGetEventShortSuccess[]
 

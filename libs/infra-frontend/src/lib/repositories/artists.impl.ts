@@ -111,7 +111,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async findManyByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
+	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
 		try {
 			return await axios({
 				method: "get",

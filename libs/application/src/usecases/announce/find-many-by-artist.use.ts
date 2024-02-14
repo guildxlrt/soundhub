@@ -12,7 +12,7 @@ export class FindAnnouncesByArtistUsecase {
 		try {
 			const id = input.id
 
-			const data = await this.announcesService.findManyByArtist(id)
+			const data = await this.announcesService.findByArtist(id)
 			return new UsecaseReply<GetAnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

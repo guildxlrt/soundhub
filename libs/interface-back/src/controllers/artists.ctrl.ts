@@ -68,10 +68,10 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const dto = req.body as UpdateArtistDTO
 			const file = req.image as unknown
-			const params = UpdateArtistUsecaseParams.fromBackend(dto, user, file)
+			const params = UpdateArtistUsecaseParams.fromBackend(dto, publisher, file)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
@@ -97,8 +97,8 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
-			const params = SetPublicStatusArtistUsecaseParams.fromBackend(user)
+			const publisher = req.auth?.authID as number
+			const params = SetPublicStatusArtistUsecaseParams.fromBackend(publisher)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()

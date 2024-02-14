@@ -40,7 +40,7 @@ export class DeleteAnnounceUsecase {
 		try {
 			const { id, ownerID } = input
 
-			// owner verification
+			// publisher verification
 			const announceOwner = await this.announcesService.getOwner(id as number)
 			if (ownerID !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
 

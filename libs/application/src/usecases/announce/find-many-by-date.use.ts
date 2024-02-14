@@ -16,7 +16,7 @@ export class FindAnnouncesByDateUsecase {
 			const dateFormatter = new DateFormatter()
 			const cleanDate = dateFormatter.format(date)
 
-			const data = await this.announcesService.findManyByDate(cleanDate)
+			const data = await this.announcesService.findByDate(cleanDate)
 			return new UsecaseReply<GetAnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

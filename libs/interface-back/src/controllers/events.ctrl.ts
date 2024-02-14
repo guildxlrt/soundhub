@@ -28,10 +28,10 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const owner = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const file = req.image as unknown
 			const event = req.body as CreateEventDTO
-			const params = NewEventUsecaseParams.fromBackend(event, owner, file)
+			const params = NewEventUsecaseParams.fromBackend(event, publisher, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -57,10 +57,10 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			const owner = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const file = req.image as unknown
 			const event = req.body as EditEventDTO
-			const params = EditEventUsecaseParams.fromBackend(event, owner, file)
+			const params = EditEventUsecaseParams.fromBackend(event, publisher, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -87,8 +87,8 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
-			const owner = req.auth?.ArtistProfileID as number
-			const params = DeleteEventUsecaseParams.fromBackend(id, owner)
+			const publisher = req.auth?.authID as number
+			const params = DeleteEventUsecaseParams.fromBackend(id, publisher)
 
 			// Services
 			const eventsImplement = new EventsImplement()

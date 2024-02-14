@@ -52,10 +52,10 @@ export class SongsController implements ISongsCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const inputs: PostSongDTO = req.body as PostSongDTO
 			const audio = req.audio as unknown
-			const params = AddSongUsecaseParams.fromBackend(inputs, user, audio)
+			const params = AddSongUsecaseParams.fromBackend(inputs, publisher, audio)
 
 			// Services
 			const songsImplement = new SongsImplement()
@@ -81,9 +81,9 @@ export class SongsController implements ISongsCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto: EditSongDTO = req.body as EditSongDTO
-			const userID = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const audio = req.audio as unknown
-			const params = EditSongUsecaseParams.fromBackend(dto, userID, audio)
+			const params = EditSongUsecaseParams.fromBackend(dto, publisher, audio)
 
 			// Services
 			const songsImplement = new SongsImplement()
@@ -109,9 +109,9 @@ export class SongsController implements ISongsCtrl {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
-			const user = req.auth?.ArtistProfileID as number
+			const publisher = req.auth?.authID as number
 			const id = req.params["id"]
-			const params = DeleteSongUsecaseParams.fromBackend(id, user)
+			const params = DeleteSongUsecaseParams.fromBackend(id, publisher)
 
 			// Services
 			const songsImplement = new SongsImplement()

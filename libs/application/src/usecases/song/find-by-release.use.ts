@@ -12,7 +12,7 @@ export class FindSongsByReleaseUsecase {
 	async execute(input: IDUsecaseParams): Promise<UsecaseReply<GetSongDTO[]>> {
 		try {
 			const id = input.id
-			const data = await this.mainService.findManyByRelease(id)
+			const data = await this.mainService.findByRelease(id)
 			return new UsecaseReply<GetSongDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
