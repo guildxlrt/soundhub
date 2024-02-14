@@ -12,6 +12,7 @@ import {
 	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
+	UserRoleEnum,
 } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
@@ -30,6 +31,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 				data: {
 					email: email as string,
 					password: password as string,
+					role: UserRoleEnum.artist,
 					artists: {
 						create: {
 							name: name,

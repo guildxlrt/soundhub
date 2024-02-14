@@ -16,6 +16,7 @@ model UserAuth {
 
   email    String @unique
   password String
+  role     String
 
   artists  Artist[]
   events   Event[]
@@ -47,8 +48,9 @@ model Artist {
 model Label {
   id Int @id @default(autoincrement())
 
-  name          String        @unique
   creationDate  DateTime
+  name          String        @unique
+  bio           String?
   website       String?
   country       String?
   logoPath      String?

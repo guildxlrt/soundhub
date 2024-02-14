@@ -2,18 +2,17 @@ import {
 	ArtistProfileID,
 	ErrorMsg,
 	GenresArray,
-	UserAuthID,
-	UserStatusEnum,
-	UserStatusType,
+	PublicationStatusEnum,
+	PublicationStatusType,
 	htmlError,
 } from "Shared"
 import { EntityLayer } from "./layers"
 import { ArrayValidator, GenresFormatter, StringFormatter } from "../tools"
 
-export class Artist extends EntityLayer {
-	readonly user_auth_id: UserAuthID | null
-	status: UserStatusType
+export class Label extends EntityLayer {
+	status: PublicationStatusType
 	name: string
+	creationDate: Date
 	bio: string
 	members: Record<string, any>
 	genres: GenresArray
@@ -27,9 +26,9 @@ export class Artist extends EntityLayer {
 
 	constructor(
 		id: ArtistProfileID | null,
-		user_auth_id: UserAuthID | null,
-		status: UserStatusType,
+		status: PublicationStatusType,
 		name: string,
+		creationDate: Date,
 		bio: string,
 		members: Record<string, any>,
 		genres: GenresArray,
@@ -39,9 +38,9 @@ export class Artist extends EntityLayer {
 	) {
 		super(id)
 
-		this.user_auth_id = user_auth_id
 		this.status = status
 		this.name = name
+		this.creationDate = creationDate
 		this.bio = bio
 		this.members = members
 		this.genres = [genres[0], genres[1] ? genres[1] : null, genres[2] ? genres[2] : null]
@@ -58,8 +57,7 @@ export class Artist extends EntityLayer {
 	}
 
 	sanitize(): void {
-		if (this.status === (UserStatusEnum.suspended || UserStatusEnum.archived))
-			throw ErrorMsg.htmlError(htmlError[403])
+		if (this.status !== PublicationStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
 
 		this.arrayValidator.validateMembers(this.members)
 		this.name = this.stringFormatter.short(this.name)

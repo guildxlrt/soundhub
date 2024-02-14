@@ -6,6 +6,7 @@ export type AnnounceID = EntityID
 export type EventID = EntityID
 export type RecordID = EntityID
 export type SongID = EntityID
+export type LabelID = EntityID
 
 // other attributes
 export type RecordPrice = number

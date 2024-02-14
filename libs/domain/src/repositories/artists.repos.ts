@@ -29,6 +29,7 @@ export interface ArtistsRepository {
 	getByEmail(email: UserEmail): Promise<GetArtistDTO>
 	getAll(): Promise<GetArtistShortDTO[]>
 	findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]>
+	findByCountry(country: string): Promise<GetArtistShortDTO[]>
 }
 
 export interface ExtBackArtistsRepos {

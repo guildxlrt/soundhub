@@ -1,5 +1,5 @@
 import { GetArtistDTO } from "../dto"
-import { ArtistProfileID, UserAuthID, UserProfileType, UserToken } from "../types"
+import { ArtistProfileID, UserAuthID, UserRoleType, UserToken } from "../types"
 
 export type ILoginSuccess = UserToken | boolean
 
@@ -9,7 +9,7 @@ export interface INewArtistBackSucces {
 }
 export type INewArtistSuccess = INewArtistBackSucces | boolean
 
-export type IfindByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserProfileType }
+export type IfindByAuthIDSuccess = { profile: GetArtistDTO; profileType: UserRoleType }
 
 export interface IGetFullRecordSuccess {
 	id: number

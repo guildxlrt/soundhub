@@ -1,7 +1,7 @@
-export const UserProfileEnum = {
+export const UserRoleEnum = {
 	artist: "artist",
 	fan: "fan",
 	admin: "admin",
 } as const
 
-export type UserProfileType = (typeof UserProfileEnum)[keyof typeof UserProfileEnum]
+export type UserRoleType = (typeof UserRoleEnum)[keyof typeof UserRoleEnum]
