@@ -4,14 +4,14 @@ import { IArtistName } from "../../types"
 interface RecordDTO {
 	readonly id: number
 	readonly createdAt: Date
-	readonly publisher_id: number
+	readonly createdBy: number
 	readonly title: string
 	readonly recordType: string
 	readonly descript: string | null
 	readonly price: number | null
 	readonly genres: string[]
 	readonly folderPath: string | null
-	readonly isPublic: boolean
+	readonly status: string
 	readonly artists: IArtistName[]
 }
 

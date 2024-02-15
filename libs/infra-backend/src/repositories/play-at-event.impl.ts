@@ -1,5 +1,5 @@
 import { PlayAtEventRepository } from "Domain"
-import { ArtistProfileID, EventID, GenreType, IGetEventShortSuccess } from "Shared"
+import { EventID, GenreType, IGetEventShortSuccess } from "Shared"
 import { DatabaseErrorHandler } from "../utils"
 import { dbClient } from "../database"
 
@@ -7,16 +7,18 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 	private relation = dbClient.playAtEvent
 	private artist = dbClient.artist
 
-	async addArtists(artistsIDs: ArtistProfileID[], eventID: EventID): Promise<boolean> {
+	async addArtists(input: { artists: number[]; event: number }): Promise<boolean> {
 		try {
-			if (artistsIDs.length < 1) return false
+			const { artists, event } = input
+
+			if (artists.length < 1) return false
 			else
 				return await this.relation
 					.createMany({
-						data: artistsIDs.map((id) => {
+						data: artists.map((id) => {
 							return {
 								artist_id: id,
-								event_id: eventID,
+								event_id: event,
 							}
 						}),
 					})
@@ -27,27 +29,30 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artistsIDs: ArtistProfileID[], eventID: EventID): Promise<boolean> {
-		try {
-			return await this.relation
-				.deleteMany({
-					where: {
-						AND: [
-							{
-								event_id: eventID,
-							},
-							{
-								artist_id: artistsIDs[0],
-							},
-						],
-					},
-				})
-				.then(() => {
-					return true
-				})
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
+
+	async removeArtists(input: { artists: number[]; event: number }): Promise<boolean> {
+		const { artists, event } = input
+
+		return await Promise.all(
+			artists.map(async (artist) => {
+				return await this.relation
+					.deleteMany({
+						where: {
+							event_id: event,
+							artist_id: artist,
+						},
+					})
+					.then(() => {
+						return true
+					})
+			})
+		)
+			.then(() => {
+				return true
+			})
+			.catch((error) => {
+				throw DatabaseErrorHandler.handle(error)
+			})
 	}
 
 	async findEventsByArtist(id: EventID): Promise<IGetEventShortSuccess[]> {
@@ -145,5 +150,19 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
+	}
+
+	async checkRights(event: number, authID: number): Promise<boolean> {
+		return await this.relation
+			.findFirst({
+				where: {
+					event_id: event,
+					event: { createdBy: authID },
+				},
+			})
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 }

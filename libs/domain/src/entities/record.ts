@@ -3,8 +3,8 @@ import {
 	ArtistProfileID,
 	ErrorMsg,
 	GenresArray,
-	PublicationStatusEnum,
-	PublicationStatusType,
+	ItemStatusEnum,
+	ItemStatusType,
 	RecordID,
 	RecordPrice,
 	RecordType,
@@ -13,8 +13,8 @@ import {
 import { GenresFormatter, StringFormatter, FieldsValidator } from "../tools"
 
 export class Record extends EntityLayer {
-	readonly publisher_id: ArtistProfileID
-	status: PublicationStatusType
+	readonly createdBy: ArtistProfileID
+	status: ItemStatusType | null
 	title: string
 	readonly recordType: RecordType | null
 	descript: string | null
@@ -28,8 +28,8 @@ export class Record extends EntityLayer {
 
 	constructor(
 		id: RecordID | null,
-		publisher_id: ArtistProfileID,
-		status: PublicationStatusType,
+		createdBy: ArtistProfileID,
+		status: ItemStatusType | null,
 		title: string,
 		recordType: RecordType | null,
 		descript: string | null,
@@ -39,7 +39,7 @@ export class Record extends EntityLayer {
 	) {
 		super(id)
 
-		this.publisher_id = publisher_id
+		this.createdBy = createdBy
 		this.status = status
 		this.title = title
 		this.recordType = recordType
@@ -50,17 +50,17 @@ export class Record extends EntityLayer {
 	}
 
 	setGenres(genres: GenresArray | string[]) {
-		if (this.status !== PublicationStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
+		if (this.status !== ItemStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
 		this.genres = genres as GenresArray
 	}
 
 	updateFolderPath(newFolderPath: string) {
-		if (this.status !== PublicationStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
+		if (this.status !== ItemStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
 		this.folderPath = newFolderPath
 	}
 
 	sanitize() {
-		if (this.status !== PublicationStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
+		if (this.status !== ItemStatusEnum.draft) throw ErrorMsg.htmlError(htmlError[403])
 
 		this.title = this.stringFormatter.short(this.title)
 		this.descript = this.stringFormatter.long(this.descript)

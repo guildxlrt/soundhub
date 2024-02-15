@@ -1,12 +1,11 @@
-export const PublicationStatusEnum = {
+export const ItemStatusEnum = {
 	draft: "draft",
 	public: "public",
 	private: "private",
 	archived: "archived",
 } as const
 
-export type PublicationStatusType =
-	(typeof PublicationStatusEnum)[keyof typeof PublicationStatusEnum]
+export type ItemStatusType = (typeof ItemStatusEnum)[keyof typeof ItemStatusEnum]
 
 export const UserStatusEnum = {
 	draft: "draft",

@@ -1,18 +1,33 @@
-import { RecordsImplement, StorageImplement } from "Infra-backend"
+import {
+	RecordArtistImplement,
+	RecordsImplement,
+	SongFeatImplement,
+	StorageImplement,
+} from "Infra-backend"
 import {
 	CreateRecordUsecase,
 	GetAllRecordsUsecase,
 	GetRecordUsecase,
-	SetPublicStatusRecordUsecase,
+	SetStatusRecordUsecase,
 	EditRecordUsecase,
 	NewRecordUsecaseParams,
 	EditRecordUsecaseParams,
-	PatchDeleteUsecaseParams,
 	IDUsecaseParams,
 	StorageService,
 	RecordsService,
-	PublishRecordUsecase,
 	DeleteRecordUsecase,
+	SetStatusRecordUsecaseParams,
+	DeleteRecordUsecaseParams,
+	SongFeatService,
+	RecordArtistService,
+	FindRecordsByArtistUsecase,
+	FindSongsByArtistFeatsUsecase,
+	GenreUsecaseParams,
+	FindRecordsByGenreUsecase,
+	DateUsecaseParams,
+	FindRecordsByDateUsecase,
+	RecordTypeUsecaseParams,
+	FindRecordsByTypeUsecase,
 } from "Application"
 import {
 	ExpressRequest,
@@ -23,6 +38,9 @@ import {
 	ResponseDTO,
 	StatusDTO,
 	PostRecordDTO,
+	ItemStatusType,
+	GetShortRecordDTO,
+	SearchResponseDTO,
 } from "Shared"
 import { ApiErrorHandler, IRecordsCtrl } from "../assets"
 
@@ -31,10 +49,10 @@ export class RecordsController implements IRecordsCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const inputs: PostRecordDTO = req.body as PostRecordDTO
 			const cover = req.image as unknown
-			const params = NewRecordUsecaseParams.fromBackend(inputs, publisher, cover)
+			const params = NewRecordUsecaseParams.fromBackend(inputs, authID, cover)
 
 			// Services
 			const recordsImplement = new RecordsImplement()
@@ -61,9 +79,9 @@ export class RecordsController implements IRecordsCtrl {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto: EditRecordDTO = req.body as EditRecordDTO
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const cover = req.image as unknown
-			const params = EditRecordUsecaseParams.fromBackend(dto, publisher, cover)
+			const params = EditRecordUsecaseParams.fromBackend(dto, authID, cover)
 
 			// Services
 			const recordsImplement = new RecordsImplement()
@@ -89,9 +107,9 @@ export class RecordsController implements IRecordsCtrl {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const id = req.params["id"]
-			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
+			const params = DeleteRecordUsecaseParams.fromBackend(id, authID)
 
 			// Services
 			const recordsImplement = new RecordsImplement()
@@ -113,47 +131,25 @@ export class RecordsController implements IRecordsCtrl {
 		}
 	}
 
-	async publish(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async setStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
-			const id = req.params["id"]
-			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
+			const authID = req.auth?.authID as number
+			const { id, status }: StatusDTO = req.body as StatusDTO
+			const params = SetStatusRecordUsecaseParams.fromBackend(
+				id,
+				status as ItemStatusType,
+				authID
+			)
 
 			// Services
 			const recordsImplement = new RecordsImplement()
 			const recordsService = new RecordsService(recordsImplement)
 
 			// Calling database
-			const publishRecord = new PublishRecordUsecase(recordsService)
-			const { data, error } = await publishRecord.execute(params)
-
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data, error)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return ApiErrorHandler.reply(error, res)
-		}
-	}
-
-	async setPublicStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
-
-			const publisher = req.auth?.authID as number
-			const { id }: StatusDTO = req.body as StatusDTO
-			const params = PatchDeleteUsecaseParams.fromBackend(id, publisher)
-
-			// Services
-			const recordsImplement = new RecordsImplement()
-			const recordsService = new RecordsService(recordsImplement)
-
-			// Calling database
-			const setPublicStatusRecord = new SetPublicStatusRecordUsecase(recordsService)
-			const { data, error } = await setPublicStatusRecord.execute(params)
+			const setStatusRecord = new SetStatusRecordUsecase(recordsService)
+			const { data, error } = await setStatusRecord.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
@@ -190,22 +186,102 @@ export class RecordsController implements IRecordsCtrl {
 		}
 	}
 
-	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async search(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+			const results: GetShortRecordDTO[] = []
+			const errors: ErrorMsg[] = []
+
+			const date = req.query?.["date"] as string
+			const artistID = req.query?.["artist-id"] as string
+			const genre = req.query?.["genre"] as string
+			const feats = req.query?.["feats"] as string
+			const recordType = req.query?.["record-type"] as string
 
 			// Services
 			const recordsImplement = new RecordsImplement()
 			const recordsService = new RecordsService(recordsImplement)
+			const recordArtistImplement = new RecordArtistImplement()
+			const recordArtistService = new RecordArtistService(recordArtistImplement)
+			const songFeatImplement = new SongFeatImplement()
+			const songFeatService = new SongFeatService(songFeatImplement)
 
-			// Calling database
-			const getAllRecords = new GetAllRecordsUsecase(recordsService)
-			const { data, error } = await getAllRecords.execute()
+			if (artistID) {
+				const params = IDUsecaseParams.fromBackend(artistID)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+				// Calling database
+				const findRecordsByArtist = new FindRecordsByArtistUsecase(recordArtistService)
+				const resultsByArtist = await findRecordsByArtist.execute(params)
 
-			const reponse = new ResponseDTO(data, error)
+				if (resultsByArtist.data) results.push(...resultsByArtist.data)
+				if (resultsByArtist.error) errors.push(resultsByArtist.error)
+			}
+			if (feats) {
+				if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+				const id = req.params["id"]
+				const params = IDUsecaseParams.fromBackend(id)
+
+				// Calling database
+				const findByArtistFeats = new FindSongsByArtistFeatsUsecase(songFeatService)
+				const resultsByArtistFeats = await findByArtistFeats.execute(params)
+
+				if (resultsByArtistFeats.data) results.push(...resultsByArtistFeats.data)
+				if (resultsByArtistFeats.error) errors.push(resultsByArtistFeats.error)
+			}
+
+			if (genre) {
+				const params = new GenreUsecaseParams(genre)
+
+				// Calling database
+				const findRecordsByGenre = new FindRecordsByGenreUsecase(recordsService)
+				const resultsByGenre = await findRecordsByGenre.execute(params)
+
+				if (resultsByGenre.data) results.push(...resultsByGenre.data)
+				if (resultsByGenre.error) errors.push(resultsByGenre.error)
+			} else if (date) {
+				const params = DateUsecaseParams.fromBackend(date)
+
+				// Calling database
+				const findEventsByDate = new FindRecordsByDateUsecase(recordsService)
+				const resultsByDate = await findEventsByDate.execute(params)
+
+				if (resultsByDate.data) results.push(...resultsByDate.data)
+				if (resultsByDate.error) errors.push(resultsByDate.error)
+			} else if (recordType) {
+				try {
+					const params = new RecordTypeUsecaseParams(recordType)
+
+					// Calling database
+					const findEventsByDate = new FindRecordsByTypeUsecase(recordsService)
+					const { data, error } = await findEventsByDate.execute(params)
+
+					if (error) throw error
+					if (!data) throw ErrorMsg.htmlError(htmlError[500])
+
+					const reponse = new ResponseDTO(data, error)
+					return res.status(200).send(reponse)
+				} catch (error) {
+					return ApiErrorHandler.reply(error, res)
+				}
+			} else if (!date || !genre || !artistID || !feats || !recordType) {
+				if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
+
+				// Services
+				const recordsImplement = new RecordsImplement()
+				const recordsService = new RecordsService(recordsImplement)
+
+				// Calling database
+				const getAllRecords = new GetAllRecordsUsecase(recordsService)
+				const resultsAll = await getAllRecords.execute()
+
+				if (resultsAll.data) results.push(...resultsAll.data)
+				if (resultsAll.error) errors.push(resultsAll.error)
+			}
+
+			// RETURN RESULTS
+			const reponse = new SearchResponseDTO([...new Set(results)], errors)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)

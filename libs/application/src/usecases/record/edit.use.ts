@@ -17,7 +17,6 @@ export class EditRecordUsecase {
 			const { cover, data } = input
 			cover?.validateImage()
 			data.sanitize()
-			data.validateRecordType()
 
 			if (envs.backend && this.storageService)
 				return await this.backend(input, this.storageService)
@@ -45,15 +44,14 @@ export class EditRecordUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { cover, data, delCover } = input
-			const { publisher_id, id } = data
+			const { createdBy, id } = data
 
-			// publisher verification
-			const recordOwner = await this.mainService.getOwner(id as number)
-			if (publisher_id !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// editability verification
-			const isReadOnly = await this.mainService.getEditability(id as number)
-			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(
+				id as number,
+				createdBy as number
+			)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// PERSIST
 			// record

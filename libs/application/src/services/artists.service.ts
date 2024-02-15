@@ -19,6 +19,7 @@ import {
 	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
+	ItemStatusType,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ExtBackArtistsRepos, ExtFrontArtistsRepos {}
@@ -45,25 +46,17 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async update(profile: Artist, delLogo?: boolean, file?: File): Promise<boolean> {
+	async update(profile: Artist, deleteLogo?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(profile, delLogo, file)
+			return await this.service.update(profile, deleteLogo, file)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
+	async setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean> {
 		try {
-			return await this.service.getPublicStatus(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setPublicStatus(id?: ArtistProfileID, isPublic?: boolean): Promise<boolean> {
-		try {
-			return await this.service.setPublicStatus(id, isPublic)
+			return await this.service.setStatus(id, status)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -96,10 +89,18 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	// BACKEND
-	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
+	async findByCountry(country: string): Promise<GetArtistShortDTO[]> {
 		try {
-			return await this.service.verifyExistence(id)
+			return await this.service.findByCountry(country)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	// BACKEND
+	async checkRights(id: number, authID: number): Promise<boolean> {
+		try {
+			return await this.service.checkRights(id, authID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

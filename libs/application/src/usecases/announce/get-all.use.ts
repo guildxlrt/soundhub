@@ -3,13 +3,13 @@ import { AnnouncesService } from "../../services"
 import { UsecaseReply } from "../../utils"
 
 export class GetAllAnnouncesUsecase {
-	announcesService: AnnouncesService
-	constructor(announcesService: AnnouncesService) {
-		this.announcesService = announcesService
+	mainService: AnnouncesService
+	constructor(mainService: AnnouncesService) {
+		this.mainService = mainService
 	}
 	async execute(): Promise<UsecaseReply<GetAnnounceShortDTO[]>> {
 		try {
-			const data = await this.announcesService.getAll()
+			const data = await this.mainService.getAll()
 
 			return new UsecaseReply<GetAnnounceShortDTO[]>(data, null)
 		} catch (error) {

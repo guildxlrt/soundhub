@@ -44,7 +44,7 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async update(data: Artist, delLogo?: boolean, file?: RawFile): Promise<boolean> {
+	async update(data: Artist, deleteLogo?: boolean, file?: RawFile): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			NewFormData.fromFile(formData, file as RawFile)
@@ -61,11 +61,11 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async setPublicStatus(): Promise<boolean> {
+	async setStatus(): Promise<boolean> {
 		try {
 			return await axios({
 				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.artists.setPublicStatus}`,
+				url: `${apiUrlRoot + apiUrlPath.artists.setStatus}`,
 
 				withCredentials: true,
 			})

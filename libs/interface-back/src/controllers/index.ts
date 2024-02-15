@@ -5,6 +5,7 @@ import { EventsController } from "./events.ctrl"
 import { RecordsController } from "./records.ctrl"
 import { SongsController } from "./songs.ctrl"
 import { SearchController } from "./search.ctrl"
+import { LabelsController } from "./labels.ctrl"
 
 export const controller = {
 	search: new SearchController(),
@@ -14,4 +15,5 @@ export const controller = {
 	events: new EventsController(),
 	records: new RecordsController(),
 	songs: new SongsController(),
+	labels: new LabelsController(),
 }

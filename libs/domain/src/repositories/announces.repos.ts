@@ -12,7 +12,7 @@ export interface AnnouncesRepository {
 }
 
 export interface ExtBackAnnouncesRepo {
-	getOwner(id: AnnounceID): Promise<number | undefined>
+	checkRights(id: number, createdBy: number): Promise<boolean>
 	getImagePath(id: AnnounceID): Promise<string | null | undefined>
 	setImagePath(path: string | null, id: AnnounceID): Promise<boolean>
 }

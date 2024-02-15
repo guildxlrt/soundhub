@@ -7,6 +7,10 @@ import {
 	ErrorMsg,
 	ExpressRequest,
 	ExpressResponse,
+	StatusDTO,
+	ItemStatusType,
+	GetArtistShortDTO,
+	SearchResponseDTO,
 } from "Shared"
 import {
 	UpdateArtistUsecaseParams,
@@ -20,12 +24,16 @@ import {
 	ArtistsService,
 	EmailUsecaseParams,
 	GetArtistByEmailUsecase,
-	SetPublicStatusArtistUsecaseParams,
-	SetPublicStatusArtistUsecase,
+	SetStatusArtistUsecaseParams,
+	SetStatusArtistUsecase,
+	GenreUsecaseParams,
+	FindArtistsByGenreUsecase,
+	CountryUsecaseParams,
+	FindArtistsByCountryUsecase,
 } from "Application"
-import { ApiErrorHandler, Cookie, IArtistCtrl } from "../assets"
+import { ApiErrorHandler, Cookie, IArtistsCtrl } from "../assets"
 
-export class ArtistsController implements IArtistCtrl {
+export class ArtistsController implements IArtistsCtrl {
 	async create(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
@@ -68,10 +76,10 @@ export class ArtistsController implements IArtistCtrl {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const dto = req.body as UpdateArtistDTO
 			const file = req.image as unknown
-			const params = UpdateArtistUsecaseParams.fromBackend(dto, publisher, file)
+			const params = UpdateArtistUsecaseParams.fromBackend(dto, authID, file)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
@@ -93,20 +101,25 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async setPublicStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async setStatus(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "PATCH") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
-			const params = SetPublicStatusArtistUsecaseParams.fromBackend(publisher)
+			const authID = req.auth?.authID as number
+			const { id, status }: StatusDTO = req.body as StatusDTO
+			const params = SetStatusArtistUsecaseParams.fromBackend(
+				id,
+				status as ItemStatusType,
+				authID
+			)
 
 			// Services
 			const artistsImplement = new ArtistsImplement()
 			const artistsService = new ArtistsService(artistsImplement)
 
 			// Calling database
-			const setPublicStatusArtist = new SetPublicStatusArtistUsecase(artistsService)
-			const { data, error } = await setPublicStatusArtist.execute(params)
+			const setStatusArtist = new SetStatusArtistUsecase(artistsService)
+			const { data, error } = await setStatusArtist.execute(params)
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
@@ -168,22 +181,57 @@ export class ArtistsController implements IArtistCtrl {
 		}
 	}
 
-	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async search(req: ExpressRequest, res: ExpressResponse) {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Services
-			const artistsImplement = new ArtistsImplement()
-			const artistsService = new ArtistsService(artistsImplement)
+			const genre = req.query?.["genre"] as string
+			const country = req.query?.["country"] as string
 
-			// Calling database
-			const getAllArtists = new GetAllArtistsUsecase(artistsService)
-			const { data, error } = await getAllArtists.execute()
+			const results: GetArtistShortDTO[] = []
+			const errors: ErrorMsg[] = []
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+			if (genre) {
+				const params = new GenreUsecaseParams(genre)
 
-			const reponse = new ResponseDTO(data, error)
+				// Services
+				const artistsImplement = new ArtistsImplement()
+				const artistsService = new ArtistsService(artistsImplement)
+
+				// Calling database
+				const findArtistsByGenre = new FindArtistsByGenreUsecase(artistsService)
+				const resultsByGenre = await findArtistsByGenre.execute(params)
+
+				if (resultsByGenre.data) results.push(...resultsByGenre.data)
+				if (resultsByGenre.error) errors.push(resultsByGenre.error)
+			} else if (country) {
+				const params = new CountryUsecaseParams(genre)
+
+				// Services
+				const artistsImplement = new ArtistsImplement()
+				const artistsService = new ArtistsService(artistsImplement)
+
+				// Calling database
+				const findArtistsByCountry = new FindArtistsByCountryUsecase(artistsService)
+				const resultsByCountry = await findArtistsByCountry.execute(params)
+
+				if (resultsByCountry.data) results.push(...resultsByCountry.data)
+				if (resultsByCountry.error) errors.push(resultsByCountry.error)
+			} else if (!genre || !country) {
+				// Services
+				const artistsImplement = new ArtistsImplement()
+				const artistsService = new ArtistsService(artistsImplement)
+
+				// Calling database
+				const getAllArtists = new GetAllArtistsUsecase(artistsService)
+				const resultsAll = await getAllArtists.execute()
+
+				if (resultsAll.data) results.push(...resultsAll.data)
+				if (resultsAll.error) errors.push(resultsAll.error)
+			}
+
+			// RETURN RESULTS
+			const reponse = new SearchResponseDTO([...new Set(results)], errors)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)

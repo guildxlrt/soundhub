@@ -1,4 +1,4 @@
-import { Event, ExtBackEventsRepos, ExtFrontEventsRepos, EventsRepository, File } from "Domain"
+import { ExtBackEventsRepos, ExtFrontEventsRepos, EventsRepository } from "Domain"
 import { UserAuthID, EventID, ErrorHandler } from "Shared"
 
 interface IEventsService extends EventsRepository, ExtBackEventsRepos, ExtFrontEventsRepos {}
@@ -63,9 +63,9 @@ export class EventsService implements IEventsService {
 	}
 
 	// BACKEND
-	async getOwner(id: number): Promise<number | undefined> {
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {
-			return await this.service.getOwner(id)
+			return await this.service.checkRights(id, createdBy)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

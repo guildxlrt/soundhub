@@ -1,6 +1,6 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import { AnnounceID, GetAnnounceDTO, GetAnnounceShortDTO } from "Shared"
+import { AnnounceID, GetAnnounceDTO, GetAnnounceShortDTO, ItemStatusEnum } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -9,11 +9,12 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async create(data: Announce): Promise<boolean> {
 		try {
-			const { publisher_id, title, text, imagePath } = data
+			const { createdBy, title, text, imagePath } = data
 
 			await this.announce.create({
 				data: {
-					publisher_id: publisher_id as number,
+					status: ItemStatusEnum.public,
+					createdBy: createdBy as number,
 					title: title,
 					text: text,
 					imagePath: imagePath,
@@ -29,12 +30,12 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 
 	async edit(data: Announce): Promise<boolean> {
 		try {
-			const { publisher_id, title, text, id, imagePath } = data
+			const { createdBy, title, text, id, imagePath } = data
 
 			await this.announce.update({
 				where: {
 					id: id as number,
-					publisher_id: publisher_id,
+					createdBy: createdBy,
 				},
 				data: {
 					title: title,
@@ -71,7 +72,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 				select: {
 					id: true,
-					publisher_id: true,
+					createdBy: true,
 					title: true,
 					text: true,
 					imagePath: true,
@@ -89,7 +90,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 			const announces = await this.announce.findMany({
 				select: {
 					id: true,
-					publisher_id: true,
+					createdBy: true,
 					title: true,
 					imagePath: true,
 				},
@@ -105,11 +106,11 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		try {
 			const announces = await this.announce.findMany({
 				where: {
-					publisher_id: id,
+					createdBy: id,
 				},
 				select: {
 					id: true,
-					publisher_id: true,
+					createdBy: true,
 					title: true,
 					imagePath: true,
 				},
@@ -129,7 +130,7 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 				},
 				select: {
 					id: true,
-					publisher_id: true,
+					createdBy: true,
 					title: true,
 					imagePath: true,
 				},
@@ -141,20 +142,19 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		}
 	}
 
-	async getOwner(id: AnnounceID): Promise<number> {
-		try {
-			const { publisher_id } = await this.announce.findUniqueOrThrow({
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
+		return await this.announce
+			.findUnique({
 				where: {
 					id: id,
-				},
-				select: {
-					publisher_id: true,
+					status: ItemStatusEnum.draft || ItemStatusEnum.public,
+					createdBy: createdBy,
 				},
 			})
-			return publisher_id
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
-		}
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 
 	async getImagePath(id: AnnounceID): Promise<string | null> {

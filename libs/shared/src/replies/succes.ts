@@ -1,5 +1,5 @@
 import { GetArtistDTO } from "../dto"
-import { ArtistProfileID, UserAuthID, UserRoleType, UserToken } from "../types"
+import { ArtistProfileID, UserAuthID, UserRoleType, UserToken, ItemStatusType } from "../types"
 
 export type ILoginSuccess = UserToken | boolean
 
@@ -15,13 +15,13 @@ export interface IGetFullRecordSuccess {
 	id: number
 	createdAt: Date
 	title: string
-	publisher_id: number
+	createdBy: number
 	genres: string[]
 	recordType: string
 	descript: string | null
 	price: number | null
 	folderPath: string | null
-	isPublic: boolean
+	status: string
 	songs: {
 		id: number
 		title: string
@@ -43,7 +43,7 @@ export interface IArtistNameSuccess {
 export interface IGetEventSuccess {
 	id: number
 	title: string
-	organisator_id: number
+	createdBy: number
 	date: Date
 	place: string
 	artists: number[]
@@ -64,4 +64,20 @@ export interface IGetFullSongSuccess {
 	readonly record_id: number
 	readonly title: string
 	readonly audioPath: string
+}
+
+export interface IFullLabel {
+	id: number
+	status: string
+	name: string
+	creationDate: Date
+	bio: string | null
+	website: string | null
+	country: string | null
+	logoPath: string | null
+}
+
+export interface ILabelName {
+	id: number
+	name: string
 }

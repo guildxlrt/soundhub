@@ -6,6 +6,7 @@ import {
 	SongID,
 	ArtistProfileID,
 	IGetFullSongSuccess,
+	ItemStatusEnum,
 } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
@@ -21,6 +22,7 @@ export class SongsImplement implements SongsBackendRepos {
 			// PERSIST
 			await this.song.create({
 				data: {
+					status: ItemStatusEnum.draft,
 					record_id: record_id as number,
 					audioPath: audioPath as string,
 					title: title,
@@ -104,7 +106,7 @@ export class SongsImplement implements SongsBackendRepos {
 				where: {
 					record_id: id,
 					record: {
-						isPublic: true,
+						status: ItemStatusEnum.public,
 					},
 				},
 				select: {
@@ -127,8 +129,8 @@ export class SongsImplement implements SongsBackendRepos {
 			const songs = await this.song.findMany({
 				where: {
 					record: {
-						publisher_id: id,
-						isPublic: true,
+						createdBy: id,
+						status: ItemStatusEnum.public,
 					},
 				},
 				select: {
@@ -152,7 +154,7 @@ export class SongsImplement implements SongsBackendRepos {
 				where: {
 					record: {
 						genres: { has: genre },
-						isPublic: true,
+						status: ItemStatusEnum.public,
 					},
 				},
 				select: {
@@ -170,20 +172,19 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async getEditability(id: SongID): Promise<boolean> {
-		try {
-			const { isReadOnly } = await this.song.findUniqueOrThrow({
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
+		return await this.song
+			.findUnique({
 				where: {
 					id: id,
+					status: ItemStatusEnum.draft,
 				},
-				select: {
-					isReadOnly: true,
-				},
+				select: { record: { select: { createdBy: true } } },
 			})
-			return isReadOnly
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
+			.then((data) => {
+				if (createdBy !== data?.record.createdBy) return false
+				else return true
+			})
 	}
 
 	async getAudioPath(recordID: RecordID): Promise<string | null> {

@@ -13,6 +13,7 @@ datasource db {
 model UserAuth {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
   email    String @unique
   password String
@@ -27,6 +28,7 @@ model UserAuth {
 model Artist {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
   user_auth_id Int      @unique
   user         UserAuth @relation(fields: [user_auth_id], references: [id], onDelete: Cascade)
@@ -38,7 +40,6 @@ model Artist {
   website  String?
   country  String?
   logoPath String?
-  isPublic Boolean
 
   playAtEvent  PlayAtEvent[]
   songsFeats   SongFeat[]
@@ -46,23 +47,26 @@ model Artist {
 }
 
 model Label {
-  id Int @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
+  status String
 
-  creationDate  DateTime
-  name          String        @unique
-  bio           String?
-  website       String?
-  country       String?
-  logoPath      String?
+  name         String   @unique
+  creationDate DateTime
+  bio          String?
+  website      String?
+  country      String?
+  logoPath     String?
+
   recordsLabels RecordLabel[]
 }
 
 model Announce {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  publisher_id Int
-  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+  createdBy Int
+  publisher UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   title     String
   text      String
@@ -72,9 +76,10 @@ model Announce {
 model Event {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  organisator_id Int
-  organisator    UserAuth @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
+  createdBy   Int
+  organisator UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   date      DateTime
   place     String
@@ -88,9 +93,10 @@ model Event {
 model Record {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  publisher_id Int
-  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+  createdBy Int
+  publisher UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   title      String
   recordType String
@@ -98,8 +104,6 @@ model Record {
   price      Int?
   genres     String[]
   folderPath String
-  isPublic   Boolean
-  isReadOnly Boolean
 
   songs          Song[]
   recordsArtists RecordArtist[]
@@ -109,6 +113,7 @@ model Record {
 model Song {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
   record_id Int
   record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
@@ -149,7 +154,7 @@ model RecordArtist {
   artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 
   record_id Int
-  realease  Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
 }
 
 model RecordLabel {

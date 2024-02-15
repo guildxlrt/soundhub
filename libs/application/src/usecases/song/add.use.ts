@@ -45,11 +45,12 @@ export class AddSongUsecase {
 		recordsService: RecordsService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { audio, data, artistsIDs, ownerID } = input
+			const { audio, data, artistsIDs, authID } = input
+			const { id } = data
 
-			// publisher verification
-			const recordOwner = await recordsService.getOwner(data.record_id as number)
-			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// STORING AUDIOFILE
 			// record folder

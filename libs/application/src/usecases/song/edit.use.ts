@@ -50,15 +50,12 @@ export class EditSongUsecase {
 		recordsService: RecordsService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { audio, data, ownerID } = input
-			const { id, record_id } = data
-			// publisher verification
-			const recordOwner = await recordsService.getOwner(record_id as number)
-			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
+			const { audio, data, authID } = input
+			const { id } = data
 
-			// editability verification
-			const isReadOnly = await this.mainService.getEditability(id as number)
-			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// STORING AUDIOFILE
 			if (audio) {

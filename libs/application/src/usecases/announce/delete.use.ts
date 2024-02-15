@@ -4,11 +4,11 @@ import { UsecaseReply } from "../../utils"
 import { DeleteAnnounceUsecaseParams } from "../../adapters"
 
 export class DeleteAnnounceUsecase {
-	private announcesService: AnnouncesService
+	private mainService: AnnouncesService
 	private storageService?: StorageService
 
-	constructor(announcesService: AnnouncesService, storageService?: StorageService) {
-		this.announcesService = announcesService
+	constructor(mainService: AnnouncesService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 	async execute(input: DeleteAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
@@ -26,7 +26,7 @@ export class DeleteAnnounceUsecase {
 		try {
 			const { id } = input
 
-			const res = await this.announcesService.delete(id)
+			const res = await this.mainService.delete(id)
 			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -38,18 +38,18 @@ export class DeleteAnnounceUsecase {
 		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, ownerID } = input
+			const { id, authID } = input
 
-			// publisher verification
-			const announceOwner = await this.announcesService.getOwner(id as number)
-			if (ownerID !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// DELETE OLD FILE
-			const imagePath = await this.announcesService.getImagePath(id as number)
+			const imagePath = await this.mainService.getImagePath(id as number)
 			await storageService.delete(imagePath as string)
 
 			// persist
-			const res = await this.announcesService.delete(id)
+			const res = await this.mainService.delete(id)
 			return new UsecaseReply<boolean>(res, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

@@ -1,20 +1,22 @@
-import { SongFeatRepository } from "Domain"
-import { ArtistProfileID, GetShortRecordDTO, IArtistName, SongID } from "Shared"
+import { SongFeatBackendRepos } from "Domain"
+import { ArtistProfileID, GetShortRecordDTO, IArtistName, ItemStatusEnum, SongID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
-export class SongFeatImplement implements SongFeatRepository {
+export class SongFeatImplement implements SongFeatBackendRepos {
 	private relation = dbClient.songFeat
 	private record = dbClient.record
 
-	async addArtists(artistsIDs: ArtistProfileID[], songID: SongID): Promise<boolean> {
+	async addArtists(input: { artists: ArtistProfileID[]; song: SongID }): Promise<boolean> {
 		try {
+			const { artists, song } = input
+
 			return await this.relation
 				.createMany({
-					data: artistsIDs.map((id) => {
+					data: artists.map((id) => {
 						return {
 							artist_id: id,
-							song_id: songID,
+							song_id: song,
 						}
 					}),
 				})
@@ -25,17 +27,19 @@ export class SongFeatImplement implements SongFeatRepository {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artistsIDs: ArtistProfileID[], songID: SongID): Promise<boolean> {
+	async removeArtists(input: { artists: ArtistProfileID[]; song: SongID }): Promise<boolean> {
 		try {
+			const { artists, song } = input
+
 			return await this.relation
 				.deleteMany({
 					where: {
 						AND: [
 							{
-								song_id: songID,
+								song_id: song,
 							},
 							{
-								artist_id: artistsIDs[0],
+								artist_id: artists[0],
 							},
 						],
 					},
@@ -72,11 +76,11 @@ export class SongFeatImplement implements SongFeatRepository {
 					const result = await this.record.findUniqueOrThrow({
 						where: {
 							id: id,
-							isPublic: true,
+							status: ItemStatusEnum.public,
 						},
 						select: {
 							id: true,
-							publisher_id: true,
+							createdBy: true,
 							title: true,
 							recordType: true,
 							genres: true,
@@ -118,5 +122,19 @@ export class SongFeatImplement implements SongFeatRepository {
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
+	}
+
+	async checkRights(song: number, authID: number): Promise<boolean> {
+		return await this.relation
+			.findFirst({
+				where: {
+					song_id: song,
+					song: { record: { createdBy: authID } },
+				},
+			})
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 }

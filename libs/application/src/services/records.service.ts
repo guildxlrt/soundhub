@@ -1,5 +1,12 @@
 import { ExtBackRecordsRepos, ExtFrontRecordsRepos, RecordsRepository } from "Domain"
-import { RecordID, GetShortRecordDTO, GenreType, ErrorHandler, RecordType } from "Shared"
+import {
+	RecordID,
+	GetShortRecordDTO,
+	GenreType,
+	ErrorHandler,
+	RecordType,
+	ItemStatusType,
+} from "Shared"
 
 interface IRecordsService extends RecordsRepository, ExtBackRecordsRepos, ExtFrontRecordsRepos {}
 
@@ -35,24 +42,9 @@ export class RecordsService implements IRecordsService {
 		}
 	}
 
-	async publish(id: RecordID): Promise<boolean> {
+	async setStatus(id: RecordID, status: ItemStatusType): Promise<boolean> {
 		try {
-			return await this.service.publish(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async getPublicStatus(id: RecordID): Promise<boolean> {
-		try {
-			return await this.service.getPublicStatus(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setPublicStatus(id: RecordID, isPublic?: boolean): Promise<boolean> {
-		try {
-			return await this.service.setPublicStatus(id, isPublic)
+			return await this.service.setStatus(id, status)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -95,20 +87,14 @@ export class RecordsService implements IRecordsService {
 	}
 
 	// BACKEND
-	async getEditability(id: number): Promise<boolean> {
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {
-			return await this.service.getEditability(id)
+			return await this.service.checkRights(id, createdBy)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getOwner(id: number): Promise<number | undefined> {
-		try {
-			return await this.service.getOwner(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+
 	async getFolderPath(recordID: RecordID): Promise<string | null | undefined> {
 		try {
 			return await this.service.getFolderPath(recordID)

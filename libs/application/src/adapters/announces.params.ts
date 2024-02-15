@@ -10,9 +10,9 @@ export class NewAnnounceUsecaseParams {
 		this.file = file
 	}
 
-	static fromBackend(dto: CreateAnnounceDTO, publisher: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: CreateAnnounceDTO, authID: number, file?: StreamFile | unknown) {
 		const { text, title } = dto
-		const announce = new Announce(null, publisher, title, text, null)
+		const announce = new Announce(null, authID, title, text, null)
 
 		return new NewAnnounceUsecaseParams(announce, file as StreamFile)
 	}
@@ -29,9 +29,9 @@ export class EditAnnounceUsecaseParams {
 		this.delImage = delImage
 	}
 
-	static fromBackend(dto: EditAnnounceDTO, publisher: number, file?: StreamFile | unknown) {
+	static fromBackend(dto: EditAnnounceDTO, authID: number, file?: StreamFile | unknown) {
 		const { text, title, id, delImage } = dto
-		const announce = new Announce(id, publisher, title, text, null)
+		const announce = new Announce(id, authID, title, text, null)
 
 		return new EditAnnounceUsecaseParams(announce, delImage, file as StreamFile)
 	}
@@ -39,14 +39,14 @@ export class EditAnnounceUsecaseParams {
 
 export class DeleteAnnounceUsecaseParams {
 	id: AnnounceID
-	ownerID?: ArtistProfileID
+	authID?: ArtistProfileID
 
-	constructor(id: AnnounceID, ownerID?: ArtistProfileID) {
+	constructor(id: AnnounceID, authID?: ArtistProfileID) {
 		this.id = id
-		this.ownerID = ownerID
+		this.authID = authID
 	}
 
-	static fromBackend(id: AnnounceID, ownerID: ArtistProfileID) {
-		return new DeleteAnnounceUsecaseParams(id, ownerID)
+	static fromBackend(id: AnnounceID, authID: ArtistProfileID) {
+		return new DeleteAnnounceUsecaseParams(id, authID)
 	}
 }

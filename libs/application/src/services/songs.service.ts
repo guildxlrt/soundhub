@@ -1,14 +1,5 @@
 import { ExtBackSongsRepos, ExtFrontSongsRepos, SongsRepository } from "Domain"
-import {
-	ErrorHandler,
-	GenreType,
-	ArtistProfileID,
-	RecordID,
-	GetSongDTO,
-	SongID,
-	IGetFullSongSuccess,
-	GetFullSongDTO,
-} from "Shared"
+import { ErrorHandler, GenreType, ArtistProfileID, RecordID, GetSongDTO, SongID } from "Shared"
 
 interface ISongsService extends SongsRepository, ExtBackSongsRepos, ExtFrontSongsRepos {}
 
@@ -74,9 +65,9 @@ export class SongsService implements ISongsService {
 		}
 	}
 
-	async getEditability(id: number): Promise<boolean> {
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {
-			return await this.service.getEditability(id)
+			return await this.service.checkRights(id, createdBy)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

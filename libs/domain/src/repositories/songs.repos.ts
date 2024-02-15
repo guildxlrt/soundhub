@@ -21,7 +21,7 @@ export interface SongsRepository {
 }
 
 export interface ExtBackSongsRepos {
-	getEditability(id: number): Promise<boolean>
+	checkRights(id: number, createdBy: number): Promise<boolean>
 	getAudioPath(recordID: RecordID): Promise<string | null | undefined>
 	getRecordID(id: SongID): Promise<number | undefined>
 }

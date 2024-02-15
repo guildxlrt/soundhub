@@ -11,6 +11,9 @@ import {
 	StorageService,
 	EditAnnounceUsecaseParams,
 	NewAnnounceUsecaseParams,
+	FindAnnouncesByArtistUsecase,
+	FindAnnouncesByDateUsecase,
+	DateUsecaseParams,
 } from "Application"
 import {
 	htmlError,
@@ -20,6 +23,8 @@ import {
 	ErrorMsg,
 	ExpressRequest,
 	ExpressResponse,
+	GetAnnounceShortDTO,
+	SearchResponseDTO,
 } from "Shared"
 import { ApiErrorHandler, IAnnoncesCtrl } from "../assets"
 
@@ -29,7 +34,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const dto = req.body as CreateAnnounceDTO
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const file = req.image as unknown
 
 			// Services
@@ -40,7 +45,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const createAnnounce = new CreateAnnounceUsecase(announcesService, storageService)
-			const params = NewAnnounceUsecaseParams.fromBackend(dto, publisher, file)
+			const params = NewAnnounceUsecaseParams.fromBackend(dto, authID, file)
 
 			const { data, error } = await createAnnounce.execute(params)
 			if (error) throw error
@@ -58,7 +63,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
 			const file = req.image as unknown
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 
 			const dto = req.body as EditAnnounceDTO
 
@@ -70,7 +75,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const EditAnnounce = new EditAnnounceUsecase(announcesService, storageService)
-			const params = EditAnnounceUsecaseParams.fromBackend(dto, publisher, file)
+			const params = EditAnnounceUsecaseParams.fromBackend(dto, authID, file)
 
 			const { data, error } = await EditAnnounce.execute(params)
 			if (error) throw error
@@ -86,7 +91,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 	async delete(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const id = Number(req.params["id"])
 
 			// Services
@@ -97,7 +102,7 @@ export class AnnoncesController implements IAnnoncesCtrl {
 
 			// Calling database
 			const deleteAnnounce = new DeleteAnnounceUsecase(announcesService, storageService)
-			const params = DeleteAnnounceUsecaseParams.fromBackend(id, publisher)
+			const params = DeleteAnnounceUsecaseParams.fromBackend(id, authID)
 
 			const { data, error } = await deleteAnnounce.execute(params)
 			if (error) throw error
@@ -136,22 +141,49 @@ export class AnnoncesController implements IAnnoncesCtrl {
 		}
 	}
 
-	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
+	async search(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
 		try {
 			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
 
-			// Services
+			const date = req.query?.["date"] as string
+			const artistID = req.query?.["artist-id"] as string
+			const genre = req.query?.["genre"] as string
+
+			const results: GetAnnounceShortDTO[] = []
+			const errors: ErrorMsg[] = []
+
 			const announcesImplement = new AnnouncesImplement()
 			const announcesService = new AnnouncesService(announcesImplement)
 
-			// Calling database
-			const getAllAnnounces = new GetAllAnnouncesUsecase(announcesService)
-			const { data, error } = await getAllAnnounces.execute()
+			if (artistID) {
+				const params = IDUsecaseParams.fromBackend(artistID)
+				const findAnnouncesByArtist = new FindAnnouncesByArtistUsecase(announcesService)
+				const resultsByArtist = await findAnnouncesByArtist.execute(params)
 
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
+				if (resultsByArtist.data) results.push(...resultsByArtist.data)
+				if (resultsByArtist.error) errors.push(resultsByArtist.error)
+			} else if (date) {
+				const params = DateUsecaseParams.fromBackend(date)
+				const findAnnouncesByArtist = new FindAnnouncesByDateUsecase(announcesService)
+				const resultsByDate = await findAnnouncesByArtist.execute(params)
 
-			const reponse = new ResponseDTO(data, error)
+				if (resultsByDate.data) results.push(...resultsByDate.data)
+				if (resultsByDate.error) errors.push(resultsByDate.error)
+			} else if (!genre || !artistID) {
+				// Services
+				const announcesImplement = new AnnouncesImplement()
+				const announcesService = new AnnouncesService(announcesImplement)
+
+				// Calling database
+				const getAllAnnounces = new GetAllAnnouncesUsecase(announcesService)
+				const resultsAll = await getAllAnnounces.execute()
+
+				if (resultsAll.data) results.push(...resultsAll.data)
+				if (resultsAll.error) errors.push(resultsAll.error)
+			}
+
+			// RETURN RESULTS
+			const reponse = new SearchResponseDTO([...new Set(results)], errors)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)

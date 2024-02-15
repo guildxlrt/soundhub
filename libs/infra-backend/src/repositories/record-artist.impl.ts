@@ -1,5 +1,5 @@
 import { RecordArtistRepository } from "Domain"
-import { ArtistProfileID, GetShortRecordDTO, IArtistName, RecordID } from "Shared"
+import { ArtistProfileID, GetShortRecordDTO, IArtistName, ItemStatusEnum, RecordID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -7,14 +7,16 @@ export class RecordArtistImplement implements RecordArtistRepository {
 	private relation = dbClient.recordArtist
 	private record = dbClient.record
 
-	async addArtists(artistsIDs: ArtistProfileID[], recordID: RecordID): Promise<boolean> {
+	async addArtists(data: { artists: ArtistProfileID[]; record: RecordID }): Promise<boolean> {
 		try {
+			const { artists, record } = data
+
 			return await this.relation
 				.createMany({
-					data: artistsIDs.map((id) => {
+					data: artists.map((id) => {
 						return {
 							artist_id: id,
-							record_id: recordID,
+							record_id: record,
 						}
 					}),
 				})
@@ -25,17 +27,19 @@ export class RecordArtistImplement implements RecordArtistRepository {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artistsIDs: ArtistProfileID[], recordID: RecordID): Promise<boolean> {
+	async removeArtists(data: { artists: ArtistProfileID[]; record: RecordID }): Promise<boolean> {
 		try {
+			const { artists, record } = data
+
 			return await this.relation
 				.deleteMany({
 					where: {
 						AND: [
 							{
-								record_id: recordID,
+								record_id: record,
 							},
 							{
-								artist_id: artistsIDs[0],
+								artist_id: artists[0],
 							},
 						],
 					},
@@ -63,7 +67,7 @@ export class RecordArtistImplement implements RecordArtistRepository {
 				const data = await this.record.findUnique({
 					where: {
 						id: relation.record_id,
-						isPublic: true,
+						status: ItemStatusEnum.public,
 					},
 					select: {
 						id: true,
@@ -107,5 +111,19 @@ export class RecordArtistImplement implements RecordArtistRepository {
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
+	}
+
+	async checkRights(record: number, authID: number): Promise<boolean> {
+		return await this.relation
+			.findFirst({
+				where: {
+					record_id: record,
+					record: { createdBy: authID },
+				},
+			})
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 }

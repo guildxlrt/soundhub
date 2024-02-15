@@ -21,7 +21,7 @@ export class DeleteSongUsecase {
 	async execute(input: DeleteSongUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			if (envs.backend && this.storageService && this.recordsService)
-				return await this.backend(input, this.storageService, this.recordsService)
+				return await this.backend(input, this.storageService)
 			else if (envs.backend && !this.storageService) throw new ErrorMsg("services error")
 			else return await this.frontend(input)
 		} catch (error) {
@@ -42,20 +42,14 @@ export class DeleteSongUsecase {
 
 	async backend(
 		input: DeleteSongUsecaseParams,
-		storageService: StorageService,
-		recordsService: RecordsService
+		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, ownerID } = input
+			const { id, authID } = input
 
-			// publisher verification
-			const recordID = await this.mainService.getRecordID(id as number)
-			const recordOwner = await recordsService.getOwner(recordID as number)
-			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// editability verification
-			const isReadOnly = await this.mainService.getEditability(id as number)
-			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// DELETE AUDIOFILE
 			const audioPath = await this.mainService.getAudioPath(id as number)

@@ -1,18 +1,17 @@
-import {
-	EventID,
-	ArtistProfileID,
-	IGetEventShortSuccess,
-	GenreType,
-	GetEventShortDTO,
-} from "Shared"
+import { EventID, IGetEventShortSuccess, GenreType, GetEventShortDTO } from "Shared"
 
 export interface PlayAtEventRepository {
-	addArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean>
-	deleteArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean>
+	addArtists(input: { artists: number[]; event: number }): Promise<boolean>
+	removeArtists(input: { artists: number[]; event: number }): Promise<boolean>
 
 	findEventsByArtist(id: EventID): Promise<unknown[]>
 	findEventsByArtistGenre(genre: GenreType): Promise<unknown[]>
 }
+
+export interface ExtBackPlayAtEventRepos {
+	checkRights(id: number, authID: number): Promise<boolean>
+}
+export interface ExtFrontPlayAtEventRepos {}
 
 export interface PlayAtEventBackendRepos extends PlayAtEventRepository {
 	findEventsByArtist(id: EventID): Promise<IGetEventShortSuccess[]>

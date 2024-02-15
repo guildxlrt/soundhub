@@ -11,6 +11,7 @@ import {
 	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
+	ItemStatusType,
 } from "Shared"
 import { StreamFile, Artist, UserAuth, RawFile, File } from "Domain"
 
@@ -23,8 +24,8 @@ export interface ArtistsRepository {
 		},
 		file?: File
 	): Promise<INewArtistSuccess>
-	update(data: Artist, delLogo?: boolean, file?: File): Promise<boolean>
-	setPublicStatus(id?: number, isPublic?: boolean): Promise<boolean>
+	update(data: Artist, deleteLogo?: boolean, file?: File): Promise<boolean>
+	setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean>
 	getByID(id: ArtistProfileID): Promise<GetArtistDTO>
 	getByEmail(email: UserEmail): Promise<GetArtistDTO>
 	getAll(): Promise<GetArtistShortDTO[]>
@@ -33,8 +34,7 @@ export interface ArtistsRepository {
 }
 
 export interface ExtBackArtistsRepos {
-	getPublicStatus(id: ArtistProfileID): Promise<boolean>
-	verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID>
+	checkRights(id: number, authID: number): Promise<boolean>
 	getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess>
 	getNames(ids: ArtistProfileID[]): Promise<IArtistName[]>
 	findByAuthID(id: UserAuthID): Promise<IfindByAuthIDSuccess>
@@ -45,7 +45,6 @@ export interface ExtBackArtistsRepos {
 export interface ExtFrontArtistsRepos {}
 
 export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRepos {
-	setPublicStatus(id: ArtistProfileID, isPublic: boolean): Promise<boolean>
 	create(
 		data: {
 			profile: Artist
@@ -53,11 +52,10 @@ export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRe
 		},
 		file?: StreamFile
 	): Promise<INewArtistBackSucces>
-	update(data: Artist, delLogo?: boolean, file?: StreamFile): Promise<boolean>
+	update(data: Artist, deleteLogo?: boolean, file?: StreamFile): Promise<boolean>
 }
 
 export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtistsRepos {
-	setPublicStatus(id?: number, isPublic?: boolean): Promise<boolean>
 	create(
 		data: {
 			profile: Artist
@@ -66,5 +64,5 @@ export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtists
 		},
 		file?: RawFile
 	): Promise<boolean>
-	update(data: Artist, delLogo?: boolean, file?: RawFile): Promise<boolean>
+	update(data: Artist, deleteLogo?: boolean, file?: RawFile): Promise<boolean>
 }

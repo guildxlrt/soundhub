@@ -12,7 +12,7 @@ import { ArrayValidator, GenresFormatter, StringFormatter } from "../tools"
 
 export class Artist extends EntityLayer {
 	readonly user_auth_id: UserAuthID | null
-	status: UserStatusType
+	status: UserStatusType | null
 	name: string
 	bio: string
 	members: Record<string, any>
@@ -28,7 +28,7 @@ export class Artist extends EntityLayer {
 	constructor(
 		id: ArtistProfileID | null,
 		user_auth_id: UserAuthID | null,
-		status: UserStatusType,
+		status: UserStatusType | null,
 		name: string,
 		bio: string,
 		members: Record<string, any>,

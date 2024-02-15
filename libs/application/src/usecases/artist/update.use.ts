@@ -30,9 +30,9 @@ export class UpdateArtistUsecase {
 
 	async frontend(input: UpdateArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
-			const { profile, delLogo, file } = input
+			const { profile, deleteLogo, file } = input
 
-			const data = await this.mainService.update(profile, delLogo, file)
+			const data = await this.mainService.update(profile, deleteLogo, file)
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -45,9 +45,9 @@ export class UpdateArtistUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { user_auth_id, id } = input.profile
-			const { file, profile, delLogo } = input
+			const { file, profile, deleteLogo } = input
 
-			// publisher verification
+			// auth verification
 			const userAuths = await this.mainService.getAuths(user_auth_id as number)
 			if (
 				(id as number) !== (userAuths.id as number) ||
@@ -60,10 +60,10 @@ export class UpdateArtistUsecase {
 
 			// STORING NEW FILE
 			// contradiction
-			if (file && delLogo === true)
+			if (file && deleteLogo === true)
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
-			if (file || delLogo === true) {
+			if (file || deleteLogo === true) {
 				const oldImagePath = await this.mainService.getLogoPath(id as number)
 				if (!oldImagePath) throw new ErrorMsg(`Error: failed to store`)
 

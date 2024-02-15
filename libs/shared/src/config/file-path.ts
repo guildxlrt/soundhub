@@ -9,6 +9,7 @@ export const filePath = {
 		artist: "store/images/logos/",
 		record: "store/records/",
 		song: "store/records/",
+		label: "store/labels/",
 	} as const,
 } as const
 

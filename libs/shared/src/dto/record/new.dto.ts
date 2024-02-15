@@ -1,6 +1,7 @@
 import { AnyObject } from "../../types"
 
 export class PostRecordDTO {
+	readonly status: string
 	readonly title: string
 	readonly recordType: string
 	readonly descript: string | null
@@ -9,6 +10,7 @@ export class PostRecordDTO {
 	readonly artistsIDs: number[]
 
 	constructor(
+		status: string,
 		title: string,
 		recordType: string,
 		descript: string | null,
@@ -16,6 +18,7 @@ export class PostRecordDTO {
 		genres: string[],
 		artistsIDs: number[]
 	) {
+		this.status = status
 		this.title = title
 		this.recordType = recordType
 		this.descript = descript
@@ -26,6 +29,7 @@ export class PostRecordDTO {
 
 	static createFromInput(record: AnyObject) {
 		return new PostRecordDTO(
+			record?.["status"],
 			record?.["title"],
 			record?.["recordType"],
 			record?.["descript"],

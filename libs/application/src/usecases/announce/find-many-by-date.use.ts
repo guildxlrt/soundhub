@@ -5,9 +5,9 @@ import { DateUsecaseParams } from "../../adapters"
 import { DateFormatter } from "Domain"
 
 export class FindAnnouncesByDateUsecase {
-	announcesService: AnnouncesService
-	constructor(announcesService: AnnouncesService) {
-		this.announcesService = announcesService
+	mainService: AnnouncesService
+	constructor(mainService: AnnouncesService) {
+		this.mainService = mainService
 	}
 	async execute(input: DateUsecaseParams): Promise<UsecaseReply<GetAnnounceShortDTO[]>> {
 		try {
@@ -16,7 +16,7 @@ export class FindAnnouncesByDateUsecase {
 			const dateFormatter = new DateFormatter()
 			const cleanDate = dateFormatter.format(date)
 
-			const data = await this.announcesService.findByDate(cleanDate)
+			const data = await this.mainService.findByDate(cleanDate)
 			return new UsecaseReply<GetAnnounceShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

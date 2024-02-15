@@ -45,11 +45,14 @@ export class EditEventUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, event, delImage } = input
-			const { organisator_id, id } = input.event
+			const { createdBy, id } = input.event
 
-			// publisher verification
-			const eventOwner = await this.mainService.getOwner(id as number)
-			if (organisator_id !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(
+				id as number,
+				createdBy as number
+			)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
 			await this.mainService.edit(event)

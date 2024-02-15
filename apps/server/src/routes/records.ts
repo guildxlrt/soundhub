@@ -8,7 +8,7 @@ const endpts = apiPathEnd.record
 
 router.post(endpts.create, authMiddleware, audioStorage, imageStorage, ctrl.create)
 router.put(endpts.edit, authMiddleware, imageStorage, ctrl.edit)
-router.patch(endpts.setPublicStatus, authMiddleware, ctrl.setPublicStatus)
+router.patch(endpts.setStatus, authMiddleware, ctrl.setStatus)
 router.get(endpts.get, ctrl.get)
 
 export default router

@@ -1,7 +1,7 @@
-import { PlayAtEventRepository } from "Domain"
-import { ArtistProfileID, ErrorHandler, EventID, GenreType } from "Shared"
+import { ExtBackPlayAtEventRepos, PlayAtEventRepository } from "Domain"
+import { ErrorHandler, EventID, GenreType } from "Shared"
 
-interface IPlayAtEventService extends PlayAtEventRepository {}
+interface IPlayAtEventService extends PlayAtEventRepository, ExtBackPlayAtEventRepos {}
 
 export class PlayAtEventService implements IPlayAtEventService {
 	private service: IPlayAtEventService
@@ -10,16 +10,16 @@ export class PlayAtEventService implements IPlayAtEventService {
 		this.service = service
 	}
 
-	async addArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async addArtists(input: { artists: number[]; event: number }): Promise<boolean> {
 		try {
-			return await this.service.addArtists(artists, event)
+			return await this.service.addArtists(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async removeArtists(input: { artists: number[]; event: number }): Promise<boolean> {
 		try {
-			return await this.service.deleteArtists(artists, event)
+			return await this.service.removeArtists(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -35,6 +35,15 @@ export class PlayAtEventService implements IPlayAtEventService {
 	async findEventsByArtistGenre(genre: GenreType): Promise<unknown[]> {
 		try {
 			return await this.service.findEventsByArtistGenre(genre)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	// BACKEND
+	async checkRights(id: number, authID: number): Promise<boolean> {
+		try {
+			return await this.service.checkRights(id, authID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

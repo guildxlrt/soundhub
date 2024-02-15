@@ -16,8 +16,7 @@ export class CreateRecordUsecase {
 		try {
 			const { cover, data } = input
 			cover?.validateImage()
-			data.sanitize(true)
-			data.validateRecordType()
+			data.sanitize()
 
 			if (envs.backend && this.storageService)
 				return await this.backend(input, this.storageService)
@@ -45,11 +44,6 @@ export class CreateRecordUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { cover, data, artistsIDs } = input
-			const { publisher_id, id } = data
-
-			// publisher verification
-			const recordOwner = await this.mainService.getOwner(id as number)
-			if (publisher_id !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
 
 			// CREATE RELEASE FOLDER
 			const newFolder = await storageService.mkdir()

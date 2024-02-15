@@ -1,14 +1,10 @@
-import { RecordArtistRepository } from "Domain"
-import {
-	ArtistProfileID,
-	ErrorHandler,
-	EventID,
-	GetShortRecordDTO,
-	IArtistName,
-	RecordID,
-} from "Shared"
+import { ExtBackRecordArtistRepos, ExtFrontRecordArtistRepos, RecordArtistRepository } from "Domain"
+import { ArtistProfileID, ErrorHandler, GetShortRecordDTO, IArtistName, RecordID } from "Shared"
 
-interface IRecordArtistService extends RecordArtistRepository {}
+interface IRecordArtistService
+	extends RecordArtistRepository,
+		ExtBackRecordArtistRepos,
+		ExtFrontRecordArtistRepos {}
 
 export class RecordArtistService implements IRecordArtistService {
 	private service: IRecordArtistService
@@ -17,16 +13,16 @@ export class RecordArtistService implements IRecordArtistService {
 		this.service = service
 	}
 
-	async addArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async addArtists(data: { artists: ArtistProfileID[]; record: RecordID }): Promise<boolean> {
 		try {
-			return await this.service.addArtists(artists, event)
+			return await this.service.addArtists(data)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async removeArtists(data: { artists: ArtistProfileID[]; record: RecordID }): Promise<boolean> {
 		try {
-			return await this.service.deleteArtists(artists, event)
+			return await this.service.removeArtists(data)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -43,6 +39,15 @@ export class RecordArtistService implements IRecordArtistService {
 	async getArtistsNamesOfRecord(id: RecordID): Promise<IArtistName[]> {
 		try {
 			return await this.service.getArtistsNamesOfRecord(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	// BACKEND
+	async checkRights(id: number, authID: number): Promise<boolean> {
+		try {
+			return await this.service.checkRights(id, authID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

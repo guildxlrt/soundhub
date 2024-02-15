@@ -1,5 +1,6 @@
 export * from "./announce"
 export * from "./artist"
+export * from "./label"
 export * from "./event"
 export * from "./record"
 export * from "./song"

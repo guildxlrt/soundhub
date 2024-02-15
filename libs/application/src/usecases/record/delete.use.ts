@@ -1,7 +1,7 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, ErrorMsg, envs, htmlError } from "Shared"
 import { RecordsService, StorageService } from "../../services"
-import { PatchDeleteUsecaseParams } from "../../adapters"
+import { DeleteRecordUsecaseParams } from "../../adapters"
 
 export class DeleteRecordUsecase {
 	private mainService: RecordsService
@@ -12,7 +12,7 @@ export class DeleteRecordUsecase {
 		this.storageService = storageService
 	}
 
-	async execute(input: PatchDeleteUsecaseParams): Promise<UsecaseReply<boolean>> {
+	async execute(input: DeleteRecordUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			if (envs.backend && this.storageService)
 				return await this.backend(input, this.storageService)
@@ -23,7 +23,7 @@ export class DeleteRecordUsecase {
 		}
 	}
 
-	async frontend(input: PatchDeleteUsecaseParams): Promise<UsecaseReply<boolean>> {
+	async frontend(input: DeleteRecordUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { id } = input
 
@@ -35,19 +35,15 @@ export class DeleteRecordUsecase {
 	}
 
 	async backend(
-		input: PatchDeleteUsecaseParams,
+		input: DeleteRecordUsecaseParams,
 		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, ownerID } = input
+			const { id, authID } = input
 
-			// publisher verification
-			const recordOwner = await this.mainService.getOwner(id as number)
-			if (ownerID !== recordOwner) throw ErrorMsg.htmlError(htmlError[403])
-
-			// editability verification
-			const isReadOnly = await this.mainService.getEditability(id as number)
-			if (isReadOnly === true) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// Delete Folder
 			const recordFolder = await this.mainService.getFolderPath(id as number)

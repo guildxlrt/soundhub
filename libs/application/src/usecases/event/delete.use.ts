@@ -38,11 +38,11 @@ export class DeleteEventUsecase {
 		storageService: StorageService
 	): Promise<UsecaseReply<boolean>> {
 		try {
-			const { id, ownerID } = input
+			const { id, authID } = input
 
-			// publisher verification
-			const eventOwner = await this.mainService.getOwner(id as number)
-			if (ownerID !== eventOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(id as number, authID as number)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// DELETE OLD FILE
 			const imagePath = await this.mainService.getImagePath(id as number)

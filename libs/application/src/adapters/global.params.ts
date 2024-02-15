@@ -31,6 +31,14 @@ export class GenreUsecaseParams {
 	}
 }
 
+export class CountryUsecaseParams {
+	country: string
+
+	constructor(country: string) {
+		this.country = country
+	}
+}
+
 export class EmailUsecaseParams {
 	email: UserEmail
 

@@ -1,6 +1,12 @@
 import { EventsBackendRepos } from "Domain"
 import { Event } from "Domain"
-import { EventID, IGetEventSuccess, IGetEventShortSuccess, ArtistProfileID } from "Shared"
+import {
+	EventID,
+	IGetEventSuccess,
+	IGetEventShortSuccess,
+	ArtistProfileID,
+	ItemStatusEnum,
+} from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -10,11 +16,12 @@ export class EventsImplement implements EventsBackendRepos {
 	async create(data: { event: Event; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
 			const { artists, event } = data
-			const { organisator_id, date, place, title, text } = event
+			const { createdBy, date, place, title, text } = event
 
 			await this.event.create({
 				data: {
-					organisator_id: organisator_id as number,
+					status: ItemStatusEnum.public,
+					createdBy: createdBy as number,
 					date: date,
 					place: place,
 					title: title,
@@ -40,13 +47,13 @@ export class EventsImplement implements EventsBackendRepos {
 
 	async edit(data: Event): Promise<boolean> {
 		try {
-			const { id, organisator_id, date, place, title, text } = data
+			const { id, createdBy, date, place, title, text } = data
 
 			// persist
 			await this.event.update({
 				where: {
 					id: id as number,
-					organisator_id: organisator_id,
+					createdBy: createdBy,
 				},
 				data: {
 					date: date,
@@ -87,7 +94,7 @@ export class EventsImplement implements EventsBackendRepos {
 					},
 					select: {
 						id: true,
-						organisator_id: true,
+						createdBy: true,
 						date: true,
 						place: true,
 						title: true,
@@ -214,20 +221,19 @@ export class EventsImplement implements EventsBackendRepos {
 		}
 	}
 
-	async getOwner(id: number) {
-		try {
-			const { organisator_id } = await this.event.findUniqueOrThrow({
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
+		return await this.event
+			.findUnique({
 				where: {
 					id: id,
-				},
-				select: {
-					organisator_id: true,
+					status: ItemStatusEnum.draft || ItemStatusEnum.public,
+					createdBy: createdBy,
 				},
 			})
-			return organisator_id
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
-		}
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 
 	async getImagePath(id: EventID): Promise<string | null> {

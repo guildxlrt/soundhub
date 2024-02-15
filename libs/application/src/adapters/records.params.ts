@@ -5,6 +5,7 @@ import {
 	ArtistProfileID,
 	RecordID,
 	RecordType,
+	ItemStatusType,
 } from "Shared"
 import { StreamFile, Record } from "Domain"
 
@@ -20,18 +21,17 @@ export class NewRecordUsecaseParams {
 	}
 
 	static fromBackend(dto: PostRecordDTO, user: number, cover?: StreamFile | unknown) {
-		const { title, recordType, descript, price, genres, artistsIDs } = dto
+		const { status, title, recordType, descript, price, genres, artistsIDs } = dto
 		const recordData = new Record(
 			null,
 			user,
+			status as ItemStatusType,
 			title,
 			recordType as RecordType,
 			descript,
 			price,
 			genres as GenresArray,
-			null,
-			false,
-			true
+			null
 		)
 
 		return new NewRecordUsecaseParams(recordData, artistsIDs, cover as StreamFile)
@@ -55,31 +55,81 @@ export class EditRecordUsecaseParams {
 		const recordData = new Record(
 			id,
 			userID,
+			null,
 			title,
 			null,
 			descript,
 			price,
 			genres as GenresArray,
-			null,
-			false,
-			true
+			null
 		)
 
 		return new EditRecordUsecaseParams(recordData, cover as StreamFile, delCover)
 	}
 }
 
-export class PatchDeleteUsecaseParams {
+export class DeleteRecordUsecaseParams {
 	id: RecordID
-	ownerID?: ArtistProfileID
+	authID?: ArtistProfileID
 
-	constructor(id: RecordID, ownerID?: ArtistProfileID) {
+	constructor(id: RecordID, authID?: ArtistProfileID) {
 		this.id = id
-		this.ownerID = ownerID
+		this.authID = authID
 	}
 
-	static fromBackend(id: number | string, ownerID: ArtistProfileID) {
+	static fromBackend(id: number | string, authID: ArtistProfileID) {
 		const recordID = typeof id === "string" ? Number(id) : id
-		return new PatchDeleteUsecaseParams(recordID, ownerID)
+		return new DeleteRecordUsecaseParams(recordID, authID)
+	}
+}
+
+export class SetStatusRecordUsecaseParams {
+	id: RecordID
+	status: ItemStatusType
+	authID?: ArtistProfileID
+
+	constructor(id: RecordID, status: ItemStatusType, authID?: ArtistProfileID) {
+		this.id = id
+		this.authID = authID
+		this.status = status
+	}
+
+	static fromBackend(id: number | string, status: ItemStatusType, authID: ArtistProfileID) {
+		const recordID = typeof id === "string" ? Number(id) : id
+		return new SetStatusRecordUsecaseParams(recordID, status, authID)
+	}
+}
+
+export class RecordArtistUsecaseParams {
+	record: number
+	artists: number[]
+	authID?: number
+
+	constructor(record: number, artists: number[], authID?: number) {
+		this.artists = artists
+		this.record = record
+		this.authID = authID
+	}
+}
+
+export class RecordLabelUsecaseParams {
+	record: number
+	label: number
+	authID?: number
+
+	constructor(record: number, label: number, authID?: number) {
+		this.record = record
+		this.label = label
+		this.authID = authID
+	}
+}
+
+export class RemoveRecordLabelUsecaseParams {
+	record: number
+	authID?: number
+
+	constructor(record: number, label: number, authID?: number) {
+		this.record = record
+		this.authID = authID
 	}
 }

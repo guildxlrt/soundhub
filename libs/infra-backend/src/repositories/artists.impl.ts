@@ -13,6 +13,9 @@ import {
 	IGetArtistAuthsSuccess,
 	IArtistName,
 	UserRoleEnum,
+	ItemStatusEnum,
+	UserStatusEnum,
+	ItemStatusType,
 } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
@@ -29,6 +32,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			// PERSIST
 			const newUser = await this.userAuth.create({
 				data: {
+					status: ItemStatusEnum.public,
 					email: email as string,
 					password: password as string,
 					role: UserRoleEnum.artist,
@@ -38,7 +42,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 							bio: bio,
 							members: members,
 							genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-							isPublic: true,
+							status: ItemStatusEnum.public,
 						},
 					},
 				},
@@ -91,14 +95,14 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async setPublicStatus(id: ArtistProfileID, isPublic: boolean): Promise<boolean> {
+	async setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean> {
 		try {
 			await this.artist.update({
 				where: {
 					id: id,
 				},
 				data: {
-					isPublic: isPublic,
+					status: status,
 				},
 			})
 
@@ -144,7 +148,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 					genres: true,
 				},
 				where: {
-					isPublic: true,
+					status: ItemStatusEnum.public,
 				},
 			})
 
@@ -160,7 +164,7 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			const artists = await this.artist.findMany({
 				where: {
 					genres: { has: genre },
-					isPublic: true,
+					status: ItemStatusEnum.public,
 				},
 				select: {
 					id: true,
@@ -176,38 +180,40 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
+	async findByCountry(country: string): Promise<GetArtistShortDTO[]> {
 		try {
-			const { isPublic } = await this.artist.findUniqueOrThrow({
+			const artists = await this.artist.findMany({
 				where: {
-					id: id,
+					country: country,
+					status: ItemStatusEnum.public,
 				},
 				select: {
-					isPublic: true,
+					id: true,
+					name: true,
+					genres: true,
+					logoPath: true,
 				},
 			})
 
-			return isPublic
+			return GetArtistShortDTO.createArrayFromData(artists)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}
 	}
 
-	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
-		try {
-			const user = await this.artist.findUniqueOrThrow({
+	async checkRights(id: number, authID: number): Promise<boolean> {
+		return await this.artist
+			.findUnique({
 				where: {
 					id: id,
-				},
-				select: {
-					id: true,
+					status: UserStatusEnum.active || UserStatusEnum.draft || UserStatusEnum.invited,
+					user_auth_id: authID,
 				},
 			})
-
-			return user.id
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
-		}
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 
 	async getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess> {

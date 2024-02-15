@@ -62,23 +62,11 @@ export class RecordsImplement implements RecordsRepository {
 		}
 	}
 
-	async publish(id: RecordID): Promise<boolean> {
+	async setStatus(id: RecordID, isPublic: boolean): Promise<boolean> {
 		try {
 			return await axios({
 				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.records.publish + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setPublicStatus(id: RecordID, isPublic: boolean): Promise<boolean> {
-		try {
-			return await axios({
-				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.records.setPublicStatus + id}`,
+				url: `${apiUrlRoot + apiUrlPath.records.setStatus + id}`,
 
 				withCredentials: true,
 				data: { id: id, isPublic: isPublic },

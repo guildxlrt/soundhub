@@ -20,7 +20,7 @@ export interface EventsRepository {
 }
 
 export interface ExtBackEventsRepos {
-	getOwner(id: EventID): Promise<number | undefined>
+	checkRights(id: number, createdBy: number): Promise<boolean>
 	getImagePath(id: EventID): Promise<string | null | undefined>
 	setImagePath(path: string | null, id: EventID): Promise<boolean>
 }

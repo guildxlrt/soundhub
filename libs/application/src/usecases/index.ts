@@ -1,5 +1,6 @@
 export * from "./user-auth"
 export * from "./artist"
+export * from "./label"
 export * from "./record"
 export * from "./song"
 export * from "./announce"
