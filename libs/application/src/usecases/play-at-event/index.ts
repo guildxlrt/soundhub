@@ -1,2 +1,3 @@
-export * from "./find-events-by-artist.use"
-export * from "./find-events-by-artist-genre.use"
+export * from "./add-artists.use"
+export * from "./remove-artists.use"
+export * from "./search.use"

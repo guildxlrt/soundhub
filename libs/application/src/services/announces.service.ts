@@ -54,27 +54,14 @@ export class AnnouncesService implements IAnnouncesService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<GetAnnounceShortDTO[]> {
+	async search(id: ArtistProfileID, date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
-			return await this.service.getAll()
+			return await this.service.search(id, date)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
-		try {
-			return await this.service.findByArtist(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
-		try {
-			return await this.service.findByDate(date)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+
 	// BACKEND
 	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {

@@ -1,6 +1,12 @@
 import { AnnouncesBackendRepos } from "Domain"
 import { Announce } from "Domain"
-import { AnnounceID, GetAnnounceDTO, GetAnnounceShortDTO, ItemStatusEnum } from "Shared"
+import {
+	AnnounceID,
+	ArtistProfileID,
+	GetAnnounceDTO,
+	GetAnnounceShortDTO,
+	ItemStatusEnum,
+} from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -85,47 +91,11 @@ export class AnnouncesImplement implements AnnouncesBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<GetAnnounceShortDTO[]> {
-		try {
-			const announces = await this.announce.findMany({
-				select: {
-					id: true,
-					createdBy: true,
-					title: true,
-					imagePath: true,
-				},
-			})
-
-			return GetAnnounceShortDTO.createArrayFromData(announces)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtist(id: AnnounceID): Promise<GetAnnounceShortDTO[]> {
+	async search(id: ArtistProfileID, date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
 			const announces = await this.announce.findMany({
 				where: {
 					createdBy: id,
-				},
-				select: {
-					id: true,
-					createdBy: true,
-					title: true,
-					imagePath: true,
-				},
-			})
-
-			return GetAnnounceShortDTO.createArrayFromData(announces)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByDate(date: Date) {
-		try {
-			const announces = await this.announce.findMany({
-				where: {
 					createdAt: date,
 				},
 				select: {

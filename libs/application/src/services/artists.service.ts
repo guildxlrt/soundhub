@@ -75,23 +75,9 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<GetArtistShortDTO[]> {
+	async search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]> {
 		try {
-			return await this.service.getAll()
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
-		try {
-			return await this.service.findByGenre(genre)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByCountry(country: string): Promise<GetArtistShortDTO[]> {
-		try {
-			return await this.service.findByCountry(country)
+			return await this.service.search(genre, country)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

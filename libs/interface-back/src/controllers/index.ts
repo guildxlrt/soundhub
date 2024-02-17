@@ -8,7 +8,6 @@ import { SearchController } from "./search.ctrl"
 import { LabelsController } from "./labels.ctrl"
 
 export const controller = {
-	search: new SearchController(),
 	announces: new AnnoncesController(),
 	artists: new ArtistsController(),
 	auth: new UserAuthController(),
@@ -16,4 +15,5 @@ export const controller = {
 	records: new RecordsController(),
 	songs: new SongsController(),
 	labels: new LabelsController(),
+	search: new SearchController(),
 }

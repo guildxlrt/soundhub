@@ -1,19 +1,20 @@
-import { ErrorHandler, GetSongDTO } from "Shared"
+import { ErrorHandler, GenreType, GetSongDTO } from "Shared"
 import { UsecaseReply } from "../../utils"
 import { SongsService } from "../../services"
-import { GenreUsecaseParams } from "../../adapters"
 
-export class FindSongsByRecordGenreUsecase {
+export class SearchSongsUsecase {
 	mainService: SongsService
 	constructor(mainService: SongsService) {
 		this.mainService = mainService
 	}
 
-	async execute(input: GenreUsecaseParams): Promise<UsecaseReply<GetSongDTO[]>> {
+	async execute(
+		recordID: number,
+		artistID: number,
+		genre: GenreType
+	): Promise<UsecaseReply<GetSongDTO[]>> {
 		try {
-			const genre = input.genre
-			const data = await this.mainService.findByRecordGenre(genre)
-
+			const data = await this.mainService.search(recordID, artistID, genre)
 			return new UsecaseReply<GetSongDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)

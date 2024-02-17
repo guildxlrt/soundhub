@@ -4,7 +4,7 @@ import { UsecaseReply } from "../../utils"
 import { RecordArtistUsecaseParams } from "../../adapters"
 
 //
-export class AddArtistsToEventUsecase {
+export class AddArtistsToRecordUsecase {
 	mainService: RecordArtistService
 
 	constructor(mainService: RecordArtistService) {

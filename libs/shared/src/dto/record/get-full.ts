@@ -1,4 +1,4 @@
-import { IGetFullRecordSuccess } from "../../replies"
+import { IGetFullRecordSuccess, ILabelName } from "../../replies"
 import { IArtistName } from "../../types"
 
 interface RecordDTO {
@@ -26,14 +26,17 @@ interface SongDTO {
 export class GetFullRecordDTO {
 	readonly record: RecordDTO
 	readonly songs: SongDTO[]
+	readonly label: ILabelName
 
-	constructor(record: RecordDTO, songs: SongDTO[]) {
+	constructor(record: RecordDTO, songs: SongDTO[], label: ILabelName) {
 		this.record = record
 		this.songs = songs
+		this.label = label
 	}
 
 	static createFromData(
 		record: IGetFullRecordSuccess,
+		label: ILabelName,
 		artists: IArtistName[],
 		songsWithFeats: {
 			feats: IArtistName[]
@@ -48,6 +51,6 @@ export class GetFullRecordDTO {
 			artists,
 		}
 
-		return new GetFullRecordDTO(cleanRecord, songsWithFeats)
+		return new GetFullRecordDTO(cleanRecord, songsWithFeats, label)
 	}
 }

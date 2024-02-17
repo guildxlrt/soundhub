@@ -42,17 +42,9 @@ export class LabelsService implements ILabelsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<unknown[]> {
+	async search(country: string): Promise<unknown[]> {
 		try {
-			return await this.service.getAll()
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByCountry(country: string): Promise<unknown[]> {
-		try {
-			return await this.service.findByCountry(country)
+			return await this.service.search(country)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

@@ -39,24 +39,9 @@ export class EventsService implements IEventsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<unknown[]> {
+	async search(date: Date, place: string): Promise<unknown[]> {
 		try {
-			return await this.service.getAll()
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByDate(date: Date): Promise<unknown[]> {
-		try {
-			return await this.service.findByDate(date)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByPlace(place: string): Promise<unknown[]> {
-		try {
-			return await this.service.findByPlace(place)
+			return await this.service.search(date, place)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

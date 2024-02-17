@@ -1,5 +1,5 @@
 import axios from "axios"
-import { NewFormData, apiUrlPath, apiUrlRoot, apiUriRequest } from "../../assets"
+import { NewFormData, apiUriQuery, apiUrlPath, apiUrlRoot } from "../../assets"
 import { Artist, RawFile, UserAuth } from "Domain"
 import {
 	GetArtistDTO,
@@ -9,9 +9,9 @@ import {
 	ErrorHandler,
 	UserEmail,
 } from "Shared"
-import { ArtistsRepository } from "Domain"
+import { ArtistsFrontendRepos } from "Domain"
 
-export class ArtistsImplement implements ArtistsRepository {
+export class ArtistsImplement implements ArtistsFrontendRepos {
 	async create(
 		data: {
 			profile: Artist
@@ -29,9 +29,11 @@ export class ArtistsImplement implements ArtistsRepository {
 			NewFormData.fromObject(formData, userAuth)
 			NewFormData.fromObject(formData, authConfirm)
 
+			const url: string = apiUrlRoot + apiUrlPath.artists.signup
+
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.artists.signup}`,
+				url: url,
 				withCredentials: true,
 				data: {
 					profile: profile,
@@ -50,9 +52,11 @@ export class ArtistsImplement implements ArtistsRepository {
 			NewFormData.fromFile(formData, file as RawFile)
 			NewFormData.fromObject(formData, data)
 
+			const url: string = apiUrlRoot + apiUrlPath.artists.update
+
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.artists.update}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -63,9 +67,11 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async setStatus(): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.artists.setStatus
+
 			return await axios({
 				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.artists.setStatus}`,
+				url: url,
 
 				withCredentials: true,
 			})
@@ -76,9 +82,11 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async getByID(id: ArtistProfileID): Promise<GetArtistDTO> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.artists.getById + id
+
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists.getById + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -88,9 +96,11 @@ export class ArtistsImplement implements ArtistsRepository {
 
 	async getByEmail(email: UserEmail): Promise<GetArtistDTO> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.artists.getByEmail + email
+
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists.getByEmail + email}`,
+				url: url,
 				data: { email: email },
 				withCredentials: true,
 			})
@@ -99,23 +109,19 @@ export class ArtistsImplement implements ArtistsRepository {
 		}
 	}
 
-	async getAll(): Promise<GetArtistShortDTO[]> {
+	async search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]> {
 		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.artists.getAll}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+			const url: string =
+				apiUrlRoot +
+				apiUrlPath.search +
+				apiUriQuery.genre +
+				genre +
+				apiUriQuery.country +
+				country
 
-	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
-		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.genre + genre}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {

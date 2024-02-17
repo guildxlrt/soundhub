@@ -1,4 +1,4 @@
-import { envs } from "../../../shared/src/config/envs"
+import { envs } from "Shared"
 
 export const apiUrlRoot = envs.apiUrl
 
@@ -26,7 +26,7 @@ export const apiUrlPath = {
 		get: "/record/:",
 		getAll: "/records",
 	},
-	songs: { add: "/song", edit: "/song/:", delete: "/song/:", get: "/song/:", getAll: "/songs" },
+	songs: { add: "/song", edit: "/song/:", remove: "/song/:", get: "/song/:", getAll: "/songs" },
 	events: {
 		create: "/event",
 		edit: "/event/:",
@@ -42,22 +42,24 @@ export const apiUrlPath = {
 		getAll: "/announces",
 	},
 	search: {
-		artists: "/search?q=artists&",
-		records: "/search?q=records&",
-		songs: "/search?q=songs&",
-		events: "/search?q=events&",
-		announces: "/search?q=announces&",
+		artists: "/search?q=artists",
+		labels: "/search?q=labels",
+		records: "/search?q=records",
+		songs: "/search?q=songs",
+		events: "/search?q=events",
+		announces: "/search?q=announces",
 	},
 }
 
-export const apiUriRequest = {
-	artistID: "artist-id=",
-	artistFeatsID: "artist-feats-id=",
-	artistGenre: "artist-genre=",
-	recordID: "record-id=",
-	recordGenre: "record-genre=",
-	recordType: "record-type=",
-	date: "date=",
-	genre: "genre=",
-	place: "place=",
+export const apiUriQuery = {
+	artistID: "&artist-id=",
+	artistFeatsID: "&artist-feats-id=",
+	artistGenre: "&artist-genre=",
+	recordID: "&record-id=",
+	recordGenre: "&record-genre=",
+	recordType: "&record-type=",
+	date: "&date=",
+	genre: "&genre=",
+	place: "&place=",
+	country: "&country=",
 }

@@ -41,7 +41,7 @@ export class GetSongUsecase {
 			const data = (await this.mainService.get(id)) as IGetFullSongSuccess
 
 			// get artists names
-			const feats: IArtistName[] = await songFeatService.getArtistsNamesOfSong(data.id)
+			const feats: IArtistName[] = await songFeatService.getArtistsNames(data.id)
 
 			const dto = GetFullSongDTO.createFromData(data, feats)
 

@@ -5,24 +5,26 @@ import {
 	GetFullRecordDTO,
 	GetShortRecordDTO,
 	ErrorHandler,
-	ArtistProfileID,
 	RecordID,
 	RecordType,
+	ItemStatusType,
 } from "Shared"
-import { NewFormData, apiUriRequest, apiUrlPath, apiUrlRoot } from "../../assets"
+import { NewFormData, apiUriQuery, apiUrlPath, apiUrlRoot } from "../../assets"
 import axios from "axios"
-import { RecordsRepository } from "Domain"
+import { RecordsFrontendRepos } from "Domain"
 
-export class RecordsImplement implements RecordsRepository {
+export class RecordsImplement implements RecordsFrontendRepos {
 	async create(record: { data: Record; cover: RawFile }): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			NewFormData.fromFile(formData, record.cover, "cover")
 			NewFormData.fromObject(formData, record.data, "record")
 
+			const url: string = apiUrlRoot + apiUrlPath.records.create
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.records.create}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -39,9 +41,11 @@ export class RecordsImplement implements RecordsRepository {
 			NewFormData.fromFile(formData, record?.cover as RawFile, "cover")
 			NewFormData.fromObject(formData, record.data, "record")
 
+			const url: string = apiUrlRoot + apiUrlPath.records.edit + id
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.records.edit + id}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -52,9 +56,11 @@ export class RecordsImplement implements RecordsRepository {
 
 	async delete(id: RecordID): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.records.delete + id
+
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.records.delete + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -62,14 +68,16 @@ export class RecordsImplement implements RecordsRepository {
 		}
 	}
 
-	async setStatus(id: RecordID, isPublic: boolean): Promise<boolean> {
+	async setStatus(id: RecordID, status: ItemStatusType): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.records.setStatus + id
+
 			return await axios({
 				method: "patch",
-				url: `${apiUrlRoot + apiUrlPath.records.setStatus + id}`,
+				url: url,
 
 				withCredentials: true,
-				data: { id: id, isPublic: isPublic },
+				data: { id: id, status: status },
 			})
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -78,9 +86,11 @@ export class RecordsImplement implements RecordsRepository {
 
 	async get(id: EntityID): Promise<GetFullRecordDTO> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.records.get + id
+
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.records.get + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -88,71 +98,22 @@ export class RecordsImplement implements RecordsRepository {
 		}
 	}
 
-	async getAll(): Promise<GetShortRecordDTO[]> {
+	async search(genre: GenreType, date: Date, type: RecordType): Promise<GetShortRecordDTO[]> {
 		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.records.getAll}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+			const url: string =
+				apiUrlRoot +
+				apiUrlPath.search +
+				apiUriQuery.genre +
+				genre +
+				apiUriQuery.date +
+				date +
+				apiUriQuery.recordType +
+				type
 
-	async findByGenre(genre: GenreType): Promise<GetShortRecordDTO[]> {
-		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.genre + genre}`,
+				url: url,
 
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByDate(date: Date): Promise<GetShortRecordDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.date + date}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtist(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtistFeats(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistFeatsID + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByRecordType(type: RecordType): Promise<GetShortRecordDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.recordType + type}`,
 				withCredentials: true,
 			})
 		} catch (error) {

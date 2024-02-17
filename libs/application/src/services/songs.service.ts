@@ -42,24 +42,13 @@ export class SongsService implements ISongsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByRecord(id: RecordID): Promise<GetSongDTO[]> {
+	async search(
+		recordID: RecordID,
+		artistID: ArtistProfileID,
+		genre: GenreType
+	): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findByRecord(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]> {
-		try {
-			return await this.service.findByRecordGenre(genre)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]> {
-		try {
-			return await this.service.findByArtistRecords(id)
+			return await this.service.search(recordID, artistID, genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

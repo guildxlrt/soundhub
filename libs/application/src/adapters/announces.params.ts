@@ -50,3 +50,5 @@ export class DeleteAnnounceUsecaseParams {
 		return new DeleteAnnounceUsecaseParams(id, authID)
 	}
 }
+
+export class AnnouncesSearchAnnouncesUsecase {}

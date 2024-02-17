@@ -56,31 +56,9 @@ export class RecordsService implements IRecordsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<GetShortRecordDTO[]> {
+	async search(genre: GenreType, date: Date, type: RecordType): Promise<GetShortRecordDTO[]> {
 		try {
-			return await this.service.getAll()
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByGenre(genre: GenreType): Promise<GetShortRecordDTO[]> {
-		try {
-			return await this.service.findByGenre(genre)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByDate(date: Date): Promise<GetShortRecordDTO[]> {
-		try {
-			return await this.service.findByDate(date)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByRecordType(type: RecordType): Promise<GetShortRecordDTO[]> {
-		try {
-			return await this.service.findByRecordType(type)
+			return await this.service.search(genre, date, type)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

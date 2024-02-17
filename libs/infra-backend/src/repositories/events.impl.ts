@@ -122,76 +122,12 @@ export class EventsImplement implements EventsBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<IGetEventShortSuccess[]> {
-		try {
-			const events: IGetEventShortSuccess[] = (
-				await this.event.findMany({
-					select: {
-						id: true,
-						date: true,
-						place: true,
-						title: true,
-						playAtEvent: {
-							select: {
-								artist_id: true,
-							},
-						},
-					},
-				})
-			).map((event) => {
-				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
-
-				const artists = playAtEvent.map((item) => {
-					return item.artist_id
-				})
-				return { ...otherDatas, artists }
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByDate(date: Date): Promise<IGetEventShortSuccess[]> {
+	async search(date: Date, place: string): Promise<IGetEventShortSuccess[]> {
 		try {
 			const events: IGetEventShortSuccess[] = (
 				await this.event.findMany({
 					where: {
 						date: date,
-					},
-					select: {
-						id: true,
-						date: true,
-						place: true,
-						title: true,
-						playAtEvent: {
-							select: {
-								artist_id: true,
-							},
-						},
-					},
-				})
-			).map((event) => {
-				const { ["playAtEvent"]: playAtEvent, ...otherDatas } = event
-
-				const artists = playAtEvent.map((item) => {
-					return item.artist_id
-				})
-				return { ...otherDatas, artists }
-			})
-
-			return events
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByPlace(place: string): Promise<IGetEventShortSuccess[]> {
-		try {
-			const events: IGetEventShortSuccess[] = (
-				await this.event.findMany({
-					where: {
 						place: place,
 					},
 					select: {

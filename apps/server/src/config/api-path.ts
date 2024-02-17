@@ -10,17 +10,14 @@ export const apiPath = {
 }
 
 export const apiPathEnd = {
-	onRoot: {
-		search: "/search?",
+	search: {
+		global: "/search?",
 		artists: "/artists?",
 		records: "/records?",
 		songs: "/songs",
 		events: "/events?",
 		announces: "/announces?",
 		labels: "/labels?",
-		signup: "/signup",
-		update: "/update",
-		setStatus: "/set-status",
 	},
 	auth: {
 		login: "/login",
@@ -29,6 +26,9 @@ export const apiPathEnd = {
 		changePass: "/change-pass",
 	},
 	artist: {
+		signup: "/signup",
+		update: "/update",
+		setStatus: "/set-status",
 		getByID: "/:id",
 		getByEmail: "/email",
 	},
@@ -36,8 +36,10 @@ export const apiPathEnd = {
 		create: "/create",
 		edit: "/edit",
 		setStatus: "/set-status",
+		delete: "/delete",
 		get: "/:id",
 	},
+	songs: { search: "/:id", get: "/:id", add: "add/:id", edit: "edit/:id", delete: "delete/:id" },
 	event: {
 		create: "/create",
 		edit: "/edit",
@@ -54,8 +56,7 @@ export const apiPathEnd = {
 		create: "/create",
 		edit: "/edit",
 		delete: "/delete/:",
-		get: "/:id",
 		setStatus: "/set-private-status/:",
+		get: "/:id",
 	},
-	songs: { get: "/:id", getAll: "" },
 }

@@ -1,5 +1,5 @@
 import { ExtBackSongFeatRepos, ExtFrontSongFeatRepos, SongFeatRepository } from "Domain"
-import { ArtistProfileID, ErrorHandler, GetShortRecordDTO, IArtistName, SongID } from "Shared"
+import { ArtistProfileID, ErrorHandler, GetSongDTO, IArtistName, SongID } from "Shared"
 
 interface ISongFeatService
 	extends SongFeatRepository,
@@ -28,23 +28,23 @@ export class SongFeatService implements ISongFeatService {
 		}
 	}
 
-	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
+	async search(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findSongsByArtistFeats(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async getArtistsNamesOfSong(id: SongID): Promise<IArtistName[]> {
-		try {
-			return await this.service.getArtistsNamesOfSong(id)
+			return await this.service.search(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
 	// BACKEND
+	async getArtistsNames(id: SongID): Promise<IArtistName[]> {
+		try {
+			return await this.service.getArtistsNames(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
 	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {
 			return await this.service.checkRights(id, createdBy)

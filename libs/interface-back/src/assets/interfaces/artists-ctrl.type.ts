@@ -4,5 +4,4 @@ export interface IArtistsCtrl {
 	setStatus(req: unknown, res: unknown): Promise<unknown>
 	getByID(req: unknown, res: unknown): Promise<unknown>
 	getByEmail(req: unknown, res: unknown): Promise<unknown>
-	search(req: unknown, res: unknown): Promise<unknown>
 }

@@ -9,14 +9,11 @@ import {
 	ExpressResponse,
 	StatusDTO,
 	ItemStatusType,
-	GetArtistShortDTO,
-	SearchResponseDTO,
 } from "Shared"
 import {
 	UpdateArtistUsecaseParams,
 	NewArtistUsecaseParams,
 	CreateArtistUsecase,
-	GetAllArtistsUsecase,
 	GetArtistByIDUsecase,
 	UpdateArtistUsecase,
 	IDUsecaseParams,
@@ -26,10 +23,6 @@ import {
 	GetArtistByEmailUsecase,
 	SetStatusArtistUsecaseParams,
 	SetStatusArtistUsecase,
-	GenreUsecaseParams,
-	FindArtistsByGenreUsecase,
-	CountryUsecaseParams,
-	FindArtistsByCountryUsecase,
 } from "Application"
 import { ApiErrorHandler, Cookie, IArtistsCtrl } from "../assets"
 
@@ -175,63 +168,6 @@ export class ArtistsController implements IArtistsCtrl {
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])
 
 			const reponse = new ResponseDTO(data, error)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return ApiErrorHandler.reply(error, res)
-		}
-	}
-
-	async search(req: ExpressRequest, res: ExpressResponse) {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
-
-			const genre = req.query?.["genre"] as string
-			const country = req.query?.["country"] as string
-
-			const results: GetArtistShortDTO[] = []
-			const errors: ErrorMsg[] = []
-
-			if (genre) {
-				const params = new GenreUsecaseParams(genre)
-
-				// Services
-				const artistsImplement = new ArtistsImplement()
-				const artistsService = new ArtistsService(artistsImplement)
-
-				// Calling database
-				const findArtistsByGenre = new FindArtistsByGenreUsecase(artistsService)
-				const resultsByGenre = await findArtistsByGenre.execute(params)
-
-				if (resultsByGenre.data) results.push(...resultsByGenre.data)
-				if (resultsByGenre.error) errors.push(resultsByGenre.error)
-			} else if (country) {
-				const params = new CountryUsecaseParams(genre)
-
-				// Services
-				const artistsImplement = new ArtistsImplement()
-				const artistsService = new ArtistsService(artistsImplement)
-
-				// Calling database
-				const findArtistsByCountry = new FindArtistsByCountryUsecase(artistsService)
-				const resultsByCountry = await findArtistsByCountry.execute(params)
-
-				if (resultsByCountry.data) results.push(...resultsByCountry.data)
-				if (resultsByCountry.error) errors.push(resultsByCountry.error)
-			} else if (!genre || !country) {
-				// Services
-				const artistsImplement = new ArtistsImplement()
-				const artistsService = new ArtistsService(artistsImplement)
-
-				// Calling database
-				const getAllArtists = new GetAllArtistsUsecase(artistsService)
-				const resultsAll = await getAllArtists.execute()
-
-				if (resultsAll.data) results.push(...resultsAll.data)
-				if (resultsAll.error) errors.push(resultsAll.error)
-			}
-
-			// RETURN RESULTS
-			const reponse = new SearchResponseDTO([...new Set(results)], errors)
 			return res.status(200).send(reponse)
 		} catch (error) {
 			return ApiErrorHandler.reply(error, res)

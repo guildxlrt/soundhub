@@ -48,7 +48,7 @@ export class RecordLabelsImplement implements RecordLabelRepository {
 			})
 	}
 
-	async getLabelOfRecord(id: RecordID): Promise<{ id: number; name: string }> {
+	async getLabelName(id: RecordID): Promise<{ id: number; name: string }> {
 		return await this.relation
 			.findUniqueOrThrow({
 				where: {

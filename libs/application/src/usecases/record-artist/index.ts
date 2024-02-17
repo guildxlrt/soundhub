@@ -1,1 +1,3 @@
-export * from "./find-records-by-artist.use"
+export * from "./add-artists.use"
+export * from "./remove-artists.use"
+export * from "./search.use"

@@ -1,5 +1,5 @@
 import { IFullLabel, ILabelName, LabelID, ItemStatusType } from "Shared"
-import { Label, StreamFile } from "../entities"
+import { Label, RawFile } from "../entities"
 
 export interface LabelsRepository {
 	create(data: unknown): Promise<boolean>
@@ -7,8 +7,7 @@ export interface LabelsRepository {
 	setStatus(data: { id: number; status: ItemStatusType }): Promise<boolean>
 
 	get(id: LabelID): Promise<unknown>
-	getAll(): Promise<unknown[]>
-	findByCountry(country: string): Promise<unknown[]>
+	search(country: string): Promise<unknown[]>
 }
 
 export interface ExtBackLabelsRepos {
@@ -23,15 +22,13 @@ export interface LabelsBackendRepos extends LabelsRepository, ExtBackLabelsRepos
 	edit(label: Label): Promise<boolean>
 
 	get(id: LabelID): Promise<IFullLabel>
-	getAll(): Promise<ILabelName[]>
-	findByCountry(country: string): Promise<ILabelName[]>
+	search(country: string): Promise<ILabelName[]>
 }
 
 export interface LabelsFrontendRepos extends LabelsRepository, ExtFrontLabelsRepos {
-	create(label: { data: Label; logo?: StreamFile }): Promise<boolean>
-	edit(label: { data: Label; logo?: StreamFile; deleteLOgo?: boolean }): Promise<boolean>
+	create(label: { data: Label; file?: RawFile }): Promise<boolean>
+	edit(label: { data: Label; file?: RawFile; deleteLOgo?: boolean }): Promise<boolean>
 
 	get(id: LabelID): Promise<unknown>
-	getAll(): Promise<unknown[]>
-	findByCountry(country: string): Promise<unknown[]>
+	search(country: string): Promise<unknown[]>
 }

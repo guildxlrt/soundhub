@@ -17,10 +17,7 @@ export interface RecordsRepository {
 	setStatus(id: RecordID, status: ItemStatusType): Promise<boolean>
 
 	get(id: RecordID): Promise<unknown>
-	getAll(): Promise<GetShortRecordDTO[]>
-	findByGenre(genre: GenreType): Promise<GetShortRecordDTO[]>
-	findByDate(date: Date): Promise<GetShortRecordDTO[]>
-	findByRecordType(type: RecordType): Promise<GetShortRecordDTO[]>
+	search(genre: GenreType, date: Date, type: RecordType): Promise<GetShortRecordDTO[]>
 }
 
 export interface ExtBackRecordsRepos {

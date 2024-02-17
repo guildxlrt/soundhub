@@ -83,20 +83,7 @@ export class LabelsImplement implements LabelsBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<ILabelName[]> {
-		try {
-			return await this.label.findMany({
-				select: {
-					id: true,
-					name: true,
-				},
-			})
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByCountry(country: string): Promise<ILabelName[]> {
+	async search(country: string): Promise<ILabelName[]> {
 		try {
 			return await this.label.findMany({
 				where: { country: country },

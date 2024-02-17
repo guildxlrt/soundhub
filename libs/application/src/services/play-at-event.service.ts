@@ -25,16 +25,9 @@ export class PlayAtEventService implements IPlayAtEventService {
 		}
 	}
 
-	async findEventsByArtist(id: EventID): Promise<unknown[]> {
+	async search(id: number, genre: GenreType): Promise<unknown[]> {
 		try {
-			return await this.service.findEventsByArtist(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findEventsByArtistGenre(genre: GenreType): Promise<unknown[]> {
-		try {
-			return await this.service.findEventsByArtistGenre(genre)
+			return await this.service.search(id, genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

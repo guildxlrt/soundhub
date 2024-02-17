@@ -1,10 +1,8 @@
 import { UsecaseReply } from "../../utils"
 import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
 import { ArtistsService, EventsService } from "../../services"
-import { DateUsecaseParams } from "../../adapters"
-import { DateFormatter } from "Domain"
 
-export class FindEventsByDateUsecase {
+export class SearchEventsUsecase {
 	mainService: EventsService
 	artistsService?: ArtistsService
 
@@ -13,24 +11,19 @@ export class FindEventsByDateUsecase {
 		this.artistsService = artistsService
 	}
 
-	async execute(input: DateUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async execute(date: Date, place: string): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService)
-				return await this.backend(input, this.artistsService)
-			else return await this.frontend(input)
+				return await this.backend({ date, place }, this.artistsService)
+			else return await this.frontend(date, place)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async frontend(input: DateUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async frontend(date: Date, place: string): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const { date } = input
-
-			const dateFormatter = new DateFormatter()
-			const cleanDate = dateFormatter.format(date)
-
-			const data = (await this.mainService.findByDate(cleanDate)) as GetEventShortDTO[]
+			const data = (await this.mainService.search(date, place)) as GetEventShortDTO[]
 			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -38,16 +31,13 @@ export class FindEventsByDateUsecase {
 	}
 
 	async backend(
-		input: DateUsecaseParams,
+		input: { date: Date; place: string },
 		artistsService: ArtistsService
 	): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const { date } = input
+			const { date, place } = input
 
-			const dateFormatter = new DateFormatter()
-			const cleanDate = dateFormatter.format(date)
-
-			const data = (await this.mainService.findByDate(cleanDate)) as IGetEventShortSuccess[]
+			const data = (await this.mainService.search(date, place)) as IGetEventShortSuccess[]
 
 			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {

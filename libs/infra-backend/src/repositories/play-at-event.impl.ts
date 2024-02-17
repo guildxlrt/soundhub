@@ -55,7 +55,7 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 			})
 	}
 
-	async findEventsByArtist(id: EventID): Promise<IGetEventShortSuccess[]> {
+	async search(id: EventID, genre: GenreType): Promise<IGetEventShortSuccess[]> {
 		try {
 			const ArtistProfileID = id
 
@@ -63,6 +63,9 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 				await this.relation.findMany({
 					where: {
 						artist_id: ArtistProfileID,
+						artist: {
+							genres: { has: genre },
+						},
 					},
 					select: {
 						event: {
@@ -91,62 +94,6 @@ export class PlayAtEventImplement implements PlayAtEventRepository {
 			})
 
 			return result
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findEventsByArtistGenre(genre: GenreType): Promise<IGetEventShortSuccess[]> {
-		try {
-			const artists = (
-				await this.artist.findMany({
-					where: {
-						genres: { has: genre },
-					},
-					select: {
-						id: true,
-					},
-				})
-			).map((artist) => artist.id)
-
-			const results = await Promise.all(
-				artists.map(async (id) => {
-					return (
-						await this.relation.findMany({
-							where: {
-								artist_id: id,
-							},
-							select: {
-								event: {
-									select: {
-										id: true,
-										date: true,
-										place: true,
-										title: true,
-										playAtEvent: {
-											select: {
-												artist_id: true,
-											},
-										},
-									},
-								},
-							},
-						})
-					).map((item) => {
-						const { ["playAtEvent"]: playAtEvent, ...otherDatas } = item.event
-
-						const artists = playAtEvent.map((item) => {
-							return item.artist_id
-						})
-						return { ...otherDatas, artists }
-					})
-				})
-			)
-
-			const flat = results.flat(2)
-			const events = [...new Set(flat)]
-
-			return events
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)
 		}

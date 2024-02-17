@@ -139,62 +139,22 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<GetArtistShortDTO[]> {
+	async search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]> {
 		try {
 			const artists = await this.artist.findMany({
+				where: {
+					status: ItemStatusEnum.public,
+					genres: { has: genre },
+					country: country,
+				},
 				select: {
 					id: true,
 					name: true,
 					genres: true,
-				},
-				where: {
-					status: ItemStatusEnum.public,
 				},
 			})
 
 			// Reorganize
-			return GetArtistShortDTO.createArrayFromData(artists)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
-		try {
-			const artists = await this.artist.findMany({
-				where: {
-					genres: { has: genre },
-					status: ItemStatusEnum.public,
-				},
-				select: {
-					id: true,
-					name: true,
-					genres: true,
-					logoPath: true,
-				},
-			})
-
-			return GetArtistShortDTO.createArrayFromData(artists)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByCountry(country: string): Promise<GetArtistShortDTO[]> {
-		try {
-			const artists = await this.artist.findMany({
-				where: {
-					country: country,
-					status: ItemStatusEnum.public,
-				},
-				select: {
-					id: true,
-					name: true,
-					genres: true,
-					logoPath: true,
-				},
-			})
-
 			return GetArtistShortDTO.createArrayFromData(artists)
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error)

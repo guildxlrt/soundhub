@@ -52,7 +52,7 @@ export class RecordArtistImplement implements RecordArtistRepository {
 		}
 	}
 
-	async findRecordsByArtist(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
+	async search(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
 		try {
 			const data = (
 				await this.relation.findMany({
@@ -86,7 +86,7 @@ export class RecordArtistImplement implements RecordArtistRepository {
 		}
 	}
 
-	async getArtistsNamesOfRecord(id: RecordID): Promise<IArtistName[]> {
+	async getArtistsNames(id: RecordID): Promise<IArtistName[]> {
 		try {
 			const data = (
 				await this.relation.findMany({

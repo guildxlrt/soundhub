@@ -15,9 +15,7 @@ export interface SongsRepository {
 	delete(id: SongID): Promise<boolean>
 
 	get(id: SongID): Promise<unknown>
-	findByRecord(id: RecordID): Promise<GetSongDTO[]>
-	findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]>
-	findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]>
+	search(recordID: RecordID, artistID: ArtistProfileID, genre: GenreType): Promise<GetSongDTO[]>
 }
 
 export interface ExtBackSongsRepos {

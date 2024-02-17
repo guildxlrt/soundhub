@@ -1,5 +1,5 @@
 import { SongFeatBackendRepos } from "Domain"
-import { ArtistProfileID, GetShortRecordDTO, IArtistName, ItemStatusEnum, SongID } from "Shared"
+import { ArtistProfileID, GetSongDTO, IArtistName, SongID } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
 
@@ -52,9 +52,9 @@ export class SongFeatImplement implements SongFeatBackendRepos {
 		}
 	}
 
-	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
+	async search(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
-			const recordsIDs = (
+			const results = (
 				await this.relation.findMany({
 					where: {
 						artist_id: id,
@@ -62,34 +62,17 @@ export class SongFeatImplement implements SongFeatBackendRepos {
 					select: {
 						song: {
 							select: {
+								id: true,
 								record_id: true,
+								title: true,
+								audioPath: true,
 							},
 						},
 					},
 				})
 			).map((result) => {
-				return result.song.record_id
+				return result.song
 			})
-
-			const results = await Promise.all(
-				recordsIDs.map(async (id) => {
-					const result = await this.record.findUniqueOrThrow({
-						where: {
-							id: id,
-							status: ItemStatusEnum.public,
-						},
-						select: {
-							id: true,
-							createdBy: true,
-							title: true,
-							recordType: true,
-							genres: true,
-						},
-					})
-
-					return result
-				})
-			)
 
 			return results
 		} catch (error) {
@@ -97,7 +80,7 @@ export class SongFeatImplement implements SongFeatBackendRepos {
 		}
 	}
 
-	async getArtistsNamesOfSong(id: SongID): Promise<IArtistName[]> {
+	async getArtistsNames(id: SongID): Promise<IArtistName[]> {
 		try {
 			const data = (
 				await this.relation.findMany({

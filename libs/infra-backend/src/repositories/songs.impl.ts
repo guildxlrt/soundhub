@@ -100,60 +100,18 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findByRecord(id: RecordID): Promise<GetSongDTO[]> {
+	async search(
+		recordID: RecordID,
+		artistID: ArtistProfileID,
+		genre: GenreType
+	): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					record_id: id,
-					record: {
-						status: ItemStatusEnum.public,
-					},
-				},
-				select: {
-					id: true,
-					record_id: true,
-					audioPath: true,
-					title: true,
-				},
-			})
-
-			// RESPONSE
-			return GetSongDTO.createArrayFromData(songs)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtistRecords(id: ArtistProfileID): Promise<GetSongDTO[]> {
-		try {
-			const songs = await this.song.findMany({
-				where: {
-					record: {
-						createdBy: id,
-						status: ItemStatusEnum.public,
-					},
-				},
-				select: {
-					id: true,
-					record_id: true,
-					audioPath: true,
-					title: true,
-				},
-			})
-
-			// RESPONSE
-			return GetSongDTO.createArrayFromData(songs)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByRecordGenre(genre: GenreType): Promise<GetSongDTO[]> {
-		try {
-			const songs = await this.song.findMany({
-				where: {
+					record_id: recordID,
 					record: {
 						genres: { has: genre },
+						createdBy: artistID,
 						status: ItemStatusEnum.public,
 					},
 				},

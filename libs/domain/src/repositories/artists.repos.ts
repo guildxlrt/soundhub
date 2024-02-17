@@ -13,7 +13,7 @@ import {
 	IArtistName,
 	ItemStatusType,
 } from "Shared"
-import { StreamFile, Artist, UserAuth, RawFile, File } from "Domain"
+import { RawFile, Artist, UserAuth, File } from "Domain"
 
 export interface ArtistsRepository {
 	create(
@@ -28,9 +28,7 @@ export interface ArtistsRepository {
 	setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean>
 	getByID(id: ArtistProfileID): Promise<GetArtistDTO>
 	getByEmail(email: UserEmail): Promise<GetArtistDTO>
-	getAll(): Promise<GetArtistShortDTO[]>
-	findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]>
-	findByCountry(country: string): Promise<GetArtistShortDTO[]>
+	search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]>
 }
 
 export interface ExtBackArtistsRepos {
@@ -50,9 +48,9 @@ export interface ArtistsBackendRepos extends ArtistsRepository, ExtBackArtistsRe
 			profile: Artist
 			userAuth: UserAuth
 		},
-		file?: StreamFile
+		file?: RawFile
 	): Promise<INewArtistBackSucces>
-	update(data: Artist, deleteLogo?: boolean, file?: StreamFile): Promise<boolean>
+	update(data: Artist, deleteLogo?: boolean, file?: RawFile): Promise<boolean>
 }
 
 export interface ArtistsFrontendRepos extends ArtistsRepository, ExtFrontArtistsRepos {

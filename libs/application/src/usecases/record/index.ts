@@ -4,7 +4,4 @@ export * from "./delete.use"
 export * from "./set-priv-status"
 
 export * from "./get.use"
-export * from "./get-all.use"
-export * from "./find-by-date.use"
-export * from "./find-by-genre.use"
-export * from "./find-by-record-type.use"
+export * from "./search.use"

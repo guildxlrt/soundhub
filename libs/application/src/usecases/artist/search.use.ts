@@ -1,16 +1,16 @@
-import { GetArtistShortDTO, ErrorHandler } from "Shared"
+import { GetArtistShortDTO, ErrorHandler, GenreType } from "Shared"
 import { ArtistsService } from "../../services"
 import { UsecaseReply } from "../../utils"
 
-export class GetAllArtistsUsecase {
+export class SearchArtistsUsecase {
 	mainService: ArtistsService
 	constructor(mainService: ArtistsService) {
 		this.mainService = mainService
 	}
 
-	async execute(): Promise<UsecaseReply<GetArtistShortDTO[]>> {
+	async execute(genre: GenreType, country: string): Promise<UsecaseReply<GetArtistShortDTO[]>> {
 		try {
-			const data = await this.mainService.getAll()
+			const data = await this.mainService.search(genre, country)
 
 			return new UsecaseReply<GetArtistShortDTO[]>(data, null)
 		} catch (error) {

@@ -1,18 +1,12 @@
 import axios from "axios"
 import { NewFormData, apiUriQuery, apiUrlPath, apiUrlRoot } from "../../assets"
-import { Announce, RawFile } from "Domain"
-import {
-	AnnounceID,
-	ArtistProfileID,
-	ErrorHandler,
-	GetAnnounceDTO,
-	GetAnnounceShortDTO,
-} from "Shared"
-import { AnnouncesFrontendRepos } from "Domain"
+import { Label, LabelsFrontendRepos, RawFile } from "Domain"
+import { LabelID, ErrorHandler, GetShortLabelDTO, GetFullLabelDTO, ItemStatusType } from "Shared"
 
-export class AnnouncesImplement implements AnnouncesFrontendRepos {
-	async create(data: Announce, file?: RawFile): Promise<boolean> {
+export class LabelsImplement implements LabelsFrontendRepos {
+	async create(label: { data: Label; file?: RawFile }): Promise<boolean> {
 		try {
+			const { file, data } = label
 			const formData = new FormData()
 			NewFormData.fromFile(formData, file as RawFile)
 			NewFormData.fromObject(formData, data)
@@ -30,8 +24,9 @@ export class AnnouncesImplement implements AnnouncesFrontendRepos {
 		}
 	}
 
-	async edit(data: Announce, file?: RawFile): Promise<boolean> {
+	async edit(label: { data: Label; file?: RawFile }): Promise<boolean> {
 		try {
+			const { file, data } = label
 			const id = data.id
 			const formData = new FormData()
 			NewFormData.fromFile(formData, file as RawFile)
@@ -50,7 +45,7 @@ export class AnnouncesImplement implements AnnouncesFrontendRepos {
 		}
 	}
 
-	async delete(id: AnnounceID): Promise<boolean> {
+	async delete(id: LabelID): Promise<boolean> {
 		try {
 			const url: string = apiUrlRoot + apiUrlPath.announces.delete + id
 
@@ -64,7 +59,27 @@ export class AnnouncesImplement implements AnnouncesFrontendRepos {
 		}
 	}
 
-	async get(id: AnnounceID): Promise<GetAnnounceDTO> {
+	async setStatus(data: { id: number; status: ItemStatusType }): Promise<boolean> {
+		try {
+			const { id, status } = data
+
+			const url: string = apiUrlRoot + apiUrlPath.announces.delete + id
+
+			return await axios({
+				method: "patch",
+				url: url,
+				withCredentials: true,
+				data: {
+					id: id,
+					status: status,
+				},
+			})
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async get(id: LabelID): Promise<GetFullLabelDTO> {
 		try {
 			const url: string = apiUrlRoot + apiUrlPath.announces.get + id
 
@@ -78,15 +93,10 @@ export class AnnouncesImplement implements AnnouncesFrontendRepos {
 		}
 	}
 
-	async search(id: ArtistProfileID, date: Date): Promise<GetAnnounceShortDTO[]> {
+	async search(country: string): Promise<GetShortLabelDTO[]> {
 		try {
 			const url: string =
-				apiUrlRoot +
-				apiUrlPath.search.artists +
-				apiUriQuery.artistID +
-				id +
-				apiUriQuery.date +
-				date
+				apiUrlRoot + apiUrlPath.search.labels + apiUriQuery.artistID + country
 
 			return await axios({
 				method: "get",

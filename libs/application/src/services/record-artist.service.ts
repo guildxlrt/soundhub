@@ -28,23 +28,23 @@ export class RecordArtistService implements IRecordArtistService {
 		}
 	}
 
-	async findRecordsByArtist(id: ArtistProfileID): Promise<GetShortRecordDTO[]> {
+	async search(artistID: number): Promise<GetShortRecordDTO[]> {
 		try {
-			return await this.service.findRecordsByArtist(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async getArtistsNamesOfRecord(id: RecordID): Promise<IArtistName[]> {
-		try {
-			return await this.service.getArtistsNamesOfRecord(id)
+			return await this.service.search(artistID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
 	// BACKEND
+	async getArtistsNames(id: RecordID): Promise<IArtistName[]> {
+		try {
+			return await this.service.getArtistsNames(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
 	async checkRights(id: number, authID: number): Promise<boolean> {
 		try {
 			return await this.service.checkRights(id, authID)

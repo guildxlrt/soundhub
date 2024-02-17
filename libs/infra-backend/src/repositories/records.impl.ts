@@ -15,7 +15,6 @@ import { DatabaseErrorHandler } from "../utils"
 
 export class RecordsImplement implements RecordsBackendRepos {
 	private record = dbClient.record
-	private song = dbClient.song
 
 	async create(data: { record: Record; artists: ArtistProfileID[] }): Promise<true> {
 		try {
@@ -143,73 +142,12 @@ export class RecordsImplement implements RecordsBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<GetShortRecordDTO[]> {
-		try {
-			const data = await this.record.findMany({
-				select: {
-					id: true,
-					createdBy: true,
-					title: true,
-					recordType: true,
-					genres: true,
-				},
-				where: {
-					status: ItemStatusEnum.public,
-				},
-			})
-
-			return GetShortRecordDTO.createArrayFromData(data)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByGenre(genre: GenreType): Promise<GetShortRecordDTO[]> {
+	async search(genre: GenreType, date: Date, type: RecordType): Promise<GetShortRecordDTO[]> {
 		try {
 			const data = await this.record.findMany({
 				where: {
 					genres: { has: genre },
-					status: ItemStatusEnum.public,
-				},
-				select: {
-					id: true,
-					createdBy: true,
-					title: true,
-					recordType: true,
-					genres: true,
-				},
-			})
-			return GetShortRecordDTO.createArrayFromData(data)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByDate(date: Date): Promise<GetShortRecordDTO[]> {
-		try {
-			const data = await this.record.findMany({
-				where: {
 					createdAt: date,
-					status: ItemStatusEnum.public,
-				},
-				select: {
-					id: true,
-					createdBy: true,
-					title: true,
-					recordType: true,
-					genres: true,
-				},
-			})
-			return GetShortRecordDTO.createArrayFromData(data)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByRecordType(type: RecordType): Promise<GetShortRecordDTO[]> {
-		try {
-			const data = await this.record.findMany({
-				where: {
 					recordType: type,
 					status: ItemStatusEnum.public,
 				},

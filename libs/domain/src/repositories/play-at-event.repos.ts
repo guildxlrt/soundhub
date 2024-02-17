@@ -4,8 +4,7 @@ export interface PlayAtEventRepository {
 	addArtists(input: { artists: number[]; event: number }): Promise<boolean>
 	removeArtists(input: { artists: number[]; event: number }): Promise<boolean>
 
-	findEventsByArtist(id: EventID): Promise<unknown[]>
-	findEventsByArtistGenre(genre: GenreType): Promise<unknown[]>
+	search(id: EventID, genre: GenreType): Promise<unknown[]>
 }
 
 export interface ExtBackPlayAtEventRepos {
@@ -14,10 +13,8 @@ export interface ExtBackPlayAtEventRepos {
 export interface ExtFrontPlayAtEventRepos {}
 
 export interface PlayAtEventBackendRepos extends PlayAtEventRepository {
-	findEventsByArtist(id: EventID): Promise<IGetEventShortSuccess[]>
-	findEventsByArtistGenre(genre: GenreType): Promise<IGetEventShortSuccess[]>
+	search(id: EventID, genre: GenreType): Promise<IGetEventShortSuccess[]>
 }
 export interface PlayAtEventFrontendRepos extends PlayAtEventRepository {
-	findEventsByArtist(id: EventID): Promise<GetEventShortDTO[]>
-	findEventsByArtistGenre(genre: GenreType): Promise<GetEventShortDTO[]>
+	search(id: EventID, genre: GenreType): Promise<GetEventShortDTO[]>
 }

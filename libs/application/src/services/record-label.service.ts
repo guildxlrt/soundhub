@@ -36,9 +36,9 @@ export class RecordLabelService implements IRecordLabelService {
 		}
 	}
 
-	async getLabelOfRecord(id: RecordID): Promise<ILabelName> {
+	async getLabelName(id: RecordID): Promise<ILabelName> {
 		try {
-			return await this.service.getLabelOfRecord(id)
+			return await this.service.getLabelName(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

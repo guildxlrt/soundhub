@@ -1,32 +1,29 @@
 import { UsecaseReply } from "../../utils"
-import { ErrorHandler, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
-import { ArtistsService, EventsService } from "../../services"
-import { PlaceUsecaseParams } from "../../adapters"
+import { ErrorHandler, GenreType, GetEventShortDTO, IGetEventShortSuccess, envs } from "Shared"
+import { ArtistsService, PlayAtEventService } from "../../services"
 
-export class FindEventsByPlaceUsecase {
-	mainService: EventsService
+export class SearchPlayAtEventUsecase {
+	mainService: PlayAtEventService
 	artistsService?: ArtistsService
 
-	constructor(mainService: EventsService, artistsService?: ArtistsService) {
+	constructor(mainService: PlayAtEventService, artistsService?: ArtistsService) {
 		this.mainService = mainService
 		this.artistsService = artistsService
 	}
 
-	async execute(input: PlaceUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async execute(id: number, genre: GenreType): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
 			if (envs.backend && this.artistsService)
-				return await this.backend(input, this.artistsService)
-			else return await this.frontend(input)
+				return await this.backend(id, genre, this.artistsService)
+			else return await this.frontend(id, genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async frontend(input: PlaceUsecaseParams): Promise<UsecaseReply<GetEventShortDTO[]>> {
+	async frontend(id: number, genre: GenreType): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const place = input.place
-
-			const data = (await this.mainService.findByPlace(place)) as GetEventShortDTO[]
+			const data = (await this.mainService.search(id, genre)) as GetEventShortDTO[]
 			return new UsecaseReply<GetEventShortDTO[]>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -34,13 +31,12 @@ export class FindEventsByPlaceUsecase {
 	}
 
 	async backend(
-		input: PlaceUsecaseParams,
+		id: number,
+		genre: GenreType,
 		artistsService: ArtistsService
 	): Promise<UsecaseReply<GetEventShortDTO[]>> {
 		try {
-			const place = input.place
-
-			const data = (await this.mainService.findByPlace(place)) as IGetEventShortSuccess[]
+			const data = (await this.mainService.search(id, genre)) as IGetEventShortSuccess[]
 
 			const results: GetEventShortDTO[] = await Promise.all(
 				data.map(async (event) => {
