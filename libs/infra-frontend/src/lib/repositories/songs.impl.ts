@@ -1,18 +1,28 @@
 import axios from "axios"
-import { RawFile, Song, SongsRepository } from "Domain"
-import { GetSongDTO, ErrorHandler, SongID, ReleaseID, ArtistProfileID, GenreType } from "Shared"
-import { NewFormData, apiUriRequest, apiUrlPath, apiUrlRoot } from "../../assets"
+import { RawFile, Song, SongsFrontendRepos } from "Domain"
+import {
+	GetSongDTO,
+	ErrorHandler,
+	SongID,
+	RecordID,
+	ArtistProfileID,
+	GenreType,
+	GetFullSongDTO,
+} from "Shared"
+import { NewFormData, apiUriQuery, apiUrlPath, apiUrlRoot } from "../../assets"
 
-export class SongsImplement implements SongsRepository {
+export class SongsImplement implements SongsFrontendRepos {
 	async add(song: { data: Song; audio: RawFile }): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			NewFormData.fromFile(formData, song.audio, "audio")
 			NewFormData.fromObject(formData, song.data, "data")
 
+			const url: string = apiUrlRoot + apiUrlPath.songs.add
+
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.songs.add}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -29,9 +39,11 @@ export class SongsImplement implements SongsRepository {
 			NewFormData.fromFile(formData, song.audio, "audio")
 			NewFormData.fromObject(formData, song.data, "data")
 
+			const url: string = apiUrlRoot + apiUrlPath.songs.edit + id
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.songs.edit + id}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -42,9 +54,11 @@ export class SongsImplement implements SongsRepository {
 
 	async delete(id: SongID): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.songs.remove + id
+
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.songs.delete + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -52,11 +66,13 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async get(id: SongID): Promise<GetSongDTO> {
+	async get(id: SongID): Promise<GetFullSongDTO> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.songs.get + id
+
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.songs.get + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -64,47 +80,25 @@ export class SongsImplement implements SongsRepository {
 		}
 	}
 
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async search(
+		recordID: RecordID,
+		artistID: ArtistProfileID,
+		genre: GenreType
+	): Promise<GetSongDTO[]> {
 		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.releaseID + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+			const url: string =
+				apiUrlRoot +
+				apiUrlPath.search +
+				apiUriQuery.recordID +
+				recordID +
+				apiUriQuery.recordGenre +
+				genre +
+				apiUriQuery.artistID +
+				artistID
 
-	async findByArtistReleases(id: ReleaseID): Promise<GetSongDTO[]> {
-		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.releaseGenre + genre}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtist(id: ArtistProfileID): Promise<GetSongDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {

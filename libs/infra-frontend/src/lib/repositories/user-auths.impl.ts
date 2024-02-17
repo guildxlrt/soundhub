@@ -6,9 +6,11 @@ import { apiUrlPath, apiUrlRoot } from "../../assets"
 export class UserAuthsImplement implements UserAuthsFrontendRepos {
 	async login(email: string, password: string): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.auth.login
+
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.auth.login}`,
+				url: url,
 				withCredentials: true,
 				data: { email: email, password: password },
 			})
@@ -19,9 +21,11 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 
 	async logout(): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.auth.logout
+
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.auth.logout}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -35,9 +39,11 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		confirm: UserEmail
 	}): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.auth.changeEmail
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.auth.changeEmail}`,
+				url: url,
 				withCredentials: true,
 				data: input,
 			})
@@ -52,9 +58,11 @@ export class UserAuthsImplement implements UserAuthsFrontendRepos {
 		confirm: UserPassword
 	}): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.auth.changePass
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.auth.changePass}`,
+				url: url,
 				withCredentials: true,
 				data: input,
 			})

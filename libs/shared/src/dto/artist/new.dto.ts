@@ -1,20 +1,31 @@
 import { GenresArray, AnyObject } from "../../types"
 
-class NewArtistProfileDTO {
+class INewArtistProfile {
 	readonly name: string
 	readonly bio: string
 	readonly members: string[]
 	readonly genres: GenresArray
+	readonly website: string | null
+	readonly country: string | null
 
-	constructor(name: string, bio: string, members: string[], genres: GenresArray) {
+	constructor(
+		name: string,
+		bio: string,
+		members: string[],
+		genres: GenresArray,
+		website: string | null,
+		country: string | null
+	) {
 		this.name = name
 		this.bio = bio
 		this.members = members
 		this.genres = genres
+		this.website = website
+		this.country = country
 	}
 }
 
-class NewAuthDTO {
+class INewAuth {
 	readonly password: string
 	readonly email: string
 
@@ -24,7 +35,7 @@ class NewAuthDTO {
 	}
 }
 
-export class AuthConfirmDTO {
+export class IAuthConfirm {
 	readonly confirmEmail: string
 	readonly confirmPass: string
 
@@ -35,29 +46,31 @@ export class AuthConfirmDTO {
 }
 
 export class NewArtistDTO {
-	readonly profile: NewArtistProfileDTO
-	readonly auth: NewAuthDTO
-	readonly authConfirm: AuthConfirmDTO
+	readonly profile: INewArtistProfile
+	readonly auth: INewAuth
+	readonly authConfirm: IAuthConfirm
 
-	constructor(profile: NewArtistProfileDTO, auth: NewAuthDTO, authConfirm: AuthConfirmDTO) {
+	constructor(profile: INewArtistProfile, auth: INewAuth, authConfirm: IAuthConfirm) {
 		this.profile = profile
 		this.auth = auth
 		this.authConfirm = authConfirm
 	}
 
 	static createFromInput(profile: AnyObject, auth: AnyObject, authConfirm: AnyObject) {
-		const newRelease = new NewArtistProfileDTO(
+		const newRecord = new INewArtistProfile(
 			profile?.["name"],
 			profile?.["bio"],
 			profile?.["members"],
-			profile?.["genres"]
+			profile?.["genres"],
+			profile?.["website"],
+			profile?.["country"]
 		)
-		const newAuth = new NewAuthDTO(auth?.["password"], auth?.["email"])
-		const newAuthConfirm = new AuthConfirmDTO(
+		const newAuth = new INewAuth(auth?.["password"], auth?.["email"])
+		const newAuthConfirm = new IAuthConfirm(
 			authConfirm?.["confirmEmail"],
 			authConfirm?.["confirmPass"]
 		)
 
-		return new NewArtistDTO(newRelease, newAuth, newAuthConfirm)
+		return new NewArtistDTO(newRecord, newAuth, newAuthConfirm)
 	}
 }

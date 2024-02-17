@@ -1,14 +1,10 @@
-import { SongFeatRepository } from "Domain"
-import {
-	ArtistProfileID,
-	ErrorHandler,
-	EventID,
-	GetShortReleaseDTO,
-	IArtistName,
-	SongID,
-} from "Shared"
+import { ExtBackSongFeatRepos, ExtFrontSongFeatRepos, SongFeatRepository } from "Domain"
+import { ArtistProfileID, ErrorHandler, GetSongDTO, IArtistName, SongID } from "Shared"
 
-interface ISongFeatService extends SongFeatRepository {}
+interface ISongFeatService
+	extends SongFeatRepository,
+		ExtBackSongFeatRepos,
+		ExtFrontSongFeatRepos {}
 
 export class SongFeatService implements ISongFeatService {
 	private service: ISongFeatService
@@ -17,32 +13,41 @@ export class SongFeatService implements ISongFeatService {
 		this.service = service
 	}
 
-	async addArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async addArtists(input: { song: number; artists: number[] }): Promise<boolean> {
 		try {
-			return await this.service.addArtists(artists, event)
+			return await this.service.addArtists(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async deleteArtists(artists: ArtistProfileID[], event: EventID): Promise<boolean> {
+	async removeArtists(input: { song: number; artists: number[] }): Promise<boolean> {
 		try {
-			return await this.service.deleteArtists(artists, event)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findSongsByArtistFeats(id: ArtistProfileID): Promise<GetShortReleaseDTO[]> {
-		try {
-			return await this.service.findSongsByArtistFeats(id)
+			return await this.service.removeArtists(input)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getArtistsNamesOfSong(id: SongID): Promise<IArtistName[]> {
+	async search(id: ArtistProfileID): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.getArtistsNamesOfSong(id)
+			return await this.service.search(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	// BACKEND
+	async getArtistsNames(id: SongID): Promise<IArtistName[]> {
+		try {
+			return await this.service.getArtistsNames(id)
+		} catch (error) {
+			throw ErrorHandler.handle(error)
+		}
+	}
+
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
+		try {
+			return await this.service.checkRights(id, createdBy)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

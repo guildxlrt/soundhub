@@ -1,11 +1,12 @@
 import { Song, SongsBackendRepos } from "Domain"
 import {
 	GenreType,
-	ReleaseID,
+	RecordID,
 	GetSongDTO,
 	SongID,
 	ArtistProfileID,
 	IGetFullSongSuccess,
+	ItemStatusEnum,
 } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
@@ -16,12 +17,13 @@ export class SongsImplement implements SongsBackendRepos {
 	async add(data: { song: Song; artists: ArtistProfileID[] }): Promise<boolean> {
 		try {
 			const { song, artists } = data
-			const { title, lyrics, audioPath, release_id } = song
+			const { title, lyrics, audioPath, record_id } = song
 
 			// PERSIST
 			await this.song.create({
 				data: {
-					release_id: release_id as number,
+					status: ItemStatusEnum.draft,
+					record_id: record_id as number,
 					audioPath: audioPath as string,
 					title: title,
 					lyrics: lyrics,
@@ -85,7 +87,7 @@ export class SongsImplement implements SongsBackendRepos {
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					title: true,
 					audioPath: true,
 				},
@@ -98,66 +100,24 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async search(
+		recordID: RecordID,
+		artistID: ArtistProfileID,
+		genre: GenreType
+	): Promise<GetSongDTO[]> {
 		try {
 			const songs = await this.song.findMany({
 				where: {
-					release_id: id,
-					release: {
-						isPublic: true,
-					},
-				},
-				select: {
-					id: true,
-					release_id: true,
-					audioPath: true,
-					title: true,
-				},
-			})
-
-			// RESPONSE
-			return GetSongDTO.createArrayFromData(songs)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
-		try {
-			const songs = await this.song.findMany({
-				where: {
-					release: {
-						publisher_id: id,
-						isPublic: true,
-					},
-				},
-				select: {
-					id: true,
-					release_id: true,
-					audioPath: true,
-					title: true,
-				},
-			})
-
-			// RESPONSE
-			return GetSongDTO.createArrayFromData(songs)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
-		try {
-			const songs = await this.song.findMany({
-				where: {
-					release: {
+					record_id: recordID,
+					record: {
 						genres: { has: genre },
-						isPublic: true,
+						createdBy: artistID,
+						status: ItemStatusEnum.public,
 					},
 				},
 				select: {
 					id: true,
-					release_id: true,
+					record_id: true,
 					audioPath: true,
 					title: true,
 				},
@@ -170,27 +130,26 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async getEditability(id: SongID): Promise<boolean> {
-		try {
-			const { isReadOnly } = await this.song.findUniqueOrThrow({
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
+		return await this.song
+			.findUnique({
 				where: {
 					id: id,
+					status: ItemStatusEnum.draft,
 				},
-				select: {
-					isReadOnly: true,
-				},
+				select: { record: { select: { createdBy: true } } },
 			})
-			return isReadOnly
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
+			.then((data) => {
+				if (createdBy !== data?.record.createdBy) return false
+				else return true
+			})
 	}
 
-	async getAudioPath(releaseID: ReleaseID): Promise<string | null> {
+	async getAudioPath(recordID: RecordID): Promise<string | null> {
 		try {
 			const { audioPath } = await this.song.findUniqueOrThrow({
 				where: {
-					id: releaseID as number,
+					id: recordID as number,
 				},
 				select: {
 					audioPath: true,
@@ -203,17 +162,17 @@ export class SongsImplement implements SongsBackendRepos {
 		}
 	}
 
-	async getReleaseID(id: SongID): Promise<number> {
+	async getRecordID(id: SongID): Promise<number> {
 		try {
-			const { release_id } = await this.song.findUniqueOrThrow({
+			const { record_id } = await this.song.findUniqueOrThrow({
 				where: {
 					id: id,
 				},
 				select: {
-					release_id: true,
+					record_id: true,
 				},
 			})
-			return release_id
+			return record_id
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}

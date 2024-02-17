@@ -1,5 +1,5 @@
 import * as fs from "fs"
-import { ErrorHandler, ReleaseFolder } from "Shared"
+import { ErrorHandler, RecordFolder } from "Shared"
 import { StreamFile, StorageRepository } from "Domain"
 
 export class StorageImplement implements StorageRepository {
@@ -39,7 +39,7 @@ export class StorageImplement implements StorageRepository {
 
 	async mkdir(): Promise<string> {
 		try {
-			const folderName = ReleaseFolder.generateRandom()
+			const folderName = RecordFolder.generateRandom()
 
 			return await fs.promises
 				.mkdir(folderName, { recursive: true })

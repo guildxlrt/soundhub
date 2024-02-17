@@ -2,7 +2,7 @@ import { AnyObject } from "../../types"
 
 export class GetEventDTO {
 	readonly id: number
-	readonly organisator_id: number
+	readonly createdBy: number
 	readonly date: Date
 	readonly place: string
 	readonly artists: number[]
@@ -12,7 +12,7 @@ export class GetEventDTO {
 
 	constructor(
 		id: number,
-		organisator_id: number,
+		createdBy: number,
 		date: Date,
 		place: string,
 		artists: number[],
@@ -21,7 +21,7 @@ export class GetEventDTO {
 		imagePath: string | null
 	) {
 		this.id = id
-		this.organisator_id = organisator_id
+		this.createdBy = createdBy
 		this.date = date
 		this.place = place
 		this.artists = artists
@@ -33,7 +33,7 @@ export class GetEventDTO {
 	static createFromData(data: AnyObject) {
 		return new GetEventDTO(
 			data?.["id"],
-			data?.["organisator_id"],
+			data?.["createdBy"],
 			data?.["date"],
 			data?.["place"],
 			data?.["artists"],

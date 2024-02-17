@@ -85,7 +85,7 @@ export class CreateArtistUsecase {
 				const newImagePath = await file.move(storageService, filePath.store.artist)
 
 				// persist
-				await this.mainService.setAvatarPath(newImagePath, artist.id as number)
+				await this.mainService.setLogoPath(newImagePath, artist.id as number)
 			}
 
 			// Cookie
@@ -101,10 +101,21 @@ export class CreateArtistUsecase {
 	async frontend(input: NewArtistUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, profile, auth, authConfirm } = input
-			const { name, bio, members, genres } = profile
+			const { website, country, name, bio, members, genres } = profile
 			const { email, password } = auth
 
-			const profileData = new Artist(null, null, name, bio, members, genres, null)
+			const profileData = new Artist(
+				null,
+				null,
+				null,
+				name,
+				bio,
+				members,
+				genres,
+				website,
+				country,
+				null
+			)
 			const authData = new UserAuth(null, email, password)
 
 			// PERSIST

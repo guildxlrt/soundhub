@@ -3,7 +3,7 @@ import { EntityLayer } from "./layers"
 import { StringFormatter, FieldsValidator, DateFormatter } from "../tools"
 
 export class Event extends EntityLayer {
-	readonly organisator_id: ArtistProfileID
+	readonly createdBy: ArtistProfileID
 	date: Date
 	place: string
 	title: string
@@ -16,7 +16,7 @@ export class Event extends EntityLayer {
 
 	constructor(
 		id: EventID | null,
-		organisator_id: ArtistProfileID,
+		createdBy: ArtistProfileID,
 		date: Date,
 		place: string,
 		title: string,
@@ -25,7 +25,7 @@ export class Event extends EntityLayer {
 	) {
 		super(id)
 
-		this.organisator_id = organisator_id
+		this.createdBy = createdBy
 		this.date = date
 		this.place = place
 		this.title = title

@@ -12,6 +12,10 @@ import {
 	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
+	UserRoleEnum,
+	ItemStatusEnum,
+	UserStatusEnum,
+	ItemStatusType,
 } from "Shared"
 import { dbClient } from "../database"
 import { DatabaseErrorHandler } from "../utils"
@@ -28,15 +32,17 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 			// PERSIST
 			const newUser = await this.userAuth.create({
 				data: {
+					status: ItemStatusEnum.public,
 					email: email as string,
 					password: password as string,
+					role: UserRoleEnum.artist,
 					artists: {
 						create: {
 							name: name,
 							bio: bio,
 							members: members,
 							genres: [`${genres[0]}`, `${genres[1]}`, `${genres[2]}`],
-							isPublic: true,
+							status: ItemStatusEnum.public,
 						},
 					},
 				},
@@ -89,14 +95,14 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async setPublicStatus(id: ArtistProfileID, isPublic: boolean): Promise<boolean> {
+	async setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean> {
 		try {
 			await this.artist.update({
 				where: {
 					id: id,
 				},
 				data: {
-					isPublic: isPublic,
+					status: status,
 				},
 			})
 
@@ -133,16 +139,18 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async getAll(): Promise<GetArtistShortDTO[]> {
+	async search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]> {
 		try {
 			const artists = await this.artist.findMany({
+				where: {
+					status: ItemStatusEnum.public,
+					genres: { has: genre },
+					country: country,
+				},
 				select: {
 					id: true,
 					name: true,
 					genres: true,
-				},
-				where: {
-					isPublic: true,
 				},
 			})
 
@@ -153,59 +161,19 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
-		try {
-			const artists = await this.artist.findMany({
-				where: {
-					genres: { has: genre },
-					isPublic: true,
-				},
-				select: {
-					id: true,
-					name: true,
-					genres: true,
-					avatarPath: true,
-				},
-			})
-
-			return GetArtistShortDTO.createArrayFromData(artists)
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
-		try {
-			const { isPublic } = await this.artist.findUniqueOrThrow({
+	async checkRights(id: number, authID: number): Promise<boolean> {
+		return await this.artist
+			.findUnique({
 				where: {
 					id: id,
-				},
-				select: {
-					isPublic: true,
-				},
-			})
-
-			return isPublic
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error)
-		}
-	}
-
-	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
-		try {
-			const user = await this.artist.findUniqueOrThrow({
-				where: {
-					id: id,
-				},
-				select: {
-					id: true,
+					status: UserStatusEnum.active || UserStatusEnum.draft || UserStatusEnum.invited,
+					user_auth_id: authID,
 				},
 			})
-
-			return user.id
-		} catch (error) {
-			throw DatabaseErrorHandler.handle(error).setMessage("error to authentificate")
-		}
+			.then((data) => {
+				if (!data) return false
+				else return true
+			})
 	}
 
 	async getAuths(id: ArtistProfileID): Promise<IGetArtistAuthsSuccess> {
@@ -262,30 +230,30 @@ export class ArtistsImplement implements ArtistsBackendRepos {
 		}
 	}
 
-	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
+	async getLogoPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			const { avatarPath } = await this.artist.findUniqueOrThrow({
+			const { logoPath } = await this.artist.findUniqueOrThrow({
 				where: {
 					user_auth_id: id,
 				},
 				select: {
-					avatarPath: true,
+					logoPath: true,
 				},
 			})
-			return avatarPath
+			return logoPath
 		} catch (error) {
 			throw DatabaseErrorHandler.handle(error).setMessage("error to get image path")
 		}
 	}
 
-	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
+	async setLogoPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
 		try {
 			await this.artist.update({
 				where: {
 					id: id,
 				},
 				data: {
-					avatarPath: path,
+					logoPath: path,
 				},
 			})
 			return true

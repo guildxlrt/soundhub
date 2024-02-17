@@ -1,5 +1,5 @@
 import axios from "axios"
-import { NewFormData, apiUrlPath, apiUrlRoot, apiUriRequest } from "../../assets"
+import { NewFormData, apiUriQuery, apiUrlPath, apiUrlRoot } from "../../assets"
 import { Announce, RawFile } from "Domain"
 import {
 	AnnounceID,
@@ -8,18 +8,20 @@ import {
 	GetAnnounceDTO,
 	GetAnnounceShortDTO,
 } from "Shared"
-import { AnnouncesRepository } from "Domain"
+import { AnnouncesFrontendRepos } from "Domain"
 
-export class AnnouncesImplement implements AnnouncesRepository {
+export class AnnouncesImplement implements AnnouncesFrontendRepos {
 	async create(data: Announce, file?: RawFile): Promise<boolean> {
 		try {
 			const formData = new FormData()
 			NewFormData.fromFile(formData, file as RawFile)
 			NewFormData.fromObject(formData, data)
 
+			const url: string = apiUrlRoot + apiUrlPath.announces.create
+
 			return await axios({
 				method: "post",
-				url: `${apiUrlRoot + apiUrlPath.announces.create}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -35,9 +37,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 			NewFormData.fromFile(formData, file as RawFile)
 			NewFormData.fromObject(formData, data)
 
+			const url: string = apiUrlRoot + apiUrlPath.announces.edit + id
+
 			return await axios({
 				method: "put",
-				url: `${apiUrlRoot + apiUrlPath.announces.edit + id}`,
+				url: url,
 				withCredentials: true,
 				data: formData,
 			})
@@ -48,9 +52,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async delete(id: AnnounceID): Promise<boolean> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.announces.delete + id
+
 			return await axios({
 				method: "delete",
-				url: `${apiUrlRoot + apiUrlPath.announces.delete + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -60,9 +66,11 @@ export class AnnouncesImplement implements AnnouncesRepository {
 
 	async get(id: AnnounceID): Promise<GetAnnounceDTO> {
 		try {
+			const url: string = apiUrlRoot + apiUrlPath.announces.get + id
+
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.announces.get + id}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {
@@ -70,35 +78,19 @@ export class AnnouncesImplement implements AnnouncesRepository {
 		}
 	}
 
-	async getAll(): Promise<GetAnnounceShortDTO[]> {
+	async search(id: ArtistProfileID, date: Date): Promise<GetAnnounceShortDTO[]> {
 		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.announces.getAll}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+			const url: string =
+				apiUrlRoot +
+				apiUrlPath.search.artists +
+				apiUriQuery.artistID +
+				id +
+				apiUriQuery.date +
+				date
 
-	async findByArtist(id: ArtistProfileID): Promise<GetAnnounceShortDTO[]> {
-		try {
 			return await axios({
 				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.artistID + id}`,
-				withCredentials: true,
-			})
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByDate(date: Date): Promise<GetAnnounceShortDTO[]> {
-		try {
-			return await axios({
-				method: "get",
-				url: `${apiUrlRoot + apiUrlPath.search + apiUriRequest.date + date}`,
+				url: url,
 				withCredentials: true,
 			})
 		} catch (error) {

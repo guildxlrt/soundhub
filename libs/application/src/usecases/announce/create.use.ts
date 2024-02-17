@@ -4,11 +4,11 @@ import { AnnouncesService, StorageService } from "../../services"
 import { NewAnnounceUsecaseParams } from "../../adapters"
 
 export class CreateAnnounceUsecase {
-	private announcesService: AnnouncesService
+	private mainService: AnnouncesService
 	private storageService?: StorageService
 
-	constructor(announcesService: AnnouncesService, storageService?: StorageService) {
-		this.announcesService = announcesService
+	constructor(mainService: AnnouncesService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
@@ -31,7 +31,7 @@ export class CreateAnnounceUsecase {
 	async frontend(input: NewAnnounceUsecaseParams): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, announce } = input
-			const data = await this.announcesService.create(announce, file)
+			const data = await this.mainService.create(announce, file)
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -53,7 +53,7 @@ export class CreateAnnounceUsecase {
 			}
 
 			// persist
-			await this.announcesService.create(announce)
+			await this.mainService.create(announce)
 
 			return new UsecaseReply<boolean>(true, null)
 		} catch (error) {

@@ -1,14 +1,5 @@
 import { ExtBackSongsRepos, ExtFrontSongsRepos, SongsRepository } from "Domain"
-import {
-	ErrorHandler,
-	GenreType,
-	ArtistProfileID,
-	ReleaseID,
-	GetSongDTO,
-	SongID,
-	IGetFullSongSuccess,
-	GetFullSongDTO,
-} from "Shared"
+import { ErrorHandler, GenreType, ArtistProfileID, RecordID, GetSongDTO, SongID } from "Shared"
 
 interface ISongsService extends SongsRepository, ExtBackSongsRepos, ExtFrontSongsRepos {}
 
@@ -51,48 +42,37 @@ export class SongsService implements ISongsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByRelease(id: ReleaseID): Promise<GetSongDTO[]> {
+	async search(
+		recordID: RecordID,
+		artistID: ArtistProfileID,
+		genre: GenreType
+	): Promise<GetSongDTO[]> {
 		try {
-			return await this.service.findByRelease(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-	async findByReleaseGenre(genre: GenreType): Promise<GetSongDTO[]> {
-		try {
-			return await this.service.findByReleaseGenre(genre)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async findByArtistReleases(id: ArtistProfileID): Promise<GetSongDTO[]> {
-		try {
-			return await this.service.findByArtistReleases(id)
+			return await this.service.search(recordID, artistID, genre)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getEditability(id: number): Promise<boolean> {
+	async checkRights(id: number, createdBy: number): Promise<boolean> {
 		try {
-			return await this.service.getEditability(id)
+			return await this.service.checkRights(id, createdBy)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getAudioPath(releaseID: ReleaseID): Promise<string | null | undefined> {
+	async getAudioPath(recordID: RecordID): Promise<string | null | undefined> {
 		try {
-			return await this.service.getAudioPath(releaseID)
+			return await this.service.getAudioPath(recordID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getReleaseID(releaseID: ReleaseID): Promise<number | undefined> {
+	async getRecordID(recordID: RecordID): Promise<number | undefined> {
 		try {
-			return await this.service.getReleaseID(releaseID)
+			return await this.service.getRecordID(recordID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

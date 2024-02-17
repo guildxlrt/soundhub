@@ -37,11 +37,11 @@ export class GetSongUsecase {
 	): Promise<UsecaseReply<GetFullSongDTO>> {
 		try {
 			const id = input.id
-			// get the release
+			// get the record
 			const data = (await this.mainService.get(id)) as IGetFullSongSuccess
 
 			// get artists names
-			const feats: IArtistName[] = await songFeatService.getArtistsNamesOfSong(data.id)
+			const feats: IArtistName[] = await songFeatService.getArtistsNames(data.id)
 
 			const dto = GetFullSongDTO.createFromData(data, feats)
 

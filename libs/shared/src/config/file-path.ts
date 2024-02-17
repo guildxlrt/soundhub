@@ -6,9 +6,10 @@ export const filePath = {
 	store: {
 		announce: "store/images/announces/",
 		event: "store/images/events/",
-		artist: "store/images/avatars/",
-		release: "store/releases/",
-		song: "store/releases/",
+		artist: "store/images/logos/",
+		record: "store/records/",
+		song: "store/records/",
+		label: "store/labels/",
 	} as const,
 } as const
 

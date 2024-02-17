@@ -19,6 +19,7 @@ import {
 	IfindByAuthIDSuccess,
 	IGetArtistAuthsSuccess,
 	IArtistName,
+	ItemStatusType,
 } from "Shared"
 
 interface IArtistsService extends ArtistsRepository, ExtBackArtistsRepos, ExtFrontArtistsRepos {}
@@ -45,25 +46,17 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async update(profile: Artist, delAvatar?: boolean, file?: File): Promise<boolean> {
+	async update(profile: Artist, deleteLogo?: boolean, file?: File): Promise<boolean> {
 		try {
-			return await this.service.update(profile, delAvatar, file)
+			return await this.service.update(profile, deleteLogo, file)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
 
-	async getPublicStatus(id: ArtistProfileID): Promise<boolean> {
+	async setStatus(id: ArtistProfileID, status: ItemStatusType): Promise<boolean> {
 		try {
-			return await this.service.getPublicStatus(id)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
-
-	async setPublicStatus(id?: ArtistProfileID, isPublic?: boolean): Promise<boolean> {
-		try {
-			return await this.service.setPublicStatus(id, isPublic)
+			return await this.service.setStatus(id, status)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -82,24 +75,18 @@ export class ArtistsService implements IArtistsService {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async getAll(): Promise<GetArtistShortDTO[]> {
+	async search(genre: GenreType, country: string): Promise<GetArtistShortDTO[]> {
 		try {
-			return await this.service.getAll()
+			return await this.service.search(genre, country)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async findByGenre(genre: GenreType): Promise<GetArtistShortDTO[]> {
-		try {
-			return await this.service.findByGenre(genre)
-		} catch (error) {
-			throw ErrorHandler.handle(error)
-		}
-	}
+
 	// BACKEND
-	async verifyExistence(id: ArtistProfileID): Promise<ArtistProfileID> {
+	async checkRights(id: number, authID: number): Promise<boolean> {
 		try {
-			return await this.service.verifyExistence(id)
+			return await this.service.checkRights(id, authID)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
@@ -128,16 +115,16 @@ export class ArtistsService implements IArtistsService {
 		}
 	}
 
-	async getAvatarPath(id: ArtistProfileID): Promise<string | null> {
+	async getLogoPath(id: ArtistProfileID): Promise<string | null> {
 		try {
-			return await this.service.getAvatarPath(id)
+			return await this.service.getLogoPath(id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}
 	}
-	async setAvatarPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
+	async setLogoPath(path: string | null, id: ArtistProfileID): Promise<boolean> {
 		try {
-			return await this.service.setAvatarPath(path, id)
+			return await this.service.setLogoPath(path, id)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
 		}

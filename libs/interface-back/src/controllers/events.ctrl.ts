@@ -3,7 +3,6 @@ import {
 	CreateEventUsecase,
 	DeleteEventUsecaseParams,
 	DeleteEventUsecase,
-	GetAllEventsUsecase,
 	GetEventUsecase,
 	EditEventUsecase,
 	IDUsecaseParams,
@@ -28,10 +27,10 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "POST") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const file = req.image as unknown
 			const event = req.body as CreateEventDTO
-			const params = NewEventUsecaseParams.fromBackend(event, publisher, file)
+			const params = NewEventUsecaseParams.fromBackend(event, authID, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -57,10 +56,10 @@ export class EventsController implements IEventsCtrl {
 		try {
 			if (req.method !== "PUT") throw ErrorMsg.htmlError(htmlError[405])
 
-			const publisher = req.auth?.authID as number
+			const authID = req.auth?.authID as number
 			const file = req.image as unknown
 			const event = req.body as EditEventDTO
-			const params = EditEventUsecaseParams.fromBackend(event, publisher, file)
+			const params = EditEventUsecaseParams.fromBackend(event, authID, file)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -87,8 +86,8 @@ export class EventsController implements IEventsCtrl {
 			if (req.method !== "DELETE") throw ErrorMsg.htmlError(htmlError[405])
 
 			const id = Number(req.params["id"])
-			const publisher = req.auth?.authID as number
-			const params = DeleteEventUsecaseParams.fromBackend(id, publisher)
+			const authID = req.auth?.authID as number
+			const params = DeleteEventUsecaseParams.fromBackend(id, authID)
 
 			// Services
 			const eventsImplement = new EventsImplement()
@@ -124,28 +123,6 @@ export class EventsController implements IEventsCtrl {
 			// Calling database
 			const getEvent = new GetEventUsecase(eventsService)
 			const { data, error } = await getEvent.execute(params)
-
-			if (error) throw error
-			if (!data) throw ErrorMsg.htmlError(htmlError[500])
-
-			const reponse = new ResponseDTO(data, error)
-			return res.status(200).send(reponse)
-		} catch (error) {
-			return ApiErrorHandler.reply(error, res)
-		}
-	}
-
-	async getAll(req: ExpressRequest, res: ExpressResponse): Promise<ExpressResponse> {
-		try {
-			if (req.method !== "GET") throw ErrorMsg.htmlError(htmlError[405])
-
-			// Services
-			const eventsImplement = new EventsImplement()
-			const eventsService = new EventsService(eventsImplement)
-
-			// Calling database
-			const getAllEvents = new GetAllEventsUsecase(eventsService)
-			const { data, error } = await getAllEvents.execute()
 
 			if (error) throw error
 			if (!data) throw ErrorMsg.htmlError(htmlError[500])

@@ -5,7 +5,7 @@ export class DateFormatter {
 		try {
 			const date = new Date(value)
 			const isValidDate = !isNaN(date.getTime())
-			if (!isValidDate) throw new ErrorMsg("unknow release type", htmlError[422].value)
+			if (!isValidDate) throw new ErrorMsg("unknow record type", htmlError[422].value)
 
 			return new Date(date)
 		} catch (error) {

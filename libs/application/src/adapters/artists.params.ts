@@ -1,5 +1,13 @@
 import { Artist, StreamFile, UserAuth } from "Domain"
-import { ArtistProfileID, NewArtistDTO, UpdateArtistDTO, UserEmail, UserPassword } from "Shared"
+import {
+	ArtistProfileID,
+	ItemStatusType,
+	NewArtistDTO,
+	UpdateArtistDTO,
+	UserAuthID,
+	UserEmail,
+	UserPassword,
+} from "Shared"
 
 export class NewArtistUsecaseParams {
 	profile: Artist
@@ -28,11 +36,22 @@ export class NewArtistUsecaseParams {
 
 	static fromBackend(dto: NewArtistDTO, file?: StreamFile | unknown) {
 		const { profile, auth, authConfirm } = dto
-		const { bio, genres, members, name } = profile
+		const { website, country, bio, genres, members, name } = profile
 		const { password, email } = auth
 		const { confirmEmail, confirmPass } = authConfirm
 
-		const artist = new Artist(null, null, name, bio, members, genres, null)
+		const artist = new Artist(
+			null,
+			null,
+			null,
+			name,
+			bio,
+			members,
+			genres,
+			website,
+			country,
+			null
+		)
 		const userAuth = new UserAuth(null, email, password)
 
 		return new NewArtistUsecaseParams(
@@ -47,20 +66,31 @@ export class NewArtistUsecaseParams {
 
 export class UpdateArtistUsecaseParams {
 	profile: Artist
-	delAvatar?: boolean
+	deleteLogo?: boolean
 	file?: StreamFile
 
-	constructor(profile: Artist, delAvatar?: boolean, file?: StreamFile | unknown) {
+	constructor(profile: Artist, deleteLogo?: boolean, file?: StreamFile | unknown) {
 		this.profile = profile
-		this.delAvatar = delAvatar
+		this.deleteLogo = deleteLogo
 		this.file = file as StreamFile
 	}
 
 	static fromBackend(dto: UpdateArtistDTO, user: number, file?: StreamFile | unknown) {
-		const { bio, genres, members, name, delAvatar } = dto
+		const { website, country, id, bio, genres, members, name, deleteLogo } = dto
 
-		const artist = new Artist(user, user, name, bio, members, genres, null)
-		return new UpdateArtistUsecaseParams(artist, delAvatar, file)
+		const artist = new Artist(
+			id,
+			user,
+			null,
+			name,
+			bio,
+			members,
+			genres,
+			website,
+			country,
+			null
+		)
+		return new UpdateArtistUsecaseParams(artist, deleteLogo, file)
 	}
 }
 
@@ -72,18 +102,26 @@ export class GetPublicStatusArtistUsecaseParams {
 	}
 
 	static fromBackend(id: ArtistProfileID) {
-		return new SetPublicStatusArtistUsecaseParams(id)
+		return new GetPublicStatusArtistUsecaseParams(id)
 	}
 }
 
-export class SetPublicStatusArtistUsecaseParams {
-	id?: ArtistProfileID
+export class SetStatusArtistUsecaseParams {
+	artistProfileID: ArtistProfileID
+	status: ItemStatusType
+	authID?: UserAuthID
 
-	constructor(id?: ArtistProfileID) {
-		this.id = id
+	constructor(artistProfileID: ArtistProfileID, status: ItemStatusType, authID?: UserAuthID) {
+		this.artistProfileID = artistProfileID
+		this.status = status
+		this.authID = authID
 	}
 
-	static fromBackend(id: ArtistProfileID) {
-		return new SetPublicStatusArtistUsecaseParams(id)
+	static fromBackend(
+		artistProfileID: ArtistProfileID,
+		status: ItemStatusType,
+		authID?: UserAuthID
+	) {
+		return new SetStatusArtistUsecaseParams(artistProfileID, status, authID)
 	}
 }

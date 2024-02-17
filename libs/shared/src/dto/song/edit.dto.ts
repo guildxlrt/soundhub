@@ -2,20 +2,20 @@ import { AnyObject } from "../../types"
 
 export class EditSongDTO {
 	readonly id: number
-	readonly releaseID: number
+	readonly recordID: number
 	readonly title: string
 	readonly feats: number[]
 	readonly lyrics: string | null
 
 	constructor(
 		id: number,
-		releaseID: number,
+		recordID: number,
 		title: string,
 		feats: number[],
 		lyrics: string | null
 	) {
 		this.id = id
-		this.releaseID = releaseID
+		this.recordID = recordID
 		this.title = title
 		this.feats = feats
 		this.lyrics = lyrics
@@ -24,7 +24,7 @@ export class EditSongDTO {
 	static createFromInput(song: AnyObject) {
 		return new EditSongDTO(
 			song?.["id"],
-			song?.["release_id"],
+			song?.["record_id"],
 			song?.["title"],
 			song?.["feats"],
 			song?.["lyrics"]

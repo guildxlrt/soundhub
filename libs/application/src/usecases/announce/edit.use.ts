@@ -4,11 +4,11 @@ import { AnnouncesService, StorageService } from "../../services"
 import { EditAnnounceUsecaseParams } from "../../adapters"
 
 export class EditAnnounceUsecase {
-	private announcesService: AnnouncesService
+	private mainService: AnnouncesService
 	private storageService?: StorageService
 
-	constructor(announcesService: AnnouncesService, storageService?: StorageService) {
-		this.announcesService = announcesService
+	constructor(mainService: AnnouncesService, storageService?: StorageService) {
+		this.mainService = mainService
 		this.storageService = storageService
 	}
 
@@ -32,7 +32,7 @@ export class EditAnnounceUsecase {
 		try {
 			const { file, announce } = input
 
-			const data = await this.announcesService.edit(announce, file)
+			const data = await this.mainService.edit(announce, file)
 			return new UsecaseReply<boolean>(data, null)
 		} catch (error) {
 			throw ErrorHandler.handle(error)
@@ -45,14 +45,17 @@ export class EditAnnounceUsecase {
 	): Promise<UsecaseReply<boolean>> {
 		try {
 			const { file, delImage, announce } = input
-			const { publisher_id, id } = announce
+			const { createdBy, id } = announce
 
-			// publisher verification
-			const announceOwner = await this.announcesService.getOwner(id as number)
-			if (publisher_id !== announceOwner) throw ErrorMsg.htmlError(htmlError[403])
+			// auth verification
+			const checkRights = await this.mainService.checkRights(
+				id as number,
+				createdBy as number
+			)
+			if (!checkRights) throw ErrorMsg.htmlError(htmlError[403])
 
 			// persist
-			await this.announcesService.edit(announce)
+			await this.mainService.edit(announce)
 
 			// STORING NEW FILE
 			// contradiction
@@ -60,7 +63,7 @@ export class EditAnnounceUsecase {
 				throw new ErrorMsg("User Image | contradictory request", 400)
 
 			if (file || delImage === true) {
-				const oldImagePath = await this.announcesService.getImagePath(id as number)
+				const oldImagePath = await this.mainService.getImagePath(id as number)
 				if (!oldImagePath) new ErrorMsg(`Error: failed to persist`)
 
 				if (file) {
@@ -68,7 +71,7 @@ export class EditAnnounceUsecase {
 					const newImagePath = await file.move(storageService, filePath.store.announce)
 
 					//move file
-					await this.announcesService.setImagePath(newImagePath, id as number)
+					await this.mainService.setImagePath(newImagePath, id as number)
 				}
 
 				// delete old

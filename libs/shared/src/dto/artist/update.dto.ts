@@ -1,24 +1,33 @@
 import { GenresArray, AnyObject } from "../../types"
 
 export class UpdateArtistDTO {
+	readonly id: number
 	readonly name: string
 	readonly bio: string
 	readonly members: string[]
 	readonly genres: GenresArray
-	readonly delAvatar?: boolean
+	readonly website: string | null
+	readonly country: string | null
+	readonly deleteLogo?: boolean
 
 	constructor(
+		id: number,
 		name: string,
 		bio: string,
 		members: string[],
 		genres: GenresArray,
-		delAvatar?: boolean
+		website: string | null,
+		country: string | null,
+		deleteLogo?: boolean
 	) {
+		this.id = id
 		this.name = name
 		this.bio = bio
 		this.members = members
 		this.genres = genres
-		this.delAvatar = delAvatar
+		this.website = website
+		this.country = country
+		this.deleteLogo = deleteLogo
 	}
 
 	static createFromInput(data: AnyObject) {
@@ -27,7 +36,9 @@ export class UpdateArtistDTO {
 			data?.["bio"],
 			data?.["members"],
 			data?.["genres"],
-			data?.["delAvatar"]
+			data?.["website"],
+			data?.["country"],
+			data?.["deleteLogo"]
 		)
 	}
 }

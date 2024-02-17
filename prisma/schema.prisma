@@ -13,41 +13,60 @@ datasource db {
 model UserAuth {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
   email    String @unique
   password String
+  role     String
 
   artists  Artist[]
   events   Event[]
   announce Announce[]
-  release  Release[]
+  record   Record[]
 }
 
 model Artist {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
   user_auth_id Int      @unique
   user         UserAuth @relation(fields: [user_auth_id], references: [id], onDelete: Cascade)
 
-  name       String
-  bio        String?
-  members    Json
-  genres     String[]
-  avatarPath String?
-  isPublic   Boolean
+  name     String   @unique
+  bio      String?
+  members  Json
+  genres   String[]
+  website  String?
+  country  String?
+  logoPath String?
 
-  playAtEvent   PlayAtEvent[]
-  songsFeats    SongFeat[]
-  releaseArtist ReleaseArtist[]
+  playAtEvent  PlayAtEvent[]
+  songsFeats   SongFeat[]
+  recordArtist RecordArtist[]
+}
+
+model Label {
+  id     Int    @id @default(autoincrement())
+  status String
+
+  name         String   @unique
+  creationDate DateTime
+  bio          String?
+  website      String?
+  country      String?
+  logoPath     String?
+
+  recordsLabels RecordLabel[]
 }
 
 model Announce {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  publisher_id Int
-  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+  createdBy Int
+  publisher UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   title     String
   text      String
@@ -57,9 +76,10 @@ model Announce {
 model Event {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  organisator_id Int
-  organisator    UserAuth @relation(fields: [organisator_id], references: [id], onDelete: Cascade)
+  createdBy   Int
+  organisator UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   date      DateTime
   place     String
@@ -70,32 +90,33 @@ model Event {
   playAtEvent PlayAtEvent[]
 }
 
-model Release {
+model Record {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  publisher_id Int
-  publisher    UserAuth @relation(fields: [publisher_id], references: [id], onDelete: Cascade)
+  createdBy Int
+  publisher UserAuth @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
-  title       String
-  releaseType String
-  descript    String?
-  price       Int?
-  genres      String[]
-  folderPath  String
-  isPublic    Boolean
-  isReadOnly  Boolean
+  title      String
+  recordType String
+  descript   String?
+  price      Int?
+  genres     String[]
+  folderPath String
 
-  songs           Song[]
-  releasesArtists ReleaseArtist[]
+  songs          Song[]
+  recordsArtists RecordArtist[]
+  recordsLabels  RecordLabel[]
 }
 
 model Song {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  status    String
 
-  release_id Int
-  release    Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+  record_id Int
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
 
   title      String
   audioPath  String
@@ -106,7 +127,6 @@ model Song {
 }
 
 // INTERMEDIARY TABLES
-
 model PlayAtEvent {
   id Int @id @default(autoincrement())
 
@@ -127,12 +147,20 @@ model SongFeat {
   song    Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
 }
 
-model ReleaseArtist {
+model RecordArtist {
   id Int @id @default(autoincrement())
 
   artist_id Int
   artist    Artist @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 
-  release_id Int
-  realease   Release @relation(fields: [release_id], references: [id], onDelete: Cascade)
+  record_id Int
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
+}
+
+model RecordLabel {
+  record_id Int    @unique
+  record    Record @relation(fields: [record_id], references: [id], onDelete: Cascade)
+
+  label_id Int
+  label    Label @relation(fields: [label_id], references: [id], onDelete: Cascade)
 }
